@@ -8,6 +8,9 @@ import { validateString } from '../_utils/validation';
 // Import Request type from Next.js
 import type { NextRequest } from 'next/server';
 
+// Import feature flags
+import featureFlags from '../../../utils/featureFlags';
+
 // Helper function to get JWT secret
 function getJwtSecret(): string {
   const secretKey = process.env.JWT_SECRET;

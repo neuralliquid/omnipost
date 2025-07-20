@@ -100,6 +100,10 @@ function withAuthAndFeature(
       return Errors.internalServerError('Airtable integration not available');
     }
   
+    // Only check feature flags directly related to content storage
+    if (!featureFlags.storage.notion.enabled) {
+      return Errors.forbidden('Notion storage feature is disabled');
+    }
     // Call the handler with the Airtable table
     return handler(request, table);
   };
@@ -229,7 +233,7 @@ async function trackContent(request: Request, airtableTable: Airtable.Table<Fiel
       details: errorMessage
     });
   }
-}
+});
 
 // Export route handlers with proper error handling
 export const POST = withErrorHandling(withAuthAndFeature('airtableIntegration', storeContent));
