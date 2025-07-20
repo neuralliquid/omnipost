@@ -79,7 +79,11 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
     }, {
       headers: {
         ...platformConfig.headers,
-        'Authorization': platformConfig.headers?.Authorization || `Bearer ${platformConfig.apiKey}`
+        ...(platformConfig.headers?.Authorization
+          ? { Authorization: platformConfig.headers.Authorization }
+          : platformConfig.apiKey
+            ? { Authorization: `Bearer ${platformConfig.apiKey}` }
+            : {})
       }
     });
     
