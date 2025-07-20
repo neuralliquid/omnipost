@@ -17,10 +17,8 @@ function getJwtSecret(): string {
   return secretKey;
 }
 // Define users in one place to avoid duplication
-const MOCK_USERS = [
-  { id: '1', username: 'admin', password: 'admin123', role: 'admin' },
-  { id: '2', username: 'user', password: 'user123', role: 'user' }
-];
+// TODO: remove mock users. Inject a UserRepository abstraction and
+// depend on a hashed-password verifier such as bcrypt.compare().
 
 // Helper function to find user by username
 // This is a placeholder - replace with actual database lookup
