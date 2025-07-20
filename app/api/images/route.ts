@@ -49,7 +49,7 @@ export const POST = withErrorHandling(async (request: Request) => {
 // Review image endpoint
 export const PUT = withErrorHandling(async (request: Request) => {
   try {
-    if (!isAuthenticated()) {
+    if (!(await isAuthenticated())) {
       return Errors.unauthorized('Authentication required to review images');
     }
     
