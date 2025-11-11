@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
+import { tokenStorage } from './storage/token-storage';
 
 // Define API response interface
 export interface ApiResponse<T = any> {
@@ -42,12 +43,10 @@ class ApiClient {
       // Add request interceptor to include auth token
       this.client.interceptors.request.use(
         (config) => {
-          // Get token from localStorage in browser environment
-          if (typeof window !== 'undefined' && window.localStorage) {
-            const token = window.localStorage.getItem('auth-token');
-            if (token) {
-              config.headers.Authorization = `Bearer ${token}`;
-            }
+          // Get token from token storage
+          const token = tokenStorage.getToken();
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
           }
           return config;
         },
@@ -63,8 +62,8 @@ class ApiClient {
           // Handle specific error cases
           if (error.response?.status === 401) {
             // Unauthorized - redirect to login
-            if (typeof window !== 'undefined' && window.localStorage) {
-              window.localStorage.removeItem('auth-token');
+            tokenStorage.removeToken();
+            if (typeof window !== 'undefined') {
               window.location.href = '/login';
             }
           }
@@ -138,10 +137,8 @@ class ApiClient {
   public async login(username: string, password: string): Promise<{ user: any; token: string }> {
     const response = await this.post<{ user: any; token: string }>('/api/auth', { username, password });
     
-    // Store token in localStorage
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.setItem('auth-token', response.token);
-    }
+    // Store token using token storage service
+    tokenStorage.setToken(response.token);
     
     return response;
   }
@@ -153,10 +150,8 @@ class ApiClient {
   public async logout(): Promise<{ message: string }> {
     const response = await this.delete<{ message: string }>('/api/auth');
     
-    // Remove token from localStorage
-    if (typeof window !== 'undefined' && window.localStorage) {
-      window.localStorage.removeItem('auth-token');
-    }
+    // Remove token using token storage service
+    tokenStorage.removeToken();
     
     return response;
   }

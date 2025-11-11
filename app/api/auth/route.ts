@@ -1,51 +1,12 @@
-import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
+import { authService } from '../../../lib/auth/auth-service';
 
 // Import Request type from Next.js
 import type { NextRequest } from 'next/server';
-
-// Import feature flags
-import featureFlags from '../../../utils/featureFlags';
-
-// Helper function to get JWT secret
-function getJwtSecret(): string {
-  const secretKey = process.env.JWT_SECRET;
-  if (!secretKey) {
-    throw new Error('JWT_SECRET environment variable is not set');
-  }
-  return secretKey;
-}
-// Define users in one place to avoid duplication
-// TODO: remove mock users. Inject a UserRepository abstraction and
-// depend on a hashed-password verifier such as bcrypt.compare().
-const MOCK_USERS = [
-  { id: '1', username: 'admin', password: 'admin123', role: 'admin' },
-  { id: '2', username: 'user', password: 'user123', role: 'user' }
-];
-
-// Helper function to find user by username
-// This is a placeholder - replace with actual database lookup
-async function findUserByUsername(username: string): Promise<any> {
-  // This would be replaced with actual database lookup
-  return MOCK_USERS.find(user => user.username === username);
-}
-
-// Helper function to verify user credentials
-// This is a placeholder - replace with actual password verification
-async function verifyUserCredentials(username: string, password: string): Promise<boolean> {
-  // In a real implementation, you would:
-  // 1. Find the user by username
-  // 2. Hash the provided password with the same algorithm used for storage
-  // 3. Compare the hashed password with the stored hash
-  
-  // For now, we'll just do a simple check against our mock users
-  const user = MOCK_USERS.find(u => u.username === username);
-  return user ? user.password === password : false;
-}
 
 /**
  * Validates login input parameters
@@ -80,14 +41,14 @@ async function authenticateUser(username: string, password: string): Promise<any
   await logToAuditTrail(await createLogEntry('LOGIN_ATTEMPT', { username }));
     
   // Find user
-  const user = await findUserByUsername(username);
+  const user = await authService.findUserByUsername(username);
   if (!user) {
     await logToAuditTrail(await createLogEntry('LOGIN_FAILED', { username, reason: 'User not found' }));
     return Errors.unauthorized('Invalid username or password');
   }
     
   // Verify credentials
-  const isPasswordValid = await verifyUserCredentials(username, password);
+  const isPasswordValid = await authService.verifyUserCredentials(username, password);
   if (!isPasswordValid) {
     await logToAuditTrail(await createLogEntry('LOGIN_FAILED', { username, reason: 'Invalid password' }));
     return Errors.unauthorized('Invalid username or password');
@@ -102,16 +63,7 @@ async function authenticateUser(username: string, password: string): Promise<any
  * @returns JWT token
  */
 function generateToken(user: any): string {
-  return jwt.sign(
-    {
-      id: user.id,
-      role: user.role,
-      username: user.username,
-      iat: Math.floor(Date.now() / 1000)
-    },
-    getJwtSecret(),
-    { expiresIn: '1h' }
-  );
+  return authService.generateToken(user);
 }
     
 /**
