@@ -1,5 +1,5 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 // User interfaces
 export interface User {
@@ -194,6 +194,3 @@ export class AuthService {
 
 // Export singleton instance
 export const authService = new AuthService();
-
-// Helper function to get headers (Next.js)
-import { headers } from 'next/headers';
