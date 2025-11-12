@@ -1,7 +1,7 @@
 import React from 'react';
-import Header from '../components/Header';
-import Hero from '../components/Hero';
-import Footer from '../components/Footer';
+import Header from '../components/shared/Header';
+import Hero from '../components/shared/Hero';
+import Footer from '../components/shared/Footer';
 import type { NextPage } from 'next';
 
 const Home: NextPage = () => {

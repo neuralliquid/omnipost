@@ -1,7 +1,7 @@
 import React from 'react';
 import Head from 'next/head';
-import Header from '../Header';
-import Footer from '../Footer';
+import Header from '../shared/Header';
+import Footer from '../shared/Footer';
 import styles from '../../styles/Layout.module.css';
 
 interface LayoutProps {

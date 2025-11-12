@@ -1,8 +1,8 @@
 import '../styles/globals.css';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import Header from '../components/shared/Header';
+import Footer from '../components/shared/Footer';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import Image from 'next/image'; // Practice #2: Image optimization
@@ -12,7 +12,7 @@ import styles from '../styles/App.module.css'; // Extracted CSS
 import siteConfig from '../content/siteConfig.json'; // Extracted JSON content
 
 // Practice #5: Code splitting with dynamic imports
-const Analytics = dynamic(() => import('../components/Analytics'), {
+const Analytics = dynamic(() => import('../components/dashboard/Analytics'), {
   ssr: false,
   loading: () => <div className={styles.analyticsPlaceholder}>Loading analytics...</div>,
 });

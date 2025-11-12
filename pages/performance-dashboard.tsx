@@ -1,7 +1,7 @@
 import React from 'react';
 import DashboardLayout from '../components/layouts/DashboardLayout';
 import EngagementMetrics from '../components/dashboard/EngagementMetrics';
-import AirtableIntegration from '../components/AirtableIntegration';
+import AirtableIntegration from '../components/content/AirtableIntegration';
 import { useEngagementMetrics } from '../hooks/useEngagementMetrics';
 import dashboardStyles from '../styles/dashboard.module.css';
 
