@@ -22,7 +22,7 @@
     "express-rate-limit": "^7.1.5",
     "jsonwebtoken": "^9.0.2",
     "next": "latest",
-    "nodemailer": "^6.10.1",
+    "nodemailer": "^7.0.7",
     "react": "latest",
     "react-dom": "latest",
     "twilio": "^5.5.2",
