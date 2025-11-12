@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import styles from '../../styles/HumanReview.module.css';
 
 // Dynamic import for the ImageGeneration component
-const ImageGeneration = dynamic(() => import('../ImageGeneration'), {
+const ImageGeneration = dynamic(() => import('../image/ImageGeneration'), {
   loading: () => <p className={styles.loadingComponent}>Loading image generator...</p>,
   ssr: true,
 });

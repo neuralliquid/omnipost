@@ -1,5 +1,5 @@
 import React from 'react';
-import AdaptationCard from './AdaptationCard';
+import AdaptationCard from '../shared/AdaptationCard';
 import workflowStyles from '../../styles/workflow.module.css';
 
 interface AdaptationExample {

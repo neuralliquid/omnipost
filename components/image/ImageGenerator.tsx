@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { apiClient, ApiError } from '../lib/api-client';
+import { apiClient, ApiError } from '../../lib/api-client';
 
 const ImageGenerator: React.FC = () => {
   const [context, setContext] = useState<string>('');

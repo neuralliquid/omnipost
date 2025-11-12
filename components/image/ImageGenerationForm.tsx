@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { apiClient } from '../lib/api-client';
+import { apiClient } from '../../lib/api-client';
 
 interface ImageGenerationFormProps {
   onImageGenerated?: (imageUrl: string) => void;

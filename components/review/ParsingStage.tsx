@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import styles from '../../styles/HumanReview.module.css';
 
 // Dynamic import for the TextParser component
-const TextParser = dynamic(() => import('../TextParser'), {
+const TextParser = dynamic(() => import('../text/TextParser'), {
   loading: () => <p className={styles.loadingComponent}>Loading text parser...</p>,
   ssr: true,
 });

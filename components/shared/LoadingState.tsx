@@ -1,20 +1,21 @@
 import React from 'react';
 import Image from 'next/image';
-import styles from '../../styles/Automation.module.css';
 
 interface LoadingStateProps {
   message?: string;
+  className?: string;
 }
 
 /**
- * Component for displaying a loading state
+ * Shared component for displaying a loading state
  */
 const LoadingState: React.FC<LoadingStateProps> = ({ 
-  message = 'Loading automation tools...' 
+  message = 'Loading...', 
+  className 
 }) => {
   return (
-    <div className={styles.loading}>
-      <div className={styles.loadingImageContainer}>
+    <div className={className || 'loading'}>
+      <div className="loading-spinner">
         <Image
           src="/images/loading-spinner.svg"
           alt="Loading"

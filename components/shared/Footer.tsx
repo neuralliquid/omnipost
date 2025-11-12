@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import styles from '../styles/Footer.module.css';
-import siteConfig from '../content/siteConfig.json';
+import siteConfig from '../../content/siteConfig.json';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();

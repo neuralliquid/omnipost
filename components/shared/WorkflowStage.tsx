@@ -1,5 +1,4 @@
 import React from 'react';
-import workflowStyles from '../../styles/workflow.module.css';
 
 interface StepCardProps {
   title: string;
@@ -7,9 +6,12 @@ interface StepCardProps {
   tip?: string;
 }
 
+/**
+ * Component for displaying a step card in the workflow
+ */
 const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
   return (
-    <div className={workflowStyles['step-card']}>
+    <div className="step-card">
       <h4>{title}</h4>
       <ul>
         {items.map((item, index) => (
@@ -17,7 +19,7 @@ const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
         ))}
       </ul>
       {tip && (
-        <div className={workflowStyles.tip}>
+        <div className="tip">
           <strong>Pro Tip:</strong> {tip}
         </div>
       )}
@@ -26,23 +28,34 @@ const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
 };
 
 interface WorkflowStageProps {
-  number: number;
-  title: string;
+  number?: number;
+  stageNumber?: number;
+  title?: string;
+  stageTitle?: string;
   steps: StepCardProps[];
 }
 
+/**
+ * Shared component for displaying a workflow stage with multiple steps
+ * Supports both number/title and stageNumber/stageTitle prop patterns
+ */
 const WorkflowStage: React.FC<WorkflowStageProps> = ({ 
-  number, 
-  title, 
+  number,
+  stageNumber,
+  title,
+  stageTitle,
   steps 
 }) => {
+  const displayNumber = number ?? stageNumber;
+  const displayTitle = title ?? stageTitle;
+
   return (
-    <div className={workflowStyles['workflow-stage']}>
-      <div className={workflowStyles['stage-header']}>
-        <div className={workflowStyles['stage-number']}>{number}</div>
-        <h3 className={workflowStyles['stage-title']}>{title}</h3>
+    <div className="workflow-stage">
+      <div className="stage-header">
+        {displayNumber && <div className="stage-number">{displayNumber}</div>}
+        {displayTitle && <h3 className="stage-title">{displayTitle}</h3>}
       </div>
-      <div className={workflowStyles['stage-steps']}>
+      <div className="stage-steps">
         {steps.map((step, index) => (
           <StepCard 
             key={index}

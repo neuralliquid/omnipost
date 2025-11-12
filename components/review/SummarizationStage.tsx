@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import styles from '../../styles/HumanReview.module.css';
 
 // Dynamic import for the SummarizationAPI component
-const SummarizationAPI = dynamic(() => import('../SummarizationAPI'), {
+const SummarizationAPI = dynamic(() => import('../text/SummarizationAPI'), {
   loading: () => <p className={styles.loadingComponent}>Loading summarization tool...</p>,
   ssr: true,
 });

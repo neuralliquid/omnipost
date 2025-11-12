@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import siteConfig from '../content/siteConfig.json';
+import siteConfig from '../../content/siteConfig.json';
 
 const Analytics: React.FC = () => {
   const router = useRouter();
