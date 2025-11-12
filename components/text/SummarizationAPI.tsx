@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
 
 interface SummarizationAPIProps {
   rawText: string;
@@ -79,14 +78,6 @@ const SummarizationAPI: React.FC<SummarizationAPIProps> = ({ rawText }) => {
       )}
     </div>
   );
-};
-
-SummarizationAPI.propTypes = {
-  rawText: PropTypes.string.isRequired
-};
-
-SummarizationAPI.defaultProps = {
-  rawText: ''
 };
 
 export default SummarizationAPI;

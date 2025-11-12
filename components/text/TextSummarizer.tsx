@@ -27,7 +27,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
       // Use the API client to summarize text
       const result = await apiClient.summarizeText(rawText);
       
-      if (result && result.summary) {
+      if (result?.summary) {
         setSummary(result.summary);
         
         // Call the callback if provided

@@ -48,14 +48,12 @@ const Authentication: React.FC = () => {
       };
       
       let errorMessage = 'An error occurred during login.';
-      if (error.response) {
-        if (error.response.status === 401) {
-          errorMessage = 'Invalid username or password.';
-        } else if (error.response.data?.message) {
-          errorMessage = error.response.data.message;
-        } else {
-          errorMessage = `Server error: ${error.response.status}`;
-        }
+      if (error.response?.status === 401) {
+        errorMessage = 'Invalid username or password.';
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.status) {
+        errorMessage = `Server error: ${error.response.status}`;
       } else if (error.request) {
         errorMessage = 'No response from server. Please check your connection.';
       } else {

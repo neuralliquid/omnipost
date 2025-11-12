@@ -59,10 +59,10 @@ const FeatureFlagToggle: React.FC<FeatureFlagToggleProps> = ({
         onClick={handleToggle}
         disabled={updating}
         className={`px-4 py-2 rounded-md ${
-          enabled
-            ? 'bg-red-500 hover:bg-red-600 text-white'
-            : 'bg-green-500 hover:bg-green-600 text-white'
-        } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
+          updating ? 'opacity-50 cursor-not-allowed' :
+          enabled ? 'bg-red-500 hover:bg-red-600 text-white' :
+          'bg-green-500 hover:bg-green-600 text-white'
+        }`}
       >
         {updating ? 'Updating...' : enabled ? 'Disable' : 'Enable'}
       </button>

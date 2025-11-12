@@ -20,8 +20,8 @@ const Footer: React.FC = () => {
           <div className={styles.footerColumn}>
             <h3 className={styles.columnTitle}>Navigation</h3>
             <ul className={styles.footerLinks}>
-              {siteConfig.navigation.map((item, index) => (
-                <li key={index}>
+              {siteConfig.navigation.map((item) => (
+                <li key={`nav-${item.path}`}>
                   <Link href={item.path} className={styles.footerLink}>
                     {item.name}
                   </Link>

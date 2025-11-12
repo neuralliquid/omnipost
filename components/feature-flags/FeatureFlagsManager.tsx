@@ -170,10 +170,10 @@ const FeatureFlagsManager: React.FC = () => {
                   onClick={() => handleToggle(feature)}
                   disabled={updating === feature}
                   className={`px-4 py-2 rounded ${
-                    isEnabled
-                      ? 'bg-red-500 hover:bg-red-600 text-white'
-                      : 'bg-green-500 hover:bg-green-600 text-white'
-                  } ${updating === feature ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    updating === feature ? 'opacity-50 cursor-not-allowed' :
+                    isEnabled ? 'bg-red-500 hover:bg-red-600 text-white' :
+                    'bg-green-500 hover:bg-green-600 text-white'
+                  }`}
                 >
                   {updating === feature ? 'Updating...' : isEnabled ? 'Disable' : 'Enable'}
                 </button>
@@ -182,12 +182,13 @@ const FeatureFlagsManager: React.FC = () => {
               {/* Special handling for textParser */}
               {feature === 'textParser' && (
                 <div className="mt-2">
-                  <label className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="textParser-implementation" className="block text-sm font-medium text-gray-700">
                     Implementation:
                   </label>
                   <select
-                    value={(value as any).implementation}
-                    onChange={(e) => handleImplementationChange(e.target.value as any)}
+                    id="textParser-implementation"
+                    value={(value as { enabled: boolean; implementation: string }).implementation}
+                    onChange={(e) => handleImplementationChange(e.target.value as 'deepseek' | 'openai' | 'azure')}
                     disabled={updating === 'textParser'}
                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                   >

@@ -26,7 +26,7 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
       // Use the API client to generate an image
       const result = await apiClient.generateImage(prompt);
       
-      if (result && result.url) {
+      if (result?.url) {
         setGeneratedImage(result.url);
         
         // Call the callback if provided
@@ -58,7 +58,7 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
       const image = { context: prompt };
       const result = await apiClient.reviewImage(image, 'regenerate');
       
-      if (result && result.url) {
+      if (result?.url) {
         setGeneratedImage(result.url);
         
         // Call the callback if provided

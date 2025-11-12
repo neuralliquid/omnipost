@@ -66,12 +66,20 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
         {platforms.map((platform) => (
           <div
             key={platform.id}
+            role="button"
+            tabIndex={0}
             className={`p-4 border rounded cursor-pointer transition-colors ${
               selectedPlatformId === platform.id
                 ? 'bg-blue-100 border-blue-500'
                 : 'hover:bg-gray-50'
             }`}
             onClick={() => handlePlatformSelect(platform)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handlePlatformSelect(platform);
+              }
+            }}
           >
             <div className="flex flex-col items-center">
               {platform.icon && (

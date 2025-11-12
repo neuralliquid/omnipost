@@ -60,8 +60,8 @@ const AdaptationCard: React.FC<AdaptationCardProps> = ({
         <div className="notes">
           <p>Key adaptation elements:</p>
           <ul>
-            {displayElements.map((element, index) => (
-              <li key={index}>{element}</li>
+            {displayElements.map((element) => (
+              <li key={`element-${element.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}>{element}</li>
             ))}
           </ul>
         </div>

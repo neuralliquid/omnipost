@@ -44,7 +44,7 @@ const AirtableIntegration: React.FC = () => {
       <ul>
         {records.map((record) => (
           <li key={record.id}>
-            {(record.fields && record.fields.Name) || record.id || 'Unnamed record'}
+            {record.fields?.Name || record.id || 'Unnamed record'}
           </li>
         ))}
       </ul>

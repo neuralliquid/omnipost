@@ -84,7 +84,7 @@ const PlatformConnectors: React.FC<PlatformConnectorsProps> = ({ content }) => {
     setApprovalMessage(null);
 
     try {
-      const response = await axios.post('/api/approve-queue', { queue });
+      await axios.post('/api/approve-queue', { queue });
       setApprovalMessage('Queue successfully approved!');
       setQueue([]); // Clear the queue after successful approval
     } catch (err) {
@@ -124,10 +124,10 @@ const PlatformConnectors: React.FC<PlatformConnectorsProps> = ({ content }) => {
       <div>
         <h3>Pre-Publishing Queue</h3>
         <ul>
-          {queue.map((item, index) => (
-            <li key={index}>
+          {queue.map((item) => (
+            <li key={`queue-${item.platform.id}-${item.platform.name}`}>
               {item.platform.name}
-              <button onClick={() => removeFromQueue(index)}>Remove</button>
+              <button onClick={() => removeFromQueue(queue.indexOf(item))}>Remove</button>
             </li>
           ))}
         </ul>

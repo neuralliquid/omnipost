@@ -70,7 +70,7 @@ const ImageGenerator: React.FC = () => {
       
       // Create an image object with the URL
       const image = { url: generatedImage, context };
-      const result = await apiClient.reviewImage(image, 'approve');
+      await apiClient.reviewImage(image, 'approve');
       
       // Show success message
       alert('Image approved successfully!');
@@ -96,7 +96,7 @@ const ImageGenerator: React.FC = () => {
       
       // Create an image object with the URL
       const image = { url: generatedImage, context };
-      const result = await apiClient.reviewImage(image, 'reject');
+      await apiClient.reviewImage(image, 'reject');
       
       // Reset the generated image
       setGeneratedImage(null);

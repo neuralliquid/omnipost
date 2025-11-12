@@ -14,8 +14,8 @@ const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
     <div className="step-card">
       <h4>{title}</h4>
       <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
+        {items.map((item) => (
+          <li key={`item-${item.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}>{item}</li>
         ))}
       </ul>
       {tip && (
@@ -56,9 +56,9 @@ const WorkflowStage: React.FC<WorkflowStageProps> = ({
         {displayTitle && <h3 className="stage-title">{displayTitle}</h3>}
       </div>
       <div className="stage-steps">
-        {steps.map((step, index) => (
+        {steps.map((step) => (
           <StepCard 
-            key={index}
+            key={`step-${step.title.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}
             title={step.title}
             items={step.items}
             tip={step.tip}

@@ -33,7 +33,7 @@ const LoginForm: React.FC<LoginFormProps> = ({
       const result = await apiClient.login(username, password);
       
       // Handle successful login
-      if (result && result.user) {
+      if (result?.user) {
         // Call the success callback if provided
         if (onLoginSuccess) {
           onLoginSuccess(result.user);

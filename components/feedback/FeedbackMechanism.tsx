@@ -26,13 +26,15 @@ const FeedbackMechanism: React.FC<FeedbackMechanismProps> = ({ reviewId }) => {
     setSuccess(null);
 
     try {
-      const response = await axios.post('/api/submit-feedback', { reviewId, feedback });
+      await axios.post('/api/submit-feedback', { reviewId, feedback });
       setSuccess('Feedback submitted successfully');
       setFeedback('');
       setLoading(false);
     } catch (err) {
-      setError('Failed to submit feedback');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit feedback';
+      setError(errorMessage);
       setLoading(false);
+      console.error('Feedback submission error:', err);
     }
   };
 

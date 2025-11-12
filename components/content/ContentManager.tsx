@@ -16,7 +16,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState<number>(1);
-  const [pageSize, setPageSize] = useState<number>(initialPageSize);
+  const [pageSize] = useState<number>(initialPageSize);
   const [filter, setFilter] = useState<string>('');
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [newContent, setNewContent] = useState<string>('');
@@ -31,7 +31,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       // Use the API client to track content
       const result = await apiClient.trackContent(page, pageSize, filter);
       
-      if (result && result.data) {
+      if (result?.data) {
         setContent(result.data);
         setHasMore(result.pagination?.hasMorePages || false);
       } else {
@@ -152,6 +152,8 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       {/* Content list */}
       {loading ? (
         <div className="text-center p-8">Loading content...</div>
+      ) : error ? (
+        <div className="text-center p-8 text-red-600">{error}</div>
       ) : content.length === 0 ? (
         <div className="text-center p-8 bg-gray-50 rounded-lg">
           No content found. {filter && 'Try adjusting your filter.'}

@@ -63,8 +63,8 @@ const NotificationSystem: React.FC = () => {
       <div>
         <h3>Notifications</h3>
         <ul>
-          {notifications.map((notification, index) => (
-            <li key={index}>
+          {notifications.map((notification) => (
+            <li key={`notif-${notification.type}-${notification.message.substring(0, 20)}`}>
               <strong>{notification.type}:</strong> {notification.message}
             </li>
           ))}
