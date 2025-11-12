@@ -19,7 +19,18 @@ export function withAuth(handler: (req: NextApiRequest, res: NextApiResponse) =>
       }
       
       const token = authHeader.split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
+      
+      if (!token) {
+        return res.status(401).json({ message: 'Invalid authorization header' });
+      }
+      
+      const secretKey = process.env.JWT_SECRET;
+      if (!secretKey) {
+        console.error('JWT_SECRET is not configured');
+        return res.status(500).json({ message: 'Server configuration error' });
+      }
+      
+      const decoded = jwt.verify(token, secretKey);
       
       // Convert the JWT payload to our UserPayload type
       if (typeof decoded === 'string') {
@@ -27,10 +38,12 @@ export function withAuth(handler: (req: NextApiRequest, res: NextApiResponse) =>
       } else {
         req.user = decoded as UserPayload;
       }
-    return handler(req, res);
+      
+      return handler(req, res);
     } catch (error) {
+      console.error('Authentication error:', error);
       return res.status(401).json({ message: 'Invalid token' });
-}
+    }
   };
 }
 
