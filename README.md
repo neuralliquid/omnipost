@@ -246,6 +246,8 @@ Tests are organized to mirror the source code structure in the `__tests__/` dire
 
 - [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Detailed project structure
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
+- [CHANGELOG.md](./CHANGELOG.md) - Project changelog and version history
+- [SECURITY.md](./SECURITY.md) - Security policy and vulnerability reporting
 - [docs/api-migration-todo.md](./docs/api-migration-todo.md) - API migration status
 - [docs/next-api-best-practices.md](./docs/next-api-best-practices.md) - Next.js API best practices
 

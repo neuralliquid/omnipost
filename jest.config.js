@@ -30,6 +30,11 @@ const customJestConfig = {
     }],
   },
   
+  // Transform ES modules
+  transformIgnorePatterns: [
+    'node_modules/(?!(node-fetch)/)',
+  ],
+  
   // Ignore paths
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
