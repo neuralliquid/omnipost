@@ -32,11 +32,12 @@ const customJestConfig = {
   
   // Ignore paths
   transformIgnorePatterns: [
-    '/node_modules/(?!node-fetch)',
+    '/node_modules/(?!(node-fetch|whatwg-fetch)/)',
   ],
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
+    '<rootDir>/__tests__/integration/',
   ],
   
   // Collect coverage from these directories

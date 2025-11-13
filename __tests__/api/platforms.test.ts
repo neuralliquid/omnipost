@@ -43,7 +43,7 @@ jest.mock('../../config/platforms', () => ({
 
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn(() => true)
+  isAuthenticated: jest.fn().mockResolvedValue(true)
 }));
 
 // Mock audit logging functions
@@ -99,7 +99,7 @@ describe('Platforms API', () => {
     test('should require authentication', async () => {
       // Mock isAuthenticated to return false
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
+      jest.mocked(isAuthenticated).mockResolvedValueOnce(false);
       
       // Create a mock request
       const request = createMockRequest();
@@ -175,7 +175,7 @@ describe('Platforms API', () => {
     test('should require authentication', async () => {
       // Mock isAuthenticated to return false
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
+      jest.mocked(isAuthenticated).mockResolvedValueOnce(false);
       
       // Create mock request and params
       const request = createMockRequest();

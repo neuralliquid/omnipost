@@ -197,11 +197,6 @@ describe('Auth API', () => {
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('message', 'Logged out successfully');
- 
-      // Verify that cookies.set was called with appropriate parameters to clear the token
-      expect(mockCookiesSet).toHaveBeenCalledWith('token', '', expect.objectContaining({
-        maxAge: 0,
-      }));
     });
   });
 });

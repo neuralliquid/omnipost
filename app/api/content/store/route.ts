@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../../_utils/audit';
 import { getCurrentUser } from '../../_utils/auth';
 import { Errors, withErrorHandling } from '../../_utils/errors';
@@ -7,16 +7,9 @@ import { getAirtableTable } from '../../../../lib/airtable';
 import featureFlags from '../../../../utils/featureFlags';
 import Airtable, { FieldSet } from 'airtable';
 import { withRole } from '../../_utils/rbac';
-
-// Error type guard
-function isError(error: unknown): error is Error {
-  return error instanceof Error || (typeof error === 'object' &&
-         error !== null && 'message' in error);
-}
-
 import { User } from '../../../../lib/auth/auth-service';
 
-async function storeContent(request: Request, user: User, airtableTable: Airtable.Table<FieldSet>): Promise<NextResponse> {
+async function storeContent(request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>): Promise<NextResponse> {
     const body = await request.json();
     const { content } = body;
 
@@ -43,9 +36,9 @@ async function storeContent(request: Request, user: User, airtableTable: Airtabl
 
 function withAuthAndFeature(
   featureFlag: keyof typeof featureFlags,
-  handler: (request: Request, user: any, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>
-): (request: Request) => Promise<NextResponse> {
-  return async (request: Request) => {
+  handler: (request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>
+): (request: NextRequest) => Promise<NextResponse> {
+  return async (request: NextRequest) => {
     const user = await getCurrentUser();
     // Check authentication
     if (!user) {
@@ -53,7 +46,11 @@ function withAuthAndFeature(
     }
 
     // Check if feature is enabled
-    if (!featureFlags[featureFlag]) {
+    const flagValue = featureFlags[featureFlag];
+    if (typeof flagValue === 'boolean' && !flagValue) {
+      return Errors.forbidden(`${featureFlag} feature is disabled`);
+    }
+    if (typeof flagValue === 'object' && flagValue !== null && 'enabled' in flagValue && !flagValue.enabled) {
       return Errors.forbidden(`${featureFlag} feature is disabled`);
     }
 

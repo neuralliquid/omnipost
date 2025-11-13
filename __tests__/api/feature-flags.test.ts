@@ -4,7 +4,7 @@ import { GET, POST } from '../../app/api/feature-flags/route';
 
 // Mock isAdmin function
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAdmin: jest.fn(() => true),
+  isAdmin: jest.fn().mockResolvedValue(true),
   // Add any other functions from the module that might be used
   verifyToken: jest.fn(),
   getTokenFromRequest: jest.fn(),

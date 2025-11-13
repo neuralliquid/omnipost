@@ -119,10 +119,17 @@ async function handleLogin(request: Request): Promise<NextResponse> {
 }
 
 // Logout endpoint - handle logout request
-async function handleLogout(request: NextRequest): Promise<NextResponse> {
+async function handleLogout(request?: NextRequest): Promise<NextResponse> {
   try {
     // Get the token from the cookie
-    const token = request.cookies.get('auth-token')?.value;
+    let token: string | undefined;
+    if (request) {
+      token = request.cookies.get('auth-token')?.value;
+    } else {
+      // Try to get from cookies() if no request provided
+      const cookieStore = cookies();
+      token = cookieStore.get('auth-token')?.value;
+    }
 
     if (token) {
       // Add the token to the blacklist
@@ -158,4 +165,4 @@ async function handleLogout(request: NextRequest): Promise<NextResponse> {
 
 // Export route handlers with proper error handling
 export const POST = withErrorHandling(async (req: Request) => handleLogin(req));
-export const DELETE = withErrorHandling(async (req: NextRequest) => handleLogout(req));
+export const DELETE = withErrorHandling(async (req?: NextRequest) => handleLogout(req));

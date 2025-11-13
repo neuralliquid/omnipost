@@ -1,33 +1,31 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
-import { NextRequest } from 'next/server';
-
-// Mock the modules before importing the route handlers
-jest.mock('../../app/api/images/route', () => {
-  // Get the actual implementation
-  const actual = jest.requireActual('../../app/api/images/route');
-  return {
-    ...(typeof actual === 'object' && actual !== null ? actual : {})
-  };
-});
 
 // Create simple mock functions with explicit any types
-const mockGenerateImage = jest.fn().mockImplementation(async (params: any) => ({ 
-  data: { url: 'https://example.com/generated-image.jpg' } 
-}));
+const mockGenerateImage = jest.fn().mockResolvedValue({ 
+  data: { url: 'https://example.com/generated-image.jpg' },
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {} as any
+});
       
-const mockApproveImage = jest.fn().mockImplementation(async (params: any) => ({ 
+const mockApproveImage = jest.fn().mockResolvedValue({ 
   success: true, 
   message: 'Image approved successfully' 
-}));
+});
       
-const mockRejectImage = jest.fn().mockImplementation(async (params: any) => ({ 
+const mockRejectImage = jest.fn().mockResolvedValue({ 
   success: true, 
   message: 'Image rejected successfully' 
-}));
+});
       
-const mockRegenerateImage = jest.fn().mockImplementation(async (params: any) => ({ 
-  data: { url: 'https://example.com/regenerated-image.jpg' } 
-}));
+const mockRegenerateImage = jest.fn().mockResolvedValue({ 
+  data: { url: 'https://example.com/regenerated-image.jpg' },
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {} as any
+});
 
 // Mock the HuggingFaceClient
 jest.mock('../../lib/clients/huggingface', () => ({
@@ -41,28 +39,20 @@ jest.mock('../../lib/clients/huggingface', () => ({
       
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn(() => true)
+  isAuthenticated: jest.fn().mockResolvedValue(true)
 }));
       
 // Mock audit logging functions
 jest.mock('../../app/api/_utils/audit', () => ({
-  createLogEntry: jest.fn(() => ({})),
-  logToAuditTrail: jest.fn()
+  createLogEntry: jest.fn().mockResolvedValue({}),
+  logToAuditTrail: jest.fn().mockResolvedValue(undefined)
 }));
       
 // Mock feature flags
 jest.mock('../../utils/featureFlags', () => ({
   __esModule: true,
   default: {
-    imageGeneration: true,
-    trigger: {
-      cron: { enabled: true },
-      rss: { enabled: true },
-    },
-    scraping: { enabled: true },
-    storage: { notion: { enabled: true } },
-    writing: { openai: { enabled: true } },
-    distribution: { telegram: { enabled: true } },
+    imageGeneration: true
   }
 }));
 
@@ -70,11 +60,11 @@ jest.mock('../../utils/featureFlags', () => ({
 import { POST, PUT } from '../../app/api/images/route';
       
 // Helper function to create a mock request
-function createMockRequest(body: any): NextRequest {
+function createMockRequest(body: any): Request {
   return {
     json: () => Promise.resolve(body),
     headers: new Headers()
-  } as unknown as NextRequest;
+  } as unknown as Request;
 }
       
 describe('Images API', () => {
@@ -84,16 +74,7 @@ describe('Images API', () => {
     
     // Reset the authentication mock to return true by default
     const { isAuthenticated } = require('../../app/api/_utils/auth');
-    isAuthenticated.mockImplementation(() => true);
-    
-    // Reset the feature flags mock to enable image generation by default
-    jest.resetModules();
-    jest.mock('../../utils/featureFlags', () => ({
-      __esModule: true,
-      default: {
-        imageGeneration: true
-      }
-    }));
+    isAuthenticated.mockResolvedValue(true);
   });
       
   describe('POST /api/images (generate image)', () => {
@@ -114,9 +95,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('url', 'https://example.com/generated-image.jpg');
       
       // Verify that generateImage was called with the correct context
-      expect(mockGenerateImage).toHaveBeenCalledWith({
-        context: 'A beautiful sunset over mountains'
-      });
+      expect(mockGenerateImage).toHaveBeenCalledWith('A beautiful sunset over mountains');
     });
 
     test('should validate context', async () => {
@@ -143,7 +122,7 @@ describe('Images API', () => {
     test('should require authentication', async () => {
       // Mock isAuthenticated to return false
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      isAuthenticated.mockReturnValueOnce(false);
+      isAuthenticated.mockResolvedValueOnce(false);
       
       // Create mock request
       const request = createMockRequest({
@@ -166,16 +145,8 @@ describe('Images API', () => {
 
     test('should check if image generation is enabled', async () => {
       // Mock feature flags to disable image generation
-      jest.resetModules();
-      jest.mock('../../utils/featureFlags', () => ({
-        __esModule: true,
-        default: {
-          imageGeneration: false
-        }
-      }));
-      
-      // Re-import the POST handler to use the updated mock
-      const { POST } = require('../../app/api/images/route');
+      const featureFlags = require('../../utils/featureFlags');
+      featureFlags.default.imageGeneration = false;
       
       // Create mock request
       const request = createMockRequest({
@@ -206,7 +177,7 @@ describe('Images API', () => {
       });
       
       // Execute the handler
- const response = await PUT(request as unknown as Request);
+      const response = await PUT(request);
       
       // Parse the JSON response
       const data = await response.json();
@@ -217,9 +188,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('message', 'Image approved successfully');
       
       // Verify that approveImage was called with the correct image
-      expect(mockApproveImage).toHaveBeenCalledWith({
-        image: { id: '123', url: 'https://example.com/image.jpg' }
-      });
+      expect(mockApproveImage).toHaveBeenCalledWith({ id: '123', url: 'https://example.com/image.jpg' });
     });
 
     test('should reject an image', async () => {
@@ -227,10 +196,10 @@ describe('Images API', () => {
       const request = createMockRequest({
         image: { id: '123', url: 'https://example.com/image.jpg' },
         action: 'reject'
-      }) as Request;
+      });
       
       // Execute the handler
- const response = await PUT(request as unknown as Request);
+      const response = await PUT(request);
       
       // Parse the JSON response
       const data = await response.json();
@@ -241,9 +210,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('message', 'Image rejected successfully');
       
       // Verify that rejectImage was called with the correct image
-      expect(mockRejectImage).toHaveBeenCalledWith({
-        image: { id: '123', url: 'https://example.com/image.jpg' }
-      });
+      expect(mockRejectImage).toHaveBeenCalledWith({ id: '123', url: 'https://example.com/image.jpg' });
     });
 
     test('should regenerate an image', async () => {
@@ -251,9 +218,9 @@ describe('Images API', () => {
       const request = createMockRequest({
         image: { 
           id: '123', 
-          url: 'https://example.com/image.jpg',
-          context: 'A beautiful sunset over mountains'
+          url: 'https://example.com/image.jpg'
         },
+        context: 'A beautiful sunset over mountains',
         action: 'regenerate'
       });
       
@@ -268,9 +235,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('url', 'https://example.com/regenerated-image.jpg');
       
       // Verify that regenerateImage was called with the correct context
-      expect(mockRegenerateImage).toHaveBeenCalledWith({
-        context: 'A beautiful sunset over mountains'
-      });
+      expect(mockRegenerateImage).toHaveBeenCalledWith('A beautiful sunset over mountains');
     });
 
     test('should validate action', async () => {

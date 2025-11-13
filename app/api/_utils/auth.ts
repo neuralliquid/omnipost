@@ -89,3 +89,12 @@ export function withAdminAuth<T>(handler: () => Promise<T>): () => Promise<T | N
     return handler();
   };
 }
+
+/**
+ * Gets the current user from the request
+ * @returns User object or null if not authenticated
+ */
+export async function getCurrentUser() {
+  const { authService } = await import('../../../lib/auth/auth-service');
+  return authService.getCurrentUser();
+}
