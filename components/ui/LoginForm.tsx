@@ -39,8 +39,10 @@ const LoginForm: React.FC<LoginFormProps> = ({
           onLoginSuccess(result.user);
         }
         
-        // Redirect to the specified path
-        router.push(redirectPath);
+        // Redirect to the specified path if provided
+        if (redirectPath) {
+          router.push(redirectPath);
+        }
       } else {
         setError('Invalid response from server');
       }
