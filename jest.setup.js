@@ -1,11 +1,7 @@
-require('dotenv').config({ path: '.env.test' });
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {
-    Object.defineProperty(this, 'url', {
-        value: input,
-        writable: true,
-    });
+    this.url = input;
     this.method = init?.method || 'GET';
     this.headers = new Headers(init?.headers);
     this.body = init?.body;
@@ -32,10 +28,6 @@ global.Headers = class Headers {
   
   set(name, value) {
     this.headers[name.toLowerCase()] = value;
-  }
-
-  entries() {
-    return Object.entries(this.headers);
   }
 };
 
@@ -74,22 +66,23 @@ jest.mock('next/headers', () => ({
 
 jest.mock('next/server', () => {
   const originalModule = jest.requireActual('next/server');
-  const mockCookiesSet = jest.fn();
   return {
     ...originalModule,
     NextResponse: {
       json: jest.fn((data, init) => {
-        const response = new Response(JSON.stringify(data), {
+        return new Response(JSON.stringify(data), {
           headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
           status: init?.status || 200,
         });
-        Object.defineProperty(response, 'cookies', {
-            value: {
-                set: mockCookiesSet,
-            },
-            writable: true,
+      }),
+      redirect: jest.fn((url) => {
+        return new Response(null, {
+          headers: { Location: url },
+          status: 302,
         });
-        return response;
+      }),
+      next: jest.fn(() => {
+        return new Response(null, { status: 200 });
       }),
     },
   };
@@ -115,12 +108,4 @@ global.featureFlags = {
   notificationSystem: true,
   feedbackMechanism: true,
   airtableIntegration: true,
-  trigger: {
-    cron: { enabled: true },
-    rss: { enabled: true },
-  },
-  scraping: { enabled: true },
-  storage: { notion: { enabled: true } },
-  writing: { openai: { enabled: true } },
-  distribution: { telegram: { enabled: true } },
 };

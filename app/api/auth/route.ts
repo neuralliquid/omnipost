@@ -4,6 +4,7 @@ import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
 import { authService } from '../../../lib/auth/auth-service';
+
 // Import Request type from Next.js
 import type { NextRequest } from 'next/server';
 
@@ -65,6 +66,23 @@ function generateToken(user: any): string {
   return authService.generateToken(user);
 }
     
+/**
+ * Sets the authentication cookie
+ * @param token JWT token
+ */
+async function setAuthCookie(token: string): Promise<void> {
+  const cookieStore = await cookies();
+  cookieStore.set({
+    name: 'auth-token',
+    value: token,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict',
+    maxAge: 60 * 60, // 1 hour
+    path: '/'
+  });
+}
+    
 // Login endpoint - handle login request
 async function handleLogin(request: Request): Promise<NextResponse> {
   try {
@@ -79,7 +97,7 @@ async function handleLogin(request: Request): Promise<NextResponse> {
     
     // Authenticate user
     const userOrError = await authenticateUser(username, password);
-    if ('status' in userOrError) {
+    if (userOrError instanceof NextResponse) {
       return userOrError; // Return error response if authentication failed
     }
     
@@ -88,11 +106,13 @@ async function handleLogin(request: Request): Promise<NextResponse> {
     // Generate JWT token
     const token = generateToken(user);
     
+    // Set HTTP-only cookie with the token
+    await setAuthCookie(token);
     // Log successful login
     await logToAuditTrail(await createLogEntry('LOGIN_SUCCESS', { username, userId: user.id }));
     
     // Return token and basic user info (omitting sensitive data)
-    const response = NextResponse.json({
+    return NextResponse.json({
       token,
       user: {
         id: user.id,
@@ -100,18 +120,6 @@ async function handleLogin(request: Request): Promise<NextResponse> {
         role: user.role
       }
     });
-
-    response.cookies.set({
-      name: 'auth-token',
-      value: token,
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 60 * 60, // 1 hour
-      path: '/'
-    });
-
-    return response;
   } catch (error) {
     console.error('Login error:', error);
     return Errors.internalServerError('An error occurred during login');
@@ -119,34 +127,11 @@ async function handleLogin(request: Request): Promise<NextResponse> {
 }
 
 // Logout endpoint - handle logout request
-async function handleLogout(request?: NextRequest): Promise<NextResponse> {
+async function handleLogout(): Promise<NextResponse> {
   try {
-    // Get the token from the cookie
-    let token: string | undefined;
-    if (request) {
-      token = request.cookies.get('auth-token')?.value;
-    } else {
-      // Try to get from cookies() if no request provided
-      const cookieStore = cookies();
-      token = cookieStore.get('auth-token')?.value;
-    }
-
-    if (token) {
-      // Add the token to the blacklist
-      const decoded = authService.verifyToken(token);
-      if (decoded && decoded.exp) {
-        const expiresIn = decoded.exp - Math.floor(Date.now() / 1000);
-        authService.addToTokenBlacklist(token, expiresIn);
-      }
-    }
-
-    // Log the logout
-    await logToAuditTrail(await createLogEntry('LOGOUT'));
-
-    const response = NextResponse.json({ message: 'Logged out successfully' });
-
-    // Clear the auth cookie by setting a new one with expired maxAge
-    response.cookies.set({
+    // Clear the auth cookie
+    const cookieStore = await cookies();
+    cookieStore.set({
       name: 'auth-token',
       value: '',
       httpOnly: true,
@@ -156,7 +141,10 @@ async function handleLogout(request?: NextRequest): Promise<NextResponse> {
       path: '/'
     });
   
-    return response;
+    // Log the logout
+    await logToAuditTrail(await createLogEntry('LOGOUT'));
+  
+    return NextResponse.json({ message: 'Logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);
     return Errors.internalServerError('An error occurred during logout');
@@ -165,4 +153,4 @@ async function handleLogout(request?: NextRequest): Promise<NextResponse> {
 
 // Export route handlers with proper error handling
 export const POST = withErrorHandling(async (req: Request) => handleLogin(req));
-export const DELETE = withErrorHandling(async (req?: NextRequest) => handleLogout(req));
+export const DELETE = withErrorHandling(async (req: Request) => handleLogout());

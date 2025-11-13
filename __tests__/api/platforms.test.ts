@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { NextRequest } from 'next/server';
 import { GET as getPlatformCapabilities } from '../../app/api/platforms/[id]/capabilities/route';
 import { GET as getPlatforms } from '../../app/api/platforms/route';
+import '../setup';
 
 // Define valid platform names type
 type PlatformName = 'facebook' | 'twitter' | 'linkedin';
@@ -22,17 +23,17 @@ jest.mock('../../config/platforms', () => ({
       facebook: {
         apiUrl: 'https://api.facebook.com',
         apiKey: 'facebook-api-key',
-        capabilities: ['text', 'image', 'video']
+        capabilities: ['post', 'image', 'video']
       },
       twitter: {
         apiUrl: 'https://api.twitter.com',
         apiKey: 'twitter-api-key',
-        capabilities: ['text', 'image']
+        capabilities: ['post', 'image']
       },
       linkedin: {
         apiUrl: 'https://api.linkedin.com',
         apiKey: 'linkedin-api-key',
-        capabilities: ['text', 'article']
+        capabilities: ['post', 'article']
       }
     };
     
@@ -43,7 +44,7 @@ jest.mock('../../config/platforms', () => ({
 
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn().mockResolvedValue(true)
+  isAuthenticated: jest.fn(() => true)
 }));
 
 // Mock audit logging functions
@@ -93,13 +94,17 @@ describe('Platforms API', () => {
       // Assertions
       expect(response.status).toBe(200);
       expect(Array.isArray(data)).toBe(true);
-      expect(data).toHaveLength(5);
+      expect(data).toHaveLength(3);
+      expect(data[0]).toHaveProperty('id', 1);
+      expect(data[0]).toHaveProperty('name', 'Facebook');
+      expect(data[1]).toHaveProperty('name', 'Twitter');
+      expect(data[2]).toHaveProperty('name', 'LinkedIn');
     });
 
     test('should require authentication', async () => {
       // Mock isAuthenticated to return false
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockResolvedValueOnce(false);
+      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
       
       // Create a mock request
       const request = createMockRequest();
@@ -135,7 +140,7 @@ describe('Platforms API', () => {
       expect(data.platform).toHaveProperty('id', 1);
       expect(data.platform).toHaveProperty('name', 'Facebook');
       expect(Array.isArray(data.capabilities)).toBe(true);
-      expect(data.capabilities).toContain('text');
+      expect(data.capabilities).toContain('post');
       expect(data.capabilities).toContain('image');
       expect(data.capabilities).toContain('video');
     });
@@ -175,7 +180,7 @@ describe('Platforms API', () => {
     test('should require authentication', async () => {
       // Mock isAuthenticated to return false
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockResolvedValueOnce(false);
+      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
       
       // Create mock request and params
       const request = createMockRequest();
@@ -189,7 +194,7 @@ describe('Platforms API', () => {
       
       // Assertions
       expect(response.status).toBe(401);
-      expect(data).toHaveProperty('message', 'Authentication required');
+      expect(data).toHaveProperty('message', 'Authentication required to access platform capabilities');
     });
   });
 });

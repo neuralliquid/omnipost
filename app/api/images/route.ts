@@ -13,13 +13,38 @@ const huggingFaceClient = new HuggingFaceClient();
 export const POST = withErrorHandling(async (request: Request) => {
   try {
     // Check authentication
-    if (!(await isAuthenticated())) {
+    if (!isAuthenticated()) {
       return Errors.unauthorized('Authentication required to generate images');
     }
     
     // Check if image generation feature is enabled
     if (!featureFlags.imageGeneration) {
       return Errors.forbidden('Image generation feature is disabled');
+    }
+    
+    // Check feature flags
+    if (!featureFlags.trigger.cron.enabled) {
+      return Errors.forbidden('CRON trigger feature is disabled');
+    }
+    
+    if (!featureFlags.trigger.rss.enabled) {
+      return Errors.forbidden('RSS trigger feature is disabled');
+    }
+    
+    if (!featureFlags.scraping.enabled) {
+      return Errors.forbidden('Scraping feature is disabled');
+    }
+    
+    if (!featureFlags.storage.notion.enabled) {
+      return Errors.forbidden('Notion storage feature is disabled');
+    }
+    
+    if (!featureFlags.writing.openai.enabled) {
+      return Errors.forbidden('OpenAI writing feature is disabled');
+    }
+    
+    if (!featureFlags.distribution.telegram.enabled) {
+      return Errors.forbidden('Telegram distribution feature is disabled');
     }
     
     const body = await request.json();
@@ -77,12 +102,10 @@ export const PUT = withErrorHandling(async (request: Request) => {
     } else if (action === 'reject') {
       response = await huggingFaceClient.rejectImage(image);
     } else if (action === 'regenerate') {
-      const { context } = body;
-      const regenerateContext = context || image.context;
-      if (!regenerateContext) {
+      if (!image.context) {
         return Errors.badRequest('Context is required for regeneration');
       }
-      response = await huggingFaceClient.regenerateImage(regenerateContext);
+      response = await huggingFaceClient.regenerateImage(image.context);
       // For regenerate, return the same format as the POST endpoint
       return NextResponse.json(response.data);
     }
