@@ -37,8 +37,9 @@ function withAuthAndFeature(
   featureFlag: keyof typeof featureFlags,
   handler: (request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>,
   requiredRole?: string
-): (request: NextRequest) => Promise<NextResponse> {
-  return async (request: NextRequest) => {
+): (request: Request) => Promise<NextResponse> {
+  return async (request: Request) => {
+    const nextRequest = request as NextRequest;
     const user = await getCurrentUser();
     // Check authentication
     if (!user) {
@@ -61,7 +62,7 @@ function withAuthAndFeature(
 
     try {
       const table = getAirtableTable();
-      return handler(request, user, table);
+      return handler(nextRequest, user, table);
     } catch (error) {
       return Errors.internalServerError('Airtable integration not available');
     }
