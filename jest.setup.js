@@ -1,7 +1,10 @@
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {
-    this.url = input;
+    Object.defineProperty(this, 'url', {
+        value: input,
+        writable: true,
+    });
     this.method = init?.method || 'GET';
     this.headers = new Headers(init?.headers);
     this.body = init?.body;
@@ -28,6 +31,10 @@ global.Headers = class Headers {
   
   set(name, value) {
     this.headers[name.toLowerCase()] = value;
+  }
+
+  entries() {
+    return Object.entries(this.headers);
   }
 };
 
@@ -66,23 +73,22 @@ jest.mock('next/headers', () => ({
 
 jest.mock('next/server', () => {
   const originalModule = jest.requireActual('next/server');
+  const mockCookiesSet = jest.fn();
   return {
     ...originalModule,
     NextResponse: {
       json: jest.fn((data, init) => {
-        return new Response(JSON.stringify(data), {
+        const response = new Response(JSON.stringify(data), {
           headers: { 'Content-Type': 'application/json', ...(init?.headers || {}) },
           status: init?.status || 200,
         });
-      }),
-      redirect: jest.fn((url) => {
-        return new Response(null, {
-          headers: { Location: url },
-          status: 302,
+        Object.defineProperty(response, 'cookies', {
+            value: {
+                set: mockCookiesSet,
+            },
+            writable: true,
         });
-      }),
-      next: jest.fn(() => {
-        return new Response(null, { status: 200 });
+        return response;
       }),
     },
   };
