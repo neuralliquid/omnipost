@@ -2,7 +2,6 @@ import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals
 import http from 'http';
 import { NextApiRequest, NextApiResponse } from 'next';
 import fetch, { Response as FetchResponse } from 'node-fetch';
-import '../setup';
 
 // Mock middleware
 jest.mock('../../middleware', () => ({
