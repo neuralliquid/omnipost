@@ -6,7 +6,6 @@ import { validateString } from '../../_utils/validation';
 import { getAirtableTable } from '../../../../lib/airtable';
 import featureFlags from '../../../../utils/featureFlags';
 import Airtable, { FieldSet } from 'airtable';
-import { withRole } from '../../_utils/rbac';
 import { User } from '../../../../lib/auth/auth-service';
 
 async function storeContent(request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>): Promise<NextResponse> {
@@ -36,13 +35,19 @@ async function storeContent(request: NextRequest, user: User, airtableTable: Air
 
 function withAuthAndFeature(
   featureFlag: keyof typeof featureFlags,
-  handler: (request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>
+  handler: (request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>,
+  requiredRole?: string
 ): (request: NextRequest) => Promise<NextResponse> {
   return async (request: NextRequest) => {
     const user = await getCurrentUser();
     // Check authentication
     if (!user) {
       return Errors.unauthorized('Authentication required');
+    }
+
+    // Check role if specified
+    if (requiredRole && user.role !== requiredRole) {
+      return Errors.forbidden('You do not have permission to access this resource.');
     }
 
     // Check if feature is enabled
@@ -63,4 +68,4 @@ function withAuthAndFeature(
   };
 }
 
-export const POST = withErrorHandling(withAuthAndFeature('airtableIntegration', withRole('admin', storeContent)));
+export const POST = withErrorHandling(withAuthAndFeature('airtableIntegration', storeContent, 'admin'));
