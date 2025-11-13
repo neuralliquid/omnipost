@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, jest, test } from '@jest/globals';
 import { NextRequest } from 'next/server';
 import { GET, POST } from '../../app/api/feature-flags/route';
+import '../setup';
 
 // Mock isAdmin function
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAdmin: jest.fn().mockResolvedValue(true),
+  isAdmin: jest.fn(() => true),
   // Add any other functions from the module that might be used
   verifyToken: jest.fn(),
   getTokenFromRequest: jest.fn(),
@@ -101,7 +102,8 @@ describe('Feature Flags API', () => {
       
       // Assertions
       expect(response.status).toBe(400);
-      expect(data).toHaveProperty('message', 'Invalid feature flag');
+      expect(data).toHaveProperty('message');
+      expect(data.message).toContain('Feature name');
     });
 
     test('should validate enabled flag', async () => {
@@ -120,6 +122,7 @@ describe('Feature Flags API', () => {
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message');
+      expect(data.message).toContain('Enabled flag');
     });
 
     test('should validate implementation for textParser', async () => {
@@ -139,6 +142,7 @@ describe('Feature Flags API', () => {
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message');
+      expect(data.message).toContain('Implementation');
     });
 
     test('should require admin privileges', async () => {
@@ -160,7 +164,7 @@ describe('Feature Flags API', () => {
       
       // Assertions
       expect(response.status).toBe(403);
-      expect(data).toHaveProperty('message', 'Admin privileges required');
+      expect(data).toHaveProperty('message', 'Admin privileges required to update feature flags');
     });
   });
 });

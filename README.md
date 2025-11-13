@@ -25,7 +25,11 @@ A comprehensive content creation and management platform built with React and Ne
 
 3. **Set up environment variables:**
    
-   Create a `.env.local` file in the root directory (see [Environment Variables](#environment-variables) section below).
+   Copy `.env.example` to `.env.local` and fill in your values:
+   ```bash
+   cp .env.example .env.local
+   ```
+   See [Environment Variables](#environment-variables) section below for details.
 
 4. **Start the development server:**
    ```bash
@@ -246,6 +250,11 @@ Tests are organized to mirror the source code structure in the `__tests__/` dire
 
 - [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Detailed project structure
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
+- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community code of conduct
+- [CHANGELOG.md](./CHANGELOG.md) - Project changelog and version history
+- [SECURITY.md](./SECURITY.md) - Security policy and vulnerability reporting
+- [LICENSE](./LICENSE) - MIT License
+- [.env.example](./.env.example) - Environment variables template
 - [docs/api-migration-todo.md](./docs/api-migration-todo.md) - API migration status
 - [docs/next-api-best-practices.md](./docs/next-api-best-practices.md) - Next.js API best practices
 
@@ -277,7 +286,11 @@ For more issues, check the GitHub Issues page or the project documentation.
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+Contributions are welcome! Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for details on the process for submitting pull requests.
+
+### Code of Conduct
+
+This project adheres to the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code.
 
 ### Development Workflow
 

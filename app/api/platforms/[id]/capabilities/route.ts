@@ -5,8 +5,8 @@ import { Errors } from '../../../_utils/errors';
 import { isAuthenticated } from '../../../_utils/auth';
 import { createLogEntry, logToAuditTrail } from '../../../_utils/audit';
 
-const validateAuth = async () => {
-  if (!(await isAuthenticated())) {
+const validateAuth = () => {
+  if (!isAuthenticated()) {
     return Errors.unauthorized('Authentication required to access platform capabilities');
   }
   return null;
@@ -36,7 +36,7 @@ export const GET = withErrorHandling(async (
   request: Request,
   context?: { params?: Record<string, string> }
 ) => {
-  const authError = await validateAuth();
+  const authError = validateAuth();
   if (authError) return authError;
   
   const id = context?.params?.id;

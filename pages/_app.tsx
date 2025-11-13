@@ -1,8 +1,8 @@
 import '../styles/globals.css';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
-import Header from '../components/shared/Header';
-import Footer from '../components/shared/Footer';
+import Header from '../components/ui/Header';
+import Footer from '../components/ui/Footer';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import Image from 'next/image'; // Practice #2: Image optimization
