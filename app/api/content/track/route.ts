@@ -39,14 +39,14 @@ async function trackContent(request: Request, airtableTable: Airtable.Table<Fiel
     const nextToken = url.searchParams.get('nextToken') || undefined;
 
     // Parse and validate pagination parameters
-    const pageNum = parseInt(page, 10);
-    const pageSizeNum = parseInt(pageSize, 10);
+    const pageNum = Number.parseInt(page, 10);
+    const pageSizeNum = Number.parseInt(pageSize, 10);
 
-    if (isNaN(pageNum) || pageNum < 1) {
+    if (Number.isNaN(pageNum) || pageNum < 1) {
       return Errors.badRequest('Invalid page number');
     }
 
-    if (isNaN(pageSizeNum) || pageSizeNum < 1 || pageSizeNum > 100) {
+    if (Number.isNaN(pageSizeNum) || pageSizeNum < 1 || pageSizeNum > 100) {
       return Errors.badRequest('Invalid page size (must be between 1-100)');
     }
 

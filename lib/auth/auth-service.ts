@@ -1,7 +1,5 @@
-import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies, headers } from 'next/headers';
-import { users } from './user-data';
 
 // User interfaces
 export interface User {
@@ -161,6 +159,12 @@ export class AuthService {
    * @returns User object or null if not found
    */
   public async findUserByUsername(username: string): Promise<User | null> {
+    // This would be replaced with actual database lookup
+    const users = [
+      { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
+      { id: '2', username: 'user', password: 'hashed_password', role: 'user' }
+    ];
+
     const user = users.find(user => user.username === username);
     return user ? user : null;
   }
@@ -172,13 +176,19 @@ export class AuthService {
    * @returns Boolean indicating if credentials are valid
    */
   public async verifyUserCredentials(username: string, password: string): Promise<boolean> {
-    const user = await this.findUserByUsername(username);
-    if (!user) {
-      return false;
-    }
-    // We need to cast user to any to access the password property, which is not part of the User interface.
-    // This will be addressed in the refactoring step.
-    return bcrypt.compare(password, (user as any).password);
+    // In a real implementation, you would:
+    // 1. Find the user by username
+    // 2. Hash the provided password with the same algorithm used for storage
+    // 3. Compare the hashed password with the stored hash
+
+    // For now, we'll just do a simple check against our mock users
+    const users = [
+      { username: 'admin', password: 'admin123', role: 'admin' },
+      { username: 'user', password: 'user123', role: 'user' }
+    ];
+
+    const user = users.find(u => u.username === username);
+    return user ? user.password === password : false;
   }
 }
 

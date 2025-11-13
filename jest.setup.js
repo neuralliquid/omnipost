@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.test' });
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {
@@ -114,4 +115,12 @@ global.featureFlags = {
   notificationSystem: true,
   feedbackMechanism: true,
   airtableIntegration: true,
+  trigger: {
+    cron: { enabled: true },
+    rss: { enabled: true },
+  },
+  scraping: { enabled: true },
+  storage: { notion: { enabled: true } },
+  writing: { openai: { enabled: true } },
+  distribution: { telegram: { enabled: true } },
 };

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../../_utils/audit';
-import { isAuthenticated, getCurrentUser } from '../../_utils/auth';
+import { getCurrentUser } from '../../_utils/auth';
 import { Errors, withErrorHandling } from '../../_utils/errors';
 import { validateString } from '../../_utils/validation';
 import { getAirtableTable } from '../../../../lib/airtable';
