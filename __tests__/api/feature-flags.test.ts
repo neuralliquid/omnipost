@@ -148,7 +148,7 @@ describe('Feature Flags API', () => {
     test('should require admin privileges', async () => {
       // Mock isAdmin to return false for this specific test
       const { isAdmin } = require('../../app/api/_utils/auth');
-      (isAdmin as jest.Mock<Promise<boolean>>).mockResolvedValueOnce(false);
+      (isAdmin as jest.MockedFunction<typeof isAdmin>).mockResolvedValueOnce(false);
       
       // Create mock request
       const request = createMockRequest('POST', {
