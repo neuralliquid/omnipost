@@ -1,5 +1,6 @@
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
+import { User } from '../../../lib/auth/auth-service';
 
 /**
  * Verifies if the request is authenticated
@@ -46,6 +47,28 @@ export async function getCurrentUsername(): Promise<string | null> {
 export async function getCurrentUserRole(): Promise<string | null> {
   const headersList = await headers();
   return headersList.get('x-user-role');
+}
+
+/**
+ * Gets the current user object from the request headers
+ * @returns User object or null if not authenticated
+ */
+export async function getCurrentUser(): Promise<User | null> {
+  const headersList = await headers();
+  const userId = headersList.get('x-user-id');
+  const username = headersList.get('x-user-name');
+  const role = headersList.get('x-user-role');
+  
+  if (!userId || !username || !role) {
+    return null;
+  }
+  
+  return {
+    id: userId,
+    username: username,
+    role: role,
+    name: username, // Using username as name since we don't have separate name header
+  };
 }
 
 /**

@@ -153,4 +153,4 @@ async function handleLogout(): Promise<NextResponse> {
 
 // Export route handlers with proper error handling
 export const POST = withErrorHandling(async (req: Request) => handleLogin(req));
-export const DELETE = withErrorHandling(async (req: Request) => handleLogout());
+export const DELETE = withErrorHandling(async (_req: Request) => handleLogout());
