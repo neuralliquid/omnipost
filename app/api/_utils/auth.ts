@@ -67,7 +67,6 @@ export async function getCurrentUser(): Promise<User | null> {
     id: userId,
     username: username,
     role: role,
-    name: username, // Using username as name since we don't have separate name header
   };
 }
 
