@@ -9,7 +9,7 @@ import SummarizationStage from '../components/review/SummarizationStage';
 import ImageGenerationStage from '../components/review/ImageGenerationStage';
 import LoadingOverlay from '../components/review/LoadingOverlay';
 import SuccessMessage from '../components/review/SuccessMessage';
-import ErrorMessage from '../components/shared/ErrorMessage';
+import ErrorMessage from '../components/ui/ErrorMessage';
 import { useReviewProcess } from '../hooks/useReviewProcess';
 import styles from '../styles/HumanReview.module.css';
 import reviewConfig from '../content/reviewConfig.json';

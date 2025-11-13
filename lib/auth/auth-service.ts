@@ -164,7 +164,7 @@ export class AuthService {
       { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
       { id: '2', username: 'user', password: 'hashed_password', role: 'user' }
     ];
-
+    
     const user = users.find(user => user.username === username);
     return user ? user : null;
   }
@@ -180,13 +180,13 @@ export class AuthService {
     // 1. Find the user by username
     // 2. Hash the provided password with the same algorithm used for storage
     // 3. Compare the hashed password with the stored hash
-
+    
     // For now, we'll just do a simple check against our mock users
     const users = [
       { username: 'admin', password: 'admin123', role: 'admin' },
       { username: 'user', password: 'user123', role: 'user' }
     ];
-
+    
     const user = users.find(u => u.username === username);
     return user ? user.password === password : false;
   }

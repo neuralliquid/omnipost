@@ -3,7 +3,7 @@ import { NextPage } from 'next';
 import Layout from '../components/layouts/Layout';
 import WorkflowDiagram from '../components/adaptation/WorkflowDiagram';
 import AdaptationExamples from '../components/adaptation/AdaptationExamples';
-import NavigationLinks from '../components/common/NavigationLinks';
+import NavigationLinks from '../components/ui/NavigationLinks';
 import { workflowStages } from '../data/workflowStages';
 import styles from '../styles/ContentAdaptation.module.css';
 
