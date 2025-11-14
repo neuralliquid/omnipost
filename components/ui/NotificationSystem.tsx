@@ -41,7 +41,8 @@ const NotificationSystem: React.FC = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const { type, message } = e.target.elements;
+            const form = e.target as HTMLFormElement;
+            const { type, message } = form.elements as any;
             sendNotification(type.value, message.value);
           }}
         >

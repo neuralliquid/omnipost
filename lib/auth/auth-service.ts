@@ -42,6 +42,10 @@ export class AuthService {
    * @returns JWT token
    */
   public generateToken(user: User, expiresIn: string = '1h'): string {
+    const secret = this.getJwtSecret();
+    if (!secret) {
+      throw new Error('JWT secret is not configured');
+    }
     return jwt.sign(
       {
         id: user.id,
@@ -49,8 +53,8 @@ export class AuthService {
         role: user.role,
         iat: Math.floor(Date.now() / 1000)
       },
-      this.getJwtSecret(),
-      { expiresIn }
+      secret,
+      { expiresIn: expiresIn }
     );
   }
 
@@ -89,11 +93,11 @@ export class AuthService {
     try {
       // Try to get token from cookies first
       const cookieStore = cookies();
-      const tokenFromCookie = cookieStore.get('auth-token')?.value;
+      const tokenFromCookie = (cookieStore as any).get?.('auth-token')?.value;
       
       // If no cookie, try to get from authorization header
       const headersList = headers();
-      const authHeader = headersList.get('authorization');
+      const authHeader = (headersList as any).get?.('authorization');
       const tokenFromHeader = authHeader ? authHeader.replace('Bearer ', '') : null;
       
       // Use whichever token is available
