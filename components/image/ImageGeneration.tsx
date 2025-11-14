@@ -6,15 +6,13 @@ interface ImageGenerationProps {
 }
 
 interface ImageResponse {
-  data: {
-    url?: string;
-    id?: string;
-    // Add other specific properties from your API response
-  };
+  url?: string;
+  id?: string;
+  // Add other specific properties from your API response
 }
 
 const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
-  const [image, setImage] = useState<ImageResponse['data'] | null>(null);
+  const [image, setImage] = useState<ImageResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

@@ -16,7 +16,7 @@ const NotificationSystem: React.FC = () => {
         const response = await axios.get('/api/notifications');
         setNotifications(response.data);
       } catch (err) {
-        setError(err.message);
+        setError((err as Error).message);
       }
     };
 
@@ -28,7 +28,7 @@ const NotificationSystem: React.FC = () => {
       const response = await axios.post('/api/notifications', { type, message });
       setNotifications([...notifications, response.data]);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   };
 

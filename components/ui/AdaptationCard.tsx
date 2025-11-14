@@ -13,6 +13,7 @@ interface AdaptationCardProps {
   elements?: string[];
   adaptationElements?: string[];
   image?: string;
+  notes?: string[];
 }
 
 /**

@@ -29,7 +29,7 @@ const SummarizationAPI: React.FC<SummarizationAPIProps> = ({ rawText }) => {
       setSummary(response.data);
       setApprovalStatus(null); // Reset approval status on new summary
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
@@ -46,7 +46,7 @@ const SummarizationAPI: React.FC<SummarizationAPIProps> = ({ rawText }) => {
       await axios.post('/api/approve-summary', { summary });
       setApprovalStatus('approved');
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     } finally {
       setLoading(false);
     }
