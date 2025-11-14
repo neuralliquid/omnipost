@@ -91,7 +91,7 @@ const HumanReview: React.FC = () => {
               rawInput={rawInput}
               onChange={handleRawInputChange}
               onSubmit={parseText}
-              isDisabled={isLoading || currentStep === 'approved' || currentStep === 'input'}
+              isDisabled={isLoading || currentStep !== 'input'}
             />
           )}
           

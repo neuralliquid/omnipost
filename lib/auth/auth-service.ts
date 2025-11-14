@@ -54,7 +54,7 @@ export class AuthService {
         iat: Math.floor(Date.now() / 1000)
       },
       secret,
-      { expiresIn: expiresIn }
+      { expiresIn }
     );
     return token;
   }
