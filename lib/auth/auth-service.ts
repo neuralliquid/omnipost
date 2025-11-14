@@ -46,7 +46,7 @@ export class AuthService {
     if (!secret) {
       throw new Error('JWT secret is not configured');
     }
-    return jwt.sign(
+    const token = jwt.sign(
       {
         id: user.id,
         username: user.username,
@@ -54,8 +54,9 @@ export class AuthService {
         iat: Math.floor(Date.now() / 1000)
       },
       secret,
-      { expiresIn: expiresIn as string | number }
+      { expiresIn: expiresIn }
     );
+    return token;
   }
 
   /**
