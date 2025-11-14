@@ -17,7 +17,7 @@ const RelatedPagesSuggestions = dynamic(
 export default function Custom404() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<Array<{ title: string; path: string }>>([]);
 
   // Practice #7: Proper data fetching with loading state
   useEffect(() => {

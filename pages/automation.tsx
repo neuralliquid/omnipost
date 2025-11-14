@@ -129,7 +129,7 @@ export async function getStaticProps() {
 }
 
 // Add performance monitoring for Core Web Vitals
-export function reportWebVitals(metric) {
+export function reportWebVitals(metric: any) {
   // In a real app, send to your analytics platform
   console.log(metric);
 }
