@@ -41,11 +41,12 @@ export class AuthService {
    * @param expiresIn Token expiration time (default: 1h)
    * @returns JWT token
    */
-  public generateToken(user: User, expiresIn: string = '1h'): string {
+  public generateToken(user: User, expiresIn: string | number = '1h'): string {
     const secret = this.getJwtSecret();
     if (!secret) {
       throw new Error('JWT secret is not configured');
     }
+    // JWT library accepts expiresIn as either a number (seconds) or string (e.g., '1h', '7d')
     const token = jwt.sign(
       {
         id: user.id,
@@ -54,7 +55,7 @@ export class AuthService {
         iat: Math.floor(Date.now() / 1000)
       },
       secret,
-      { expiresIn: expiresIn }
+      { expiresIn }
     );
     return token;
   }
