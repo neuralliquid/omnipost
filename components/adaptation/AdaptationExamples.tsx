@@ -1,5 +1,5 @@
 import React from 'react';
-import AdaptationCard from '../shared/AdaptationCard';
+import AdaptationCard from '../ui/AdaptationCard';
 import styles from '../../styles/ContentAdaptation.module.css';
 
 interface AdaptationExample {

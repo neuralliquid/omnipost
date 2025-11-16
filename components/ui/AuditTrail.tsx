@@ -17,7 +17,7 @@ const AuditTrail: React.FC = () => {
         const response = await axios.get<Log[]>('/api/audit-logs');
         setLogs(response.data);
       } catch (err) {
-        setError(err.message);
+        setError((err as Error).message);
       }
     };
 

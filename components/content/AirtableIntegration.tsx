@@ -24,7 +24,7 @@ const AirtableIntegration: React.FC = () => {
         const table = base(process.env.NEXT_PUBLIC_AIRTABLE_TABLE_NAME || '');
 
         const records: Records<FieldSet> = await table.select().all();
-        setRecords(records as Record[]);
+        setRecords([...records] as Record[]);
       } catch (err) {
         setError((err as Error).message);
       } finally {

@@ -1,5 +1,5 @@
 import React from 'react';
-import WorkflowStage from '../shared/WorkflowStage';
+import WorkflowStage from '../ui/WorkflowStage';
 import workflowStyles from '../../styles/workflow.module.css';
 
 interface StepData {

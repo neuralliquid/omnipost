@@ -16,7 +16,7 @@ const NotificationSystem: React.FC = () => {
         const response = await axios.get('/api/notifications');
         setNotifications(response.data);
       } catch (err) {
-        setError(err.message);
+        setError((err as Error).message);
       }
     };
 
@@ -28,7 +28,7 @@ const NotificationSystem: React.FC = () => {
       const response = await axios.post('/api/notifications', { type, message });
       setNotifications([...notifications, response.data]);
     } catch (err) {
-      setError(err.message);
+      setError((err as Error).message);
     }
   };
 
@@ -41,7 +41,8 @@ const NotificationSystem: React.FC = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            const { type, message } = e.target.elements;
+            const form = e.target as HTMLFormElement;
+            const { type, message } = form.elements as any;
             sendNotification(type.value, message.value);
           }}
         >

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../../_utils/audit';
 import { getCurrentUser } from '../../_utils/auth';
 import { Errors, withErrorHandling } from '../../_utils/errors';
@@ -6,17 +6,9 @@ import { validateString } from '../../_utils/validation';
 import { getAirtableTable } from '../../../../lib/airtable';
 import featureFlags from '../../../../utils/featureFlags';
 import Airtable, { FieldSet } from 'airtable';
-import { withRole } from '../../_utils/rbac';
-
-// Error type guard
-function isError(error: unknown): error is Error {
-  return error instanceof Error || (typeof error === 'object' &&
-         error !== null && 'message' in error);
-}
-
 import { User } from '../../../../lib/auth/auth-service';
 
-async function storeContent(request: Request, user: User, airtableTable: Airtable.Table<FieldSet>): Promise<NextResponse> {
+async function storeContent(request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>): Promise<NextResponse> {
     const body = await request.json();
     const { content } = body;
 
@@ -43,27 +35,38 @@ async function storeContent(request: Request, user: User, airtableTable: Airtabl
 
 function withAuthAndFeature(
   featureFlag: keyof typeof featureFlags,
-  handler: (request: Request, user: any, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>
+  handler: (request: NextRequest, user: User, airtableTable: Airtable.Table<FieldSet>) => Promise<NextResponse>,
+  requiredRole?: string
 ): (request: Request) => Promise<NextResponse> {
   return async (request: Request) => {
+    const nextRequest = request as NextRequest;
     const user = await getCurrentUser();
     // Check authentication
     if (!user) {
       return Errors.unauthorized('Authentication required');
     }
 
+    // Check role if specified
+    if (requiredRole && user.role !== requiredRole) {
+      return Errors.forbidden('You do not have permission to access this resource.');
+    }
+
     // Check if feature is enabled
-    if (!featureFlags[featureFlag]) {
+    const flagValue = featureFlags[featureFlag];
+    if (typeof flagValue === 'boolean' && !flagValue) {
+      return Errors.forbidden(`${featureFlag} feature is disabled`);
+    }
+    if (typeof flagValue === 'object' && flagValue !== null && 'enabled' in flagValue && !flagValue.enabled) {
       return Errors.forbidden(`${featureFlag} feature is disabled`);
     }
 
     try {
       const table = getAirtableTable();
-      return handler(request, user, table);
+      return handler(nextRequest, user, table);
     } catch (error) {
       return Errors.internalServerError('Airtable integration not available');
     }
   };
 }
 
-export const POST = withErrorHandling(withAuthAndFeature('airtableIntegration', withRole('admin', storeContent)));
+export const POST = withErrorHandling(withAuthAndFeature('airtableIntegration', storeContent, 'admin'));

@@ -69,11 +69,12 @@ class ApiClient {
           }
           
           // Format error for consistent handling
+          const responseData = error.response?.data as any;
           const apiError: ApiError = {
-            message: error.response?.data?.message || error.message,
+            message: responseData?.message || error.message,
             status: error.response?.status || 500,
-            details: error.response?.data?.details,
-            code: error.response?.data?.code,
+            details: responseData?.details,
+            code: responseData?.code,
           };
           
           return Promise.reject(apiError);

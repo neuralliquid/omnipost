@@ -2,11 +2,11 @@ import React from 'react';
 import { NextPage } from 'next';
 import Layout from '../components/layouts/Layout';
 import ToolGrid from '../components/automation/ToolGrid';
-import LoadingState from '../components/shared/LoadingState';
-import ErrorMessage from '../components/shared/ErrorMessage';
+import LoadingState from '../components/ui/LoadingState';
+import ErrorMessage from '../components/ui/ErrorMessage';
 import ToolDetailModal from '../components/automation/ToolDetailModal';
 import ConclusionSection from '../components/automation/ConclusionSection';
-import NavigationLinks from '../components/common/NavigationLinks';
+import NavigationLinks from '../components/ui/NavigationLinks';
 import { useAutomationTools } from '../hooks/useAutomationTools';
 import { AutomationTool } from '../types/automation';
 import styles from '../styles/Automation.module.css';
@@ -129,7 +129,7 @@ export async function getStaticProps() {
 }
 
 // Add performance monitoring for Core Web Vitals
-export function reportWebVitals(metric) {
+export function reportWebVitals(metric: any) {
   // In a real app, send to your analytics platform
   console.log(metric);
 }

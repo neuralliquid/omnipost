@@ -52,7 +52,7 @@ const SeriesPage: React.FC = () => {
         {showForm && (
           <>
             <SeriesForm 
-              onAddSeries={(newSeries) => {
+              onAddSeries={(newSeries: any) => {
                 addSeries(newSeries);
                 setShowForm(false);
               }} 
@@ -75,7 +75,7 @@ const SeriesPage: React.FC = () => {
           <EmptyState onCreateClick={() => setShowForm(true)} />
         ) : (
           <div className={styles.seriesGrid}>
-            {series.map((s, index) => (
+            {series.map((s: any, index: number) => (
               <SeriesCard
                 key={s.id || index}
                 series={s}
@@ -102,7 +102,7 @@ const SeriesPage: React.FC = () => {
 };
 
 // Add performance monitoring for Core Web Vitals
-export function reportWebVitals(metric) {
+export function reportWebVitals(metric: any) {
   // In a real app, send to your analytics platform
   console.log(metric);
 }

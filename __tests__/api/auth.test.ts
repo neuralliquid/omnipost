@@ -3,6 +3,7 @@ import { RequestCookie } from 'next/dist/compiled/@edge-runtime/cookies';
 import { RequestCookies } from 'next/dist/server/web/spec-extension/cookies';
 import { NextRequest } from 'next/server';
 import { DELETE, POST } from '../../app/api/auth/route';
+import '../setup';
 
 // Mock findUserByUsername and verifyUserCredentials
 jest.mock('../../lib/auth/auth-service', () => ({
@@ -188,8 +189,11 @@ describe('Auth API', () => {
 
   describe('DELETE /api/auth (logout)', () => {
     test('should log out a user successfully', async () => {
+      // Create mock request (body doesn't matter for DELETE)
+      const request = createMockRequest({});
+      
       // Execute the handler
-      const response = await DELETE();
+      const response = await DELETE(request);
   
       // Parse the JSON response
       const data = await response.json();

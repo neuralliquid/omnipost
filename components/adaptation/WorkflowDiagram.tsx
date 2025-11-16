@@ -1,5 +1,5 @@
 import React from 'react';
-import WorkflowStage from '../shared/WorkflowStage';
+import WorkflowStage from '../ui/WorkflowStage';
 import styles from '../../styles/ContentAdaptation.module.css';
 
 interface WorkflowStep {

@@ -41,17 +41,23 @@ export class AuthService {
    * @param expiresIn Token expiration time (default: 1h)
    * @returns JWT token
    */
-  public generateToken(user: User, expiresIn: string = '1h'): string {
-    return jwt.sign(
+  public generateToken(user: User, expiresIn: string | number = '1h'): string {
+    const secret = this.getJwtSecret();
+    if (!secret) {
+      throw new Error('JWT secret is not configured');
+    }
+    // JWT library accepts expiresIn as either a number (seconds) or string (e.g., '1h', '7d')
+    const token = jwt.sign(
       {
         id: user.id,
         username: user.username,
         role: user.role,
         iat: Math.floor(Date.now() / 1000)
       },
-      this.getJwtSecret(),
+      secret,
       { expiresIn }
     );
+    return token;
   }
 
   /**
@@ -89,11 +95,11 @@ export class AuthService {
     try {
       // Try to get token from cookies first
       const cookieStore = cookies();
-      const tokenFromCookie = cookieStore.get('auth-token')?.value;
+      const tokenFromCookie = (cookieStore as any).get?.('auth-token')?.value;
       
       // If no cookie, try to get from authorization header
       const headersList = headers();
-      const authHeader = headersList.get('authorization');
+      const authHeader = (headersList as any).get?.('authorization');
       const tokenFromHeader = authHeader ? authHeader.replace('Bearer ', '') : null;
       
       // Use whichever token is available
@@ -164,7 +170,7 @@ export class AuthService {
       { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
       { id: '2', username: 'user', password: 'hashed_password', role: 'user' }
     ];
-
+    
     const user = users.find(user => user.username === username);
     return user ? user : null;
   }
@@ -180,13 +186,13 @@ export class AuthService {
     // 1. Find the user by username
     // 2. Hash the provided password with the same algorithm used for storage
     // 3. Compare the hashed password with the stored hash
-
+    
     // For now, we'll just do a simple check against our mock users
     const users = [
       { username: 'admin', password: 'admin123', role: 'admin' },
       { username: 'user', password: 'user123', role: 'user' }
     ];
-
+    
     const user = users.find(u => u.username === username);
     return user ? user.password === password : false;
   }

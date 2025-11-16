@@ -54,15 +54,7 @@ jest.mock('../../app/api/_utils/audit', () => ({
 jest.mock('../../utils/featureFlags', () => ({
   __esModule: true,
   default: {
-    imageGeneration: true,
-    trigger: {
-      cron: { enabled: true },
-      rss: { enabled: true },
-    },
-    scraping: { enabled: true },
-    storage: { notion: { enabled: true } },
-    writing: { openai: { enabled: true } },
-    distribution: { telegram: { enabled: true } },
+    imageGeneration: true
   }
 }));
 

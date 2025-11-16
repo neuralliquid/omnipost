@@ -25,15 +25,17 @@ const customJestConfig = {
   
   // Process TypeScript files
   transform: {
-    '^.+\\.(ts|tsx|mjs)$': ['ts-jest', {
+    '^.+\\.(ts|tsx)$': ['ts-jest', {
       tsconfig: 'tsconfig.jest.json',
     }],
   },
   
-  // Ignore paths
+  // Transform ES modules
   transformIgnorePatterns: [
-    '/node_modules/(?!node-fetch)',
+    'node_modules/(?!(node-fetch)/)',
   ],
+  
+  // Ignore paths
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
