@@ -1,3 +1,5 @@
+import '@testing-library/jest-dom';
+
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {

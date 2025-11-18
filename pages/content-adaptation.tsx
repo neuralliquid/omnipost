@@ -42,8 +42,10 @@ const ContentAdaptationPage: NextPage<ContentAdaptationPageProps> = ({
         <div className={styles.section}>
           {/* Display error message if there was an error loading data */}
           {error && (
-            <div className={styles.errorMessage}>
-              <p>{error}</p>
+            <div className={styles.errorContainer}>
+              <h3 className={styles.errorTitle}>Something Went Wrong</h3>
+              <p className={styles.errorMessage}>{error}</p>
+              <p className={styles.errorSuggestion}>Please try refreshing the page or contact support if the problem persists.</p>
             </div>
           )}
           
