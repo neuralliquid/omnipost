@@ -62,3 +62,22 @@
   padding: 2rem;
   color: #718096;
 }
+.tableContainer {
+  width: 100%;
+}
+
+.metricsTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.metricsTable th,
+.metricsTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.metricsTable th {
+  background-color: #f2f2f2;
+}

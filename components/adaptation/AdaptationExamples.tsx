@@ -26,9 +26,9 @@ const AdaptationExamples: React.FC<AdaptationExamplesProps> = ({ examples }) => 
       
       <div className={styles.adaptationContainer}>
         <div className={styles.adaptationExamples}>
-          {examples.map((example, index) => (
+          {examples.map((example) => (
             <AdaptationCard
-              key={index}
+              key={`${example.platform}-${example.type}`}
               platform={example.platform}
               type={example.type}
               original={example.original}
