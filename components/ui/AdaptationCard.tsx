@@ -1,81 +1,72 @@
 import React from 'react';
 import Image from 'next/image';
-import DOMPurify from 'dompurify';
+import ReactMarkdown from 'react-markdown';
+import styles from './AdaptationCard.module.css';
 
 interface AdaptationCardProps {
   platform: string;
   type?: string;
   title?: string;
-  original?: string;
-  originalContent?: string;
-  adaptation?: string;
-  adaptedContent?: string;
-  elements?: string[];
-  adaptationElements?: string[];
+  original: string;
+  adaptation: string;
+  elements: string[];
   image?: string;
   notes?: string[];
 }
 
 /**
  * Shared component for displaying a content adaptation example
- * Supports multiple prop patterns for backward compatibility
  */
 const AdaptationCard: React.FC<AdaptationCardProps> = ({
   platform,
   type,
   title,
   original,
-  originalContent,
   adaptation,
-  adaptedContent,
   elements,
-  adaptationElements,
   image
 }) => {
   const displayTitle = title || (type ? `${type} Adaptation` : 'Adaptation');
-  const displayOriginal = original ?? originalContent;
-  const displayAdaptation = adaptation ?? adaptedContent;
-  const displayElements = elements ?? adaptationElements ?? [];
 
   return (
-    <div className="adaptation-card">
+    <div className={styles.adaptationCard}>
       <h4>
-        <span className="platform-badge">{platform}</span> {displayTitle}
+        <span className={styles.platformBadge}>{platform}</span> {displayTitle}
       </h4>
-      <div className="example">
-        {displayOriginal && (
+      <div className={styles.example}>
+        {original && (
           <>
-            <div className="title">Original Article Section:</div>
-            <p>{displayOriginal}</p>
+            <div className={styles.title}>Original Article Section:</div>
+            <p>{original}</p>
           </>
         )}
         
-        {displayAdaptation && (
+        {adaptation && (
           <>
-            <div className="title">{platform} Adaptation:</div>
-            <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(displayAdaptation) }} />
+            <div className={styles.title}>{platform} Adaptation:</div>
+            <ReactMarkdown>{adaptation}</ReactMarkdown>
           </>
         )}
       </div>
-      {displayElements.length > 0 && (
-        <div className="notes">
+      {elements.length > 0 && (
+        <div className={styles.notes}>
           <p>Key adaptation elements:</p>
           <ul>
-            {displayElements.map((element) => (
-              <li key={`element-${element.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}>{element}</li>
+            {elements.map((element, index) => (
+              <li key={`${element.slice(0, 20)}-${index}`}>{element}</li>
             ))}
           </ul>
         </div>
       )}
       
       {image && (
-        <div className="example-image">
+        <div className={styles.exampleImage}>
           <Image
             src={image}
             alt={`${platform} adaptation example`}
             width={300}
             height={200}
-            objectFit="contain"
+            style={{ objectFit: 'contain' }}
           />
         </div>
       )}

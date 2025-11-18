@@ -34,17 +34,25 @@ const EngagementMetrics: React.FC<EngagementMetricsProps> = ({
       ) : metrics.length === 0 ? (
         <p>No metrics available</p>
       ) : (
-        <div>
-          <ul>
-            {metrics.map((metric, index) => (
-              <li key={index} className={dashboardStyles.metricItem}>
-                <div className={dashboardStyles.platformName}>{metric.platform}</div>
-                <div className={dashboardStyles.metricValue}>{metric.value}</div>
-              </li>
-            ))}
-          </ul>
-          <button 
-            onClick={onRefresh} 
+        <div className={dashboardStyles.tableContainer}>
+          <table className={dashboardStyles.metricsTable}>
+            <thead>
+              <tr>
+                <th>Platform</th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              {metrics.map((metric) => (
+                <tr key={metric.platform}>
+                  <td>{metric.platform}</td>
+                  <td>{metric.value}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            onClick={onRefresh}
             className={dashboardStyles.refreshButton}
           >
             Refresh Data
