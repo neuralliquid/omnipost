@@ -52,7 +52,7 @@ const initializeClients = () => {
 // Send notification endpoint
 export const POST = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to send notifications');
   }
   
@@ -162,7 +162,7 @@ export const POST = withErrorHandling(async (request: Request) => {
 // Get notifications endpoint (placeholder for future implementation)
 export const GET = withErrorHandling(async () => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to retrieve notifications');
   }
   

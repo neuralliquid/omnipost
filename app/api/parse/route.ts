@@ -37,7 +37,7 @@ function validateEnvironmentVariables(): boolean {
 // Parse text endpoint
 export const POST = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to parse text');
   }
   
@@ -167,7 +167,7 @@ export const POST = withErrorHandling(async (request: Request) => {
 // Analyze parsed data endpoint
 export const PUT = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to analyze text');
   }
   

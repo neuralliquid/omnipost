@@ -19,8 +19,8 @@ const getApiConfig = () => {
 /**
  * Validates authentication and feature flag
  */
-function validateAuthAndFeature() {
-  if (!isAuthenticated()) {
+async function validateAuthAndFeature() {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to summarize text');
   }
   
@@ -88,7 +88,7 @@ async function callApprovalApi(summary: string) {
 // Summarize text endpoint
 export const POST = withErrorHandling(async (request: Request) => {
   // Check authentication and feature flag
-  const authError = validateAuthAndFeature();
+  const authError = await validateAuthAndFeature();
   if (authError) return authError;
   
   try {

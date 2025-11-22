@@ -13,7 +13,7 @@ const huggingFaceClient = new HuggingFaceClient();
 export const POST = withErrorHandling(async (request: Request) => {
   try {
     // Check authentication
-    if (!isAuthenticated()) {
+    if (!(await isAuthenticated())) {
       return Errors.unauthorized('Authentication required to generate images');
     }
     
