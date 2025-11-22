@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
+import { textInputSchema, validateAndSanitize, validateJson } from '../_utils/sanitize';
+import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import feature flags
 import featureFlags from '../../../utils/featureFlags';
@@ -34,8 +36,9 @@ function validateEnvironmentVariables(): boolean {
   return true;
 }
 
-// Parse text endpoint
-export const POST = withErrorHandling(async (request: Request) => {
+// Parse text endpoint with rate limiting
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
   // Check authentication
   if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to parse text');
@@ -78,28 +81,22 @@ export const POST = withErrorHandling(async (request: Request) => {
   
   try {
     const body = await request.json();
-    const { rawInput } = body;
     
-    // Validate input
-    if (!rawInput || typeof rawInput !== 'string') {
-      return Errors.badRequest('Invalid input: rawInput must be a non-empty string');
+    // Validate and sanitize input using Zod schema
+    const validation = validateAndSanitize(textInputSchema, body);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
     }
     
-    // Check input size
-    const MAX_INPUT_LENGTH = 1_000_000; // 1 MB
-    if (rawInput.length > MAX_INPUT_LENGTH) {
-      return Errors.badRequest('Input too large', { maxSize: MAX_INPUT_LENGTH, actualSize: rawInput.length });
-     }
+    const { rawInput } = validation.data;
     
     // Log the parse request
     const logEntry = await createLogEntry('PARSE_TEXT', { inputLength: rawInput.length });
     await logToAuditTrail(logEntry);
     
-    // Parse the input
-    let parsedData;
-    try {
-      parsedData = JSON.parse(rawInput);
-    } catch (error) {
+    // Parse and validate the JSON input
+    const parsedData = validateJson(rawInput);
+    if (!parsedData) {
       return Errors.badRequest('Invalid JSON input');
     }
     
@@ -162,7 +159,10 @@ export const POST = withErrorHandling(async (request: Request) => {
       return Errors.internalServerError(message, { service: featureFlags.textParser.implementation });
     }
   }
-});
+}),
+  '/api/parse',
+  RateLimitPresets.AI_SERVICE
+);
 
 // Analyze parsed data endpoint
 export const PUT = withErrorHandling(async (request: Request) => {

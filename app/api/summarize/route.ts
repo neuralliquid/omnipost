@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
-import { validateString } from '../_utils/validation';
+import { summarizeTextSchema, validateAndSanitize } from '../_utils/sanitize';
+import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import feature flags from utils
 import featureFlags from '../../../utils/featureFlags';
@@ -85,19 +86,23 @@ async function callApprovalApi(summary: string) {
   }
 }
 
-// Summarize text endpoint
-export const POST = withErrorHandling(async (request: Request) => {
+// Summarize text endpoint with rate limiting
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
   // Check authentication and feature flag
   const authError = await validateAuthAndFeature();
   if (authError) return authError;
   
   try {
     const body = await request.json();
-    const { rawText } = body;
     
-    // Validate input
-    const inputError = validateInput(rawText, 'Raw text');
-    if (inputError) return inputError;
+    // Validate and sanitize input using Zod schema
+    const validation = validateAndSanitize(summarizeTextSchema, body);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
+    }
+    
+    const { rawText } = validation.data;
     
     // Log the summarize request
     const requestLogEntry = await createLogEntry('SUMMARIZE_TEXT', { textLength: rawText.length });
@@ -118,7 +123,10 @@ export const POST = withErrorHandling(async (request: Request) => {
   } catch (error) {
     return handleError(error, 'SUMMARIZE_TEXT', 'generate summary');
   }
-});
+}),
+  '/api/summarize',
+  RateLimitPresets.AI_SERVICE
+);
 
 // Approve summary endpoint
 export const PUT = withErrorHandling(async (request: Request) => {
