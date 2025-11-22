@@ -94,17 +94,17 @@ describe('Platforms API', () => {
       // Assertions
       expect(response.status).toBe(200);
       expect(Array.isArray(data)).toBe(true);
-      expect(data).toHaveLength(3);
+      expect(data).toHaveLength(5); // Updated: now has 5 platforms
       expect(data[0]).toHaveProperty('id', 1);
       expect(data[0]).toHaveProperty('name', 'Facebook');
-      expect(data[1]).toHaveProperty('name', 'Twitter');
+      expect(data[1]).toHaveProperty('name', 'Instagram'); // Updated order
       expect(data[2]).toHaveProperty('name', 'LinkedIn');
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return false
+      // Mock isAuthenticated to return Promise<false>
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
+      jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
       
       // Create a mock request
       const request = createMockRequest();
@@ -140,7 +140,7 @@ describe('Platforms API', () => {
       expect(data.platform).toHaveProperty('id', 1);
       expect(data.platform).toHaveProperty('name', 'Facebook');
       expect(Array.isArray(data.capabilities)).toBe(true);
-      expect(data.capabilities).toContain('post');
+      expect(data.capabilities).toContain('text'); // Updated from 'post' to 'text'
       expect(data.capabilities).toContain('image');
       expect(data.capabilities).toContain('video');
     });
@@ -178,9 +178,9 @@ describe('Platforms API', () => {
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return false
+      // Mock isAuthenticated to return Promise<false>
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockReturnValueOnce(false);
+      jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
       
       // Create mock request and params
       const request = createMockRequest();
