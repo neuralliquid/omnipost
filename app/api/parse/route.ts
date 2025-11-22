@@ -3,6 +3,8 @@ import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
+import { textInputSchema, validateAndSanitize, validateJson } from '../_utils/sanitize';
+import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import feature flags
 import featureFlags from '../../../utils/featureFlags';
@@ -34,41 +36,39 @@ function validateEnvironmentVariables(): boolean {
   return true;
 }
 
-// Parse text endpoint
-export const POST = withErrorHandling(async (request: Request) => {
+// Helper to validate all required feature flags
+function validateFeatureFlags(): string | null {
+  const requiredFlags = [
+    { flag: featureFlags.textParser?.enabled, name: 'Text parser' },
+    { flag: featureFlags.trigger.cron.enabled, name: 'CRON trigger' },
+    { flag: featureFlags.trigger.rss.enabled, name: 'RSS trigger' },
+    { flag: featureFlags.scraping.enabled, name: 'Scraping' },
+    { flag: featureFlags.storage.notion.enabled, name: 'Notion storage' },
+    { flag: featureFlags.writing.openai.enabled, name: 'OpenAI writing' },
+    { flag: featureFlags.distribution.telegram.enabled, name: 'Telegram distribution' }
+  ];
+  
+  for (const { flag, name } of requiredFlags) {
+    if (!flag) {
+      return `${name} feature is disabled`;
+    }
+  }
+  
+  return null;
+}
+
+// Parse text endpoint with rate limiting
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to parse text');
   }
   
-  // Check if text parser feature is enabled
-  if (!featureFlags.textParser?.enabled) {
-    return Errors.forbidden('Text parser feature is disabled');
-  }
-  
   // Check feature flags
-  if (!featureFlags.trigger.cron.enabled) {
-    return Errors.forbidden('CRON trigger feature is disabled');
-  }
-  
-  if (!featureFlags.trigger.rss.enabled) {
-    return Errors.forbidden('RSS trigger feature is disabled');
-  }
-  
-  if (!featureFlags.scraping.enabled) {
-    return Errors.forbidden('Scraping feature is disabled');
-  }
-  
-  if (!featureFlags.storage.notion.enabled) {
-    return Errors.forbidden('Notion storage feature is disabled');
-  }
-  
-  if (!featureFlags.writing.openai.enabled) {
-    return Errors.forbidden('OpenAI writing feature is disabled');
-  }
-  
-  if (!featureFlags.distribution.telegram.enabled) {
-    return Errors.forbidden('Telegram distribution feature is disabled');
+  const featureFlagError = validateFeatureFlags();
+  if (featureFlagError) {
+    return Errors.forbidden(featureFlagError);
   }
   
   // Validate environment variables
@@ -78,28 +78,22 @@ export const POST = withErrorHandling(async (request: Request) => {
   
   try {
     const body = await request.json();
-    const { rawInput } = body;
     
-    // Validate input
-    if (!rawInput || typeof rawInput !== 'string') {
-      return Errors.badRequest('Invalid input: rawInput must be a non-empty string');
+    // Validate and sanitize input using Zod schema
+    const validation = validateAndSanitize(textInputSchema, body);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
     }
     
-    // Check input size
-    const MAX_INPUT_LENGTH = 1_000_000; // 1 MB
-    if (rawInput.length > MAX_INPUT_LENGTH) {
-      return Errors.badRequest('Input too large', { maxSize: MAX_INPUT_LENGTH, actualSize: rawInput.length });
-     }
+    const { rawInput } = validation.data;
     
     // Log the parse request
     const logEntry = await createLogEntry('PARSE_TEXT', { inputLength: rawInput.length });
     await logToAuditTrail(logEntry);
     
-    // Parse the input
-    let parsedData;
-    try {
-      parsedData = JSON.parse(rawInput);
-    } catch (error) {
+    // Parse and validate the JSON input
+    const parsedData = validateJson(rawInput);
+    if (!parsedData) {
       return Errors.badRequest('Invalid JSON input');
     }
     
@@ -162,12 +156,15 @@ export const POST = withErrorHandling(async (request: Request) => {
       return Errors.internalServerError(message, { service: featureFlags.textParser.implementation });
     }
   }
-});
+}),
+  '/api/parse',
+  RateLimitPresets.AI_SERVICE
+);
 
 // Analyze parsed data endpoint
 export const PUT = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to analyze text');
   }
   

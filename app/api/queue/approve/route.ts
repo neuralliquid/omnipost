@@ -120,7 +120,7 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
 
 export const POST = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to approve queue');
   }
 

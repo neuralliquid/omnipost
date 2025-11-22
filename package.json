@@ -24,6 +24,7 @@
     "dompurify": "^3.2.5",
     "express": "^5.1.0",
     "express-rate-limit": "^7.1.5",
+    "isomorphic-dompurify": "^2.33.0",
     "jsonwebtoken": "^9.0.2",
     "next": "latest",
     "nodemailer": "^7.0.7",

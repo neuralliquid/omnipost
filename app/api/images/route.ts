@@ -3,17 +3,19 @@ import featureFlags from '../../../utils/featureFlags';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
-import { validateString } from '../_utils/validation';
+import { imageContextSchema, validateAndSanitize } from '../_utils/sanitize';
+import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 import { HuggingFaceClient } from '../../../lib/clients/huggingface';
 
 // Initialize the HuggingFace client
 const huggingFaceClient = new HuggingFaceClient();
 
-// Generate image endpoint
-export const POST = withErrorHandling(async (request: Request) => {
+// Generate image endpoint with rate limiting to prevent AI API abuse
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
   try {
     // Check authentication
-    if (!isAuthenticated()) {
+    if (!(await isAuthenticated())) {
       return Errors.unauthorized('Authentication required to generate images');
     }
     
@@ -48,13 +50,14 @@ export const POST = withErrorHandling(async (request: Request) => {
     }
     
     const body = await request.json();
-    const { context } = body;
     
-    // Validate context
-    const contextError = validateString(context, 'Context');
-    if (contextError) {
-      return Errors.badRequest(contextError);
+    // Validate and sanitize input using Zod schema
+    const validation = validateAndSanitize(imageContextSchema, body);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
     }
+    
+    const { context } = validation.data;
     
     // Log the image generation request
     const logEntry = await createLogEntry('GENERATE_IMAGE', { contextLength: context.length });
@@ -69,7 +72,10 @@ export const POST = withErrorHandling(async (request: Request) => {
     console.error('Error generating image:', error);
     return Errors.internalServerError('Failed to generate image');
   }
-});
+}),
+  '/api/images',
+  RateLimitPresets.AI_SERVICE
+);
 
 // Review image endpoint
 export const PUT = withErrorHandling(async (request: Request) => {

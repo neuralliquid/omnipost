@@ -29,7 +29,7 @@ const ContentAdaptation: React.FC<ContentAdaptationProps> = ({ examples }) => {
               title={example.title}
               original={example.original}
               adaptation={example.adaptation}
-              notes={example.notes}
+              elements={example.notes}
             />
           ))}
         </div>

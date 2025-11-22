@@ -2,6 +2,16 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 
+// Validate JWT_SECRET at startup - fail fast if missing
+if (!process.env.JWT_SECRET) {
+  throw new Error(
+    'FATAL: JWT_SECRET environment variable is required but not set. ' +
+    'Application cannot start without it. Please set JWT_SECRET in your environment.'
+  );
+}
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
 // Define paths that require authentication
 const authenticatedPaths = [
   '/api/platforms',
@@ -56,14 +66,8 @@ export function middleware(request: NextRequest) {
     }
 
     try {
-      // Get JWT secret
-      const secretKey = process.env.JWT_SECRET;
-      if (!secretKey) {
-        throw new Error('JWT_SECRET environment variable is not set');
-      }
-
-      // Verify the token
-      const decoded = jwt.verify(token, secretKey) as jwt.JwtPayload;
+      // Verify the token using the validated JWT_SECRET
+      const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
       
       // Check if token has expired
       const now = Math.floor(Date.now() / 1000);

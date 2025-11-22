@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Header from '../components/ui/Header';
 import Footer from '../components/ui/Footer';
+import ErrorBoundary from '../components/ErrorBoundary';
 import type { AppProps } from 'next/app';
 import { Inter } from 'next/font/google';
 import Image from 'next/image'; // Practice #2: Image optimization
@@ -63,30 +64,32 @@ export default function MyApp({ Component, pageProps }: AppProps) {
         <meta property="og:image" content={`${siteConfig.siteUrl}/images/og-image.jpg`} />
         <link rel="canonical" href={`${siteConfig.siteUrl}${router.asPath}`} />
       </Head>
-      <div className={`${inter.variable} ${styles.appContainer} font-sans`}>
-        <Header />
-        {isLoading && (
-          <div className={styles.loadingOverlay}>
-            {/* Practice #2: Image optimization */}
-            <div className={styles.loadingImageContainer}>
-              <Image 
-                src="/images/loading-spinner.svg"
-                alt="Loading"
-                width={50}
-                height={50}
-                priority
-              />
-      </div>
-          </div>
-        )}
-        <main className={styles.mainContent}>
-          <Component {...pageProps} />
-        </main>
-        <Footer />
-        
-        {/* Practice #5: Code splitting - only load analytics in production */}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-      </div>
+      <ErrorBoundary>
+        <div className={`${inter.variable} ${styles.appContainer} font-sans`}>
+          <Header />
+          {isLoading && (
+            <div className={styles.loadingOverlay}>
+              {/* Practice #2: Image optimization */}
+              <div className={styles.loadingImageContainer}>
+                <Image 
+                  src="/images/loading-spinner.svg"
+                  alt="Loading"
+                  width={50}
+                  height={50}
+                  priority
+                />
+        </div>
+            </div>
+          )}
+          <main className={styles.mainContent}>
+            <Component {...pageProps} />
+          </main>
+          <Footer />
+          
+          {/* Practice #5: Code splitting - only load analytics in production */}
+          {process.env.NODE_ENV === 'production' && <Analytics />}
+        </div>
+      </ErrorBoundary>
     </>
   );
 }

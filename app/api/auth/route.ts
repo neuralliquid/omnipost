@@ -4,6 +4,7 @@ import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
 import { authService } from '../../../lib/auth/auth-service';
+import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import Request type from Next.js
 import type { NextRequest } from 'next/server';
@@ -151,6 +152,12 @@ async function handleLogout(): Promise<NextResponse> {
   }
 }
 
-// Export route handlers with proper error handling
-export const POST = withErrorHandling(async (req: Request) => handleLogin(req));
+// Export route handlers with proper error handling and rate limiting
+// Auth endpoint uses strict rate limiting to prevent brute force attacks
+export const POST = withRateLimit(
+  withErrorHandling(async (req: Request) => handleLogin(req)),
+  '/api/auth',
+  RateLimitPresets.AUTH
+);
+
 export const DELETE = withErrorHandling(async (_req: Request) => handleLogout());
