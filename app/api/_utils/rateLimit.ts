@@ -35,7 +35,9 @@ interface RateLimitEntry {
 }
 
 // In-memory store for rate limiting
-// TODO: Replace with Redis for production multi-instance deployment
+// NOTE: For production multi-instance deployments, replace with Redis or Upstash Rate Limit
+// Example: import { Ratelimit } from "@upstash/ratelimit";
+// const ratelimit = new Ratelimit({ redis: Redis.fromEnv(), limiter: Ratelimit.slidingWindow(10, "10 s") });
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 /**

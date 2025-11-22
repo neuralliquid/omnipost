@@ -36,9 +36,8 @@ async function validateAuthAndFeature() {
  * Validates the input text
  */
 function validateInput(text: unknown, fieldName: string) {
-  const textError = validateString(text, fieldName);
-  if (textError) {
-    return Errors.badRequest(textError);
+  if (typeof text !== 'string' || !text.trim()) {
+    return Errors.badRequest(`${fieldName} is required and must be a non-empty string`);
   }
   return null;
 }

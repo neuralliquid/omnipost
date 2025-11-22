@@ -15,6 +15,13 @@ import * as DOMPurifyModule from 'isomorphic-dompurify';
 // Handle both CommonJS and ES module exports
 const DOMPurify = (DOMPurifyModule as any).default || DOMPurifyModule;
 
+// Type definition for DOMPurify config
+interface DOMPurifyConfig {
+  ALLOWED_TAGS?: string[];
+  ALLOWED_ATTR?: string[];
+  KEEP_CONTENT?: boolean;
+}
+
 /**
  * Sanitizes HTML content to prevent XSS attacks
  * @param input - Raw HTML string
@@ -28,7 +35,7 @@ export function sanitizeHtml(
     allowedAttributes?: string[];
   }
 ): string {
-  const config: DOMPurify.Config = {
+  const config: DOMPurifyConfig = {
     ALLOWED_TAGS: options?.allowedTags || [],
     ALLOWED_ATTR: options?.allowedAttributes || [],
     KEEP_CONTENT: true,

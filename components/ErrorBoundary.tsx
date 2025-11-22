@@ -31,18 +31,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       console.error('Error caught by boundary:', error, errorInfo);
     }
     
-    // TODO: Log to error monitoring service (e.g., Sentry, DataDog)
-    // logErrorToService(error, errorInfo);
+    // TODO: Log to error monitoring service (e.g., Sentry, DataDog) in Wave 2
+    // Example: Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
     
     this.setState({ errorInfo });
   }
 
   handleReload = () => {
-    window.location.reload();
+    globalThis.location.reload();
   };
 
   handleGoHome = () => {
-    window.location.href = '/';
+    globalThis.location.href = '/';
   };
 
   render() {
@@ -129,6 +129,8 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                 }}
                 onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#3a5481'}
                 onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#4a6491'}
+                onFocus={(e) => e.currentTarget.style.backgroundColor = '#3a5481'}
+                onBlur={(e) => e.currentTarget.style.backgroundColor = '#4a6491'}
               >
                 Reload Page
               </button>
@@ -148,6 +150,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                   e.currentTarget.style.backgroundColor = '#f9fafb';
                 }}
                 onMouseOut={(e) => {
+                  e.currentTarget.style.backgroundColor = 'white';
+                }}
+                onFocus={(e) => {
+                  e.currentTarget.style.backgroundColor = '#f9fafb';
+                }}
+                onBlur={(e) => {
                   e.currentTarget.style.backgroundColor = 'white';
                 }}
               >

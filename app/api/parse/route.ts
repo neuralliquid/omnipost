@@ -36,6 +36,27 @@ function validateEnvironmentVariables(): boolean {
   return true;
 }
 
+// Helper to validate all required feature flags
+function validateFeatureFlags(): string | null {
+  const requiredFlags = [
+    { flag: featureFlags.textParser?.enabled, name: 'Text parser' },
+    { flag: featureFlags.trigger.cron.enabled, name: 'CRON trigger' },
+    { flag: featureFlags.trigger.rss.enabled, name: 'RSS trigger' },
+    { flag: featureFlags.scraping.enabled, name: 'Scraping' },
+    { flag: featureFlags.storage.notion.enabled, name: 'Notion storage' },
+    { flag: featureFlags.writing.openai.enabled, name: 'OpenAI writing' },
+    { flag: featureFlags.distribution.telegram.enabled, name: 'Telegram distribution' }
+  ];
+  
+  for (const { flag, name } of requiredFlags) {
+    if (!flag) {
+      return `${name} feature is disabled`;
+    }
+  }
+  
+  return null;
+}
+
 // Parse text endpoint with rate limiting
 export const POST = withRateLimit(
   withErrorHandling(async (request: Request) => {
@@ -44,34 +65,10 @@ export const POST = withRateLimit(
     return Errors.unauthorized('Authentication required to parse text');
   }
   
-  // Check if text parser feature is enabled
-  if (!featureFlags.textParser?.enabled) {
-    return Errors.forbidden('Text parser feature is disabled');
-  }
-  
   // Check feature flags
-  if (!featureFlags.trigger.cron.enabled) {
-    return Errors.forbidden('CRON trigger feature is disabled');
-  }
-  
-  if (!featureFlags.trigger.rss.enabled) {
-    return Errors.forbidden('RSS trigger feature is disabled');
-  }
-  
-  if (!featureFlags.scraping.enabled) {
-    return Errors.forbidden('Scraping feature is disabled');
-  }
-  
-  if (!featureFlags.storage.notion.enabled) {
-    return Errors.forbidden('Notion storage feature is disabled');
-  }
-  
-  if (!featureFlags.writing.openai.enabled) {
-    return Errors.forbidden('OpenAI writing feature is disabled');
-  }
-  
-  if (!featureFlags.distribution.telegram.enabled) {
-    return Errors.forbidden('Telegram distribution feature is disabled');
+  const featureFlagError = validateFeatureFlags();
+  if (featureFlagError) {
+    return Errors.forbidden(featureFlagError);
   }
   
   // Validate environment variables
