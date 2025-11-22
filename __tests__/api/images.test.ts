@@ -41,7 +41,7 @@ jest.mock('../../lib/clients/huggingface', () => ({
       
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn(() => true)
+  isAuthenticated: jest.fn(() => Promise.resolve(true)) // Changed to return Promise
 }));
       
 // Mock audit logging functions
@@ -133,9 +133,9 @@ describe('Images API', () => {
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return false
+      // Mock isAuthenticated to return Promise.resolve(false)
       const { isAuthenticated } = require('../../app/api/_utils/auth');
-      isAuthenticated.mockReturnValueOnce(false);
+      isAuthenticated.mockResolvedValueOnce(false); // Changed from mockReturnValueOnce
       
       // Create mock request
       const request = createMockRequest({

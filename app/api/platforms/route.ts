@@ -9,8 +9,8 @@ import featureFlags from '../../../utils/featureFlags';
  * Validates user authentication
  * @returns Error response if not authenticated, null otherwise
  */
-function validateAuth() {
-  if (!isAuthenticated()) {
+async function validateAuth() {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required');
   }
   return null;
@@ -37,7 +37,7 @@ async function logPlatformsAccess() {
  */
 export const GET = withErrorHandling(async () => {
   // Check authentication
-  const authError = validateAuth();
+  const authError = await validateAuth();
   if (authError) return authError;
   
   // Log the access to platforms list
