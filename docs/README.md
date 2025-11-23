@@ -24,6 +24,10 @@ Located in the repository root for easy access:
   - Security model and data flow
   - Deployment architecture
   - Best practices and patterns
+- **[TEST_STATUS.md](./TEST_STATUS.md)** - Current test suite status and known issues
+  - Test results breakdown
+  - Known issues and recommended fixes
+  - Testing best practices
 
 ### API Documentation (`/api`)
 
