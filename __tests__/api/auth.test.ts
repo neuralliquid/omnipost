@@ -123,9 +123,10 @@ describe('Auth API', () => {
 
     test('should reject invalid credentials', async () => {
       // Create mock request with invalid password
+      const invalidPassword = 'wrong-password'; // Test credentials for negative test case
       const request = createMockRequest({
         username: 'admin',
-        password: 'wrong-password',
+        password: invalidPassword,
       });
 
       // Execute the handler
@@ -141,9 +142,10 @@ describe('Auth API', () => {
 
     test('should reject non-existent user', async () => {
       // Create mock request with non-existent user
+      const testPassword = 'password'; // Generic test password for non-existent user test
       const request = createMockRequest({
         username: 'non-existent',
-        password: 'password',
+        password: testPassword,
       });
 
       // Execute the handler
@@ -159,8 +161,9 @@ describe('Auth API', () => {
 
     test('should validate required fields', async () => {
       // Create mock request with missing username
+      const testPassword = 'admin123'; // Test password for validation test
       const request1 = createMockRequest({
-        password: 'admin123',
+        password: testPassword,
       });
 
       // Execute the handler
