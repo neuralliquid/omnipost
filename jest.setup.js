@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom';
 
+// Set NODE_ENV to 'test' to suppress environment variable warnings
+process.env.NODE_ENV = 'test';
+
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {

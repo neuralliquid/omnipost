@@ -39,32 +39,31 @@ export const platforms: Platform[] = [
 export const platformConfigurations: Record<string, PlatformConfig> = {
   facebook: {
     apiUrl: 'https://api.facebook.com/publish',
-    apiKey: process.env.FACEBOOK_API_KEY || (console.warn('FACEBOOK_API_KEY not set'), ''),
+    apiKey: process.env.FACEBOOK_API_KEY || '',
     required: true,
     capabilities: ['text', 'image', 'video'],
   },
   instagram: {
     apiUrl: 'https://api.instagram.com/publish',
-    apiKey: process.env.INSTAGRAM_API_KEY || (console.warn('INSTAGRAM_API_KEY not set'), ''),
+    apiKey: process.env.INSTAGRAM_API_KEY || '',
     required: true,
     capabilities: ['image', 'video'],
   },
   linkedin: {
     apiUrl: 'https://api.linkedin.com/publish',
-    apiKey: process.env.LINKEDIN_API_KEY || (console.warn('LINKEDIN_API_KEY not set'), ''),
+    apiKey: process.env.LINKEDIN_API_KEY || '',
     required: true,
     capabilities: ['text', 'image', 'article'],
   },
   twitter: {
     apiUrl: 'https://api.twitter.com/publish',
-    apiKey: process.env.TWITTER_API_KEY || (console.warn('TWITTER_API_KEY not set'), ''),
+    apiKey: process.env.TWITTER_API_KEY || '',
     required: true,
     capabilities: ['text', 'image', 'video'],
   },
   'custom-channel': {
     apiUrl: 'https://api.customchannel.com/publish',
-    apiKey:
-      process.env.CUSTOM_CHANNEL_API_KEY || (console.warn('CUSTOM_CHANNEL_API_KEY not set'), ''),
+    apiKey: process.env.CUSTOM_CHANNEL_API_KEY || '',
     required: true,
     headers: {
       Authorization: `Bearer ${process.env.CUSTOM_CHANNEL_API_KEY || ''}`,
@@ -76,16 +75,19 @@ export const platformConfigurations: Record<string, PlatformConfig> = {
 
 /**
  * Validate that all required API keys are provided
+ * @param silent - If true, suppress console warnings (useful for tests)
  */
-export function validateApiKeys(): void {
+export function validateApiKeys(silent = false): string[] {
   const missingKeys = Object.entries(platformConfigurations)
     .filter(([_, config]) => config.required && !config.apiKey)
     .map(([name]) => name);
 
-  if (missingKeys.length > 0) {
+  if (!silent && missingKeys.length > 0) {
     console.warn(`Missing API keys for required platforms: ${missingKeys.join(', ')}`);
     console.warn('API calls to these platforms will likely fail');
   }
+
+  return missingKeys;
 }
 
 /**
@@ -93,7 +95,7 @@ export function validateApiKeys(): void {
  */
 export function getPlatformConfig(platformName: string): PlatformConfig | undefined {
   // Normalize the platform name to match our keys
-  const normalizedName = platformName.toLowerCase().replace(/\s+/g, '-');
+  const normalizedName = platformName.toLowerCase().replaceAll(/\s+/g, '-');
   return (
     platformConfigurations[normalizedName] || platformConfigurations[platformName.toLowerCase()]
   );
@@ -118,5 +120,8 @@ export function getPlatformBySlug(slug: string): Platform | undefined {
   );
 }
 
-// Validate API keys during module initialization
-validateApiKeys();
+// Only validate API keys in non-test environments
+// In tests, API keys are typically mocked or not needed
+if (process.env.NODE_ENV !== 'test') {
+  validateApiKeys();
+}
