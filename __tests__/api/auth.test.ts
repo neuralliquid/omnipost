@@ -8,7 +8,7 @@ import '../setup';
 // Mock findUserByUsername and verifyUserCredentials
 jest.mock('../../lib/auth/auth-service', () => ({
   authService: {
-    findUserByUsername: jest.fn(async (username) => {
+    findUserByUsername: jest.fn(async username => {
       if (username === 'admin') {
         return { id: '1', username: 'admin', role: 'admin' };
       }
@@ -39,7 +39,7 @@ const mockCookies = {
 jest.mock('next/headers', () => ({
   cookies: jest.fn(() => mockCookies),
   headers: jest.fn(() => ({
-    get: jest.fn((name: string) => ({ name, value: 'mock-value' } as RequestCookie)),
+    get: jest.fn((name: string) => ({ name, value: 'mock-value' }) as RequestCookie),
   })),
 }));
 
@@ -47,7 +47,9 @@ jest.mock('next/headers', () => ({
 function createMockRequest(body: Record<string, unknown>): NextRequest {
   // Create a mock RequestCookies object with the correct method signatures
   const cookiesObj = {
-    get: jest.fn((name: string) => ({ name, value: 'mock-value' } as unknown as RequestCookie | undefined)),
+    get: jest.fn(
+      (name: string) => ({ name, value: 'mock-value' }) as unknown as RequestCookie | undefined
+    ),
     getAll: jest.fn(() => []),
     has: jest.fn(() => false),
     // For delete, handle single string or array of strings correctly
@@ -102,15 +104,15 @@ describe('Auth API', () => {
       // Create mock request
       const request = createMockRequest({
         username: 'admin',
-        password: 'admin123'
+        password: 'admin123',
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('token');
@@ -122,15 +124,15 @@ describe('Auth API', () => {
       // Create mock request with invalid password
       const request = createMockRequest({
         username: 'admin',
-        password: 'wrong-password'
+        password: 'wrong-password',
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(401);
       expect(data).toHaveProperty('message', 'Invalid username or password');
@@ -140,15 +142,15 @@ describe('Auth API', () => {
       // Create mock request with non-existent user
       const request = createMockRequest({
         username: 'non-existent',
-        password: 'password'
+        password: 'password',
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(401);
       expect(data).toHaveProperty('message', 'Invalid username or password');
@@ -157,30 +159,30 @@ describe('Auth API', () => {
     test('should validate required fields', async () => {
       // Create mock request with missing username
       const request1 = createMockRequest({
-        password: 'admin123'
+        password: 'admin123',
       });
-      
+
       // Execute the handler
       const response1 = await POST(request1);
-      
+
       // Parse the JSON response
       const data1 = await response1.json();
-      
+
       // Assertions
       expect(response1.status).toBe(400);
       expect(data1.message).toContain('Username');
-      
+
       // Create mock request with missing password
       const request2 = createMockRequest({
-        username: 'admin'
+        username: 'admin',
       });
-      
+
       // Execute the handler
       const response2 = await POST(request2);
-      
+
       // Parse the JSON response
       const data2 = await response2.json();
-      
+
       // Assertions
       expect(response2.status).toBe(400);
       expect(data2.message).toContain('Password');
@@ -191,21 +193,25 @@ describe('Auth API', () => {
     test('should log out a user successfully', async () => {
       // Create mock request (body doesn't matter for DELETE)
       const request = createMockRequest({});
-      
+
       // Execute the handler
       const response = await DELETE(request);
-  
+
       // Parse the JSON response
       const data = await response.json();
-  
+
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('message', 'Logged out successfully');
- 
+
       // Verify that cookies.set was called with appropriate parameters to clear the token
-      expect(mockCookiesSet).toHaveBeenCalledWith('token', '', expect.objectContaining({
-        maxAge: 0,
-      }));
+      expect(mockCookiesSet).toHaveBeenCalledWith(
+        'token',
+        '',
+        expect.objectContaining({
+          maxAge: 0,
+        })
+      );
     });
   });
 });

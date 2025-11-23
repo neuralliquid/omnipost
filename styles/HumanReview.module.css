@@ -230,16 +230,16 @@
     gap: 1rem;
     align-items: flex-start;
   }
-  
+
   .workflowProgress::before {
     display: none;
   }
-  
+
   .progressStep {
     flex-direction: row;
     gap: 1rem;
   }
-  
+
   .navigationLinks {
     flex-direction: column;
     gap: 1rem;

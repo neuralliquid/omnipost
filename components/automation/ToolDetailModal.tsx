@@ -3,13 +3,10 @@ import dynamic from 'next/dynamic';
 import styles from '../../styles/Automation.module.css';
 
 // Dynamic import for the AutomationToolDetail component
-const AutomationToolDetail = dynamic(
-  () => import('../AutomationToolDetail'),
-  {
-    loading: () => <p className={styles.loadingComponent}>Loading tool details...</p>,
-    ssr: true,
-  }
-);
+const AutomationToolDetail = dynamic(() => import('../AutomationToolDetail'), {
+  loading: () => <p className={styles.loadingComponent}>Loading tool details...</p>,
+  ssr: true,
+});
 
 interface ToolDetailModalProps {
   toolId: string;
@@ -22,11 +19,8 @@ interface ToolDetailModalProps {
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
   return (
     <div className={styles.toolDetailModal} onClick={onClose}>
-      <div className={styles.toolDetailContent} onClick={(e) => e.stopPropagation()}>
-        <AutomationToolDetail 
-          toolId={toolId} 
-          onClose={onClose}
-        />
+      <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
+        <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
     </div>
   );

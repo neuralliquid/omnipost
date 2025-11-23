@@ -1,6 +1,7 @@
 # Next.js Routing and Navigation Best Practices
 
 ## Table of Contents
+
 - [File-Based Routing](#file-based-routing)
 - [Dynamic Routes](#dynamic-routes)
 - [Nested Routes](#nested-routes)
@@ -17,6 +18,7 @@
 Next.js uses a file-system based router where files in the `pages` directory automatically become routes.
 
 **Directory Structure:**
+
 ```
 pages/
 ├── index.tsx         # Route: /
@@ -28,6 +30,7 @@ pages/
 ```
 
 **Best Practices:**
+
 - Keep page components focused on layout and data fetching
 - Move business logic to separate files/hooks
 - Use descriptive filenames that match the route purpose
@@ -44,12 +47,13 @@ import { useRouter } from 'next/router';
 export default function Post() {
   const router = useRouter();
   const { id } = router.query; // Access the dynamic route parameter
-  
+
   return <p>Post ID: {id}</p>;
 }
 ```
 
 **Best Practices:**
+
 - Validate route parameters before using them
 - Implement loading states while data is being fetched
 - Handle invalid parameters gracefully
@@ -69,6 +73,7 @@ pages/
 ```
 
 **Best Practices:**
+
 - Keep nesting to a reasonable depth (2-3 levels)
 - Consider UX when designing nested routes
 - Use breadcrumbs for deep navigation hierarchies
@@ -88,7 +93,7 @@ import Link from 'next/link';
 <Link href={`/posts/${post.id}`}>Read Post</Link>
 
 // With query parameters
-<Link 
+<Link
   href={{
     pathname: '/blog',
     query: { category: 'tech' },
@@ -119,6 +124,7 @@ router.push({
 ```
 
 **Best Practices:**
+
 - Always use `Link` for internal navigation
 - Add `prefetch={false}` for less important links
 - Use the `replace` prop to replace history instead of pushing
@@ -140,19 +146,20 @@ interface PostParams extends ParsedUrlQuery {
 export default function Post() {
   const router = useRouter();
   const { id } = router.query as PostParams;
-  
+
   // Validate the parameter
   const isValidId = id && /^\d+$/.test(id);
-  
+
   if (!isValidId) {
     return <div>Invalid post ID</div>;
   }
-  
+
   return <div>Post ID: {id}</div>;
 }
 ```
 
 **Best Practices:**
+
 - Type your route parameters with TypeScript
 - Validate parameters before using them
 - Handle loading states while parameters are undefined
@@ -171,7 +178,7 @@ import { useAuth } from '@/hooks/useAuth';
 export default function ProtectedPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-  
+
   useEffect(() => {
     if (!loading && !user) {
       router.replace({
@@ -180,16 +187,17 @@ export default function ProtectedPage() {
       });
     }
   }, [user, loading, router]);
-  
+
   if (loading || !user) {
     return <div>Loading...</div>;
   }
-  
+
   return <div>Protected content</div>;
 }
 ```
 
 **Best Practices:**
+
 - Create a reusable HOC or hook for auth protection
 - Redirect to login with return URL for better UX
 - Handle loading states appropriately
@@ -225,6 +233,7 @@ export default function About() {
 ```
 
 **Best Practices:**
+
 - Create reusable layout components
 - Use composition for nested layouts
 - Consider using the new Next.js App Router for more advanced layouts
@@ -249,15 +258,14 @@ export default function Custom500() {
 function Error({ statusCode }) {
   return (
     <p>
-      {statusCode
-        ? `An error ${statusCode} occurred on server`
-        : 'An error occurred on client'}
+      {statusCode ? `An error ${statusCode} occurred on server` : 'An error occurred on client'}
     </p>
   );
 }
 ```
 
 **Best Practices:**
+
 - Create custom 404 and 500 pages
 - Add helpful navigation options on error pages
 - Implement error tracking/logging
@@ -289,6 +297,7 @@ useEffect(() => {
 ```
 
 **Best Practices:**
+
 - Use shallow routing for tab interfaces or filters
 - Listen to route changes to update UI accordingly
 - Keep state in sync with URL parameters
@@ -305,7 +314,7 @@ module.exports = {
     locales: ['en', 'fr', 'de'],
     defaultLocale: 'en',
   },
-}
+};
 
 // Access locale in component
 import { useRouter } from 'next/router';
@@ -313,13 +322,13 @@ import { useRouter } from 'next/router';
 export default function IndexPage() {
   const router = useRouter();
   const { locale, locales, defaultLocale } = router;
-  
+
   return (
     <div>
       <p>Current locale: {locale}</p>
       <p>Default locale: {defaultLocale}</p>
       <div>
-        {locales.map((l) => (
+        {locales.map(l => (
           <button
             key={l}
             onClick={() => router.push(router.pathname, router.asPath, { locale: l })}
@@ -334,6 +343,7 @@ export default function IndexPage() {
 ```
 
 **Best Practices:**
+
 - Configure i18n in next.config.js
 - Use locale-specific content files
 - Implement language switcher

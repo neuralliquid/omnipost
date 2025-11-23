@@ -25,14 +25,18 @@ components/
 ## Organization Principles
 
 ### 1. Feature-Based Organization
+
 Components are grouped by domain/feature rather than by type. This makes it easier to:
+
 - Find related components
 - Understand feature boundaries
 - Refactor features independently
 - Onboard new developers
 
 ### 2. Shared Components
+
 Common, reusable UI components live in `shared/`. These include:
+
 - **AdaptationCard** - Display content adaptation examples
 - **WorkflowStage** - Display workflow stages with steps
 - **ErrorMessage** - Consistent error display
@@ -41,6 +45,7 @@ Common, reusable UI components live in `shared/`. These include:
 - **Authentication** - Auth UI components
 
 ### 3. Barrel Exports
+
 Each directory includes an `index.ts` file for clean imports:
 
 ```typescript
@@ -57,11 +62,13 @@ import { ToolCard, ToolGrid } from '../components/automation';
 ### Importing Components
 
 **From shared directory:**
+
 ```typescript
 import { Header, Footer, LoadingState } from '@/components/shared';
 ```
 
 **From feature directories:**
+
 ```typescript
 import { SeriesCard, SeriesForm } from '@/components/series';
 import { ImageGenerator } from '@/components/image';
@@ -74,18 +81,19 @@ import { ImageGenerator } from '@/components/image';
    - Feature-specific: Used by 1-2 related features → feature directory
 
 2. **Create component in appropriate directory**
+
    ```typescript
    // components/feature-name/ComponentName.tsx
    import React from 'react';
-   
+
    interface ComponentProps {
      // props
    }
-   
-   const Component: React.FC<ComponentProps> = (props) => {
+
+   const Component: React.FC<ComponentProps> = props => {
      // implementation
    };
-   
+
    export default Component;
    ```
 
@@ -106,12 +114,15 @@ import { ImageGenerator } from '@/components/image';
 ## Migration Notes
 
 This structure was created to eliminate:
+
 - **25 root-level components** → organized into subdirectories
 - **6 duplicate components** → consolidated into shared versions
 - **Inconsistent imports** → standardized paths
 
 ### Breaking Changes
+
 If you're updating from the old structure:
+
 1. Update imports from root components to new paths
 2. Use shared components instead of duplicates
 3. Update any custom tooling that references old paths
@@ -119,11 +130,13 @@ If you're updating from the old structure:
 ## Component Inventory
 
 ### Shared (13 components)
+
 - AdaptationCard, WorkflowStage, ErrorMessage, LoadingState
 - Header, Footer, Hero, Layout
 - Authentication, LoginForm, AuditTrail, NotificationSystem, MobileResponsiveness
 
 ### Feature Directories
+
 - **adaptation** (3): AdaptationExamples, WorkflowDiagram, ContentAdaptationStyles
 - **automation** (4): ToolCard, ToolGrid, ToolDetailModal, ConclusionSection
 - **content** (6): ContentAdaptation, ContentHeader, ContentManager, PlatformCard, WorkflowDiagram, AirtableIntegration

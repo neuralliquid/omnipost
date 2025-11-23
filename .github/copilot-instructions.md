@@ -11,6 +11,7 @@ This is a comprehensive content creation and management platform built with Next
 ## Technology Stack
 
 ### Frontend
+
 - **Framework:** Next.js 14 (Hybrid Pages + App Router)
 - **UI Library:** React 18
 - **Language:** TypeScript 5.3 (strict mode enabled)
@@ -18,18 +19,21 @@ This is a comprehensive content creation and management platform built with Next
 - **State Management:** React hooks (useState, useEffect, useContext)
 
 ### Backend
+
 - **API:** Next.js App Router (route handlers) + Legacy Pages API routes
 - **Authentication:** JWT-based with middleware
 - **Validation:** Zod schemas
 - **Security:** DOMPurify for sanitization, rate limiting, security headers
 
 ### Infrastructure
+
 - **Deployment:** Azure Web Apps
 - **IaC:** Bicep templates
 - **CI/CD:** GitHub Actions
 - **Testing:** Jest + React Testing Library
 
 ### External Services
+
 - AI services (Hugging Face for image generation)
 - Airtable (data storage)
 - Slack (notifications)
@@ -39,6 +43,7 @@ This is a comprehensive content creation and management platform built with Next
 ## Code Style & Standards
 
 ### TypeScript
+
 - **ALWAYS** use TypeScript strict mode
 - **ALWAYS** define explicit types for function parameters and return values
 - **ALWAYS** use interfaces for object shapes, types for unions/primitives
@@ -64,6 +69,7 @@ function createContent(data: any): any {
 ```
 
 ### React Components
+
 - **ALWAYS** use functional components with hooks
 - **ALWAYS** define component prop types with TypeScript interfaces
 - **PREFER** named exports over default exports for components
@@ -89,6 +95,7 @@ export default function ContentCard(props: any) {
 ```
 
 ### API Routes (App Router)
+
 - **ALWAYS** use async route handlers
 - **ALWAYS** validate input with Zod schemas
 - **ALWAYS** sanitize user input using the sanitization utilities
@@ -112,17 +119,14 @@ export const POST = withRateLimit(
     // Parse and validate input
     const body = await request.json();
     const validation = validateAndSanitize(textInputSchema, body);
-    
+
     if (!validation.success) {
-      return Response.json(
-        { error: 'Invalid input', details: validation.errors },
-        { status: 400 }
-      );
+      return Response.json({ error: 'Invalid input', details: validation.errors }, { status: 400 });
     }
 
     // Use sanitized data
     const { content } = validation.data;
-    
+
     // Business logic here
     return Response.json({ success: true }, { status: 200 });
   },
@@ -132,14 +136,15 @@ export const POST = withRateLimit(
 
 // ❌ Bad
 export async function POST(request: Request) {
-  if (!isAuthenticated()) { // Missing await!
+  if (!isAuthenticated()) {
+    // Missing await!
     return Response.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
   const body = await request.json();
   // No validation or sanitization - XSS vulnerability!
   const content = body.content;
-  
+
   return Response.json({ success: true });
 }
 ```
@@ -147,6 +152,7 @@ export async function POST(request: Request) {
 ## Critical Security Rules
 
 ### 1. Authentication
+
 - **ALWAYS** use `await isAuthenticated()` - it's an async function!
 - **NEVER** forget the `await` keyword when checking authentication
 - **ALWAYS** return 401 for unauthenticated requests
@@ -165,6 +171,7 @@ if (!isAuthenticated()) {
 ```
 
 ### 2. Input Sanitization
+
 - **ALWAYS** sanitize user input using DOMPurify
 - **ALWAYS** validate with Zod schemas before processing
 - **USE** the utilities in `app/api/_utils/sanitize.ts`
@@ -185,6 +192,7 @@ const content = userInput.content; // XSS vulnerability!
 ```
 
 ### 3. Rate Limiting
+
 - **ALWAYS** apply rate limiting to public endpoints
 - **ALWAYS** apply strict rate limiting to auth endpoints (5 req/15min)
 - **ALWAYS** apply cost-aware limiting to AI endpoints (10 req/min)
@@ -195,16 +203,21 @@ import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 
 // ✅ Good
 export const POST = withRateLimit(
-  async (request: Request) => { /* handler */ },
+  async (request: Request) => {
+    /* handler */
+  },
   '/api/auth/login',
   RateLimitPresets.AUTH
 );
 
 // ❌ Bad - No rate limiting!
-export async function POST(request: Request) { /* handler */ }
+export async function POST(request: Request) {
+  /* handler */
+}
 ```
 
 ### 4. Error Handling
+
 - **ALWAYS** wrap components in error boundaries for crash prevention
 - **ALWAYS** provide user-friendly error messages
 - **NEVER** expose stack traces or sensitive info in production
@@ -217,10 +230,7 @@ try {
   return Response.json({ success: true, data: result });
 } catch (error) {
   console.error('Operation failed:', error);
-  return Response.json(
-    { error: 'Failed to complete operation' },
-    { status: 500 }
-  );
+  return Response.json({ error: 'Failed to complete operation' }, { status: 500 });
 }
 
 // ❌ Bad
@@ -233,6 +243,7 @@ try {
 ```
 
 ### 5. Environment Variables
+
 - **ALWAYS** validate required env vars at startup
 - **NEVER** commit secrets or API keys
 - **USE** `.env.local` for local development
@@ -251,27 +262,30 @@ const secret = process.env.JWT_SECRET; // Might be undefined!
 ## API Development Guidelines
 
 ### Route Structure
+
 - Place new routes in `app/api/` directory
 - Follow RESTful conventions: GET, POST, PUT, DELETE
 - Use descriptive route names: `/api/content/[id]/publish`
 - Group related routes in folders
 
 ### Error Responses
+
 Use consistent error response format:
 
 ```typescript
 // Standard error response
 return Response.json(
-  { 
+  {
     error: 'Short error message',
     details: 'More detailed explanation',
-    code: 'ERROR_CODE'
+    code: 'ERROR_CODE',
   },
   { status: 400 }
 );
 ```
 
 ### Success Responses
+
 Use consistent success response format:
 
 ```typescript
@@ -279,8 +293,10 @@ Use consistent success response format:
 return Response.json(
   {
     success: true,
-    data: { /* result data */ },
-    message: 'Operation completed successfully'
+    data: {
+      /* result data */
+    },
+    message: 'Operation completed successfully',
   },
   { status: 200 }
 );
@@ -289,12 +305,14 @@ return Response.json(
 ## Testing Guidelines
 
 ### Test Structure
+
 - Place tests in `__tests__/` directory
 - Mirror the source file structure
 - Use descriptive test names: `should return 401 when user is not authenticated`
 - Group related tests with `describe` blocks
 
 ### Testing Best Practices
+
 - **ALWAYS** test happy path and error cases
 - **ALWAYS** test authentication and authorization
 - **ALWAYS** mock external services
@@ -308,10 +326,10 @@ describe('POST /api/content/create', () => {
   it('should create content when authenticated and input is valid', async () => {
     // Arrange
     const mockContent = { title: 'Test', body: 'Content' };
-    
+
     // Act
     const response = await createContent(mockContent);
-    
+
     // Assert
     expect(response.status).toBe(201);
     expect(response.data).toMatchObject(mockContent);
@@ -332,6 +350,7 @@ describe('POST /api/content/create', () => {
 ## Component Development
 
 ### Component Organization
+
 ```
 components/
 ├── ui/              # Reusable UI primitives (Button, Input, Card)
@@ -341,6 +360,7 @@ components/
 ```
 
 ### Accessibility
+
 - **ALWAYS** use semantic HTML elements
 - **ALWAYS** add ARIA labels to interactive elements
 - **ALWAYS** ensure keyboard navigation works
@@ -363,6 +383,7 @@ components/
 ```
 
 ### Performance
+
 - **USE** React.memo() for expensive components
 - **USE** useMemo() and useCallback() to prevent unnecessary re-renders
 - **LAZY LOAD** components with dynamic imports when appropriate
@@ -371,12 +392,14 @@ components/
 ## Migration Notes
 
 ### App Router Migration
+
 - The project is **migrating from Pages Router to App Router**
 - New API routes: Use App Router in `app/api/`
 - Legacy routes in `pages/api/` are being phased out
 - Refer to `docs/api-migration.md` for migration status
 
 ### When Creating New Routes
+
 - **ALWAYS** use App Router (`app/api/`) for new routes
 - **FOLLOW** the security patterns in existing App Router routes
 - **DO NOT** add new routes to `pages/api/` (legacy)
@@ -384,6 +407,7 @@ components/
 ## Common Patterns
 
 ### Authentication Check Pattern
+
 ```typescript
 export const POST = withRateLimit(
   withErrorHandling(async (request: Request) => {
@@ -398,21 +422,20 @@ export const POST = withRateLimit(
 ```
 
 ### Input Validation Pattern
+
 ```typescript
 const body = await request.json();
 const validation = validateAndSanitize(schemaName, body);
 
 if (!validation.success) {
-  return Response.json(
-    { error: 'Invalid input', details: validation.errors },
-    { status: 400 }
-  );
+  return Response.json({ error: 'Invalid input', details: validation.errors }, { status: 400 });
 }
 
 const { field1, field2 } = validation.data;
 ```
 
 ### Error Handling Pattern
+
 ```typescript
 try {
   const result = await operation();
@@ -435,6 +458,7 @@ try {
 ## Code Review Checklist
 
 Before submitting code, ensure:
+
 - [ ] TypeScript strict mode passes with no errors
 - [ ] ESLint passes with no errors (`npm run lint`)
 - [ ] Prettier formatting applied (`npm run format`)
@@ -450,6 +474,7 @@ Before submitting code, ensure:
 ## Documentation Standards
 
 ### Code Comments
+
 - **USE** JSDoc for public functions and complex logic
 - **EXPLAIN** why, not what (code should be self-explanatory)
 - **DOCUMENT** complex algorithms and business rules
@@ -458,12 +483,12 @@ Before submitting code, ensure:
 ```typescript
 /**
  * Processes content for multi-platform publishing.
- * 
+ *
  * Applies platform-specific transformations including:
  * - Character limit adjustments
  * - Image resizing and optimization
  * - Hashtag formatting
- * 
+ *
  * @param content - The raw content to process
  * @param platforms - Target platforms for publishing
  * @returns Processed content optimized for each platform
@@ -478,6 +503,7 @@ export async function processContent(
 ```
 
 ### README Updates
+
 - Keep README.md current with setup instructions
 - Document all environment variables
 - Update feature list when adding functionality
@@ -486,12 +512,14 @@ export async function processContent(
 ## Project-Specific Context
 
 ### Business Domain
+
 - **Content Types:** Blog posts, social media posts, images, marketing materials
 - **Platforms:** Facebook, Instagram, LinkedIn, Twitter, custom platforms
 - **Workflows:** Draft → Review → Approval → Schedule → Publish
 - **AI Features:** Text summarization, image generation, content optimization
 
 ### Key Constraints
+
 - **Performance:** API responses should be < 2s
 - **Security:** OWASP Top 10 compliance required
 - **Accessibility:** WCAG 2.1 AA target
@@ -499,6 +527,7 @@ export async function processContent(
 - **Mobile:** Responsive design required
 
 ### Known Issues & TODOs
+
 - Test suite at 66% pass rate (13 failures are mocking issues)
 - Production monitoring not yet configured
 - Design system needs formalization
@@ -508,6 +537,7 @@ export async function processContent(
 ## Resources
 
 ### Documentation
+
 - **README.md** - Setup and quick start
 - **CONTRIBUTING.md** - Development guidelines
 - **SECURITY.md** - Security policy
@@ -517,6 +547,7 @@ export async function processContent(
 - **docs/best-practices.md** - Best practices guide
 
 ### Helpful Commands
+
 ```bash
 # Development
 npm run dev              # Start dev server

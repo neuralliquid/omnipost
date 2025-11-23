@@ -30,10 +30,10 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
     if (process.env.NODE_ENV === 'development') {
       console.error('Error caught by boundary:', error, errorInfo);
     }
-    
+
     // TODO: Log to error monitoring service (e.g., Sentry, DataDog) in Wave 2
     // Example: Sentry.captureException(error, { contexts: { react: { componentStack: errorInfo.componentStack } } });
-    
+
     this.setState({ errorInfo });
   }
 
@@ -48,73 +48,89 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          padding: '2rem',
-          textAlign: 'center',
-          backgroundColor: '#f9fafb'
-        }}>
-          <div style={{
-            maxWidth: '600px',
-            backgroundColor: 'white',
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            minHeight: '100vh',
             padding: '2rem',
-            borderRadius: '8px',
-            boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-          }}>
-            <h1 style={{ 
-              color: '#2c3e50', 
-              marginBottom: '1rem',
-              fontSize: '2rem'
-            }}>
+            textAlign: 'center',
+            backgroundColor: '#f9fafb',
+          }}
+        >
+          <div
+            style={{
+              maxWidth: '600px',
+              backgroundColor: 'white',
+              padding: '2rem',
+              borderRadius: '8px',
+              boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            <h1
+              style={{
+                color: '#2c3e50',
+                marginBottom: '1rem',
+                fontSize: '2rem',
+              }}
+            >
               Something went wrong
             </h1>
-            <p style={{ 
-              color: '#333', 
-              marginBottom: '2rem',
-              lineHeight: '1.6'
-            }}>
-              We're sorry, but something unexpected happened. 
-              Our team has been notified and is working to fix the issue.
-            </p>
-            
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details style={{
+            <p
+              style={{
+                color: '#333',
                 marginBottom: '2rem',
-                textAlign: 'left',
-                padding: '1rem',
-                backgroundColor: '#f9fafb',
-                borderRadius: '4px',
-                fontSize: '0.875rem'
-              }}>
-                <summary style={{ 
-                  cursor: 'pointer', 
-                  fontWeight: '600',
-                  marginBottom: '0.5rem'
-                }}>
+                lineHeight: '1.6',
+              }}
+            >
+              We're sorry, but something unexpected happened. Our team has been notified and is
+              working to fix the issue.
+            </p>
+
+            {process.env.NODE_ENV === 'development' && this.state.error && (
+              <details
+                style={{
+                  marginBottom: '2rem',
+                  textAlign: 'left',
+                  padding: '1rem',
+                  backgroundColor: '#f9fafb',
+                  borderRadius: '4px',
+                  fontSize: '0.875rem',
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: 'pointer',
+                    fontWeight: '600',
+                    marginBottom: '0.5rem',
+                  }}
+                >
                   Error Details (Development Only)
                 </summary>
-                <pre style={{
-                  overflow: 'auto',
-                  padding: '0.5rem',
-                  backgroundColor: '#fff',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px'
-                }}>
+                <pre
+                  style={{
+                    overflow: 'auto',
+                    padding: '0.5rem',
+                    backgroundColor: '#fff',
+                    border: '1px solid #ddd',
+                    borderRadius: '4px',
+                  }}
+                >
                   {this.state.error.toString()}
                   {this.state.errorInfo?.componentStack}
                 </pre>
               </details>
             )}
-            
-            <div style={{ 
-              display: 'flex', 
-              gap: '1rem', 
-              justifyContent: 'center' 
-            }}>
+
+            <div
+              style={{
+                display: 'flex',
+                gap: '1rem',
+                justifyContent: 'center',
+              }}
+            >
               <button
                 onClick={this.handleReload}
                 style={{
@@ -125,12 +141,12 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                   borderRadius: '8px',
                   fontSize: '1rem',
                   cursor: 'pointer',
-                  transition: 'background-color 0.2s'
+                  transition: 'background-color 0.2s',
                 }}
-                onMouseOver={(e) => e.currentTarget.style.backgroundColor = '#3a5481'}
-                onMouseOut={(e) => e.currentTarget.style.backgroundColor = '#4a6491'}
-                onFocus={(e) => e.currentTarget.style.backgroundColor = '#3a5481'}
-                onBlur={(e) => e.currentTarget.style.backgroundColor = '#4a6491'}
+                onMouseOver={e => (e.currentTarget.style.backgroundColor = '#3a5481')}
+                onMouseOut={e => (e.currentTarget.style.backgroundColor = '#4a6491')}
+                onFocus={e => (e.currentTarget.style.backgroundColor = '#3a5481')}
+                onBlur={e => (e.currentTarget.style.backgroundColor = '#4a6491')}
               >
                 Reload Page
               </button>
@@ -144,18 +160,18 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
                   borderRadius: '8px',
                   fontSize: '1rem',
                   cursor: 'pointer',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
                 }}
-                onMouseOver={(e) => {
+                onMouseOver={e => {
                   e.currentTarget.style.backgroundColor = '#f9fafb';
                 }}
-                onMouseOut={(e) => {
+                onMouseOut={e => {
                   e.currentTarget.style.backgroundColor = 'white';
                 }}
-                onFocus={(e) => {
+                onFocus={e => {
                   e.currentTarget.style.backgroundColor = '#f9fafb';
                 }}
-                onBlur={(e) => {
+                onBlur={e => {
                   e.currentTarget.style.backgroundColor = 'white';
                 }}
               >

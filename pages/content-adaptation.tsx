@@ -15,22 +15,22 @@ interface ContentAdaptationPageProps {
 /**
  * Content Adaptation page showing workflow stages and adaptation examples
  */
-const ContentAdaptationPage: NextPage<ContentAdaptationPageProps> = ({ 
+const ContentAdaptationPage: NextPage<ContentAdaptationPageProps> = ({
   adaptationExamples,
-  error 
+  error,
 }) => {
   // Navigation links configuration
   const navigationLinks = [
     {
       href: '/workflow',
       label: 'View Complete Workflow',
-      direction: 'prev' as const
+      direction: 'prev' as const,
     },
     {
       href: '/automation',
       label: 'Explore Automation Opportunities',
-      direction: 'next' as const
-    }
+      direction: 'next' as const,
+    },
   ];
 
   return (
@@ -45,21 +45,23 @@ const ContentAdaptationPage: NextPage<ContentAdaptationPageProps> = ({
             <div className={styles.errorContainer}>
               <h3 className={styles.errorTitle}>Something Went Wrong</h3>
               <p className={styles.errorMessage}>{error}</p>
-              <p className={styles.errorSuggestion}>Please try refreshing the page or contact support if the problem persists.</p>
+              <p className={styles.errorSuggestion}>
+                Please try refreshing the page or contact support if the problem persists.
+              </p>
             </div>
           )}
-          
+
           {/* Workflow diagram section */}
           <WorkflowDiagram stages={workflowStages} />
-          
+
           {/* Adaptation examples section */}
           <AdaptationExamples examples={adaptationExamples.examples} />
-          
+
           {/* Navigation links */}
-          <NavigationLinks 
-            links={navigationLinks} 
-            className={styles.navigationLinks} 
-            linkClassName={styles.navLink} 
+          <NavigationLinks
+            links={navigationLinks}
+            className={styles.navigationLinks}
+            linkClassName={styles.navLink}
           />
         </div>
       </div>
@@ -75,10 +77,10 @@ export async function getStaticProps() {
     // In a real implementation, you might fetch this data from an API or CMS
     // For now, we'll import it directly
     const adaptationExamples = await import('../content/adaptationExamples.json');
-    
+
     return {
       props: {
-        adaptationExamples
+        adaptationExamples,
       },
       // Revalidate every day
       revalidate: 86400,
@@ -88,7 +90,7 @@ export async function getStaticProps() {
     return {
       props: {
         adaptationExamples: { examples: [] },
-        error: 'Failed to load adaptation examples'
+        error: 'Failed to load adaptation examples',
       },
     };
   }

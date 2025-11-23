@@ -11,12 +11,7 @@ interface InputStageProps {
 /**
  * Component for the initial input stage of the review process
  */
-const InputStage: React.FC<InputStageProps> = ({
-  rawInput,
-  onChange,
-  onSubmit,
-  isDisabled
-}) => {
+const InputStage: React.FC<InputStageProps> = ({ rawInput, onChange, onSubmit, isDisabled }) => {
   return (
     <div className={styles.inputStage}>
       <h2>Input Raw Content</h2>

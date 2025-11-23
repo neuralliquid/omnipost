@@ -78,7 +78,11 @@ interface MockRequest {
   nextUrl: URL;
 }
 
-global.createMockRequest = (method: string, body?: Record<string, unknown>, headers?: Record<string, string>): MockRequest => {
+global.createMockRequest = (
+  method: string,
+  body?: Record<string, unknown>,
+  headers?: Record<string, string>
+): MockRequest => {
   return {
     method,
     url: 'http://localhost:3000/api/test',
@@ -99,7 +103,11 @@ global.createMockRequest = (method: string, body?: Record<string, unknown>, head
 // Extend global types
 declare global {
   // eslint-disable-next-line no-var
-  var createMockRequest: (method: string, body?: Record<string, unknown>, headers?: Record<string, string>) => MockRequest;
+  var createMockRequest: (
+    method: string,
+    body?: Record<string, unknown>,
+    headers?: Record<string, string>
+  ) => MockRequest;
 }
 
 // Add a simple test to satisfy Jest's requirement

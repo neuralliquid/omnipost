@@ -112,7 +112,7 @@ const PlatformConnectors: React.FC<PlatformConnectorsProps> = ({ content }) => {
           <p>Loading platforms...</p>
         ) : (
           <ul>
-            {platforms.map((platform) => (
+            {platforms.map(platform => (
               <li key={platform.id}>
                 {platform.name}
                 <button onClick={() => addToQueue(platform)}>Add to Queue</button>
@@ -124,17 +124,14 @@ const PlatformConnectors: React.FC<PlatformConnectorsProps> = ({ content }) => {
       <div>
         <h3>Pre-Publishing Queue</h3>
         <ul>
-          {queue.map((item) => (
+          {queue.map(item => (
             <li key={`queue-${item.platform.id}-${item.platform.name}`}>
               {item.platform.name}
               <button onClick={() => removeFromQueue(queue.indexOf(item))}>Remove</button>
             </li>
           ))}
         </ul>
-        <button 
-          onClick={approveQueue} 
-          disabled={queue.length === 0 || isApproving}
-        >
+        <button onClick={approveQueue} disabled={queue.length === 0 || isApproving}>
           {isApproving ? 'Processing...' : 'Approve Queue'}
         </button>
       </div>

@@ -18,8 +18,11 @@ const ContentAdaptation: React.FC<ContentAdaptationProps> = ({ examples }) => {
   return (
     <div className={workflowStyles['content-adaptation']}>
       <h3>Content Adaptation Examples</h3>
-      <p>Strategic approaches for adapting your technical content to different platforms while maintaining consistency and quality.</p>
-      
+      <p>
+        Strategic approaches for adapting your technical content to different platforms while
+        maintaining consistency and quality.
+      </p>
+
       <div className={workflowStyles['adaptation-container']}>
         <div className={workflowStyles['adaptation-examples']}>
           {examples.map((example, index) => (

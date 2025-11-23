@@ -3,7 +3,7 @@ import styles from '../../styles/HumanReview.module.css';
 import { ReviewStep } from '../../hooks/useReviewProcess';
 
 interface Step {
-  id: string;  // Changed from ReviewStep to string for more flexibility
+  id: string; // Changed from ReviewStep to string for more flexibility
   label: string;
 }
 
@@ -19,11 +19,9 @@ const ProgressBar: React.FC<ProgressBarProps> = ({ steps, currentStep }) => {
   return (
     <div className={styles.workflowProgress}>
       {steps.map((step, index) => (
-        <div 
-          key={index} 
-          className={`${styles.progressStep} ${
-            currentStep === step.id ? styles.activeStep : ''
-          } ${
+        <div
+          key={index}
+          className={`${styles.progressStep} ${currentStep === step.id ? styles.activeStep : ''} ${
             steps.findIndex(s => s.id === currentStep) > index ? styles.completedStep : ''
           }`}
         >

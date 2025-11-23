@@ -14,12 +14,7 @@ interface LayoutProps {
 /**
  * Shared layout component for consistent page structure
  */
-const Layout: React.FC<LayoutProps> = ({ 
-  children, 
-  title, 
-  description,
-  ogImage
-}) => {
+const Layout: React.FC<LayoutProps> = ({ children, title, description, ogImage }) => {
   return (
     <div className={styles.layoutContainer}>
       <Head>
@@ -30,13 +25,11 @@ const Layout: React.FC<LayoutProps> = ({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description || title} />
       </Head>
-      
+
       <Header />
-      
-      <main className={styles.mainContent}>
-        {children}
-      </main>
-      
+
+      <main className={styles.mainContent}>{children}</main>
+
       <Footer />
     </div>
   );

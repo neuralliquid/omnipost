@@ -8,15 +8,15 @@ export function validateString(value: unknown, fieldName: string): string | unde
   if (value === undefined || value === null) {
     return `${fieldName} is required`;
   }
-  
+
   if (typeof value !== 'string') {
     return `${fieldName} must be a string`;
   }
-  
+
   if (value.trim() === '') {
     return `${fieldName} cannot be empty`;
   }
-  
+
   return undefined;
 }
 
@@ -30,11 +30,11 @@ export function validateBoolean(value: unknown, fieldName: string): string | und
   if (value === undefined || value === null) {
     return `${fieldName} is required`;
   }
-  
+
   if (typeof value !== 'boolean') {
     return `${fieldName} must be a boolean`;
   }
-  
+
   return undefined;
 }
 
@@ -48,11 +48,11 @@ export function validateArray(value: unknown, fieldName: string): string | undef
   if (value === undefined || value === null) {
     return `${fieldName} is required`;
   }
-  
+
   if (!Array.isArray(value)) {
     return `${fieldName} must be an array`;
   }
-  
+
   return undefined;
 }
 
@@ -64,19 +64,19 @@ export function validateArray(value: unknown, fieldName: string): string | undef
  * @returns An error message if invalid, undefined if valid
  */
 export function validateEnum<T>(
-  value: unknown, 
-  allowedValues: readonly T[], 
+  value: unknown,
+  allowedValues: readonly T[],
   fieldName: string
 ): string | undefined {
   if (value === undefined || value === null) {
     return `${fieldName} is required`;
   }
-  
+
   // Type guard to check if value is in allowedValues
   if (!allowedValues.some(allowed => allowed === value)) {
     return `${fieldName} must be one of: ${allowedValues.join(', ')}`;
   }
-  
+
   return undefined;
 }
 
@@ -91,14 +91,14 @@ export function validateObject<T extends Record<string, unknown>>(
   schema: Record<string, (value: unknown) => string | undefined>
 ): Record<string, string> | null {
   const errors: Record<string, string> = {};
-  
+
   for (const [field, validator] of Object.entries(schema)) {
     const error = validator(obj[field]);
     if (error) {
       errors[field] = error;
     }
   }
-  
+
   return Object.keys(errors).length > 0 ? errors : null;
 }
 

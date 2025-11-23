@@ -1,6 +1,7 @@
 # Next.js Component Architecture Best Practices
 
 ## Table of Contents
+
 - [Component Organization](#component-organization)
 - [Component Types](#component-types)
 - [Props and TypeScript](#props-and-typescript)
@@ -10,6 +11,7 @@
 ## Component Organization
 
 ### Directory Structure
+
 ```
 /components
   /common            # Shared components used across multiple features
@@ -94,16 +96,16 @@ const UserPage: NextPage<UserPageProps> = ({ user }) => {
   return <UserProfile user={user} />;
 };
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
+export const getServerSideProps: GetServerSideProps = async context => {
   const { id } = context.params as { id: string };
   const user = await fetchUser(id);
-  
+
   if (!user) {
     return {
       notFound: true,
     };
   }
-  
+
   return {
     props: {
       user,
@@ -137,11 +139,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
 }) => {
   return (
-    <button
-      className={`btn btn-${variant} btn-${size}`}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button className={`btn btn-${variant} btn-${size}`} onClick={onClick} disabled={disabled}>
       {label}
     </button>
   );
@@ -165,7 +163,7 @@ const Button: React.FC<ButtonProps> = ({
 };
 
 // Avoid
-const Button: React.FC<ButtonProps> = (props) => {
+const Button: React.FC<ButtonProps> = props => {
   // ...
 };
 
@@ -185,7 +183,7 @@ For component-specific state, use useState and useReducer:
 ```tsx
 const Counter: React.FC = () => {
   const [count, setCount] = useState<number>(0);
-  
+
   return (
     <div>
       <p>Count: {count}</p>
@@ -206,7 +204,7 @@ type State = {
   error: string | null;
 };
 
-type Action = 
+type Action =
   | { type: 'INCREMENT' }
   | { type: 'DECREMENT' }
   | { type: 'SET_LOADING'; payload: boolean }
@@ -233,7 +231,7 @@ const ComplexCounter: React.FC = () => {
     isLoading: false,
     error: null,
   });
-  
+
   // Component logic
 };
 ```
@@ -258,9 +256,7 @@ Use composition instead of passing too many props:
 const Card: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
   <div className="card">
     <h2>{title}</h2>
-    <div className="card-content">
-      {children}
-    </div>
+    <div className="card-content">{children}</div>
   </div>
 );
 
@@ -272,7 +268,7 @@ const UserCard: React.FC<{ user: User }> = ({ user }) => (
 );
 
 // Avoid
-const Card: React.FC<{ 
+const Card: React.FC<{
   title: string;
   email?: string;
   role?: string;
@@ -315,7 +311,7 @@ function DataFetcher<T>({ fetchFunction, render }: DataFetcherProps<T>) {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, [fetchFunction]);
 
@@ -330,5 +326,5 @@ function DataFetcher<T>({ fetchFunction, render }: DataFetcherProps<T>) {
     if (error) return <p>Error: {error.message}</p>;
     return <UserList users={data} />;
   }}
-/>
+/>;
 ```

@@ -41,21 +41,21 @@ export class AuthService {
    * @param expiresIn Token expiration time (default: 1h)
    * @returns JWT token
    */
-  public generateToken(user: User, expiresIn: string | number = '1h'): string {
+  public generateToken(user: User, expiresIn = '1h'): string {
     const secret = this.getJwtSecret();
     if (!secret) {
       throw new Error('JWT secret is not configured');
     }
-    // JWT library accepts expiresIn as either a number (seconds) or string (e.g., '1h', '7d')
+    // JWT library accepts expiresIn as a string (e.g., '1h', '7d') or number (seconds)
     const token = jwt.sign(
       {
         id: user.id,
         username: user.username,
         role: user.role,
-        iat: Math.floor(Date.now() / 1000)
+        iat: Math.floor(Date.now() / 1000),
       },
       secret,
-      { expiresIn: expiresIn as string }
+      { expiresIn: expiresIn as jwt.SignOptions['expiresIn'] }
     );
     return token;
   }
@@ -73,7 +73,7 @@ export class AuthService {
       }
 
       const decoded = jwt.verify(token, this.getJwtSecret()) as TokenPayload;
-      
+
       // Check if token has expired
       const now = Math.floor(Date.now() / 1000);
       if (decoded.exp && decoded.exp < now) {
@@ -96,29 +96,29 @@ export class AuthService {
       // Try to get token from cookies first
       const cookieStore = cookies();
       const tokenFromCookie = (cookieStore as any).get?.('auth-token')?.value;
-      
+
       // If no cookie, try to get from authorization header
       const headersList = headers();
       const authHeader = (headersList as any).get?.('authorization');
       const tokenFromHeader = authHeader ? authHeader.replace('Bearer ', '') : null;
-      
+
       // Use whichever token is available
       const token = tokenFromCookie || tokenFromHeader;
-      
+
       if (!token) {
         return null;
       }
-      
+
       const decoded = this.verifyToken(token);
       if (!decoded) {
         return null;
       }
-      
+
       return {
         id: decoded.id,
         username: decoded.username,
         role: decoded.role,
-        isAdmin: decoded.role === 'admin'
+        isAdmin: decoded.role === 'admin',
       };
     } catch (error) {
       console.error('Error getting current user:', error);
@@ -142,7 +142,7 @@ export class AuthService {
    */
   public addToTokenBlacklist(token: string, expiryTime: number): void {
     tokenBlacklist.set(token, Date.now() + expiryTime * 1000);
-    
+
     // Clean up expired tokens from blacklist
     this.cleanupBlacklist();
   }
@@ -168,9 +168,9 @@ export class AuthService {
     // This would be replaced with actual database lookup
     const users = [
       { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
-      { id: '2', username: 'user', password: 'hashed_password', role: 'user' }
+      { id: '2', username: 'user', password: 'hashed_password', role: 'user' },
     ];
-    
+
     const user = users.find(user => user.username === username);
     return user ? user : null;
   }
@@ -186,13 +186,13 @@ export class AuthService {
     // 1. Find the user by username
     // 2. Hash the provided password with the same algorithm used for storage
     // 3. Compare the hashed password with the stored hash
-    
+
     // For now, we'll just do a simple check against our mock users
     const users = [
       { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'user', password: 'user123', role: 'user' }
+      { username: 'user', password: 'user123', role: 'user' },
     ];
-    
+
     const user = users.find(u => u.username === username);
     return user ? user.password === password : false;
   }

@@ -27,10 +27,10 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use the API client to track content
       const result = await apiClient.trackContent(page, pageSize, filter);
-      
+
       if (result?.data) {
         setContent(result.data);
         setHasMore(result.pagination?.hasMorePages || false);
@@ -53,7 +53,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
   // Handle content submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!newContent.trim()) {
       return;
     }
@@ -61,10 +61,10 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
     try {
       setSubmitting(true);
       setError(null);
-      
+
       // Use the API client to store content
       await apiClient.storeContent(newContent);
-      
+
       // Reset form and refresh content list
       setNewContent('');
       setPage(1);
@@ -99,13 +99,13 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
   return (
     <div className="p-4">
       <h2 className="text-2xl font-bold mb-6">Content Manager</h2>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
-      
+
       {/* Content submission form */}
       <div className="mb-8 p-4 border rounded-lg">
         <h3 className="text-lg font-medium mb-4">Add New Content</h3>
@@ -113,14 +113,14 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
           <div className="mb-4">
             <textarea
               value={newContent}
-              onChange={(e) => setNewContent(e.target.value)}
+              onChange={e => setNewContent(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
               rows={4}
               placeholder="Enter content..."
               disabled={submitting}
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={submitting || !newContent.trim()}
@@ -132,7 +132,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
           </button>
         </form>
       </div>
-      
+
       {/* Content filter */}
       <div className="mb-4">
         <label htmlFor="filter" className="block text-sm font-medium text-gray-700 mb-1">
@@ -148,7 +148,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
           disabled={loading}
         />
       </div>
-      
+
       {/* Content list */}
       {loading ? (
         <div className="text-center p-8">Loading content...</div>
@@ -161,7 +161,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       ) : (
         <div>
           <div className="space-y-4">
-            {content.map((item) => (
+            {content.map(item => (
               <div key={item.id} className="p-4 border rounded-lg">
                 <p className="whitespace-pre-wrap">{item.Content}</p>
                 {item.createdTime && (
@@ -172,7 +172,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
               </div>
             ))}
           </div>
-          
+
           {/* Pagination controls */}
           <div className="flex justify-between items-center mt-6">
             <button
@@ -184,9 +184,9 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
             >
               Previous
             </button>
-            
+
             <span>Page {page}</span>
-            
+
             <button
               onClick={nextPage}
               disabled={!hasMore || loading}

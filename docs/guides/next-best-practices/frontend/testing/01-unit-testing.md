@@ -1,6 +1,7 @@
 # Unit Testing in Next.js
 
 ## Table of Contents
+
 - [Testing Framework Setup](#testing-framework-setup)
 - [Component Testing](#component-testing)
 - [Hook Testing](#hook-testing)
@@ -87,7 +88,7 @@ describe('Button component', () => {
   it('calls onClick when clicked', async () => {
     const handleClick = jest.fn();
     render(<Button label="Click me" onClick={handleClick} />);
-    
+
     await userEvent.click(screen.getByText('Click me'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
@@ -116,7 +117,7 @@ const mockUser = {
 describe('UserProfile component', () => {
   it('displays user information correctly', () => {
     render(<UserProfile user={mockUser} />);
-    
+
     expect(screen.getByText(mockUser.name)).toBeInTheDocument();
     expect(screen.getByText(mockUser.email)).toBeInTheDocument();
     expect(screen.getByText(mockUser.role)).toBeInTheDocument();
@@ -156,32 +157,32 @@ describe('useCounter hook', () => {
 
   it('should increment counter', () => {
     const { result } = renderHook(() => useCounter());
-    
+
     act(() => {
       result.current.increment();
     });
-    
+
     expect(result.current.count).toBe(1);
   });
 
   it('should decrement counter', () => {
     const { result } = renderHook(() => useCounter(5));
-    
+
     act(() => {
       result.current.decrement();
     });
-    
+
     expect(result.current.count).toBe(4);
   });
 
   it('should reset counter to initial value', () => {
     const { result } = renderHook(() => useCounter(5));
-    
+
     act(() => {
       result.current.increment();
       result.current.reset();
     });
-    
+
     expect(result.current.count).toBe(5);
   });
 });
@@ -195,9 +196,7 @@ import { renderHook, act } from '@testing-library/react';
 import { AuthProvider } from '../contexts/AuthContext';
 import useAuth from './useAuth';
 
-const wrapper = ({ children }) => (
-  <AuthProvider>{children}</AuthProvider>
-);
+const wrapper = ({ children }) => <AuthProvider>{children}</AuthProvider>;
 
 describe('useAuth hook', () => {
   it('should return user as null initially', () => {
@@ -207,23 +206,23 @@ describe('useAuth hook', () => {
 
   it('should update user after login', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     await act(async () => {
       await result.current.login('test@example.com', 'password');
     });
-    
+
     expect(result.current.user).not.toBeNull();
     expect(result.current.user.email).toBe('test@example.com');
   });
 
   it('should clear user after logout', async () => {
     const { result } = renderHook(() => useAuth(), { wrapper });
-    
+
     await act(async () => {
       await result.current.login('test@example.com', 'password');
       await result.current.logout();
     });
-    
+
     expect(result.current.user).toBeNull();
   });
 });
@@ -250,7 +249,7 @@ describe('formatDate', () => {
     const date = new Date('2023-01-15T12:00:00Z');
     expect(formatDate(date)).toBe('Jan 15, 2023');
   });
-  
+
   it('handles invalid dates', () => {
     expect(formatDate(null)).toBe('Invalid date');
     expect(formatDate(undefined)).toBe('Invalid date');
@@ -262,7 +261,7 @@ describe('truncateText', () => {
     expect(truncateText('Hello world', 5)).toBe('Hello...');
     expect(truncateText('Hello', 10)).toBe('Hello');
   });
-  
+
   it('handles empty strings', () => {
     expect(truncateText('', 5)).toBe('');
   });
@@ -286,28 +285,28 @@ describe('API utility functions', () => {
   describe('fetchUser', () => {
     it('fetches user successfully', async () => {
       const mockUser = { id: '1', name: 'John Doe' };
-      
+
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
         json: async () => mockUser,
       });
-      
+
       const user = await fetchUser('1');
       expect(user).toEqual(mockUser);
       expect(fetch).toHaveBeenCalledWith('/api/users/1');
     });
-    
+
     it('throws error when fetch fails', async () => {
       (fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 404,
         statusText: 'Not Found',
       });
-      
+
       await expect(fetchUser('999')).rejects.toThrow('Not Found');
     });
   });
-  
+
   // Additional tests for createUser and updateUser...
 });
 ```
@@ -330,7 +329,7 @@ jest.mock('next/router', () => ({
 
 describe('Navigation component', () => {
   const mockPush = jest.fn();
-  
+
   beforeEach(() => {
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
@@ -338,23 +337,23 @@ describe('Navigation component', () => {
       query: {},
     });
   });
-  
+
   it('navigates to the dashboard when dashboard link is clicked', async () => {
     render(<Navigation />);
-    
+
     await userEvent.click(screen.getByText('Dashboard'));
     expect(mockPush).toHaveBeenCalledWith('/dashboard');
   });
-  
+
   it('highlights the active link based on current path', () => {
     (useRouter as jest.Mock).mockReturnValue({
       push: mockPush,
       pathname: '/profile',
       query: {},
     });
-    
+
     render(<Navigation />);
-    
+
     expect(screen.getByText('Profile')).toHaveClass('active');
     expect(screen.getByText('Dashboard')).not.toHaveClass('active');
   });
@@ -381,26 +380,26 @@ describe('UserList component', () => {
       { id: '1', name: 'John Doe' },
       { id: '2', name: 'Jane Smith' },
     ];
-    
+
     (fetchUsers as jest.Mock).mockResolvedValueOnce(mockUsers);
-    
+
     render(<UserList />);
-    
+
     // Should show loading initially
     expect(screen.getByText('Loading users...')).toBeInTheDocument();
-    
+
     // Wait for users to load
     await waitFor(() => {
       expect(screen.getByText('John Doe')).toBeInTheDocument();
       expect(screen.getByText('Jane Smith')).toBeInTheDocument();
     });
   });
-  
+
   it('displays error message when fetch fails', async () => {
     (fetchUsers as jest.Mock).mockRejectedValueOnce(new Error('Failed to fetch'));
-    
+
     render(<UserList />);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Error: Failed to fetch')).toBeInTheDocument();
     });
@@ -420,10 +419,10 @@ describe('UserList component', () => {
    - Avoid selecting elements by class or tag names
 
    ```tsx
-   <button data-testid="submit-button">Submit</button>
-   
+   <button data-testid="submit-button">Submit</button>;
+
    // In test
-   screen.getByTestId('submit-button')
+   screen.getByTestId('submit-button');
    ```
 
 3. **Organize Tests Properly**

@@ -23,7 +23,7 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries }) => {
           type="text"
           id="title"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
           required
         />
       </div>
@@ -32,7 +32,7 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries }) => {
         <textarea
           id="description"
           value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          onChange={e => setDescription(e.target.value)}
           required
         ></textarea>
       </div>

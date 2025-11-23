@@ -99,7 +99,7 @@
   .mobileMenuButton {
     display: flex;
   }
-  
+
   .navigation {
     position: fixed;
     top: 70px;
@@ -111,21 +111,21 @@
     overflow: hidden;
     transition: height 0.3s ease;
   }
-  
+
   .menuOpen {
     height: auto;
     padding: 1rem;
   }
-  
+
   .navList {
     flex-direction: column;
     width: 100%;
   }
-  
+
   .navItem {
     width: 100%;
   }
-  
+
   .navLink {
     display: block;
     padding: 0.75rem 0;

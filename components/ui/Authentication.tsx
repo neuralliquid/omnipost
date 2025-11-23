@@ -22,9 +22,9 @@ const Authentication: React.FC = () => {
       } catch (err: unknown) {
         const error = err as Error & {
           response?: {
-            data?: { message?: string },
-            status?: number
-          }
+            data?: { message?: string };
+            status?: number;
+          };
         };
         setError(error.response?.data?.message || error.message);
       }
@@ -44,8 +44,8 @@ const Authentication: React.FC = () => {
     } catch (err: unknown) {
       const error = err as Error & {
         response?: {
-          data?: { message?: string }
-        }
+          data?: { message?: string };
+        };
       };
       setError(error.response?.data?.message || error.message);
     } finally {
@@ -65,10 +65,7 @@ const Authentication: React.FC = () => {
           </button>
         </div>
       ) : (
-        <LoginForm 
-          onLoginSuccess={handleLoginSuccess}
-          redirectPath=""
-        />
+        <LoginForm onLoginSuccess={handleLoginSuccess} redirectPath="" />
       )}
     </div>
   );

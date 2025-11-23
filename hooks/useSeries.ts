@@ -44,9 +44,7 @@ export function useSeries() {
 
   // Edit an existing series
   const editSeries = (index: number, updatedSeries: Series) => {
-    setSeries(prevSeries => 
-      prevSeries.map((s, i) => i === index ? updatedSeries : s)
-    );
+    setSeries(prevSeries => prevSeries.map((s, i) => (i === index ? updatedSeries : s)));
   };
 
   // Delete a series

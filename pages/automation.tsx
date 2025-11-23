@@ -19,32 +19,26 @@ interface AutomationPageProps {
 /**
  * Automation page showing workflow automation opportunities
  */
-const AutomationPage: NextPage<AutomationPageProps> = ({ 
-  initialTools = [], 
-  error: initialError 
+const AutomationPage: NextPage<AutomationPageProps> = ({
+  initialTools = [],
+  error: initialError,
 }) => {
   // Use our custom hook for managing automation tools
-  const {
-    tools,
-    selectedTool,
-    isLoading,
-    error,
-    selectTool,
-    closeTool
-  } = useAutomationTools(initialTools);
+  const { tools, selectedTool, isLoading, error, selectTool, closeTool } =
+    useAutomationTools(initialTools);
 
   // Navigation links configuration
   const navigationLinks = [
     {
       href: '/workflow',
       label: 'View Content Production Workflow',
-      direction: 'prev' as const
+      direction: 'prev' as const,
     },
     {
       href: '/platform-analysis',
       label: 'Explore Platform Analysis',
-      direction: 'next' as const
-    }
+      direction: 'next' as const,
+    },
   ];
 
   // Display error from props or from the hook
@@ -61,39 +55,27 @@ const AutomationPage: NextPage<AutomationPageProps> = ({
           <div className={styles.automation}>
             <h2>Workflow Automation Opportunities</h2>
             <p>
-              Leverage your system architecture expertise to automate repetitive tasks in your content workflow, 
-              improving efficiency and consistency.
+              Leverage your system architecture expertise to automate repetitive tasks in your
+              content workflow, improving efficiency and consistency.
             </p>
-            
+
             {/* Error message */}
             {displayError && <ErrorMessage message={displayError} />}
-            
+
             {/* Loading state or tool grid */}
-            {isLoading ? (
-              <LoadingState />
-            ) : (
-              <ToolGrid 
-                tools={tools} 
-                onSelectTool={selectTool} 
-              />
-            )}
-            
+            {isLoading ? <LoadingState /> : <ToolGrid tools={tools} onSelectTool={selectTool} />}
+
             {/* Tool detail modal */}
-            {selectedTool && (
-              <ToolDetailModal 
-                toolId={selectedTool} 
-                onClose={closeTool} 
-              />
-            )}
-            
+            {selectedTool && <ToolDetailModal toolId={selectedTool} onClose={closeTool} />}
+
             {/* Conclusion section */}
             <ConclusionSection />
-            
+
             {/* Navigation links */}
-            <NavigationLinks 
-              links={navigationLinks} 
-              className={styles.navigationLinks} 
-              linkClassName={styles.navLink} 
+            <NavigationLinks
+              links={navigationLinks}
+              className={styles.navigationLinks}
+              linkClassName={styles.navLink}
             />
           </div>
         </div>
@@ -109,10 +91,10 @@ export async function getStaticProps() {
   try {
     // In a real implementation, you might fetch this data from an API or CMS
     const automationTools = await import('../content/automationTools.json');
-    
+
     return {
       props: {
-        initialTools: automationTools.tools
+        initialTools: automationTools.tools,
       },
       // Revalidate every hour
       revalidate: 3600,
@@ -122,7 +104,7 @@ export async function getStaticProps() {
     return {
       props: {
         initialTools: [],
-        error: 'Failed to load automation tools'
+        error: 'Failed to load automation tools',
       },
     };
   }

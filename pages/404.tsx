@@ -6,13 +6,10 @@ import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import a suggestions component (practice #5: code splitting)
-const RelatedPagesSuggestions = dynamic(
-  () => import('../components/RelatedPagesSuggestions'),
-  {
-    loading: () => <p>Loading suggestions...</p>,
-    ssr: true,
-  }
-);
+const RelatedPagesSuggestions = dynamic(() => import('../components/RelatedPagesSuggestions'), {
+  loading: () => <p>Loading suggestions...</p>,
+  ssr: true,
+});
 
 export default function Custom404() {
   const router = useRouter();
@@ -27,12 +24,12 @@ export default function Custom404() {
         // This would typically be an API call to get related content
         // Simulating API call with timeout
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Example suggestions
         setSuggestions([
           { title: 'Workflow Page', path: '/workflow' },
           { title: 'Platform Analysis', path: '/platform-analysis' },
-          { title: 'Content Adaptation', path: '/content-adaptation' }
+          { title: 'Content Adaptation', path: '/content-adaptation' },
         ]);
       } catch (error) {
         console.error('Failed to fetch suggestions:', error);
@@ -55,7 +52,10 @@ export default function Custom404() {
       {/* Practice #4: SEO improvements with proper meta tags */}
       <Head>
         <title>Page Not Found | Content Workflow Platform</title>
-        <meta name="description" content="The page you are looking for cannot be found. Please check the URL or navigate back to the homepage." />
+        <meta
+          name="description"
+          content="The page you are looking for cannot be found. Please check the URL or navigate back to the homepage."
+        />
         <meta property="og:title" content="Page Not Found | Content Workflow Platform" />
         <meta property="og:description" content="The page you are looking for cannot be found." />
         <meta property="og:type" content="website" />
@@ -67,9 +67,9 @@ export default function Custom404() {
       <div className="error-container max-w-2xl mx-auto py-16 px-4 sm:py-24 sm:px-6 lg:px-8 text-center">
         {/* Practice #2: Image optimization using Next.js Image component */}
         <div className="relative w-64 h-64 mx-auto mb-8">
-          <Image 
-            src="/images/404-illustration.svg" 
-            alt="404 illustration" 
+          <Image
+            src="/images/404-illustration.svg"
+            alt="404 illustration"
             fill
             priority
             sizes="(max-width: 768px) 100vw, 256px"
@@ -83,22 +83,26 @@ export default function Custom404() {
           </div> */}
         </div>
 
-        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">Page not found</h1>
-        <p className="mt-2 text-lg text-gray-500">The page you are looking for doesn't exist or has been moved.</p>
-        
+        <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+          Page not found
+        </h1>
+        <p className="mt-2 text-lg text-gray-500">
+          The page you are looking for doesn't exist or has been moved.
+        </p>
+
         <div className="mt-6 flex flex-col sm:flex-row justify-center gap-4">
           {/* Practice #3: Proper navigation using Next.js Link component */}
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-            onClick={(e) => {
+            onClick={e => {
               e.preventDefault();
               handleGoHome();
             }}
           >
             {isLoading ? 'Redirecting...' : 'Back to Home'}
           </Link>
-          
+
           <button
             onClick={() => router.back()}
             className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -114,7 +118,7 @@ export default function Custom404() {
             <ul className="mt-4 border-t border-b border-gray-200 divide-y divide-gray-200">
               {suggestions.map((suggestion, index) => (
                 <li key={index} className="py-3">
-                  <Link 
+                  <Link
                     href={suggestion.path}
                     className="text-indigo-600 hover:text-indigo-800 hover:underline"
                   >

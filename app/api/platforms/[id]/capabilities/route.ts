@@ -16,7 +16,7 @@ const validateAndParsePlatformId = (id: string | undefined) => {
   if (!id) {
     return { error: Errors.badRequest('Platform ID is required') };
   }
-  
+
   const platformId = parseInt(id);
   if (isNaN(platformId)) {
     return { error: Errors.badRequest('Invalid platform ID') };
@@ -32,35 +32,34 @@ const findPlatform = (platformId: number) => {
   return { platform, error: null };
 };
 
-export const GET = withErrorHandling(async (
-  request: Request,
-  context?: { params?: Record<string, string> }
-) => {
-  const authError = await validateAuth();
-  if (authError) return authError;
-  
-  const id = context?.params?.id;
-  const { platformId, error: idError } = validateAndParsePlatformId(id);
-  if (idError) return idError;
-  
-  const { platform, error: platformError } = findPlatform(platformId);
-  if (platformError) return platformError;
-  
-  // Log the access to platform capabilities
-  const logEntry = await createLogEntry(
-    'GET_PLATFORM_CAPABILITIES', 
-    { platformId, platformName: platform.name }
-  );
-  await logToAuditTrail(logEntry);
-  
-  const config = getPlatformConfig(platform.name);
-  
-  if (!config) {
-    return Errors.notFound('Platform configuration not found');
+export const GET = withErrorHandling(
+  async (request: Request, context?: { params?: Record<string, string> }) => {
+    const authError = await validateAuth();
+    if (authError) return authError;
+
+    const id = context?.params?.id;
+    const { platformId, error: idError } = validateAndParsePlatformId(id);
+    if (idError) return idError;
+
+    const { platform, error: platformError } = findPlatform(platformId);
+    if (platformError) return platformError;
+
+    // Log the access to platform capabilities
+    const logEntry = await createLogEntry('GET_PLATFORM_CAPABILITIES', {
+      platformId,
+      platformName: platform.name,
+    });
+    await logToAuditTrail(logEntry);
+
+    const config = getPlatformConfig(platform.name);
+
+    if (!config) {
+      return Errors.notFound('Platform configuration not found');
+    }
+
+    return NextResponse.json({
+      platform,
+      capabilities: config.capabilities || [],
+    });
   }
-  
-  return NextResponse.json({
-    platform,
-    capabilities: config.capabilities || []
-  });
-});
+);

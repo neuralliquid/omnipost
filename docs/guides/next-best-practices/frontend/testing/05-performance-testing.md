@@ -1,6 +1,7 @@
 # Performance Testing in Next.js
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [Setup](#setup)
 - [Lighthouse Testing](#lighthouse-testing)
@@ -104,11 +105,11 @@ Basic load testing with k6:
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
-export default function() {
+export default function () {
   const res = http.get('http://localhost:3000');
   check(res, {
-    'status is 200': (r) => r.status === 200,
-    'page loads in less than 1s': (r) => r.timings.duration < 1000,
+    'status is 200': r => r.status === 200,
+    'page loads in less than 1s': r => r.timings.duration < 1000,
   });
   sleep(1);
 }

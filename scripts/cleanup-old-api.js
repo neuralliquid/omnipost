@@ -6,7 +6,7 @@
  * 1. Remove old pages/api routes
  * 2. Move any needed code from api/ directory to lib/
  * 3. Clean up unused files
- * 
+ *
  * Usage: node scripts/cleanup-old-api.js
  */
 
@@ -16,7 +16,7 @@ const readline = require('readline');
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 // Define paths
@@ -86,7 +86,7 @@ function cleanup() {
   if (fs.existsSync(pagesApiDir)) {
     console.log('Backing up pages/api directory...');
     copyDirRecursive(pagesApiDir, backupPagesApiDir);
-    
+
     console.log('Removing pages/api directory...');
     removeDirRecursive(pagesApiDir);
     console.log('pages/api directory removed successfully.');
@@ -98,7 +98,7 @@ function cleanup() {
   if (fs.existsSync(apiDir)) {
     console.log('Backing up api directory...');
     copyDirRecursive(apiDir, backupApiDir);
-    
+
     console.log('Removing api directory...');
     removeDirRecursive(apiDir);
     console.log('api directory removed successfully.');
@@ -110,15 +110,20 @@ function cleanup() {
   console.log(`Backups saved to: ${backupDir}`);
   console.log('\nNotes:');
   console.log('1. If you need to restore any files, you can find them in the backup directory.');
-  console.log('2. Make sure to update any imports in your code that still reference the old API files.');
+  console.log(
+    '2. Make sure to update any imports in your code that still reference the old API files.'
+  );
 }
 
 // Prompt for confirmation
-rl.question('This will remove all files in pages/api and api directories. Are you sure? (y/N) ', (answer) => {
-  if (answer.toLowerCase() === 'y') {
-    cleanup();
-  } else {
-    console.log('Cleanup cancelled.');
+rl.question(
+  'This will remove all files in pages/api and api directories. Are you sure? (y/N) ',
+  answer => {
+    if (answer.toLowerCase() === 'y') {
+      cleanup();
+    } else {
+      console.log('Cleanup cancelled.');
+    }
+    rl.close();
   }
-  rl.close();
-});
+);

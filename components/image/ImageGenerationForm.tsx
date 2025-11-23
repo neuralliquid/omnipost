@@ -13,7 +13,7 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!prompt.trim()) {
       setError('Please enter a description for the image');
       return;
@@ -22,13 +22,13 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use the API client to generate an image
       const result = await apiClient.generateImage(prompt);
-      
+
       if (result?.url) {
         setGeneratedImage(result.url);
-        
+
         // Call the callback if provided
         if (onImageGenerated) {
           onImageGenerated(result.url);
@@ -53,14 +53,14 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use the API client to regenerate the image
       const image = { context: prompt };
       const result = await apiClient.reviewImage(image, 'regenerate');
-      
+
       if (result?.url) {
         setGeneratedImage(result.url);
-        
+
         // Call the callback if provided
         if (onImageGenerated) {
           onImageGenerated(result.url);
@@ -79,13 +79,13 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
   return (
     <div className="max-w-lg mx-auto p-4 border rounded-lg">
       <h2 className="text-xl font-bold mb-4">Generate Image</h2>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
-      
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 mb-1">
@@ -94,14 +94,14 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
           <textarea
             id="prompt"
             value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
+            onChange={e => setPrompt(e.target.value)}
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
             rows={4}
             placeholder="Describe the image you want to generate..."
             disabled={loading}
           />
         </div>
-        
+
         <div className="flex space-x-2">
           <button
             type="submit"
@@ -112,7 +112,7 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
           >
             {loading ? 'Generating...' : 'Generate Image'}
           </button>
-          
+
           {generatedImage && (
             <button
               type="button"
@@ -127,13 +127,13 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
           )}
         </div>
       </form>
-      
+
       {generatedImage && (
         <div className="mt-6">
           <h3 className="text-lg font-medium mb-2">Generated Image</h3>
-          <img 
-            src={generatedImage} 
-            alt="Generated from description" 
+          <img
+            src={generatedImage}
+            alt="Generated from description"
             className="w-full h-auto rounded-md border"
           />
         </div>

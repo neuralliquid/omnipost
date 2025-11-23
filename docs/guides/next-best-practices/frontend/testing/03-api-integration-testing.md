@@ -1,6 +1,7 @@
 # API Integration Testing in Next.js
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [Setup](#setup)
 - [Testing API Routes](#testing-api-routes)
@@ -67,15 +68,15 @@ it('loads and displays user data', async () => {
   });
 
   render(<UserProfile userId="1" />);
-  
+
   // Check loading state
   expect(screen.getByText('Loading...')).toBeInTheDocument();
-  
+
   // Wait for data to load
   await waitFor(() => {
     expect(screen.getByText('John Doe')).toBeInTheDocument();
   });
-  
+
   // Verify API was called with correct parameters
   expect(fetch).toHaveBeenCalledWith('/api/users/1');
 });
@@ -96,7 +97,7 @@ it('displays error message when API fails', async () => {
   });
 
   render(<UserProfile userId="1" />);
-  
+
   // Wait for error state
   await waitFor(() => {
     expect(screen.getByText('Failed to load user data')).toBeInTheDocument();

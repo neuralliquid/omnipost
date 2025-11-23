@@ -52,8 +52,12 @@ const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
 
   return (
     <div>
-      <button onClick={parseText} disabled={isLoading}>Parse Text</button>
-      <button onClick={analyzeText} disabled={isLoading}>Analyze Text</button>
+      <button onClick={parseText} disabled={isLoading}>
+        Parse Text
+      </button>
+      <button onClick={analyzeText} disabled={isLoading}>
+        Analyze Text
+      </button>
       {error && <p>Error: {error}</p>}
       {parsedData && <pre>{JSON.stringify(parsedData, null, 2)}</pre>}
     </div>

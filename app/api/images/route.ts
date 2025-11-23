@@ -13,66 +13,66 @@ const huggingFaceClient = new HuggingFaceClient();
 // Generate image endpoint with rate limiting to prevent AI API abuse
 export const POST = withRateLimit(
   withErrorHandling(async (request: Request) => {
-  try {
-    // Check authentication
-    if (!(await isAuthenticated())) {
-      return Errors.unauthorized('Authentication required to generate images');
+    try {
+      // Check authentication
+      if (!(await isAuthenticated())) {
+        return Errors.unauthorized('Authentication required to generate images');
+      }
+
+      // Check if image generation feature is enabled
+      if (!featureFlags.imageGeneration) {
+        return Errors.forbidden('Image generation feature is disabled');
+      }
+
+      // Check feature flags
+      if (!featureFlags.trigger.cron.enabled) {
+        return Errors.forbidden('CRON trigger feature is disabled');
+      }
+
+      if (!featureFlags.trigger.rss.enabled) {
+        return Errors.forbidden('RSS trigger feature is disabled');
+      }
+
+      if (!featureFlags.scraping.enabled) {
+        return Errors.forbidden('Scraping feature is disabled');
+      }
+
+      if (!featureFlags.storage.notion.enabled) {
+        return Errors.forbidden('Notion storage feature is disabled');
+      }
+
+      if (!featureFlags.writing.openai.enabled) {
+        return Errors.forbidden('OpenAI writing feature is disabled');
+      }
+
+      if (!featureFlags.distribution.telegram.enabled) {
+        return Errors.forbidden('Telegram distribution feature is disabled');
+      }
+
+      const body = await request.json();
+
+      // Validate and sanitize input using Zod schema
+      const validation = validateAndSanitize(imageContextSchema, body);
+      if (!validation.success) {
+        return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
+      }
+
+      const { context } = validation.data;
+
+      // Log the image generation request
+      const logEntry = await createLogEntry('GENERATE_IMAGE', { contextLength: context.length });
+      await logToAuditTrail(logEntry);
+
+      // Generate the image
+      const response = await huggingFaceClient.generateImage(context);
+
+      // Return the generated image data
+      return NextResponse.json(response.data);
+    } catch (error) {
+      console.error('Error generating image:', error);
+      return Errors.internalServerError('Failed to generate image');
     }
-    
-    // Check if image generation feature is enabled
-    if (!featureFlags.imageGeneration) {
-      return Errors.forbidden('Image generation feature is disabled');
-    }
-    
-    // Check feature flags
-    if (!featureFlags.trigger.cron.enabled) {
-      return Errors.forbidden('CRON trigger feature is disabled');
-    }
-    
-    if (!featureFlags.trigger.rss.enabled) {
-      return Errors.forbidden('RSS trigger feature is disabled');
-    }
-    
-    if (!featureFlags.scraping.enabled) {
-      return Errors.forbidden('Scraping feature is disabled');
-    }
-    
-    if (!featureFlags.storage.notion.enabled) {
-      return Errors.forbidden('Notion storage feature is disabled');
-    }
-    
-    if (!featureFlags.writing.openai.enabled) {
-      return Errors.forbidden('OpenAI writing feature is disabled');
-    }
-    
-    if (!featureFlags.distribution.telegram.enabled) {
-      return Errors.forbidden('Telegram distribution feature is disabled');
-    }
-    
-    const body = await request.json();
-    
-    // Validate and sanitize input using Zod schema
-    const validation = validateAndSanitize(imageContextSchema, body);
-    if (!validation.success) {
-      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
-    }
-    
-    const { context } = validation.data;
-    
-    // Log the image generation request
-    const logEntry = await createLogEntry('GENERATE_IMAGE', { contextLength: context.length });
-    await logToAuditTrail(logEntry);
-    
-    // Generate the image
-    const response = await huggingFaceClient.generateImage(context);
-    
-    // Return the generated image data
-    return NextResponse.json(response.data);
-  } catch (error) {
-    console.error('Error generating image:', error);
-    return Errors.internalServerError('Failed to generate image');
-  }
-}),
+  }),
   '/api/images',
   RateLimitPresets.AI_SERVICE
 );
@@ -83,25 +83,25 @@ export const PUT = withErrorHandling(async (request: Request) => {
     if (!(await isAuthenticated())) {
       return Errors.unauthorized('Authentication required to review images');
     }
-    
+
     const body = await request.json();
     const { image, action } = body;
-    
+
     // Validate image and action
     if (!image || typeof image !== 'object') {
       return Errors.badRequest('Invalid image data provided');
     }
-    
+
     if (!action || !['approve', 'reject', 'regenerate'].includes(action)) {
       return Errors.badRequest('Invalid action. Must be one of: approve, reject, regenerate');
     }
-    
+
     // Log the image review action
     const logEntry = await createLogEntry('REVIEW_IMAGE', { action });
     await logToAuditTrail(logEntry);
-    
+
     let response;
-    
+
     // Perform the requested action
     if (action === 'approve') {
       response = await huggingFaceClient.approveImage(image);
@@ -115,7 +115,7 @@ export const PUT = withErrorHandling(async (request: Request) => {
       // For regenerate, return the same format as the POST endpoint
       return NextResponse.json(response.data);
     }
-    
+
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error reviewing image:', error);

@@ -10,10 +10,10 @@ const createJestConfig = nextJest({
 const customJestConfig = {
   // Add more setup options before each test is run
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
-  
+
   // Use jest-environment-jsdom for browser-like environment
   testEnvironment: 'jest-environment-jsdom',
-  
+
   // Handle module aliases
   moduleNameMapper: {
     '^@/components/(.*)$': '<rootDir>/components/$1',
@@ -22,25 +22,23 @@ const customJestConfig = {
     '^@/app/(.*)$': '<rootDir>/app/$1',
     '^@/utils/(.*)$': '<rootDir>/utils/$1',
   },
-  
+
   // Process TypeScript files
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      tsconfig: 'tsconfig.jest.json',
-    }],
+    '^.+\\.(ts|tsx)$': [
+      'ts-jest',
+      {
+        tsconfig: 'tsconfig.jest.json',
+      },
+    ],
   },
-  
+
   // Transform ES modules
-  transformIgnorePatterns: [
-    'node_modules/(?!(node-fetch)/)',
-  ],
-  
+  transformIgnorePatterns: ['node_modules/(?!(node-fetch)/)'],
+
   // Ignore paths
-  testPathIgnorePatterns: [
-    '<rootDir>/node_modules/',
-    '<rootDir>/.next/',
-  ],
-  
+  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+
   // Collect coverage from these directories
   collectCoverageFrom: [
     'app/**/*.{js,jsx,ts,tsx}',
@@ -49,7 +47,7 @@ const customJestConfig = {
     '!**/*.d.ts',
     '!**/node_modules/**',
   ],
-  
+
   // Verbose output
   verbose: true,
 };

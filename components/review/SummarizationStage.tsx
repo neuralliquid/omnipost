@@ -22,25 +22,17 @@ const SummarizationStage: React.FC<SummarizationStageProps> = ({
   parsedData,
   onBack,
   onNext,
-  isDisabled
+  isDisabled,
 }) => {
   return (
     <div className={styles.summaryStage}>
       <h2>Generated Summary</h2>
       <SummarizationAPI rawText={parsedData} />
       <div className={styles.actionButtons}>
-        <button
-          className={styles.secondaryButton}
-          onClick={onBack}
-          disabled={isDisabled}
-        >
+        <button className={styles.secondaryButton} onClick={onBack} disabled={isDisabled}>
           Back
         </button>
-        <button
-          className={styles.primaryButton}
-          onClick={onNext}
-          disabled={isDisabled}
-        >
+        <button className={styles.primaryButton} onClick={onNext} disabled={isDisabled}>
           Generate Image
         </button>
       </div>

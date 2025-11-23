@@ -1,5 +1,9 @@
 import { NextResponse } from 'next/server';
-import featureFlags, { FeatureFlag, FeatureFlags, saveFeatureFlags } from '../../../utils/featureFlags';
+import featureFlags, {
+  FeatureFlag,
+  FeatureFlags,
+  saveFeatureFlags,
+} from '../../../utils/featureFlags';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAdmin } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
@@ -10,7 +14,7 @@ import { z } from 'zod';
 const FeatureFlagSchema = z.object({
   feature: z.string(),
   enabled: z.boolean(),
-  implementation: z.enum(['deepseek', 'openai', 'azure']).optional()
+  implementation: z.enum(['deepseek', 'openai', 'azure']).optional(),
 });
 
 // Type for parsed feature flag update
@@ -26,7 +30,7 @@ function hasProperty<T extends object, K extends PropertyKey>(
 export const GET = withErrorHandling(async () => {
   // Log the access to feature flags
   await logToAuditTrail(await createLogEntry('GET_FEATURE_FLAGS'));
-  
+
   // Return all feature flags
   return NextResponse.json(featureFlags);
 });
@@ -64,7 +68,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   try {
     // Get the current value of the feature flag
     const currentValue = featureFlags[feature];
-    
+
     // Update based on type
     if (typeof currentValue === 'object' && currentValue !== null) {
       // Handle complex feature flags (like textParser)
@@ -72,7 +76,7 @@ export const POST = withErrorHandling(async (request: Request) => {
         // We know this is the text parser feature flag
         const textParserFlag = featureFlags.textParser;
         textParserFlag.enabled = enabled;
-        
+
         if (implementation !== undefined) {
           textParserFlag.implementation = implementation;
         }
@@ -85,15 +89,15 @@ export const POST = withErrorHandling(async (request: Request) => {
       // Handle simple boolean feature flags
       featureFlags[feature] = enabled;
     }
-    
+
     // Save the updated feature flags
     await saveFeatureFlags();
-    
-    return NextResponse.json({ 
+
+    return NextResponse.json({
       message: 'Feature flag updated successfully',
       feature,
       enabled,
-      ...(implementation !== undefined ? { implementation } : {})
+      ...(implementation !== undefined ? { implementation } : {}),
     });
   } catch (err) {
     console.error('Failed to persist feature flags:', err);

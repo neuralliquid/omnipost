@@ -18,29 +18,16 @@ interface ParsingStageProps {
 /**
  * Component for the parsing stage of the review process
  */
-const ParsingStage: React.FC<ParsingStageProps> = ({
-  rawInput,
-  onReset,
-  onNext,
-  isDisabled
-}) => {
+const ParsingStage: React.FC<ParsingStageProps> = ({ rawInput, onReset, onNext, isDisabled }) => {
   return (
     <div className={styles.parsingStage}>
       <h2>Parsed Content</h2>
       <TextParser rawInput={rawInput} />
       <div className={styles.actionButtons}>
-        <button
-          className={styles.secondaryButton}
-          onClick={onReset}
-          disabled={isDisabled}
-        >
+        <button className={styles.secondaryButton} onClick={onReset} disabled={isDisabled}>
           Start Over
         </button>
-        <button
-          className={styles.primaryButton}
-          onClick={onNext}
-          disabled={isDisabled}
-        >
+        <button className={styles.primaryButton} onClick={onNext} disabled={isDisabled}>
           Generate Summary
         </button>
       </div>

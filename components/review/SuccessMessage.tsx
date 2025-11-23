@@ -12,13 +12,7 @@ interface SuccessMessageProps {
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ message }) => {
   return (
     <div className={styles.successMessage}>
-      <Image 
-        src="/images/success-check.svg"
-        alt="Success"
-        width={30}
-        height={30}
-        priority
-      />
+      <Image src="/images/success-check.svg" alt="Success" width={30} height={30} priority />
       <p>{message}</p>
     </div>
   );

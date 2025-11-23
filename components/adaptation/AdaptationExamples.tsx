@@ -22,11 +22,14 @@ const AdaptationExamples: React.FC<AdaptationExamplesProps> = ({ examples }) => 
   return (
     <div className={styles.contentAdaptation}>
       <h3>Content Adaptation Examples</h3>
-      <p>Strategic approaches for adapting your technical content to different platforms while maintaining consistency and quality.</p>
-      
+      <p>
+        Strategic approaches for adapting your technical content to different platforms while
+        maintaining consistency and quality.
+      </p>
+
       <div className={styles.adaptationContainer}>
         <div className={styles.adaptationExamples}>
-          {examples.map((example) => (
+          {examples.map(example => (
             <AdaptationCard
               key={`${example.platform}-${example.type}`}
               platform={example.platform}

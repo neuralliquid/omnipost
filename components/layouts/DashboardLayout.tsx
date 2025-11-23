@@ -11,11 +11,7 @@ interface DashboardLayoutProps {
 /**
  * Layout component specifically for dashboard pages
  */
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({
-  children,
-  title,
-  description
-}) => {
+const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children, title, description }) => {
   return (
     <>
       <Head>
@@ -27,9 +23,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <h1>{title}</h1>
           {description && <p>{description}</p>}
         </div>
-        <div className={styles.section}>
-          {children}
-        </div>
+        <div className={styles.section}>{children}</div>
       </div>
     </>
   );

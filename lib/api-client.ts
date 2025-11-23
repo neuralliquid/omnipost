@@ -25,10 +25,11 @@ class ApiClient {
   private baseUrl: string;
 
   constructor() {
-    this.baseUrl = typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_BASE_URL 
-      ? process.env.NEXT_PUBLIC_API_BASE_URL 
-      : '';
-    
+    this.baseUrl =
+      typeof process !== 'undefined' && process.env.NEXT_PUBLIC_API_BASE_URL
+        ? process.env.NEXT_PUBLIC_API_BASE_URL
+        : '';
+
     // Create axios instance with default config
     this.client = axios.create({
       baseURL: this.baseUrl,
@@ -42,7 +43,7 @@ class ApiClient {
     if (this.client && this.client.interceptors) {
       // Add request interceptor to include auth token
       this.client.interceptors.request.use(
-        (config) => {
+        config => {
           // Get token from token storage
           const token = tokenStorage.getToken();
           if (token) {
@@ -50,14 +51,14 @@ class ApiClient {
           }
           return config;
         },
-        (error) => {
+        error => {
           return Promise.reject(error);
         }
       );
 
       // Add response interceptor for error handling
       this.client.interceptors.response.use(
-        (response) => response,
+        response => response,
         (error: AxiosError) => {
           // Handle specific error cases
           if (error.response?.status === 401) {
@@ -67,7 +68,7 @@ class ApiClient {
               window.location.href = '/login';
             }
           }
-          
+
           // Format error for consistent handling
           const responseData = error.response?.data as any;
           const apiError: ApiError = {
@@ -76,7 +77,7 @@ class ApiClient {
             details: responseData?.details,
             code: responseData?.code,
           };
-          
+
           return Promise.reject(apiError);
         }
       );
@@ -136,11 +137,14 @@ class ApiClient {
    * @returns User data and token
    */
   public async login(username: string, password: string): Promise<{ user: any; token: string }> {
-    const response = await this.post<{ user: any; token: string }>('/api/auth', { username, password });
-    
+    const response = await this.post<{ user: any; token: string }>('/api/auth', {
+      username,
+      password,
+    });
+
     // Store token using token storage service
     tokenStorage.setToken(response.token);
-    
+
     return response;
   }
 
@@ -150,10 +154,10 @@ class ApiClient {
    */
   public async logout(): Promise<{ message: string }> {
     const response = await this.delete<{ message: string }>('/api/auth');
-    
+
     // Remove token using token storage service
     tokenStorage.removeToken();
-    
+
     return response;
   }
 
@@ -197,7 +201,7 @@ class ApiClient {
     return this.post<{ message: string }>('/api/feature-flags', {
       feature,
       enabled,
-      ...(implementation ? { implementation } : {})
+      ...(implementation ? { implementation } : {}),
     });
   }
 
@@ -342,14 +346,14 @@ class ApiClient {
     filters?: { action?: string; user?: string; startDate?: string; endDate?: string }
   ): Promise<any> {
     let url = `/api/audit?limit=${limit}&page=${page}`;
-    
+
     if (filters) {
       if (filters.action) url += `&action=${encodeURIComponent(filters.action)}`;
       if (filters.user) url += `&user=${encodeURIComponent(filters.user)}`;
       if (filters.startDate) url += `&startDate=${encodeURIComponent(filters.startDate)}`;
       if (filters.endDate) url += `&endDate=${encodeURIComponent(filters.endDate)}`;
     }
-    
+
     return this.get<any>(url);
   }
 }

@@ -54,25 +54,19 @@ const SummarizationAPI: React.FC<SummarizationAPIProps> = ({ rawText }) => {
 
   return (
     <div>
-      <button
-        onClick={generateSummary}
-        disabled={loading || !rawText || rawText.trim() === ''}
-      >
+      <button onClick={generateSummary} disabled={loading || !rawText || rawText.trim() === ''}>
         {loading ? 'Generating...' : 'Generate Summary'}
       </button>
       {error && <p>Error: {error}</p>}
       {summary && (
         <div>
           <pre>{JSON.stringify(summary, null, 2)}</pre>
-          <button
-            onClick={approveSummary}
-            disabled={loading || approvalStatus === 'approved'}
-          >
+          <button onClick={approveSummary} disabled={loading || approvalStatus === 'approved'}>
             {loading && approvalStatus !== 'approved'
               ? 'Approving...'
               : approvalStatus === 'approved'
-              ? 'Approved'
-              : 'Approve Summary'}
+                ? 'Approved'
+                : 'Approve Summary'}
           </button>
         </div>
       )}

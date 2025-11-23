@@ -208,10 +208,11 @@
 }
 
 @media (max-width: 768px) {
-  .stageSteps, .adaptationExamples {
+  .stageSteps,
+  .adaptationExamples {
     grid-template-columns: 1fr;
   }
-  
+
   .navigationLinks {
     flex-direction: column;
     gap: 1rem;
