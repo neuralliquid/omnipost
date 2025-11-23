@@ -40,7 +40,7 @@ function validatePlatformConfig(platformName: string): {
   if (platformConfig.required && !platformConfig.apiKey) {
     return {
       valid: false,
-      error: `API key for ${platformName} is not configured. Please set the ${platformName.toUpperCase().replace(/\s+/g, '_')}_API_KEY environment variable.`,
+      error: `API key for ${platformName} is not configured. Please set the ${platformName.toUpperCase().replaceAll(/\s+/g, '_')}_API_KEY environment variable.`,
     };
   }
 
@@ -101,9 +101,9 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
     // Enhanced error handling with AxiosError details
     const axiosError = err as AxiosError;
     const statusCode = axiosError.response?.status;
-    const errorMessage = !platformConfig.apiKey
-      ? `${axiosError.message} (This may be due to missing API key)`
-      : axiosError.message;
+    const errorMessage = platformConfig.apiKey
+      ? axiosError.message
+      : `${axiosError.message} (This may be due to missing API key)`;
 
     // Enhanced error logging with HTTP status
     const errorLogEntry = await createLogEntry('PUBLISH_FAILURE', {

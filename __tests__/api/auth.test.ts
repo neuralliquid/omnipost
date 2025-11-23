@@ -102,9 +102,10 @@ describe('Auth API', () => {
   describe('POST /api/auth (login)', () => {
     test('should authenticate a user with valid credentials', async () => {
       // Create mock request
+      const testPassword = 'admin123'; // Test credentials, not a real password
       const request = createMockRequest({
         username: 'admin',
-        password: 'admin123',
+        password: testPassword,
       });
 
       // Execute the handler

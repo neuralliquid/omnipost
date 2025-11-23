@@ -20,6 +20,24 @@ interface FeatureFlags {
   feedbackMechanism: boolean;
 }
 
+// Helper function to determine button class name
+const getButtonClassName = (isUpdating: boolean, isEnabled: boolean): string => {
+  if (isUpdating) {
+    return 'opacity-50 cursor-not-allowed';
+  }
+  return isEnabled
+    ? 'bg-red-500 hover:bg-red-600 text-white'
+    : 'bg-green-500 hover:bg-green-600 text-white';
+};
+
+// Helper function to get button text
+const getButtonText = (isUpdating: boolean, isEnabled: boolean): string => {
+  if (isUpdating) {
+    return 'Updating...';
+  }
+  return isEnabled ? 'Disable' : 'Enable';
+};
+
 const FeatureFlagsManager: React.FC = () => {
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -170,15 +188,9 @@ const FeatureFlagsManager: React.FC = () => {
                 <button
                   onClick={() => handleToggle(feature)}
                   disabled={updating === feature}
-                  className={`px-4 py-2 rounded ${
-                    updating === feature
-                      ? 'opacity-50 cursor-not-allowed'
-                      : isEnabled
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
-                        : 'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
+                  className={`px-4 py-2 rounded ${getButtonClassName(updating === feature, isEnabled)}`}
                 >
-                  {updating === feature ? 'Updating...' : isEnabled ? 'Disable' : 'Enable'}
+                  {getButtonText(updating === feature, isEnabled)}
                 </button>
               </div>
 
