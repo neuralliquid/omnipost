@@ -11,21 +11,21 @@ jest.mock('../../app/api/images/route', () => {
 });
 
 // Create simple mock functions with explicit any types
-const mockGenerateImage = jest.fn().mockImplementation(async (params: any) => ({
+const mockGenerateImage = jest.fn(async (params: any) => ({
   data: { url: 'https://example.com/generated-image.jpg' },
 }));
 
-const mockApproveImage = jest.fn().mockImplementation(async (params: any) => ({
+const mockApproveImage = jest.fn(async (params: any) => ({
   success: true,
   message: 'Image approved successfully',
 }));
 
-const mockRejectImage = jest.fn().mockImplementation(async (params: any) => ({
+const mockRejectImage = jest.fn(async (params: any) => ({
   success: true,
   message: 'Image rejected successfully',
 }));
 
-const mockRegenerateImage = jest.fn().mockImplementation(async (params: any) => ({
+const mockRegenerateImage = jest.fn(async (params: any) => ({
   data: { url: 'https://example.com/regenerated-image.jpg' },
 }));
 
@@ -50,6 +50,16 @@ jest.mock('../../app/api/_utils/audit', () => ({
   logToAuditTrail: jest.fn(),
 }));
 
+// Mock sanitization utilities
+jest.mock('../../app/api/_utils/sanitize', () => ({
+  validateAndSanitize: jest.fn((schema, data) => ({
+    success: true,
+    data: data,
+    errors: [],
+  })),
+  imageContextSchema: {},
+}));
+
 // Mock feature flags
 jest.mock('../../utils/featureFlags', () => ({
   __esModule: true,
@@ -70,11 +80,6 @@ function createMockRequest(body: any): NextRequest {
 }
 
 describe('Images API', () => {
-  beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
-  });
-
   describe('POST /api/images (generate image)', () => {
     test('should generate an image with valid context', async () => {
       // Create mock request
