@@ -24,31 +24,6 @@ export const POST = withRateLimit(
         return Errors.forbidden('Image generation feature is disabled');
       }
 
-      // Check feature flags
-      if (!featureFlags.trigger.cron.enabled) {
-        return Errors.forbidden('CRON trigger feature is disabled');
-      }
-
-      if (!featureFlags.trigger.rss.enabled) {
-        return Errors.forbidden('RSS trigger feature is disabled');
-      }
-
-      if (!featureFlags.scraping.enabled) {
-        return Errors.forbidden('Scraping feature is disabled');
-      }
-
-      if (!featureFlags.storage.notion.enabled) {
-        return Errors.forbidden('Notion storage feature is disabled');
-      }
-
-      if (!featureFlags.writing.openai.enabled) {
-        return Errors.forbidden('OpenAI writing feature is disabled');
-      }
-
-      if (!featureFlags.distribution.telegram.enabled) {
-        return Errors.forbidden('Telegram distribution feature is disabled');
-      }
-
       const body = await request.json();
 
       // Validate and sanitize input using Zod schema
@@ -64,7 +39,7 @@ export const POST = withRateLimit(
       await logToAuditTrail(logEntry);
 
       // Generate the image
-      const response = await huggingFaceClient.generateImage(context);
+      const response = await huggingFaceClient.generateImage({ context });
 
       // Return the generated image data
       return NextResponse.json(response.data);
@@ -104,14 +79,14 @@ export const PUT = withErrorHandling(async (request: Request) => {
 
     // Perform the requested action
     if (action === 'approve') {
-      response = await huggingFaceClient.approveImage(image);
+      response = await huggingFaceClient.approveImage({ image });
     } else if (action === 'reject') {
-      response = await huggingFaceClient.rejectImage(image);
+      response = await huggingFaceClient.rejectImage({ image });
     } else if (action === 'regenerate') {
       if (!image.context) {
         return Errors.badRequest('Context is required for regeneration');
       }
-      response = await huggingFaceClient.regenerateImage(image.context);
+      response = await huggingFaceClient.regenerateImage({ context: image.context });
       // For regenerate, return the same format as the POST endpoint
       return NextResponse.json(response.data);
     }
