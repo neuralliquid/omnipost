@@ -39,7 +39,7 @@ export const POST = withRateLimit(
       await logToAuditTrail(logEntry);
 
       // Generate the image
-      const response = await huggingFaceClient.generateImage({ context });
+      const response = await huggingFaceClient.generateImage(context);
 
       // Return the generated image data
       return NextResponse.json(response.data);
@@ -79,14 +79,14 @@ export const PUT = withErrorHandling(async (request: Request) => {
 
     // Perform the requested action
     if (action === 'approve') {
-      response = await huggingFaceClient.approveImage({ image });
+      response = await huggingFaceClient.approveImage(image);
     } else if (action === 'reject') {
-      response = await huggingFaceClient.rejectImage({ image });
+      response = await huggingFaceClient.rejectImage(image);
     } else if (action === 'regenerate') {
       if (!image.context) {
         return Errors.badRequest('Context is required for regeneration');
       }
-      response = await huggingFaceClient.regenerateImage({ context: image.context });
+      response = await huggingFaceClient.regenerateImage(image.context);
       // For regenerate, return the same format as the POST endpoint
       return NextResponse.json(response.data);
     }

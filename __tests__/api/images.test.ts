@@ -98,9 +98,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('url', 'https://example.com/generated-image.jpg');
 
       // Verify that generateImage was called with the correct context
-      expect(mockGenerateImage).toHaveBeenCalledWith({
-        context: 'A beautiful sunset over mountains',
-      });
+      expect(mockGenerateImage).toHaveBeenCalledWith('A beautiful sunset over mountains');
     });
 
     test('should validate context', async () => {
@@ -206,9 +204,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('message', 'Image approved successfully');
 
       // Verify that approveImage was called with the correct image
-      expect(mockApproveImage).toHaveBeenCalledWith({
-        image: { id: '123', url: 'https://example.com/image.jpg' },
-      });
+      expect(mockApproveImage).toHaveBeenCalledWith({ id: '123', url: 'https://example.com/image.jpg' });
     });
 
     test('should reject an image', async () => {
@@ -230,9 +226,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('message', 'Image rejected successfully');
 
       // Verify that rejectImage was called with the correct image
-      expect(mockRejectImage).toHaveBeenCalledWith({
-        image: { id: '123', url: 'https://example.com/image.jpg' },
-      });
+      expect(mockRejectImage).toHaveBeenCalledWith({ id: '123', url: 'https://example.com/image.jpg' });
     });
 
     test('should regenerate an image', async () => {
@@ -257,9 +251,7 @@ describe('Images API', () => {
       expect(data).toHaveProperty('url', 'https://example.com/regenerated-image.jpg');
 
       // Verify that regenerateImage was called with the correct context
-      expect(mockRegenerateImage).toHaveBeenCalledWith({
-        context: 'A beautiful sunset over mountains',
-      });
+      expect(mockRegenerateImage).toHaveBeenCalledWith('A beautiful sunset over mountains');
     });
 
     test('should validate action', async () => {
