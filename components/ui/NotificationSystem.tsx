@@ -39,7 +39,7 @@ const NotificationSystem: React.FC = () => {
       <div>
         <h3>Send Notification</h3>
         <form
-          onSubmit={(e) => {
+          onSubmit={e => {
             e.preventDefault();
             const form = e.target as HTMLFormElement;
             const { type, message } = form.elements as any;
@@ -64,7 +64,7 @@ const NotificationSystem: React.FC = () => {
       <div>
         <h3>Notifications</h3>
         <ul>
-          {notifications.map((notification) => (
+          {notifications.map(notification => (
             <li key={`notif-${notification.type}-${notification.message.substring(0, 20)}`}>
               <strong>{notification.type}:</strong> {notification.message}
             </li>

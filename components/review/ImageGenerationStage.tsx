@@ -22,25 +22,17 @@ const ImageGenerationStage: React.FC<ImageGenerationStageProps> = ({
   summary,
   onBack,
   onNext,
-  isDisabled
+  isDisabled,
 }) => {
   return (
     <div className={styles.imageStage}>
       <h2>Generated Image</h2>
       <ImageGeneration context={summary} />
       <div className={styles.actionButtons}>
-        <button
-          className={styles.secondaryButton}
-          onClick={onBack}
-          disabled={isDisabled}
-        >
+        <button className={styles.secondaryButton} onClick={onBack} disabled={isDisabled}>
           Back
         </button>
-        <button
-          className={styles.primaryButton}
-          onClick={onNext}
-          disabled={isDisabled}
-        >
+        <button className={styles.primaryButton} onClick={onNext} disabled={isDisabled}>
           Approve Content
         </button>
       </div>

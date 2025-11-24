@@ -3,13 +3,10 @@ import dynamic from 'next/dynamic';
 import styles from '../../styles/Automation.module.css';
 
 // Dynamic import for the AutomationToolDetail component
-const AutomationToolDetail = dynamic(
-  () => import('../AutomationToolDetail'),
-  {
-    loading: () => <p className={styles.loadingComponent}>Loading tool details...</p>,
-    ssr: true,
-  }
-);
+const AutomationToolDetail = dynamic(() => import('../AutomationToolDetail'), {
+  loading: () => <p className={styles.loadingComponent}>Loading tool details...</p>,
+  ssr: true,
+});
 
 interface ToolDetailModalProps {
   toolId: string;
@@ -20,13 +17,32 @@ interface ToolDetailModalProps {
  * Component for displaying a modal with detailed information about a tool
  */
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
+  // Handle escape key to close modal
+  React.useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [onClose]);
+
   return (
-    <div className={styles.toolDetailModal} onClick={onClose}>
-      <div className={styles.toolDetailContent} onClick={(e) => e.stopPropagation()}>
-        <AutomationToolDetail 
-          toolId={toolId} 
-          onClose={onClose}
-        />
+    <div
+      className={styles.toolDetailModal}
+      onClick={onClose}
+      role="button"
+      tabIndex={0}
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          onClose();
+        }
+      }}
+      aria-label="Close modal"
+    >
+      <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
+        <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
     </div>
   );

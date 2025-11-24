@@ -13,60 +13,68 @@ A comprehensive content creation and management platform built with React and Ne
 ### Installation
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/JustAGhosT/content_creation.git
    cd content_creation
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables:**
-   
+
    Copy `.env.example` to `.env.local` and fill in your values:
+
    ```bash
    cp .env.example .env.local
    ```
+
    See [Environment Variables](#environment-variables) section below for details.
 
 4. **Start the development server:**
+
    ```bash
    npm run dev
    ```
 
 5. **Open your browser:**
-   
+
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 📋 Available Scripts
 
-| Script | Description |
-|--------|-------------|
-| `npm run dev` | Start development server at http://localhost:3000 |
-| `npm run build` | Build the application for production |
-| `npm run start` | Start the production server |
-| `npm run type-check` | Run TypeScript type checking |
-| `npm test` | Run all tests |
-| `npm run test:watch` | Run tests in watch mode |
-| `npm run test:coverage` | Generate test coverage report |
+| Script                  | Description                                       |
+| ----------------------- | ------------------------------------------------- |
+| `npm run dev`           | Start development server at http://localhost:3000 |
+| `npm run build`         | Build the application for production              |
+| `npm run start`         | Start the production server                       |
+| `npm run type-check`    | Run TypeScript type checking                      |
+| `npm test`              | Run all tests                                     |
+| `npm run test:watch`    | Run tests in watch mode                           |
+| `npm run test:coverage` | Generate test coverage report                     |
 
 ## ✨ Key Features
 
 ### Content Management
+
 - **Multi-Platform Publishing**: Publish content to Facebook, Instagram, LinkedIn, Twitter, and custom platforms
 - **Content Adaptation**: Automatically adapt content for different platforms and audiences
 - **Series Management**: Organize and manage content series
 - **Content Queue**: Review and approve content before publishing
 
 ### AI-Powered Tools
+
 - **Text Summarization**: Generate summaries of raw text using AI
 - **Text Parsing**: Parse and analyze text with support for multiple AI providers (DeepSeek, OpenAI, Azure)
 - **Image Generation**: Generate images using Hugging Face API
 - **Content Review Workflow**: Human-in-the-loop review process for quality assurance
 
 ### Platform Capabilities
+
 - **Airtable Integration**: Store and track published content
 - **Authentication & Authorization**: Secure JWT-based authentication
 - **Audit Trail**: Comprehensive logging of all system actions
@@ -99,12 +107,14 @@ For a detailed breakdown, see [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
 Create a `.env.local` file in the root directory with the following variables:
 
 ### Required
+
 ```bash
 # Authentication
 JWT_SECRET=your-jwt-secret-key
 ```
 
 ### Optional - Airtable Integration
+
 ```bash
 AIRTABLE_API_KEY=your-airtable-api-key
 AIRTABLE_BASE_ID=your-airtable-base-id
@@ -112,11 +122,13 @@ AIRTABLE_TABLE_NAME=your-airtable-table-name
 ```
 
 ### Optional - Image Generation
+
 ```bash
 HUGGING_FACE_API_KEY=your-hugging-face-api-key
 ```
 
 ### Optional - Email Notifications
+
 ```bash
 EMAIL_USER=your-email-address
 GMAIL_CLIENT_ID=your-gmail-client-id
@@ -125,11 +137,13 @@ GMAIL_REFRESH_TOKEN=your-gmail-refresh-token
 ```
 
 ### Optional - Slack Notifications
+
 ```bash
 SLACK_TOKEN=your-slack-token
 ```
 
 ### Optional - SMS Notifications
+
 ```bash
 TWILIO_ACCOUNT_SID=your-twilio-account-sid
 TWILIO_AUTH_TOKEN=your-twilio-auth-token
@@ -137,6 +151,7 @@ TWILIO_PHONE_NUMBER=your-twilio-phone-number
 ```
 
 ### Optional - Platform API Keys
+
 ```bash
 FACEBOOK_API_URL=your-facebook-api-url
 FACEBOOK_API_KEY=your-facebook-api-key
@@ -153,6 +168,7 @@ TWITTER_API_KEY=your-twitter-api-key
 This project is configured for deployment to Azure Web Apps using GitHub Actions.
 
 ### Prerequisites
+
 - Azure subscription
 - Azure CLI installed
 - GitHub repository secrets configured
@@ -168,6 +184,7 @@ This project is configured for deployment to Azure Web Apps using GitHub Actions
 
 2. **Configure Infrastructure:**
    Edit `infra/parameters.json` with your desired settings:
+
    ```json
    {
      "appName": "your-app-name",
@@ -191,25 +208,30 @@ For detailed deployment instructions, see the workflow file at `.github/workflow
 The platform provides a comprehensive REST API. Key endpoints include:
 
 ### Authentication
+
 - `POST /api/auth` - User login
 - `DELETE /api/auth` - User logout
 - `GET /api/auth` - Get current user
 
 ### Content Management
+
 - `POST /api/content` - Store content in Airtable
 - `GET /api/content` - Track and retrieve content
 - `POST /api/queue/approve` - Approve content queue
 
 ### AI Services
+
 - `POST /api/parse` - Parse and analyze text
 - `POST /api/summarize` - Generate text summaries
 - `POST /api/images` - Generate images with AI
 
 ### Platform Publishing
+
 - `GET /api/platforms` - List available platforms
 - `GET /api/platforms/[id]/capabilities` - Get platform capabilities
 
 ### Administration
+
 - `GET /api/audit` - Retrieve audit logs
 - `GET /api/feature-flags` - Manage feature flags
 - `POST /api/feedback` - Submit user feedback
@@ -248,37 +270,51 @@ Tests are organized to mirror the source code structure in the `__tests__/` dire
 
 ## 📚 Documentation
 
-- [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) - Detailed project structure
-- [CONTRIBUTING.md](./CONTRIBUTING.md) - Contribution guidelines
-- [CODE_OF_CONDUCT.md](./CODE_OF_CONDUCT.md) - Community code of conduct
-- [CHANGELOG.md](./CHANGELOG.md) - Project changelog and version history
-- [SECURITY.md](./SECURITY.md) - Security policy and vulnerability reporting
-- [LICENSE](./LICENSE) - MIT License
-- [.env.example](./.env.example) - Environment variables template
-- [docs/api-migration-todo.md](./docs/api-migration-todo.md) - API migration status
-- [docs/next-api-best-practices.md](./docs/next-api-best-practices.md) - Next.js API best practices
+### Quick Links
+
+- **[Getting Started](./README.md)** - You are here!
+- **[Documentation Hub](./docs/README.md)** - Complete documentation index
+- **[Architecture Guide](./docs/ARCHITECTURE.md)** - Technical architecture and design
+- **[Project Structure](./PROJECT_STRUCTURE.md)** - Directory organization
+- **[Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
+- **[API Best Practices](./docs/api/next-api-best-practices.md)** - API development guidelines
+- **[Security Policy](./SECURITY.md)** - Security and vulnerability reporting
+
+### Additional Resources
+
+- [Code of Conduct](./CODE_OF_CONDUCT.md) - Community guidelines
+- [Changelog](./CHANGELOG.md) - Version history
+- [License](./LICENSE) - MIT License
+- [Environment Variables](./.env.example) - Configuration template
+- [API Migration Status](./docs/api/api-migration-todo.md) - Migration progress
+- [Developer Guides](./docs/guides/next-best-practices/) - Best practices and patterns
 
 ## 🔍 Troubleshooting
 
 ### Common Issues
 
 **Missing environment variables**
+
 - Ensure all required environment variables are set in `.env.local`
 - Check that `JWT_SECRET` is configured
 
 **Authentication errors**
+
 - Verify JWT_SECRET matches between client and server
 - Check token expiration
 
 **Airtable connection issues**
+
 - Verify `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_NAME` are correct
 - Check Airtable API permissions
 
 **Build errors**
+
 - Run `npm install` to ensure all dependencies are installed
 - Clear `.next` directory and rebuild: `rm -rf .next && npm run build`
 
 **Test failures**
+
 - Ensure all dependencies are installed
 - Check that environment variables are set for tests
 

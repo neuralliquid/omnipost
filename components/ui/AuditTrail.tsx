@@ -29,7 +29,7 @@ const AuditTrail: React.FC = () => {
       <h2>Audit Trail</h2>
       {error && <p>Error: {error}</p>}
       <ul>
-        {logs.map((log) => (
+        {logs.map(log => (
           <li key={`log-${log.timestamp}-${log.action}-${log.user}`}>
             <strong>{log.timestamp}:</strong> {log.action} by {log.user}
           </li>

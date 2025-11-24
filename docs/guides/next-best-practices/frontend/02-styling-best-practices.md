@@ -1,6 +1,7 @@
 # Next.js Styling Best Practices
 
 ## Table of Contents
+
 - [CSS Approaches in Next.js](#css-approaches-in-nextjs)
 - [CSS Modules](#css-modules)
 - [Styled Components](#styled-components)
@@ -66,12 +67,7 @@ interface ButtonProps {
   className?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ 
-  variant, 
-  children, 
-  className,
-  ...props 
-}) => {
+const Button: React.FC<ButtonProps> = ({ variant, children, className, ...props }) => {
   return (
     <button
       className={classNames(
@@ -120,8 +116,7 @@ export default class MyDocument extends Document {
     try {
       ctx.renderPage = () =>
         originalRenderPage({
-          enhanceApp: (App) => (props) =>
-            sheet.collectStyles(<App {...props} />),
+          enhanceApp: App => props => sheet.collectStyles(<App {...props} />),
         });
 
       const initialProps = await Document.getInitialProps(ctx);
@@ -169,25 +164,25 @@ const Button = styled.button<ButtonProps>`
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  
+
   /* Size variations */
   padding: ${props => {
     switch (props.size) {
-      case 'small': return '0.25rem 0.5rem';
-      case 'large': return '0.75rem 1.5rem';
-      default: return '0.5rem 1rem';
+      case 'small':
+        return '0.25rem 0.5rem';
+      case 'large':
+        return '0.75rem 1.5rem';
+      default:
+        return '0.5rem 1rem';
     }
   }};
-  
+
   /* Variant styles */
-  background-color: ${props => 
-    props.variant === 'primary' ? props.theme.colors.primary : 'transparent'
-  };
-  color: ${props => 
-    props.variant === 'primary' ? 'white' : props.theme.colors.primary
-  };
+  background-color: ${props =>
+    props.variant === 'primary' ? props.theme.colors.primary : 'transparent'};
+  color: ${props => (props.variant === 'primary' ? 'white' : props.theme.colors.primary)};
   border: 1px solid ${props => props.theme.colors.primary};
-  
+
   &:hover {
     opacity: 0.9;
     transform: translateY(-1px);
@@ -220,10 +215,7 @@ Configure Tailwind:
 ```js
 // tailwind.config.js
 module.exports = {
-  content: [
-    './pages/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-  ],
+  content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       colors: {
@@ -256,26 +248,26 @@ interface ButtonProps {
   className?: string;
 }
 
-const Button: React.FC<ButtonProps> = ({ 
-  variant = 'primary', 
-  size = 'md', 
+const Button: React.FC<ButtonProps> = ({
+  variant = 'primary',
+  size = 'md',
   children,
   className = '',
-  ...props 
+  ...props
 }) => {
   const baseClasses = 'font-semibold rounded transition-all focus:outline-none focus:ring-2';
-  
+
   const variantClasses = {
     primary: 'bg-primary text-white hover:bg-primary-dark',
     secondary: 'bg-white text-primary border border-primary hover:bg-gray-50',
   };
-  
+
   const sizeClasses = {
     sm: 'py-1 px-2 text-sm',
     md: 'py-2 px-4 text-base',
     lg: 'py-3 px-6 text-lg',
   };
-  
+
   return (
     <button
       className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
@@ -304,8 +296,9 @@ For global styles that apply across your entire application:
 :root {
   --color-primary: #0070f3;
   --color-secondary: #ff4081;
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 
-    'Helvetica Neue', Arial, sans-serif;
+  --font-sans:
+    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
 }
 
 html,
@@ -360,7 +353,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>('light');
-  
+
   useEffect(() => {
     // Check if user has a preference stored
     const savedTheme = localStorage.getItem('theme') as Theme | null;
@@ -372,19 +365,15 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.documentElement.setAttribute('data-theme', 'dark');
     }
   }, []);
-  
+
   const toggleTheme = () => {
     const newTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
   };
-  
-  return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+
+  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>;
 };
 
 export const useTheme = () => {
@@ -448,30 +437,26 @@ import { useState, useEffect } from 'react';
 
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = useState(false);
-  
+
   useEffect(() => {
     const media = window.matchMedia(query);
     if (media.matches !== matches) {
       setMatches(media.matches);
     }
-    
+
     const listener = () => setMatches(media.matches);
     media.addEventListener('change', listener);
-    
+
     return () => media.removeEventListener('change', listener);
   }, [matches, query]);
-  
+
   return matches;
 }
 
 // Usage
 const Component = () => {
   const isMobile = useMediaQuery('(max-width: 768px)');
-  
-  return (
-    <div>
-      {isMobile ? <MobileView /> : <DesktopView />}
-    </div>
-  );
+
+  return <div>{isMobile ? <MobileView /> : <DesktopView />}</div>;
 };
 ```

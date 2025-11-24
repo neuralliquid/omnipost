@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import axios from 'axios';
 
-export type ReviewStep = 'input' | 'parsing' | 'summarizing' | 'generating' | 'approving' | 'approved';
+export type ReviewStep =
+  | 'input'
+  | 'parsing'
+  | 'summarizing'
+  | 'generating'
+  | 'approving'
+  | 'approved';
 
 interface ApiResponse {
   data: any;
@@ -128,6 +134,6 @@ export function useReviewProcess() {
     approveContent,
     resetProcess,
     goToPreviousStep,
-    setInitialInput
+    setInitialInput,
   };
 }

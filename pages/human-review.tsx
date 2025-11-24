@@ -34,7 +34,7 @@ const HumanReview: React.FC = () => {
     approveContent,
     resetProcess,
     goToPreviousStep,
-    setInitialInput
+    setInitialInput,
   } = useReviewProcess();
 
   // Handle initial input from URL parameters
@@ -56,8 +56,8 @@ const HumanReview: React.FC = () => {
   }, [currentStep, router]);
 
   return (
-    <Layout 
-      title="Human Review Interface" 
+    <Layout
+      title="Human Review Interface"
       description="Review and approve content before publication across platforms"
     >
       <div className={styles.reviewContainer}>
@@ -65,24 +65,21 @@ const HumanReview: React.FC = () => {
         <p className={styles.pageDescription}>
           Review and approve content before publication across platforms
         </p>
-        
+
         {/* Error message */}
         {error && <ErrorMessage message={error} />}
-        
+
         {/* Loading overlay */}
         {isLoading && <LoadingOverlay currentStep={currentStep} />}
-        
+
         {/* Success message */}
         {currentStep === 'approved' && (
           <SuccessMessage message="Content successfully approved! Redirecting to dashboard..." />
         )}
-        
+
         {/* Progress bar */}
-        <ProgressBar 
-          steps={reviewConfig.steps} 
-          currentStep={currentStep} 
-        />
-        
+        <ProgressBar steps={reviewConfig.steps} currentStep={currentStep} />
+
         {/* Review stages */}
         <div className={styles.reviewStage}>
           {/* Input stage */}
@@ -94,7 +91,7 @@ const HumanReview: React.FC = () => {
               isDisabled={isLoading || currentStep !== 'input'}
             />
           )}
-          
+
           {/* Parsing stage */}
           {parsedData && currentStep === 'summarizing' && (
             <ParsingStage
@@ -104,7 +101,7 @@ const HumanReview: React.FC = () => {
               isDisabled={isLoading}
             />
           )}
-          
+
           {/* Summarization stage */}
           {summary && currentStep === 'generating' && (
             <SummarizationStage
@@ -114,7 +111,7 @@ const HumanReview: React.FC = () => {
               isDisabled={isLoading}
             />
           )}
-          
+
           {/* Image generation stage */}
           {image && currentStep === 'approving' && (
             <ImageGenerationStage
@@ -125,7 +122,7 @@ const HumanReview: React.FC = () => {
             />
           )}
         </div>
-        
+
         {/* Navigation links */}
         <div className={styles.navigationLinks}>
           <Link href="/workflow" className={styles.navLink}>

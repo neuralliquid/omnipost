@@ -21,7 +21,9 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
     setIsLoading(true);
     setError(null);
     try {
-      const response: AxiosResponse<ImageResponse> = await axios.post('/api/generate-image', { context });
+      const response: AxiosResponse<ImageResponse> = await axios.post('/api/generate-image', {
+        context,
+      });
       setImage(response.data);
     } catch (err: any) {
       setError(err.message);
@@ -60,7 +62,9 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
     setError(null);
     setFeedback(null);
     try {
-      const response: AxiosResponse<ImageResponse> = await axios.post('/api/regenerate-image', { context });
+      const response: AxiosResponse<ImageResponse> = await axios.post('/api/regenerate-image', {
+        context,
+      });
       setImage(response.data);
       setFeedback('Image regenerated successfully');
     } catch (err: any) {
@@ -94,11 +98,15 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
     formData.append('file', file);
 
     try {
-      const response: AxiosResponse<ImageResponse> = await axios.post('/api/upload-image', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response: AxiosResponse<ImageResponse> = await axios.post(
+        '/api/upload-image',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
       setImage(response.data);
       setFeedback('Image uploaded successfully');
     } catch (err: any) {
@@ -136,7 +144,9 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
             type="file"
             accept="image/*"
             aria-label="Upload custom image"
-            onChange={(e) => e.target.files && e.target.files.length > 0 && uploadImage(e.target.files[0])}
+            onChange={e =>
+              e.target.files && e.target.files.length > 0 && uploadImage(e.target.files[0])
+            }
             disabled={isLoading}
           />
           <p className="help-text">Upload a JPEG, PNG, or GIF image (max 5MB)</p>
@@ -144,6 +154,6 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
       )}
     </div>
   );
-}
+};
 
 export default ImageGeneration;

@@ -23,12 +23,14 @@ Thank you for your interest in contributing! This document provides guidelines a
 ### Development Setup
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/JustAGhosT/content_creation.git
    cd content_creation
    ```
 
 2. **Install dependencies:**
+
    ```bash
    npm install
    # or
@@ -36,29 +38,30 @@ Thank you for your interest in contributing! This document provides guidelines a
    ```
 
 3. **Set up environment variables:**
-   
+
    Create a `.env.local` file in the root directory with the required environment variables:
+
    ```bash
    # Authentication
    JWT_SECRET=your-jwt-secret
-   
+
    # Airtable (if using)
    AIRTABLE_API_KEY=your-airtable-api-key
    AIRTABLE_BASE_ID=your-base-id
    AIRTABLE_TABLE_NAME=your-table-name
-   
+
    # Hugging Face API (for image generation)
    HUGGING_FACE_API_KEY=your-hugging-face-api-key
-   
+
    # Email notifications (optional)
    EMAIL_USER=your-email
    GMAIL_CLIENT_ID=your-client-id
    GMAIL_CLIENT_SECRET=your-client-secret
    GMAIL_REFRESH_TOKEN=your-refresh-token
-   
+
    # Slack notifications (optional)
    SLACK_TOKEN=your-slack-token
-   
+
    # Twilio (optional)
    TWILIO_ACCOUNT_SID=your-account-sid
    TWILIO_AUTH_TOKEN=your-auth-token
@@ -66,6 +69,7 @@ Thank you for your interest in contributing! This document provides guidelines a
    ```
 
 4. **Run the development server:**
+
    ```bash
    npm run dev
    ```
@@ -78,6 +82,7 @@ Thank you for your interest in contributing! This document provides guidelines a
 See [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md) for a detailed overview of the project's directory structure.
 
 **Key Points:**
+
 - New API routes go in `/app/api/`
 - React components are organized by feature in `/components/`
 - Business logic belongs in `/lib/`
@@ -118,11 +123,10 @@ export default MyComponent;
 
 ### Naming Conventions
 
-- **Files**: 
+- **Files**:
   - Components: `PascalCase.tsx` (e.g., `UserProfile.tsx`)
   - Utilities: `camelCase.ts` (e.g., `formatDate.ts`)
   - CSS Modules: `PascalCase.module.css` or `kebab-case.module.css`
-  
 - **Variables/Functions**: `camelCase`
 - **Components**: `PascalCase`
 - **Constants**: `UPPER_SNAKE_CASE`
@@ -162,10 +166,11 @@ npm run test:coverage
 ### Writing Tests
 
 1. **Unit Tests**: Test individual functions and components
+
    ```typescript
    import { describe, it, expect } from '@jest/globals';
    import { myFunction } from '../lib/myModule';
-   
+
    describe('myFunction', () => {
      it('should return expected result', () => {
        expect(myFunction('input')).toBe('expected');
@@ -174,10 +179,11 @@ npm run test:coverage
    ```
 
 2. **Component Tests**: Test component rendering and interactions
+
    ```typescript
    import { render, screen, fireEvent } from '@testing-library/react';
    import MyComponent from '../components/MyComponent';
-   
+
    describe('MyComponent', () => {
      it('renders correctly', () => {
        render(<MyComponent title="Test" />);
@@ -187,10 +193,11 @@ npm run test:coverage
    ```
 
 3. **API Tests**: Test API endpoints
+
    ```typescript
    import { describe, it, expect } from '@jest/globals';
    import { GET } from '../app/api/my-endpoint/route';
-   
+
    describe('GET /api/my-endpoint', () => {
      it('returns expected data', async () => {
        const response = await GET();
@@ -228,6 +235,7 @@ Follow the conventional commits format:
 ```
 
 **Types:**
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation changes
@@ -237,6 +245,7 @@ Follow the conventional commits format:
 - `chore`: Maintenance tasks
 
 **Examples:**
+
 ```
 feat(api): add content summarization endpoint
 fix(auth): resolve token expiration issue
@@ -279,10 +288,7 @@ export async function GET(request: NextRequest) {
     // Your logic here
     return NextResponse.json({ data: 'response' });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Error message' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error message' }, { status: 500 });
   }
 }
 
@@ -292,10 +298,7 @@ export async function POST(request: NextRequest) {
     // Your logic here
     return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Error message' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Error message' }, { status: 500 });
   }
 }
 ```
@@ -310,14 +313,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
   const authResult = await verifyAuth(request);
-  
+
   if (!authResult.authenticated) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  
+
   // Your authenticated logic here
   return NextResponse.json({ data: 'protected data' });
 }
@@ -349,6 +349,7 @@ export async function GET(request: NextRequest) {
 This project adheres to the [Contributor Covenant Code of Conduct](./CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
 
 Key points:
+
 - Be respectful and inclusive
 - Provide constructive feedback
 - Focus on the code, not the person

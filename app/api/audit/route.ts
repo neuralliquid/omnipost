@@ -47,14 +47,14 @@ function sanitizeErrorMessage(errorMsg: string): string {
     // Redact potential stack traces
     /at\s+.*\(.*\)/gi,
     // Redact file paths
-    /\/[\w\/\.-]+/gi
+    /\/[\w\/\.-]+/gi,
   ];
-  
+
   let sanitized = errorMsg;
   sensitivePatterns.forEach(pattern => {
     sanitized = sanitized.replace(pattern, '[REDACTED]');
   });
-  
+
   return sanitized;
 }
 // Get audit logs endpoint
@@ -63,42 +63,49 @@ export const GET = withErrorHandling(async (request: Request) => {
   if (!(await isAdmin())) {
     return Errors.forbidden('Admin privileges required to access audit logs');
   }
-  
+
   try {
     // Get query parameters for filtering and pagination
     const url = new URL(request.url);
-    
+
     // Validate and sanitize limit parameter
     const limitRaw = Number(url.searchParams.get('limit')) || DEFAULT_LIMIT;
     const limit = Math.min(Math.max(limitRaw, 1), MAX_LIMIT); // Between 1 and MAX_LIMIT
-    
+
     // Validate and sanitize page parameter
     const page = Math.max(Number(url.searchParams.get('page')) || 1, 1); // At least 1
     const action = url.searchParams.get('action');
     const user = url.searchParams.get('user');
     const startDate = url.searchParams.get('startDate');
     const endDate = url.searchParams.get('endDate');
-    
+
     // Log the audit logs access
-    await logToAuditTrail(await createLogEntry('ACCESS_AUDIT_LOGS', { 
-      limit, page, action, user, startDate, endDate 
-    }));
-    
+    await logToAuditTrail(
+      await createLogEntry('ACCESS_AUDIT_LOGS', {
+        limit,
+        page,
+        action,
+        user,
+        startDate,
+        endDate,
+      })
+    );
+
     // Check if log file exists
     if (!fs.existsSync(logFilePath)) {
       return NextResponse.json({ logs: [], total: 0, page, limit });
     }
-    
+
     // Check file size before reading
     const stats = await fs.promises.stat(logFilePath);
     if (stats.size > MAX_FILE_SIZE) {
       return Errors.internalServerError('Audit log file is too large to process');
     }
-    
+
     // Process logs in a streaming manner for large files
     let logs: LogEntry[] = [];
     let totalLogs = 0;
-    
+
     // For smaller files, we can use the direct approach
     const data = await fs.promises.readFile(logFilePath, 'utf-8');
     const allLogs: LogEntry[] = JSON.parse(data);
@@ -107,47 +114,49 @@ export const GET = withErrorHandling(async (request: Request) => {
     if (action) {
       filteredLogs = filteredLogs.filter(log => log.action === action);
     }
-    
+
     if (user) {
       filteredLogs = filteredLogs.filter(log => log.user === user);
     }
-    
+
     if (startDate) {
       const start = new Date(startDate).getTime();
       filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() >= start);
     }
-    
+
     if (endDate) {
       const end = new Date(endDate).getTime();
       filteredLogs = filteredLogs.filter(log => new Date(log.timestamp).getTime() <= end);
     }
-    
+
     // Get total count before pagination
     const total = filteredLogs.length;
-    
+
     // Apply pagination
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
     logs = filteredLogs.slice(startIndex, endIndex);
-    
+
     // Return paginated and filtered logs
     return NextResponse.json({
       logs,
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit)
+      totalPages: Math.ceil(total / limit),
     });
   } catch (error) {
     console.error('Error retrieving audit logs:', error);
-    
+
     // Sanitize error message before logging
     const sanitizedError = sanitizeErrorMessage((error as Error).message);
     // Log audit logs access failure
-    await logToAuditTrail(await createLogEntry('ACCESS_AUDIT_LOGS_FAILURE', { 
-      error: sanitizedError
-    }));
-    
+    await logToAuditTrail(
+      await createLogEntry('ACCESS_AUDIT_LOGS_FAILURE', {
+        error: sanitizedError,
+      })
+    );
+
     return Errors.internalServerError('Failed to retrieve audit logs');
   }
 });

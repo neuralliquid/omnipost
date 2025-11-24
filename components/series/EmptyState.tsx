@@ -19,7 +19,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
           width={120}
           height={120}
           // Fallback if image doesn't exist
-          onError={(e) => {
+          onError={e => {
             // @ts-ignore
             e.target.style.display = 'none';
           }}
@@ -29,10 +29,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
       <p className={styles.emptyStateDescription}>
         Create your first content series to start organizing your technical articles.
       </p>
-      <button 
-        onClick={onCreateClick} 
-        className={styles.primaryButton}
-      >
+      <button onClick={onCreateClick} className={styles.primaryButton}>
         Create Your First Series
       </button>
     </div>

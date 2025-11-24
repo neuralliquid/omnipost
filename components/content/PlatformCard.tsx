@@ -22,7 +22,7 @@ const PlatformCard: React.FC<PlatformCardProps> = ({
   type,
   audience,
   features,
-  implementationStrategy
+  implementationStrategy,
 }) => {
   return (
     <div className={styles.card}>
@@ -33,19 +33,29 @@ const PlatformCard: React.FC<PlatformCardProps> = ({
           <p className={styles.subtitle}>{type}</p>
         </div>
       </div>
-      
+
       <div className={styles.highlight}>
         <strong>Primary Audience:</strong> {audience}
       </div>
-      
+
       <ul>
-        <li><strong>Content Format:</strong> {features.format}</li>
-        <li><strong>Media Elements:</strong> {features.media}</li>
-        <li><strong>Optimization Focus:</strong> {features.focus}</li>
-        <li><strong>Publication Cadence:</strong> {features.cadence}</li>
-        <li><strong>Success Metrics:</strong> {features.metrics}</li>
+        <li>
+          <strong>Content Format:</strong> {features.format}
+        </li>
+        <li>
+          <strong>Media Elements:</strong> {features.media}
+        </li>
+        <li>
+          <strong>Optimization Focus:</strong> {features.focus}
+        </li>
+        <li>
+          <strong>Publication Cadence:</strong> {features.cadence}
+        </li>
+        <li>
+          <strong>Success Metrics:</strong> {features.metrics}
+        </li>
       </ul>
-      
+
       <div className={styles.infoBox}>
         <h4>Implementation Strategy:</h4>
         <p>{implementationStrategy}</p>

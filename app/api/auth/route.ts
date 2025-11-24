@@ -15,19 +15,22 @@ import type { NextRequest } from 'next/server';
  * @param password Password to validate
  * @returns Error response or null if valid
  */
-async function validateLoginInput(username: string, password: string): Promise<NextResponse | null> {
+async function validateLoginInput(
+  username: string,
+  password: string
+): Promise<NextResponse | null> {
   // Validate username
   const usernameError = validateString(username, 'Username');
   if (usernameError) {
     return Errors.badRequest(usernameError);
   }
-    
+
   // Validate password
   const passwordError = validateString(password, 'Password');
   if (passwordError) {
     return Errors.badRequest(passwordError);
   }
-    
+
   return null;
 }
 
@@ -40,21 +43,25 @@ async function validateLoginInput(username: string, password: string): Promise<N
 async function authenticateUser(username: string, password: string): Promise<any | NextResponse> {
   // Log the login attempt (without the password)
   await logToAuditTrail(await createLogEntry('LOGIN_ATTEMPT', { username }));
-    
+
   // Find user
   const user = await authService.findUserByUsername(username);
   if (!user) {
-    await logToAuditTrail(await createLogEntry('LOGIN_FAILED', { username, reason: 'User not found' }));
+    await logToAuditTrail(
+      await createLogEntry('LOGIN_FAILED', { username, reason: 'User not found' })
+    );
     return Errors.unauthorized('Invalid username or password');
   }
-    
+
   // Verify credentials
   const isPasswordValid = await authService.verifyUserCredentials(username, password);
   if (!isPasswordValid) {
-    await logToAuditTrail(await createLogEntry('LOGIN_FAILED', { username, reason: 'Invalid password' }));
+    await logToAuditTrail(
+      await createLogEntry('LOGIN_FAILED', { username, reason: 'Invalid password' })
+    );
     return Errors.unauthorized('Invalid username or password');
   }
-    
+
   return user;
 }
 
@@ -66,7 +73,7 @@ async function authenticateUser(username: string, password: string): Promise<any
 function generateToken(user: any): string {
   return authService.generateToken(user);
 }
-    
+
 /**
  * Sets the authentication cookie
  * @param token JWT token
@@ -80,46 +87,46 @@ async function setAuthCookie(token: string): Promise<void> {
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'strict',
     maxAge: 60 * 60, // 1 hour
-    path: '/'
+    path: '/',
   });
 }
-    
+
 // Login endpoint - handle login request
 async function handleLogin(request: Request): Promise<NextResponse> {
   try {
     const body = await request.json();
     const { username, password } = body;
-    
+
     // Validate input
     const validationError = await validateLoginInput(username, password);
     if (validationError) {
       return validationError;
     }
-    
+
     // Authenticate user
     const userOrError = await authenticateUser(username, password);
     if (userOrError instanceof NextResponse) {
       return userOrError; // Return error response if authentication failed
     }
-    
+
     const user = userOrError;
-    
+
     // Generate JWT token
     const token = generateToken(user);
-    
+
     // Set HTTP-only cookie with the token
     await setAuthCookie(token);
     // Log successful login
     await logToAuditTrail(await createLogEntry('LOGIN_SUCCESS', { username, userId: user.id }));
-    
+
     // Return token and basic user info (omitting sensitive data)
     return NextResponse.json({
       token,
       user: {
         id: user.id,
         username: user.username,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
     console.error('Login error:', error);
@@ -139,12 +146,12 @@ async function handleLogout(): Promise<NextResponse> {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 0,
-      path: '/'
+      path: '/',
     });
-  
+
     // Log the logout
     await logToAuditTrail(await createLogEntry('LOGOUT'));
-  
+
     return NextResponse.json({ message: 'Logged out successfully' });
   } catch (error) {
     console.error('Logout error:', error);

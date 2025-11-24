@@ -24,12 +24,12 @@ export function createErrorResponse(
   code?: string
 ): NextResponse {
   const errorBody: ErrorResponse = {
-    message
+    message,
   };
-  
+
   if (details) errorBody.details = details;
   if (code) errorBody.code = code;
-  
+
   return NextResponse.json(errorBody, { status });
 }
 
@@ -37,25 +37,25 @@ export function createErrorResponse(
  * Common error responses
  */
 export const Errors = {
-  badRequest: (message: string = 'Bad request', details?: any) => 
+  badRequest: (message: string = 'Bad request', details?: any) =>
     createErrorResponse(message, 400, details, 'BAD_REQUEST'),
-    
-  unauthorized: (message: string = 'Unauthorized', details?: any) => 
+
+  unauthorized: (message: string = 'Unauthorized', details?: any) =>
     createErrorResponse(message, 401, details, 'UNAUTHORIZED'),
-    
-  forbidden: (message: string = 'Forbidden', details?: any) => 
+
+  forbidden: (message: string = 'Forbidden', details?: any) =>
     createErrorResponse(message, 403, details, 'FORBIDDEN'),
-    
-  notFound: (message: string = 'Not found', details?: any) => 
+
+  notFound: (message: string = 'Not found', details?: any) =>
     createErrorResponse(message, 404, details, 'NOT_FOUND'),
-    
-  methodNotAllowed: (message: string = 'Method not allowed', details?: any) => 
+
+  methodNotAllowed: (message: string = 'Method not allowed', details?: any) =>
     createErrorResponse(message, 405, details, 'METHOD_NOT_ALLOWED'),
-    
-  conflict: (message: string = 'Conflict', details?: any) => 
+
+  conflict: (message: string = 'Conflict', details?: any) =>
     createErrorResponse(message, 409, details, 'CONFLICT'),
-    
-  internalServerError: (message: string = 'Internal server error', details?: any) => 
+
+  internalServerError: (message: string = 'Internal server error', details?: any) =>
     createErrorResponse(message, 500, details, 'INTERNAL_SERVER_ERROR'),
 };
 
@@ -75,14 +75,14 @@ export function withErrorHandling(
         error,
         timestamp: new Date().toISOString(),
         url: req?.url || 'unknown',
-        method: req?.method || 'unknown'
+        method: req?.method || 'unknown',
       });
-      
+
       // Handle specific known errors
       if (error.name === 'ValidationError') {
         return Errors.badRequest('Validation error', error.details);
       }
-      
+
       // Default to internal server error
       return Errors.internalServerError(
         error.message || 'An unexpected error occurred',

@@ -63,9 +63,10 @@ class Mutex {
 const mutex = new Mutex();
 
 // Path for persisting feature flags (if in Node.js environment)
-const featureFlagsPath = typeof process !== 'undefined' && process.cwd
-  ? path.join(process.cwd(), 'data', 'feature-flags.json')
-  : '';
+const featureFlagsPath =
+  typeof process !== 'undefined' && process.cwd
+    ? path.join(process.cwd(), 'data', 'feature-flags.json')
+    : '';
 
 // Default feature flags configuration
 const featureFlags: FeatureFlags = {
@@ -95,21 +96,21 @@ export async function saveFeatureFlags(): Promise<void> {
     } else if (featureFlagsPath) {
       // Node.js environment - use atomic file operations
       const dirPath = path.dirname(featureFlagsPath);
-      
+
       // Ensure directory exists
       if (!fs.existsSync(dirPath)) {
         fs.mkdirSync(dirPath, { recursive: true });
       }
-      
+
       // Create a temporary file with a unique name
       const tmpPath = path.join(
         os.tmpdir(),
         `feature-flags-${Date.now()}-${Math.random().toString(36).substring(2)}.json`
       );
-      
+
       // Write to temporary file first
       fs.writeFileSync(tmpPath, JSON.stringify(featureFlags, null, 2), 'utf8');
-      
+
       // Atomically rename the temporary file to the target file
       // This ensures the write is atomic and prevents partial writes
       fs.renameSync(tmpPath, featureFlagsPath);

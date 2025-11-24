@@ -12,45 +12,48 @@ jest.mock('../../config/platforms', () => ({
   platforms: [
     { id: 1, name: 'Facebook', icon: 'facebook-icon' },
     { id: 2, name: 'Twitter', icon: 'twitter-icon' },
-    { id: 3, name: 'LinkedIn', icon: 'linkedin-icon' }
+    { id: 3, name: 'LinkedIn', icon: 'linkedin-icon' },
   ],
   getPlatformConfig: jest.fn((name: string) => {
-    const configs: Record<PlatformName, {
-      apiUrl: string;
-      apiKey: string;
-      capabilities: string[];
-    }> = {
+    const configs: Record<
+      PlatformName,
+      {
+        apiUrl: string;
+        apiKey: string;
+        capabilities: string[];
+      }
+    > = {
       facebook: {
         apiUrl: 'https://api.facebook.com',
         apiKey: 'facebook-api-key',
-        capabilities: ['post', 'image', 'video']
+        capabilities: ['post', 'image', 'video'],
       },
       twitter: {
         apiUrl: 'https://api.twitter.com',
         apiKey: 'twitter-api-key',
-        capabilities: ['post', 'image']
+        capabilities: ['post', 'image'],
       },
       linkedin: {
         apiUrl: 'https://api.linkedin.com',
         apiKey: 'linkedin-api-key',
-        capabilities: ['post', 'article']
-      }
+        capabilities: ['post', 'article'],
+      },
     };
-    
+
     const platformName = name.toLowerCase() as PlatformName;
     return configs[platformName] || null;
-  })
+  }),
 }));
 
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn(() => true)
+  isAuthenticated: jest.fn(() => true),
 }));
 
 // Mock audit logging functions
 jest.mock('../../app/api/_utils/audit', () => ({
   createLogEntry: jest.fn(() => ({})),
-  logToAuditTrail: jest.fn()
+  logToAuditTrail: jest.fn(),
 }));
 
 // Helper function to create a mock request
@@ -84,13 +87,13 @@ describe('Platforms API', () => {
     test('should return all platforms', async () => {
       // Create a mock request
       const request = createMockRequest();
-      
+
       // Execute the handler
       const response = await getPlatforms(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(200);
       expect(Array.isArray(data)).toBe(true);
@@ -105,16 +108,16 @@ describe('Platforms API', () => {
       // Mock isAuthenticated to return Promise<false>
       const { isAuthenticated } = require('../../app/api/_utils/auth');
       jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
-      
+
       // Create a mock request
       const request = createMockRequest();
-      
+
       // Execute the handler
       const response = await getPlatforms(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(401);
       expect(data).toHaveProperty('message', 'Authentication required');
@@ -126,13 +129,13 @@ describe('Platforms API', () => {
       // Create mock request and params
       const request = createMockRequest();
       const params = { params: { id: '1' } };
-      
+
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('platform');
@@ -149,13 +152,13 @@ describe('Platforms API', () => {
       // Create mock request and params
       const request = createMockRequest();
       const params = { params: { id: 'invalid' } };
-      
+
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message', 'Invalid platform ID');
@@ -165,13 +168,13 @@ describe('Platforms API', () => {
       // Create mock request and params
       const request = createMockRequest();
       const params = { params: { id: '99' } };
-      
+
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(404);
       expect(data).toHaveProperty('message', 'Platform not found');
@@ -181,20 +184,23 @@ describe('Platforms API', () => {
       // Mock isAuthenticated to return Promise<false>
       const { isAuthenticated } = require('../../app/api/_utils/auth');
       jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
-      
+
       // Create mock request and params
       const request = createMockRequest();
       const params = { params: { id: '1' } };
-      
+
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(401);
-      expect(data).toHaveProperty('message', 'Authentication required to access platform capabilities');
+      expect(data).toHaveProperty(
+        'message',
+        'Authentication required to access platform capabilities'
+      );
     });
   });
 });

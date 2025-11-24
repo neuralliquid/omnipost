@@ -162,7 +162,8 @@ const ContentAdaptationStyles: React.FC = () => {
         color: #666;
       }
       @media (max-width: 768px) {
-        .stage-steps, .adaptation-examples {
+        .stage-steps,
+        .adaptation-examples {
           grid-template-columns: 1fr;
         }
       }

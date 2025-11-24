@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom';
 
+// Set NODE_ENV to 'test' to suppress environment variable warnings
+process.env.NODE_ENV = 'test';
+
 // Global mocks for Next.js App Router API routes
 global.Request = class Request {
   constructor(input, init) {
@@ -8,7 +11,7 @@ global.Request = class Request {
     this.headers = new Headers(init?.headers);
     this.body = init?.body;
   }
-  
+
   json() {
     return Promise.resolve(this.body ? JSON.parse(this.body) : {});
   }
@@ -23,11 +26,11 @@ global.Headers = class Headers {
       });
     }
   }
-  
+
   get(name) {
     return this.headers[name.toLowerCase()] || null;
   }
-  
+
   set(name, value) {
     this.headers[name.toLowerCase()] = value;
   }
@@ -40,7 +43,7 @@ global.Response = class Response {
     this.statusText = init?.statusText || 'OK';
     this.headers = new Headers(init?.headers);
   }
-  
+
   json() {
     return Promise.resolve(typeof this.body === 'string' ? JSON.parse(this.body) : this.body);
   }
@@ -49,14 +52,14 @@ global.Response = class Response {
 // Mock Next.js specific objects and functions
 jest.mock('next/headers', () => ({
   cookies: jest.fn(() => ({
-    get: jest.fn((name) => {
+    get: jest.fn(name => {
       if (name === 'auth-token') return { value: 'mock-token' };
       return null;
     }),
     set: jest.fn(),
   })),
   headers: jest.fn(() => ({
-    get: jest.fn((name) => {
+    get: jest.fn(name => {
       if (name === 'x-user-id') return '1';
       if (name === 'x-user-role') return 'admin';
       if (name === 'x-user-name') return 'admin';
@@ -77,7 +80,7 @@ jest.mock('next/server', () => {
           status: init?.status || 200,
         });
       }),
-      redirect: jest.fn((url) => {
+      redirect: jest.fn(url => {
         return new Response(null, {
           headers: { Location: url },
           status: 302,

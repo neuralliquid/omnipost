@@ -7,6 +7,7 @@ This document outlines the tasks required to migrate the existing API structure 
 ## Current API Structure Analysis
 
 The current application uses the Pages Router API structure with:
+
 - API implementation files in `pages/api/` directory
 - Utility and helper modules in `api/` directory
 - Authentication via HOC middleware (`withAuth` and `withAdminAuth`)

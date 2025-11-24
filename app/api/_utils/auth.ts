@@ -58,11 +58,11 @@ export async function getCurrentUser(): Promise<User | null> {
   const userId = headersList.get('x-user-id');
   const username = headersList.get('x-user-name');
   const role = headersList.get('x-user-role');
-  
+
   if (!userId || !username || !role) {
     return null;
   }
-  
+
   return {
     id: userId,
     username: username,
@@ -75,13 +75,12 @@ export async function getCurrentUser(): Promise<User | null> {
  * @param handler The route handler function to protect
  * @returns A function that checks auth before calling the handler
  */
-export function withAuth<T extends Response | object>(handler: () => Promise<T>): () => Promise<T | NextResponse> {
+export function withAuth<T extends Response | object>(
+  handler: () => Promise<T>
+): () => Promise<T | NextResponse> {
   return async () => {
     if (!(await isAuthenticated())) {
-      return NextResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Authentication required' }, { status: 401 });
     }
     return handler();
   };
@@ -95,19 +94,13 @@ export function withAuth<T extends Response | object>(handler: () => Promise<T>)
 export function withAdminAuth<T>(handler: () => Promise<T>): () => Promise<T | NextResponse> {
   return async () => {
     if (!(await isAuthenticated())) {
-      return NextResponse.json(
-        { message: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ message: 'Authentication required' }, { status: 401 });
     }
-    
+
     if (!(await isAdmin())) {
-      return NextResponse.json(
-        { message: 'Admin privileges required' },
-        { status: 403 }
-      );
+      return NextResponse.json({ message: 'Admin privileges required' }, { status: 403 });
     }
-    
+
     return handler();
   };
 }

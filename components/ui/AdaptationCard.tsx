@@ -24,7 +24,7 @@ const AdaptationCard: React.FC<AdaptationCardProps> = ({
   original,
   adaptation,
   elements,
-  image
+  image,
 }) => {
   const displayTitle = title || (type ? `${type} Adaptation` : 'Adaptation');
 
@@ -40,7 +40,7 @@ const AdaptationCard: React.FC<AdaptationCardProps> = ({
             <p>{original}</p>
           </>
         )}
-        
+
         {adaptation && (
           <>
             <div className={styles.title}>{platform} Adaptation:</div>
@@ -58,7 +58,7 @@ const AdaptationCard: React.FC<AdaptationCardProps> = ({
           </ul>
         </div>
       )}
-      
+
       {image && (
         <div className={styles.exampleImage}>
           <Image

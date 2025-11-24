@@ -23,7 +23,7 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
       try {
         setLoading(true);
         setError(null);
-        
+
         // Use the API client instead of direct fetch/axios calls
         const data = await apiClient.getPlatforms();
         setPlatforms(data);
@@ -63,7 +63,7 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
     <div className="p-4">
       <h2 className="text-lg font-medium mb-4">Select a Platform</h2>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-        {platforms.map((platform) => (
+        {platforms.map(platform => (
           <div
             key={platform.id}
             role="button"
@@ -74,7 +74,7 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
                 : 'hover:bg-gray-50'
             }`}
             onClick={() => handlePlatformSelect(platform)}
-            onKeyDown={(e) => {
+            onKeyDown={e => {
               if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 handlePlatformSelect(platform);
@@ -83,11 +83,7 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
           >
             <div className="flex flex-col items-center">
               {platform.icon && (
-                <img
-                  src={platform.icon}
-                  alt={`${platform.name} icon`}
-                  className="w-8 h-8 mb-2"
-                />
+                <img src={platform.icon} alt={`${platform.name} icon`} className="w-8 h-8 mb-2" />
               )}
               <span className="text-center">{platform.name}</span>
             </div>

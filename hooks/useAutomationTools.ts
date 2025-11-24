@@ -25,7 +25,7 @@ export function useAutomationTools(initialTools: AutomationTool[] = []) {
         // In a real implementation, this would be an API call
         // For now, we'll simulate a data fetch with a timeout
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         // Import tools from JSON
         const automationTools = await import('../content/automationTools.json');
         setTools(automationTools.tools);
@@ -56,6 +56,6 @@ export function useAutomationTools(initialTools: AutomationTool[] = []) {
     isLoading,
     error,
     selectTool,
-    closeTool
+    closeTool,
   };
 }

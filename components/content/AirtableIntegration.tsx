@@ -19,7 +19,7 @@ const AirtableIntegration: React.FC = () => {
       setLoading(true);
       try {
         const base = new Airtable({
-          apiKey: process.env.NEXT_PUBLIC_AIRTABLE_API_KEY || ''
+          apiKey: process.env.NEXT_PUBLIC_AIRTABLE_API_KEY || '',
         }).base(process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID || '');
         const table = base(process.env.NEXT_PUBLIC_AIRTABLE_TABLE_NAME || '');
 
@@ -42,10 +42,8 @@ const AirtableIntegration: React.FC = () => {
       {loading && <p>Loading records...</p>}
       {!loading && records.length === 0 && !error && <p>No records found</p>}
       <ul>
-        {records.map((record) => (
-          <li key={record.id}>
-            {record.fields?.Name || record.id || 'Unnamed record'}
-          </li>
+        {records.map(record => (
+          <li key={record.id}>{record.fields?.Name || record.id || 'Unnamed record'}</li>
         ))}
       </ul>
     </div>

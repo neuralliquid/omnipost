@@ -17,9 +17,9 @@ const ImageGenerator: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const result = await apiClient.generateImage(context);
-      
+
       // Assuming the API returns a URL to the generated image
       setGeneratedImage(result.url);
     } catch (err) {
@@ -41,11 +41,11 @@ const ImageGenerator: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Create an image object with the context for regeneration
       const image = { context };
       const result = await apiClient.reviewImage(image, 'regenerate');
-      
+
       // Update the generated image
       setGeneratedImage(result.url);
     } catch (err) {
@@ -67,11 +67,11 @@ const ImageGenerator: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Create an image object with the URL
       const image = { url: generatedImage, context };
       await apiClient.reviewImage(image, 'approve');
-      
+
       // Show success message
       alert('Image approved successfully!');
     } catch (err) {
@@ -93,11 +93,11 @@ const ImageGenerator: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Create an image object with the URL
       const image = { url: generatedImage, context };
       await apiClient.reviewImage(image, 'reject');
-      
+
       // Reset the generated image
       setGeneratedImage(null);
       alert('Image rejected successfully!');
@@ -113,13 +113,13 @@ const ImageGenerator: React.FC = () => {
   return (
     <div className="p-4 max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Image Generator</h1>
-      
+
       {error && (
         <div className="p-2 mb-4 bg-red-100 border border-red-400 text-red-700 rounded">
           {error}
         </div>
       )}
-      
+
       <div className="mb-4">
         <label htmlFor="context" className="block text-sm font-medium text-gray-700 mb-1">
           Image Description
@@ -127,14 +127,14 @@ const ImageGenerator: React.FC = () => {
         <textarea
           id="context"
           value={context}
-          onChange={(e) => setContext(e.target.value)}
+          onChange={e => setContext(e.target.value)}
           placeholder="Describe the image you want to generate..."
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           rows={4}
           disabled={loading}
         />
       </div>
-      
+
       <div className="flex space-x-2 mb-6">
         <button
           onClick={handleGenerateImage}
@@ -145,7 +145,7 @@ const ImageGenerator: React.FC = () => {
         >
           {loading ? 'Generating...' : 'Generate Image'}
         </button>
-        
+
         {generatedImage && (
           <button
             onClick={handleRegenerateImage}
@@ -158,17 +158,13 @@ const ImageGenerator: React.FC = () => {
           </button>
         )}
       </div>
-      
+
       {generatedImage && (
         <div className="border rounded-md p-4">
           <div className="mb-4">
-            <img
-              src={generatedImage}
-              alt="Generated"
-              className="w-full h-auto rounded-md"
-            />
+            <img src={generatedImage} alt="Generated" className="w-full h-auto rounded-md" />
           </div>
-          
+
           <div className="flex space-x-2">
             <button
               onClick={handleApproveImage}
@@ -179,7 +175,7 @@ const ImageGenerator: React.FC = () => {
             >
               Approve
             </button>
-            
+
             <button
               onClick={handleRejectImage}
               disabled={loading}

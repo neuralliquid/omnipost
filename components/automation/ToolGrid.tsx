@@ -15,12 +15,8 @@ const ToolGrid: React.FC<ToolGridProps> = ({ tools, onSelectTool }) => {
   return (
     <div className={styles.automationContainer}>
       <div className={styles.automationTools}>
-        {tools.map((tool) => (
-          <ToolCard 
-            key={tool.id} 
-            tool={tool} 
-            onSelect={onSelectTool} 
-          />
+        {tools.map(tool => (
+          <ToolCard key={tool.id} tool={tool} onSelect={onSelectTool} />
         ))}
       </div>
     </div>

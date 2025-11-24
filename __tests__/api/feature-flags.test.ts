@@ -49,13 +49,13 @@ describe('Feature Flags API', () => {
     test('should return all feature flags', async () => {
       // Create a mock request for GET
       const request = createMockRequest('GET', {});
-      
+
       // Execute the handler
       const response = await GET(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('textParser');
@@ -71,15 +71,15 @@ describe('Feature Flags API', () => {
       // Create mock request
       const request = createMockRequest('POST', {
         feature: 'imageGeneration',
-        enabled: false
+        enabled: false,
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('message', 'Feature flag updated successfully');
@@ -91,15 +91,15 @@ describe('Feature Flags API', () => {
       // Create mock request with invalid feature name
       const request = createMockRequest('POST', {
         feature: '',
-        enabled: false
+        enabled: false,
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message');
@@ -111,15 +111,15 @@ describe('Feature Flags API', () => {
       // Create mock request with invalid enabled value
       const request = createMockRequest('POST', {
         feature: 'imageGeneration',
-        enabled: 'not-a-boolean'
+        enabled: 'not-a-boolean',
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message');
@@ -132,15 +132,15 @@ describe('Feature Flags API', () => {
       const request = createMockRequest('POST', {
         feature: 'textParser',
         enabled: true,
-        implementation: 'invalid-implementation'
+        implementation: 'invalid-implementation',
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(400);
       expect(data).toHaveProperty('message');
@@ -152,19 +152,19 @@ describe('Feature Flags API', () => {
       // Mock isAdmin to return false for this specific test
       const { isAdmin } = require('../../app/api/_utils/auth');
       (isAdmin as jest.MockedFunction<typeof isAdmin>).mockResolvedValueOnce(false);
-      
+
       // Create mock request
       const request = createMockRequest('POST', {
         feature: 'imageGeneration',
-        enabled: false
+        enabled: false,
       });
-      
+
       // Execute the handler
       const response = await POST(request);
-      
+
       // Parse the JSON response
       const data = await response.json();
-      
+
       // Assertions
       expect(response.status).toBe(403);
       expect(data).toHaveProperty('message', 'Admin privileges required to update feature flags');

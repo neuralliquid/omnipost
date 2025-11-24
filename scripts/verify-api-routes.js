@@ -24,7 +24,7 @@ function scanDirectory(dir) {
 
   for (const entry of entries) {
     const fullPath = path.join(dir, entry.name);
-    
+
     if (entry.isDirectory()) {
       // Skip _utils and other underscore-prefixed directories
       if (!entry.name.startsWith('_')) {
@@ -72,5 +72,5 @@ console.log(`- ${routeFiles.length} new API routes implemented`);
 console.log('- API client updated to use new routes');
 console.log('- Example components created to demonstrate usage');
 console.log('\nThe API migration appears to be complete and ready for testing.');
-console.log('When you\'re ready to remove the old API code, run:');
+console.log("When you're ready to remove the old API code, run:");
 console.log('  node scripts/cleanup-old-api.js');

@@ -4,14 +4,14 @@ import { headers } from 'next/headers';
  * Log entry structure for API audit trail
  */
 export interface LogEntry {
-   action: string;
-   user: string;
-   timestamp: string;
-   path: string;
-   method: string;
-   body?: Record<string, unknown>;
-   result?: string;
-   statusCode?: number;
+  action: string;
+  user: string;
+  timestamp: string;
+  path: string;
+  method: string;
+  body?: Record<string, unknown>;
+  result?: string;
+  statusCode?: number;
 }
 
 /**
@@ -20,28 +20,28 @@ export interface LogEntry {
  * @returns Sanitized body object
  */
 export function sanitizeRequestBody(body: any): any {
-   if (!body) return body;
-   
-   const sensitiveFields = ['password', 'token', 'apiKey', 'secret', 'authorization'];
-   const sanitized = { ...body };
-   
-   // Recursively sanitize nested objects
-   for (const [key, value] of Object.entries(sanitized)) {
-     const lowerKey = key.toLowerCase();
-     
+  if (!body) return body;
+
+  const sensitiveFields = ['password', 'token', 'apiKey', 'secret', 'authorization'];
+  const sanitized = { ...body };
+
+  // Recursively sanitize nested objects
+  for (const [key, value] of Object.entries(sanitized)) {
+    const lowerKey = key.toLowerCase();
+
     // Check for sensitive fields first
     if (sensitiveFields.some(field => lowerKey.includes(field))) {
-       sanitized[key] = '[REDACTED]';
+      sanitized[key] = '[REDACTED]';
       continue;
     }
-    
+
     // Process nested objects
     if (typeof value === 'object' && value !== null) {
-       sanitized[key] = sanitizeRequestBody(value);
-     }
-   }
-   
-   return sanitized;
+      sanitized[key] = sanitizeRequestBody(value);
+    }
+  }
+
+  return sanitized;
 }
 
 /**
@@ -62,7 +62,7 @@ export async function createLogEntry(
   const path = headersList.get('x-invoke-path') || 'unknown';
   const method = headersList.get('x-http-method') || 'unknown';
   const user = headersList.get('x-user-id') || 'anonymous';
-  
+
   return {
     action,
     user,
@@ -71,7 +71,7 @@ export async function createLogEntry(
     method,
     body: body ? sanitizeRequestBody(body) : undefined,
     result,
-    statusCode
+    statusCode,
   };
 }
 
@@ -82,12 +82,12 @@ export async function createLogEntry(
 export async function logToAuditTrail(entry: LogEntry): Promise<void> {
   // Determine environment from NODE_ENV
   const isProd = process.env.NODE_ENV === 'production';
-  
+
   if (isProd) {
     // In production, we might:
     // 1. Store in database
     // TODO: Implement database logging
-    
+
     // 2. Send to a logging service
     try {
       // Placeholder for actual logging service integration
@@ -125,19 +125,19 @@ export function withAuditLogging<T>(
     // Log the start of the action
     const entry = await createLogEntry(action, body);
     await logToAuditTrail(entry);
-     
+
     // Execute the handler
     const result = await handler(body);
-     
+
     // Log the completion of the action
     const completionEntry = {
       ...entry,
       timestamp: new Date().toISOString(),
       result: result ? 'success' : 'failure',
-      statusCode: isResultWithStatus(result) ? result.status : 200
+      statusCode: isResultWithStatus(result) ? result.status : 200,
     };
     await logToAuditTrail(completionEntry);
-     
+
     return result;
   };
 }
@@ -146,7 +146,5 @@ export function withAuditLogging<T>(
  * Type guard to check if a result has a status property
  */
 function isResultWithStatus(result: unknown): result is ResultWithStatus {
-  return typeof result === 'object' && 
-         result !== null && 
-         'status' in result;
+  return typeof result === 'object' && result !== null && 'status' in result;
 }

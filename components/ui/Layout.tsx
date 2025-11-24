@@ -13,20 +13,20 @@ interface LayoutProps {
   ogImage?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({ 
-  children, 
+const Layout: React.FC<LayoutProps> = ({
+  children,
   title = 'Content Workflow Platform',
   description = 'A comprehensive platform for content production workflow and platform analysis',
-  ogImage = '/images/og-default.jpg'
+  ogImage = '/images/og-default.jpg',
 }) => {
   const router = useRouter();
-  
+
   // Construct full page title with site name
   const pageTitle = title ? `${title} | ${siteConfig.siteName}` : siteConfig.siteName;
-  
+
   // Use provided description or fall back to site description
   const pageDescription = description || siteConfig.siteDescription;
-  
+
   // Construct absolute URL for canonical and OG tags
   const canonicalUrl = `${siteConfig.siteUrl}${router.asPath}`;
   return (
@@ -39,16 +39,17 @@ const Layout: React.FC<LayoutProps> = ({
         <meta property="og:description" content={pageDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={canonicalUrl} />
-        <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `${siteConfig.siteUrl}${ogImage}`} />
+        <meta
+          property="og:image"
+          content={ogImage.startsWith('http') ? ogImage : `${siteConfig.siteUrl}${ogImage}`}
+        />
         <link rel="canonical" href={canonicalUrl} />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      
+
       <Header />
-      <main className={styles.mainContent}>
-        {children}
-      </main>
-      
+      <main className={styles.mainContent}>{children}</main>
+
       <Footer />
     </div>
   );

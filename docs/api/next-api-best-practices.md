@@ -17,13 +17,13 @@ The traditional approach using the Pages Router:
 
 ```typescript
 // Example: pages/api/example.ts
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
-    res.status(200).json({ message: 'Success' })
+    res.status(200).json({ message: 'Success' });
   } else {
-    res.status(405).json({ message: 'Method not allowed' })
+    res.status(405).json({ message: 'Method not allowed' });
   }
 }
 ```
@@ -39,15 +39,15 @@ The modern approach using the App Router:
 
 ```typescript
 // Example: app/api/example/route.ts
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 export async function GET() {
-  return NextResponse.json({ message: 'Success' })
+  return NextResponse.json({ message: 'Success' });
 }
 
 export async function POST(request: Request) {
-  const data = await request.json()
-  return NextResponse.json({ received: data })
+  const data = await request.json();
+  return NextResponse.json({ received: data });
 }
 ```
 
@@ -69,16 +69,17 @@ export async function POST(request: Request) {
 
 - Use the Web standard `Request` object and `NextResponse`
 - Parse request data appropriately:
+
   ```typescript
   // JSON data
-  const data = await request.json()
-  
+  const data = await request.json();
+
   // Form data
-  const formData = await request.formData()
-  
+  const formData = await request.formData();
+
   // URL parameters
-  const { searchParams } = new URL(request.url)
-  const query = searchParams.get('query')
+  const { searchParams } = new URL(request.url);
+  const query = searchParams.get('query');
   ```
 
 ### 4. Error Handling
@@ -90,14 +91,11 @@ export async function POST(request: Request) {
 ```typescript
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
+    const data = await request.json();
     // Process data
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to process request' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
   }
 }
 ```
@@ -111,7 +109,7 @@ export async function POST(request: Request) {
 export const config = {
   runtime: 'edge',
   matcher: '/api/:path*',
-}
+};
 ```
 
 ### 6. API Organization
@@ -134,7 +132,7 @@ export async function GET() {
         'Cache-Control': 'max-age=3600',
       },
     }
-  )
+  );
 }
 ```
 

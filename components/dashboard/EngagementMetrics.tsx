@@ -17,17 +17,14 @@ const EngagementMetrics: React.FC<EngagementMetricsProps> = ({
   metrics,
   isLoading,
   error,
-  onRefresh
+  onRefresh,
 }) => {
   return (
     <MetricsCard title="Engagement Metrics" isLoading={isLoading}>
       {error ? (
         <div className={dashboardStyles.errorMessage}>
           <p>Error loading metrics: {error}</p>
-          <button 
-            onClick={onRefresh}
-            className={dashboardStyles.refreshButton}
-          >
+          <button onClick={onRefresh} className={dashboardStyles.refreshButton}>
             Try Again
           </button>
         </div>
@@ -43,7 +40,7 @@ const EngagementMetrics: React.FC<EngagementMetricsProps> = ({
               </tr>
             </thead>
             <tbody>
-              {metrics.map((metric) => (
+              {metrics.map(metric => (
                 <tr key={metric.platform}>
                   <td>{metric.platform}</td>
                   <td>{metric.value}</td>
@@ -51,10 +48,7 @@ const EngagementMetrics: React.FC<EngagementMetricsProps> = ({
               ))}
             </tbody>
           </table>
-          <button
-            onClick={onRefresh}
-            className={dashboardStyles.refreshButton}
-          >
+          <button onClick={onRefresh} className={dashboardStyles.refreshButton}>
             Refresh Data
           </button>
         </div>

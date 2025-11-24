@@ -7,20 +7,14 @@ interface MainLayoutProps {
   description?: string;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ 
-  children, 
-  title, 
-  description 
-}) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ children, title, description }) => {
   return (
     <>
       <Head>
         <title>{title}</title>
         <meta name="description" content={description || title} />
       </Head>
-      <div className="container">
-        {children}
-      </div>
+      <div className="container">{children}</div>
     </>
   );
 };

@@ -1,6 +1,7 @@
 # End-to-End Testing in Next.js
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [Setup](#setup)
 - [Basic Navigation Tests](#basic-navigation-tests)

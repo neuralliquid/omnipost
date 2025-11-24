@@ -23,13 +23,13 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
       setLoading(true);
       setError(null);
       setSummaryApproved(false);
-      
+
       // Use the API client to summarize text
       const result = await apiClient.summarizeText(rawText);
-      
+
       if (result?.summary) {
         setSummary(result.summary);
-        
+
         // Call the callback if provided
         if (onSummarize) {
           onSummarize(result.summary);
@@ -55,7 +55,7 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Use the API client to approve the summary
       await apiClient.approveSummary(summary);
       setSummaryApproved(true);
@@ -70,19 +70,19 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4">Text Summarizer</h2>
-      
+
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           {error}
         </div>
       )}
-      
+
       {summaryApproved && (
         <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
           Summary approved successfully!
         </div>
       )}
-      
+
       <div className="mb-4">
         <label htmlFor="rawText" className="block text-sm font-medium text-gray-700 mb-1">
           Text to Summarize
@@ -90,14 +90,14 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
         <textarea
           id="rawText"
           value={rawText}
-          onChange={(e) => setRawText(e.target.value)}
+          onChange={e => setRawText(e.target.value)}
           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           rows={8}
           placeholder="Enter text to summarize..."
           disabled={loading}
         />
       </div>
-      
+
       <div className="mb-6">
         <button
           onClick={handleSummarize}
@@ -109,12 +109,12 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
           {loading ? 'Summarizing...' : 'Summarize Text'}
         </button>
       </div>
-      
+
       {summary && (
         <div className="border rounded-md p-4">
           <h3 className="text-lg font-medium mb-2">Summary</h3>
           <p className="mb-4 whitespace-pre-wrap">{summary}</p>
-          
+
           <button
             onClick={handleApproveSummary}
             disabled={loading || summaryApproved}

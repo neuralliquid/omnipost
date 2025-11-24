@@ -14,16 +14,16 @@ const RelatedPagesSuggestions: React.FC<RelatedPagesSuggestionsProps> = ({ curre
     { title: 'Home', path: '/', description: 'Go back to the homepage' },
     { title: 'Workflow', path: '/workflow', description: 'View content workflow' },
     { title: 'Platform Analysis', path: '/platform-analysis', description: 'Analyze platforms' },
-    { title: 'Content Adaptation', path: '/content-adaptation', description: 'Adapt content' }
+    { title: 'Content Adaptation', path: '/content-adaptation', description: 'Adapt content' },
   ];
 
   return (
     <div className="mt-8">
       <h3 className="text-lg font-medium text-gray-900 mb-4">You might also be interested in:</h3>
       <ul className="space-y-2">
-        {suggestions.map((suggestion) => (
+        {suggestions.map(suggestion => (
           <li key={suggestion.path}>
-            <Link 
+            <Link
               href={suggestion.path}
               className="text-indigo-600 hover:text-indigo-800 hover:underline"
             >
@@ -40,4 +40,3 @@ const RelatedPagesSuggestions: React.FC<RelatedPagesSuggestionsProps> = ({ curre
 };
 
 export default RelatedPagesSuggestions;
-

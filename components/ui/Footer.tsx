@@ -5,7 +5,7 @@ import siteConfig from '../../content/siteConfig.json';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
-  
+
   return (
     <footer className={styles.footer}>
       <div className={styles.footerContainer}>
@@ -16,11 +16,11 @@ const Footer: React.FC = () => {
               A comprehensive platform for content production workflow and platform analysis.
             </p>
           </div>
-          
+
           <div className={styles.footerColumn}>
             <h3 className={styles.columnTitle}>Navigation</h3>
             <ul className={styles.footerLinks}>
-              {siteConfig.navigation.map((item) => (
+              {siteConfig.navigation.map(item => (
                 <li key={`nav-${item.path}`}>
                   <Link href={item.path} className={styles.footerLink}>
                     {item.name}
@@ -29,13 +29,13 @@ const Footer: React.FC = () => {
               ))}
             </ul>
           </div>
-          
+
           <div className={styles.footerColumn}>
             <h3 className={styles.columnTitle}>Connect</h3>
             <ul className={styles.socialLinks}>
               {Object.entries(siteConfig.social).map(([platform, handle]) => (
                 <li key={platform}>
-                  <a 
+                  <a
                     href={`https://${platform}.com/${handle}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -48,7 +48,7 @@ const Footer: React.FC = () => {
             </ul>
           </div>
         </div>
-        
+
         <div className={styles.footerBottom}>
           <p className={styles.copyright}>
             © {currentYear} {siteConfig.siteName}. All rights reserved.

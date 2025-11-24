@@ -1,11 +1,11 @@
 /**
  * Rate Limiting Utility
- * 
+ *
  * Implements rate limiting for API endpoints to prevent:
  * - Brute force attacks on authentication
  * - DDoS attacks
  * - Cost exploitation (AI API abuse)
- * 
+ *
  * Uses in-memory storage for simplicity. For production with multiple
  * instances, consider Redis or Upstash Rate Limit.
  */
@@ -17,12 +17,12 @@ interface RateLimitConfig {
    * Maximum number of requests allowed
    */
   maxRequests: number;
-  
+
   /**
    * Time window in milliseconds
    */
   windowMs: number;
-  
+
   /**
    * Custom error message
    */
@@ -60,7 +60,7 @@ function getRateLimitKey(request: NextRequest, endpoint: string): string {
   const forwarded = request.headers.get('x-forwarded-for');
   const realIp = request.headers.get('x-real-ip');
   const ip = forwarded?.split(',')[0] || realIp || 'unknown';
-  
+
   return `${endpoint}:${ip}`;
 }
 
@@ -74,9 +74,9 @@ export function checkRateLimit(
 ): { allowed: boolean; remaining: number; resetTime: number } {
   const key = getRateLimitKey(request, endpoint);
   const now = Date.now();
-  
+
   const entry = rateLimitStore.get(key);
-  
+
   // No entry or expired entry - allow and create new entry
   if (!entry || entry.resetTime < now) {
     const resetTime = now + config.windowMs;
@@ -90,7 +90,7 @@ export function checkRateLimit(
       resetTime,
     };
   }
-  
+
   // Entry exists and not expired
   if (entry.count < config.maxRequests) {
     // Under limit - increment and allow
@@ -102,7 +102,7 @@ export function checkRateLimit(
       resetTime: entry.resetTime,
     };
   }
-  
+
   // Over limit - deny
   return {
     allowed: false,
@@ -121,12 +121,12 @@ export function withRateLimit<T extends (...args: any[]) => Promise<Response>>(
 ): T {
   return (async (...args: any[]) => {
     const request = args[0] as NextRequest;
-    
+
     const result = checkRateLimit(request, endpoint, config);
-    
+
     if (!result.allowed) {
       const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
-      
+
       return NextResponse.json(
         {
           error: config.message || 'Too many requests',
@@ -143,16 +143,16 @@ export function withRateLimit<T extends (...args: any[]) => Promise<Response>>(
         }
       );
     }
-    
+
     // Add rate limit headers to successful responses
     const response = await handler(...args);
-    
+
     // Clone response to add headers
     const newResponse = new Response(response.body, response);
     newResponse.headers.set('X-RateLimit-Limit', config.maxRequests.toString());
     newResponse.headers.set('X-RateLimit-Remaining', result.remaining.toString());
     newResponse.headers.set('X-RateLimit-Reset', result.resetTime.toString());
-    
+
     return newResponse;
   }) as T;
 }
@@ -170,7 +170,7 @@ export const RateLimitPresets = {
     windowMs: 15 * 60 * 1000, // 15 minutes
     message: 'Too many authentication attempts. Please try again in 15 minutes.',
   },
-  
+
   /**
    * For AI service endpoints - prevent cost exploitation
    * 10 requests per minute
@@ -180,7 +180,7 @@ export const RateLimitPresets = {
     windowMs: 60 * 1000, // 1 minute
     message: 'Too many AI requests. Please try again in a minute.',
   },
-  
+
   /**
    * For general API endpoints
    * 100 requests per 15 minutes
@@ -190,7 +190,7 @@ export const RateLimitPresets = {
     windowMs: 15 * 60 * 1000, // 15 minutes
     message: 'Too many requests. Please try again later.',
   },
-  
+
   /**
    * For admin endpoints
    * 50 requests per hour

@@ -20,6 +20,24 @@ interface FeatureFlags {
   feedbackMechanism: boolean;
 }
 
+// Helper function to determine button class name
+const getButtonClassName = (isUpdating: boolean, isEnabled: boolean): string => {
+  if (isUpdating) {
+    return 'opacity-50 cursor-not-allowed';
+  }
+  return isEnabled
+    ? 'bg-red-500 hover:bg-red-600 text-white'
+    : 'bg-green-500 hover:bg-green-600 text-white';
+};
+
+// Helper function to get button text
+const getButtonText = (isUpdating: boolean, isEnabled: boolean): string => {
+  if (isUpdating) {
+    return 'Updating...';
+  }
+  return isEnabled ? 'Disable' : 'Enable';
+};
+
 const FeatureFlagsManager: React.FC = () => {
   const [featureFlags, setFeatureFlags] = useState<FeatureFlags | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -56,7 +74,7 @@ const FeatureFlagsManager: React.FC = () => {
 
       const currentFlag = featureFlags[feature];
       const isEnabled = typeof currentFlag === 'boolean' ? currentFlag : currentFlag.enabled;
-      
+
       // For textParser, we need to include the implementation
       if (feature === 'textParser') {
         const implementation = (featureFlags.textParser as any).implementation;
@@ -66,9 +84,9 @@ const FeatureFlagsManager: React.FC = () => {
       }
 
       // Update local state
-      setFeatureFlags((prev) => {
+      setFeatureFlags(prev => {
         if (!prev) return prev;
-        
+
         if (typeof prev[feature] === 'boolean') {
           return { ...prev, [feature]: !prev[feature] };
         } else {
@@ -76,8 +94,8 @@ const FeatureFlagsManager: React.FC = () => {
             ...prev,
             [feature]: {
               ...prev[feature],
-              enabled: !(prev[feature] as FeatureFlag).enabled
-            }
+              enabled: !(prev[feature] as FeatureFlag).enabled,
+            },
           };
         }
       });
@@ -104,15 +122,15 @@ const FeatureFlagsManager: React.FC = () => {
       );
 
       // Update local state
-      setFeatureFlags((prev) => {
+      setFeatureFlags(prev => {
         if (!prev) return prev;
-        
+
         return {
           ...prev,
           textParser: {
             ...prev.textParser,
-            implementation
-          }
+            implementation,
+          },
         };
       });
     } catch (err: any) {
@@ -142,53 +160,55 @@ const FeatureFlagsManager: React.FC = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Feature Flags Manager</h1>
-      
+
       {updateError && (
         <div className="p-2 mb-4 bg-red-100 border border-red-400 text-red-700 rounded">
           {updateError}
         </div>
       )}
-      
+
       <div className="space-y-4">
         {Object.entries(featureFlags).map(([feature, value]) => {
           const isComplex = typeof value === 'object';
           const isEnabled = isComplex ? value.enabled : value;
-          
+
           return (
             <div key={feature} className="border p-4 rounded">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-medium">{feature}</h3>
                   <p className="text-gray-500">
-                    Status: <span className={isEnabled ? 'text-green-600' : 'text-red-600'}>
+                    Status:{' '}
+                    <span className={isEnabled ? 'text-green-600' : 'text-red-600'}>
                       {isEnabled ? 'Enabled' : 'Disabled'}
                     </span>
                   </p>
                 </div>
-                
+
                 <button
                   onClick={() => handleToggle(feature)}
                   disabled={updating === feature}
-                  className={`px-4 py-2 rounded ${
-                    updating === feature ? 'opacity-50 cursor-not-allowed' :
-                    isEnabled ? 'bg-red-500 hover:bg-red-600 text-white' :
-                    'bg-green-500 hover:bg-green-600 text-white'
-                  }`}
+                  className={`px-4 py-2 rounded ${getButtonClassName(updating === feature, isEnabled)}`}
                 >
-                  {updating === feature ? 'Updating...' : isEnabled ? 'Disable' : 'Enable'}
+                  {getButtonText(updating === feature, isEnabled)}
                 </button>
               </div>
-              
+
               {/* Special handling for textParser */}
               {feature === 'textParser' && (
                 <div className="mt-2">
-                  <label htmlFor="textParser-implementation" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="textParser-implementation"
+                    className="block text-sm font-medium text-gray-700"
+                  >
                     Implementation:
                   </label>
                   <select
                     id="textParser-implementation"
                     value={(value as { enabled: boolean; implementation: string }).implementation}
-                    onChange={(e) => handleImplementationChange(e.target.value as 'deepseek' | 'openai' | 'azure')}
+                    onChange={e =>
+                      handleImplementationChange(e.target.value as 'deepseek' | 'openai' | 'azure')
+                    }
                     disabled={updating === 'textParser'}
                     className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md"
                   >

@@ -16,11 +16,7 @@ interface NavigationLinksProps {
 /**
  * Component for displaying consistent navigation links between pages
  */
-const NavigationLinks: React.FC<NavigationLinksProps> = ({ 
-  links, 
-  className, 
-  linkClassName 
-}) => {
+const NavigationLinks: React.FC<NavigationLinksProps> = ({ links, className, linkClassName }) => {
   return (
     <div className={className}>
       {links.map((link, index) => (

@@ -1,6 +1,7 @@
 # Next.js Performance Optimization Best Practices
 
 ## Table of Contents
+
 - [Core Web Vitals](#core-web-vitals)
 - [Image Optimization](#image-optimization)
 - [Code Splitting](#code-splitting)
@@ -14,14 +15,15 @@
 
 Focus on these key performance metrics:
 
-| Metric | Description | Target |
-|--------|-------------|--------|
-| LCP (Largest Contentful Paint) | Time until largest content element is visible | < 2.5s |
-| FID (First Input Delay) | Time until page responds to user interaction | < 100ms |
-| CLS (Cumulative Layout Shift) | Visual stability measurement | < 0.1 |
-| TTFB (Time to First Byte) | Time until first byte of response is received | < 800ms |
+| Metric                         | Description                                   | Target  |
+| ------------------------------ | --------------------------------------------- | ------- |
+| LCP (Largest Contentful Paint) | Time until largest content element is visible | < 2.5s  |
+| FID (First Input Delay)        | Time until page responds to user interaction  | < 100ms |
+| CLS (Cumulative Layout Shift)  | Visual stability measurement                  | < 0.1   |
+| TTFB (Time to First Byte)      | Time until first byte of response is received | < 800ms |
 
 **Best Practices:**
+
 - Prioritize above-the-fold content loading
 - Defer non-critical resources
 - Implement proper image dimensions and aspect ratios
@@ -53,6 +55,7 @@ import Image from 'next/image';
 ```
 
 **Best Practices:**
+
 - Always specify width and height or use fill with proper sizing
 - Add the `priority` attribute for above-the-fold images
 - Use the `sizes` attribute for responsive images
@@ -67,16 +70,14 @@ Next.js automatically code-splits by pages. Enhance with:
 // Dynamic import with loading state
 import dynamic from 'next/dynamic';
 
-const DynamicComponent = dynamic(
-  () => import('../components/HeavyComponent'),
-  {
-    loading: () => <p>Loading...</p>,
-    ssr: false, // Disable SSR if component uses browser APIs
-  }
-);
+const DynamicComponent = dynamic(() => import('../components/HeavyComponent'), {
+  loading: () => <p>Loading...</p>,
+  ssr: false, // Disable SSR if component uses browser APIs
+});
 ```
 
 **Best Practices:**
+
 - Use dynamic imports for large components not needed immediately
 - Split large pages into smaller components
 - Lazy load below-the-fold content
@@ -92,6 +93,7 @@ npx next build && npx next analyze
 ```
 
 **Best Practices:**
+
 - Import only what you need from libraries
 - Use tree-shakable libraries
 - Replace large dependencies with smaller alternatives
@@ -121,6 +123,7 @@ export default function MyApp({ Component, pageProps }) {
 ```
 
 **Best Practices:**
+
 - Use `next/font` for automatic optimization
 - Limit font weights and styles
 - Use `font-display: swap` to prevent invisible text
@@ -144,7 +147,7 @@ function VirtualList({ items }) {
     getScrollElement: () => parentRef.current,
     estimateSize: () => 50,
   });
-  
+
   return (
     <div ref={parentRef} style={{ height: '500px', overflow: 'auto' }}>
       <div
@@ -153,7 +156,7 @@ function VirtualList({ items }) {
           position: 'relative',
         }}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => (
+        {rowVirtualizer.getVirtualItems().map(virtualRow => (
           <div
             key={virtualRow.index}
             style={{
@@ -175,6 +178,7 @@ function VirtualList({ items }) {
 ```
 
 **Best Practices:**
+
 - Use React.memo for expensive components
 - Implement virtualization for long lists
 - Avoid unnecessary re-renders with proper key usage
@@ -192,7 +196,7 @@ export async function getServerSideProps() {
     fetch('https://api.example.com/user').then(res => res.json()),
     fetch('https://api.example.com/posts').then(res => res.json()),
   ]);
-  
+
   return {
     props: {
       user: userData,
@@ -203,6 +207,7 @@ export async function getServerSideProps() {
 ```
 
 **Best Practices:**
+
 - Use Incremental Static Regeneration when possible
 - Implement proper caching headers
 - Fetch data in parallel
@@ -229,6 +234,7 @@ export function reportWebVitals(metric) {
 ```
 
 **Best Practices:**
+
 - Use Next.js built-in web vitals reporting
 - Implement Real User Monitoring (RUM)
 - Set up performance budgets

@@ -92,8 +92,13 @@ content_creation/
 │   └── workflowStages.ts
 │
 ├── docs/                  # Documentation
-│   ├── api-migration-todo.md
-│   └── next-api-best-practices.md
+│   ├── ARCHITECTURE.md   # Technical architecture documentation
+│   ├── api/              # API-specific documentation
+│   │   ├── api-migration-todo.md
+│   │   └── next-api-best-practices.md
+│   ├── guides/           # Developer guides and best practices
+│   │   └── next-best-practices/
+│   └── archived/         # Historical/implementation documentation
 │
 ├── infra/                 # Infrastructure as Code
 │   ├── main.bicep        # Azure Bicep template
@@ -109,27 +114,29 @@ content_creation/
 │   ├── integration/      # Integration tests
 │   └── lib/              # Library tests
 │
-└── next-best-practices/   # Best practice documentation
-    └── frontend/         # Frontend best practices
-
 ```
 
 ## Key Directories Explained
 
 ### `/app/api/` - Modern API Routes
+
 This directory contains the new API route handlers following the Next.js App Router pattern. These are gradually replacing the legacy API routes in `/pages/api/`.
 
 **Key Features:**
+
 - Uses standard Web Request/Response APIs
 - Better TypeScript support
 - More flexible middleware options
 - Located in `_utils/` subfolder for shared logic
 
 ### `/pages/` - Pages and Legacy API Routes
+
 Contains the Next.js pages and legacy API routes. The API routes in `/pages/api/` are being migrated to `/app/api/` as documented in `docs/api-migration-todo.md`.
 
 ### `/components/` - React Components
+
 Organized by feature/domain. Components are grouped into logical categories:
+
 - Feature-specific folders (e.g., `automation/`, `platform/`, `review/`)
 - Shared/common UI components in `ui/` folder
 - Layout components in `layouts/`
@@ -137,20 +144,30 @@ Organized by feature/domain. Components are grouped into logical categories:
 Each component folder typically includes an `index.ts` for clean exports.
 
 ### `/lib/` - Core Business Logic
+
 Contains reusable business logic, services, and utilities:
+
 - **`auth/`**: Authentication and authorization services
 - **`clients/`**: External API clients
 - **`data/`**: Data access and persistence logic
 - **`storage/`**: Storage abstractions
 
 ### `/types/` - TypeScript Types
+
 Centralized type definitions for better type safety and code sharing.
 
 ### `/infra/` - Infrastructure
+
 Azure infrastructure definitions using Bicep templates for deployment.
 
 ### `/docs/` - Documentation
-Project documentation including API migration guides and best practices.
+
+Project documentation organized by type:
+
+- **`ARCHITECTURE.md`**: Comprehensive technical architecture guide
+- **`api/`**: API-specific documentation and migration guides
+- **`guides/`**: Developer guides and best practices
+- **`archived/`**: Historical documentation from previous analysis phases
 
 ## File Naming Conventions
 
@@ -163,24 +180,33 @@ Project documentation including API migration guides and best practices.
 ## Recent Improvements
 
 ### Component Organization
+
 - ✅ Consolidated `components/common/` and `components/shared/` into `components/ui/` for better organization
 - ✅ All imports updated to use the new `components/ui/` path
 
 ### Configuration Enhancements
+
 - ✅ Added `.editorconfig` for consistent coding style
 - ✅ Added `.nvmrc` to specify Node.js version
-- ✅ Added ESLint configuration for code quality
+- ✅ Updated ESLint configuration for compatibility
 - ✅ Added Prettier configuration for code formatting
 - ✅ Enhanced TypeScript path aliases for cleaner imports
+- ✅ Added `check-all` script to run all quality checks
 
-### Documentation
-- ✅ Added `CHANGELOG.md` for tracking changes
-- ✅ Added `SECURITY.md` for security policy
-- ✅ Updated `package.json` with proper metadata
+### Documentation Consolidation
+
+- ✅ Reorganized documentation into logical structure
+- ✅ Created `/docs/api/` for API-specific documentation
+- ✅ Created `/docs/guides/` for developer guides and best practices
+- ✅ Created `/docs/archived/` for historical analysis documentation
+- ✅ Added comprehensive `ARCHITECTURE.md` technical guide
+- ✅ Moved implementation/analysis docs to archived folder
+- ✅ Kept only user-facing docs in root (README, CONTRIBUTING, SECURITY, etc.)
 
 ## Migration Status
 
 The project is currently migrating from Pages Router API routes to App Router Route Handlers:
+
 - ✅ New endpoints are being added in `/app/api/`
 - 🔄 Legacy endpoints in `/pages/api/` are being deprecated
 - 📝 See `docs/api-migration-todo.md` for detailed migration status

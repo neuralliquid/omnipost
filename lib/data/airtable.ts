@@ -123,7 +123,7 @@ export class AirtableClient {
       // Create query options object
       const queryOptions: QueryOptions = {
         maxRecords: pageSize + 1,
-        pageSize: pageSize + 1
+        pageSize: pageSize + 1,
       };
 
       if (offset) {
@@ -153,8 +153,8 @@ export class AirtableClient {
         pagination: {
           page,
           pageSize,
-          hasMorePages: hasMore
-        }
+          hasMorePages: hasMore,
+        },
       };
     } catch (error) {
       console.error('Error retrieving content from Airtable:', error);
@@ -175,7 +175,7 @@ export class AirtableClient {
       await this.feedbackTable!.create({
         ReviewId: feedback.reviewId,
         Feedback: feedback.feedback,
-        CreatedAt: new Date().toISOString()
+        CreatedAt: new Date().toISOString(),
       });
     } catch (error) {
       console.error('Error saving feedback to Airtable:', error);
@@ -195,17 +195,17 @@ export class AirtableClient {
 
     try {
       const selectParams: QueryOptions = {};
-      
+
       if (filter.reviewId) {
         selectParams.filterByFormula = `{ReviewId} = '${filter.reviewId}'`;
       }
 
       // Use type assertion to handle the type mismatch with Airtable's API
       const records = await this.feedbackTable!.select(selectParams as any).all();
-      
+
       return records.map(record => ({
         reviewId: record.get('ReviewId') as string,
-        feedback: record.get('Feedback') as string
+        feedback: record.get('Feedback') as string,
       }));
     } catch (error) {
       console.error('Error retrieving feedback from Airtable:', error);

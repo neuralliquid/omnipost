@@ -1,6 +1,7 @@
 # Component Integration Testing in Next.js
 
 ## Table of Contents
+
 - [Introduction](#introduction)
 - [Setup](#setup)
 - [Testing Component Interactions](#testing-component-interactions)
@@ -34,10 +35,10 @@ Test how components interact with each other:
 // Minimal example
 it('shows user details when user is selected from list', async () => {
   render(<UserDirectory />);
-  
+
   // Click on a user in the list
   await userEvent.click(screen.getByText('Jane Smith'));
-  
+
   // Verify user details are displayed
   expect(screen.getByText('Email: jane@example.com')).toBeInTheDocument();
 });
@@ -51,15 +52,15 @@ Test form interactions across components:
 // Minimal example
 it('submits form data and shows success message', async () => {
   render(<ContactForm />);
-  
+
   // Fill form fields
   await userEvent.type(screen.getByLabelText('Name'), 'John Doe');
   await userEvent.type(screen.getByLabelText('Email'), 'john@example.com');
   await userEvent.type(screen.getByLabelText('Message'), 'Hello world');
-  
+
   // Submit form
   await userEvent.click(screen.getByRole('button', { name: /submit/i }));
-  
+
   // Check success message appears
   expect(screen.getByText('Message sent successfully!')).toBeInTheDocument();
 });
@@ -81,11 +82,11 @@ jest.mock('next/router', () => ({
 it('navigates to product details when product is clicked', async () => {
   const mockRouter = { push: jest.fn() };
   (useRouter as jest.Mock).mockReturnValue(mockRouter);
-  
+
   render(<ProductList products={mockProducts} />);
-  
+
   await userEvent.click(screen.getByText('Product 1'));
-  
+
   expect(mockRouter.push).toHaveBeenCalledWith('/products/1');
 });
 ```

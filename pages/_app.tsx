@@ -46,10 +46,10 @@ export default function MyApp({ Component, pageProps }: AppProps) {
   }, [router]);
 
   // Practice #4: SEO improvements
-  const pageTitle = pageProps.title 
+  const pageTitle = pageProps.title
     ? `${pageProps.title} | ${siteConfig.siteName}`
     : siteConfig.siteName;
-  
+
   const pageDescription = pageProps.description || siteConfig.siteDescription;
   return (
     <>
@@ -71,21 +71,21 @@ export default function MyApp({ Component, pageProps }: AppProps) {
             <div className={styles.loadingOverlay}>
               {/* Practice #2: Image optimization */}
               <div className={styles.loadingImageContainer}>
-                <Image 
+                <Image
                   src="/images/loading-spinner.svg"
                   alt="Loading"
                   width={50}
                   height={50}
                   priority
                 />
-        </div>
+              </div>
             </div>
           )}
           <main className={styles.mainContent}>
             <Component {...pageProps} />
           </main>
           <Footer />
-          
+
           {/* Practice #5: Code splitting - only load analytics in production */}
           {process.env.NODE_ENV === 'production' && <Analytics />}
         </div>
@@ -105,7 +105,7 @@ export function reportWebVitals(metric: any) {
     // Example implementation for sending to analytics
     const body = JSON.stringify(metric);
     const url = '/api/analytics';
-    
+
     // Use `navigator.sendBeacon()` if available, falling back to `fetch()`
     if (navigator.sendBeacon) {
       navigator.sendBeacon(url, body);

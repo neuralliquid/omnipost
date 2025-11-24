@@ -25,11 +25,11 @@ export function useEngagementMetrics(): UseEngagementMetricsReturn {
       setIsLoading(true);
       setError(null);
       const response = await fetch('/api/engagement-metrics');
-      
+
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
-      
+
       const data = await response.json();
       setData(data);
     } catch (err) {
@@ -47,6 +47,6 @@ export function useEngagementMetrics(): UseEngagementMetricsReturn {
     data,
     isLoading,
     error,
-    refetch: fetchEngagementMetrics
+    refetch: fetchEngagementMetrics,
   };
 }

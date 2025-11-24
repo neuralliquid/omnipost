@@ -14,13 +14,7 @@ const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ currentStep }) => {
   return (
     <div className={styles.loadingOverlay}>
       <div className={styles.loadingImageContainer}>
-        <Image 
-          src="/images/loading-spinner.svg"
-          alt="Loading"
-          width={50}
-          height={50}
-          priority
-        />
+        <Image src="/images/loading-spinner.svg" alt="Loading" width={50} height={50} priority />
       </div>
       <p>Processing: {currentStep}...</p>
     </div>

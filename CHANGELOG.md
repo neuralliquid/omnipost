@@ -8,12 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Changed
+
 - Consolidated `components/common/` and `components/shared/` into a single `components/ui/` directory for better organization
 - Updated package.json metadata with proper project name, description, and repository information
 - Enhanced TypeScript configuration with better path aliases for cleaner imports
 - Improved Jest configuration to properly handle ES modules
 
 ### Added
+
 - Added `.editorconfig` for consistent coding style across different editors
 - Added `.nvmrc` to specify Node.js version (18.20.0)
 - Added ESLint configuration (`.eslintrc.json`) for code quality
@@ -26,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - Initial Release
 
 ### Added
+
 - Initial project structure with Next.js App Router and Pages Router
 - Content creation and management features
 - AI-powered text processing and image generation

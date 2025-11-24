@@ -6,7 +6,7 @@ interface MobileResponsivenessProps {
 
 const MobileResponsiveness: React.FC<MobileResponsivenessProps> = ({ children }) => {
   return (
-    <div 
+    <div
       className="mobile-responsive"
       style={{
         display: 'flex',

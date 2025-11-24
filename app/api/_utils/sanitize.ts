@@ -1,9 +1,9 @@
 /**
  * Input Sanitization and Validation Utilities
- * 
+ *
  * This module provides functions to sanitize and validate user input
  * to prevent XSS, injection attacks, and other security vulnerabilities.
- * 
+ *
  * Uses:
  * - DOMPurify for HTML sanitization
  * - Zod for runtime type validation
@@ -40,7 +40,7 @@ export function sanitizeHtml(
     ALLOWED_ATTR: options?.allowedAttributes || [],
     KEEP_CONTENT: true,
   };
-  
+
   return DOMPurify.sanitize(input, config);
 }
 
@@ -61,42 +61,47 @@ export function sanitizeText(input: string): string {
  * Zod schema for validating text input
  */
 export const textInputSchema = z.object({
-  rawInput: z.string()
+  rawInput: z
+    .string()
     .min(1, 'Input cannot be empty')
     .max(1_000_000, 'Input too large (max 1MB)')
-    .transform((val) => sanitizeText(val)),
+    .transform(val => sanitizeText(val)),
 });
 
 /**
  * Zod schema for validating context input for image generation
  */
 export const imageContextSchema = z.object({
-  context: z.string()
+  context: z
+    .string()
     .min(1, 'Context cannot be empty')
     .max(10_000, 'Context too large (max 10,000 characters)')
-    .transform((val) => sanitizeText(val)),
+    .transform(val => sanitizeText(val)),
 });
 
 /**
  * Zod schema for validating raw text for summarization
  */
 export const summarizeTextSchema = z.object({
-  rawText: z.string()
+  rawText: z
+    .string()
     .min(1, 'Text cannot be empty')
     .max(100_000, 'Text too large (max 100,000 characters)')
-    .transform((val) => sanitizeText(val)),
+    .transform(val => sanitizeText(val)),
 });
 
 /**
  * Zod schema for validating notification input
  */
 export const notificationSchema = z.object({
-  message: z.string()
+  message: z
+    .string()
     .min(1, 'Message cannot be empty')
     .max(10_000, 'Message too large')
-    .transform((val) => sanitizeText(val)),
+    .transform(val => sanitizeText(val)),
   type: z.enum(['email', 'slack', 'sms']),
-  recipient: z.string()
+  recipient: z
+    .string()
     .email('Invalid email address')
     .optional()
     .or(z.string().min(1, 'Recipient required')),
@@ -106,11 +111,13 @@ export const notificationSchema = z.object({
  * Zod schema for validating feedback input
  */
 export const feedbackSchema = z.object({
-  message: z.string()
+  message: z
+    .string()
     .min(1, 'Feedback message cannot be empty')
     .max(5_000, 'Feedback too long (max 5,000 characters)')
-    .transform((val) => sanitizeText(val)),
-  rating: z.number()
+    .transform(val => sanitizeText(val)),
+  rating: z
+    .number()
     .int('Rating must be an integer')
     .min(1, 'Rating must be at least 1')
     .max(5, 'Rating must be at most 5')
@@ -133,7 +140,7 @@ export function validateAndSanitize<T extends z.ZodType>(
     return { success: true, data: result };
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = error.errors.map((e) => `${e.path.join('.')}: ${e.message}`);
+      const errors = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
       return { success: false, errors };
     }
     return { success: false, errors: ['Validation failed'] };
@@ -146,29 +153,26 @@ export function validateAndSanitize<T extends z.ZodType>(
  * @param allowedDomains - List of allowed domains (optional)
  * @returns Sanitized URL or null if invalid
  */
-export function sanitizeUrl(
-  url: string,
-  allowedDomains?: string[]
-): string | null {
+export function sanitizeUrl(url: string, allowedDomains?: string[]): string | null {
   try {
     const parsed = new URL(url);
-    
+
     // Only allow http and https protocols
     if (!['http:', 'https:'].includes(parsed.protocol)) {
       return null;
     }
-    
+
     // Check against allowed domains if provided
     if (allowedDomains && allowedDomains.length > 0) {
-      const isAllowed = allowedDomains.some((domain) =>
-        parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
+      const isAllowed = allowedDomains.some(
+        domain => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
       );
-      
+
       if (!isAllowed) {
         return null;
       }
     }
-    
+
     // Prevent private IP ranges (basic check)
     if (
       parsed.hostname === 'localhost' ||
@@ -179,7 +183,7 @@ export function sanitizeUrl(
     ) {
       return null;
     }
-    
+
     return parsed.toString();
   } catch {
     return null;

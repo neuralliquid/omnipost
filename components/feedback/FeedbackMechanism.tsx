@@ -45,7 +45,7 @@ const FeedbackMechanism: React.FC<FeedbackMechanismProps> = ({ reviewId }) => {
       {success && <p style={{ color: 'green' }}>{success}</p>}
       <textarea
         value={feedback}
-        onChange={(e) => setFeedback(e.target.value)}
+        onChange={e => setFeedback(e.target.value)}
         placeholder="Enter your feedback here"
         disabled={loading}
       />

@@ -15,8 +15,9 @@ interface Feedback {
 
 // Type guard for Error objects
 function isError(error: unknown): error is Error {
-  return error instanceof Error || (typeof error === 'object' && 
-         error !== null && 'message' in error);
+  return (
+    error instanceof Error || (typeof error === 'object' && error !== null && 'message' in error)
+  );
 }
 // Mock functions for feedback storage
 // In a real implementation, these would interact with your database
@@ -32,10 +33,11 @@ async function getFeedback(filter: Partial<Feedback>): Promise<Feedback[]> {
   // For now, return mock data
   return [
     { reviewId: '123', feedback: 'Great content!' },
-    { reviewId: '456', feedback: 'Could use improvement.' }
-  ].filter(item => 
-    (!filter.reviewId || item.reviewId === filter.reviewId) &&
-    (!filter.feedback || item.feedback.includes(filter.feedback))
+    { reviewId: '456', feedback: 'Could use improvement.' },
+  ].filter(
+    item =>
+      (!filter.reviewId || item.reviewId === filter.reviewId) &&
+      (!filter.feedback || item.feedback.includes(filter.feedback))
   );
 }
 
@@ -50,12 +52,12 @@ function validateFeedbackData(reviewId: unknown, feedback: unknown): NextRespons
   if (reviewIdError) {
     return Errors.badRequest(reviewIdError) as NextResponse;
   }
-  
+
   const feedbackError = validateString(feedback, 'Feedback');
   if (feedbackError) {
     return Errors.badRequest(feedbackError) as NextResponse;
   }
-    
+
   return null;
 }
 
@@ -65,31 +67,38 @@ function validateFeedbackData(reviewId: unknown, feedback: unknown): NextRespons
  * @param feedback The feedback text
  * @returns Response object with the result
  */
-async function processFeedbackSubmission(reviewId: string, feedback: string): Promise<NextResponse> {
+async function processFeedbackSubmission(
+  reviewId: string,
+  feedback: string
+): Promise<NextResponse> {
   try {
     // Log the feedback submission
-    await logToAuditTrail(await createLogEntry('SUBMIT_FEEDBACK', { 
-      reviewId,
-      feedbackLength: feedback.length
-    }));
-    
+    await logToAuditTrail(
+      await createLogEntry('SUBMIT_FEEDBACK', {
+        reviewId,
+        feedbackLength: feedback.length,
+      })
+    );
+
     // Save the feedback
     await saveFeedback({ reviewId, feedback });
-    
+
     // Return success response
-    return NextResponse.json({ 
+    return NextResponse.json({
       message: 'Feedback submitted successfully',
-      reviewId
+      reviewId,
     });
   } catch (error) {
     console.error('Error submitting feedback:', error);
-    
+
     // Log feedback submission failure
     const errorMessage = isError(error) ? error.message : 'Unknown error';
-    await logToAuditTrail(await createLogEntry('SUBMIT_FEEDBACK_FAILURE', { 
-      error: error instanceof Error ? error.message : String(error)
-    }));
-    
+    await logToAuditTrail(
+      await createLogEntry('SUBMIT_FEEDBACK_FAILURE', {
+        error: error instanceof Error ? error.message : String(error),
+      })
+    );
+
     return Errors.internalServerError('Failed to submit feedback') as NextResponse;
   }
 }
@@ -103,30 +112,32 @@ async function retrieveFeedback(url: URL): Promise<NextResponse> {
   try {
     // Get query parameters
     const reviewId = url.searchParams.get('reviewId');
-    
+
     // Create filter based on query parameters
     const filter: Partial<Feedback> = {};
     if (reviewId) {
       filter.reviewId = reviewId;
     }
-    
+
     // Log the feedback retrieval request
     await logToAuditTrail(await createLogEntry('GET_FEEDBACK', { filter }));
-    
+
     // Get the feedback
     const feedbackItems = await getFeedback(filter);
-    
+
     // Return the feedback items
     return NextResponse.json(feedbackItems);
   } catch (error) {
     console.error('Error retrieving feedback:', error);
-    
+
     // Log feedback retrieval failure
     const errorMessage = isError(error) ? error.message : 'Unknown error';
-    await logToAuditTrail(await createLogEntry('GET_FEEDBACK_FAILURE', { 
-      error: errorMessage
-    }));
-    
+    await logToAuditTrail(
+      await createLogEntry('GET_FEEDBACK_FAILURE', {
+        error: errorMessage,
+      })
+    );
+
     return Errors.internalServerError('Failed to retrieve feedback') as NextResponse;
   }
 }
@@ -147,15 +158,15 @@ export const POST = withErrorHandling(async (request: Request) => {
   // Check if feedback mechanism feature is enabled
   const featureCheckError = checkFeedbackFeatureEnabled();
   if (featureCheckError) return featureCheckError;
-  
+
   // Parse and validate request body
   const body = await request.json();
   const { reviewId, feedback } = body;
-  
+
   // Validate input
   const validationError = validateFeedbackData(reviewId, feedback);
   if (validationError) return validationError;
-  
+
   // Process the feedback submission
   return processFeedbackSubmission(reviewId, feedback);
 });
@@ -166,14 +177,14 @@ export const GET = withErrorHandling(async (request: Request) => {
   if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to retrieve feedback') as NextResponse;
   }
-  
+
   // Check if feedback mechanism feature is enabled
   const featureCheckError = checkFeedbackFeatureEnabled();
   if (featureCheckError) return featureCheckError;
-  
+
   // Get the URL for query parameters
   const url = new URL(request.url);
-  
+
   // Retrieve feedback based on query parameters
   return retrieveFeedback(url);
 });

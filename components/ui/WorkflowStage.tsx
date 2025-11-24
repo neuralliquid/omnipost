@@ -14,7 +14,7 @@ const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
     <div className="step-card">
       <h4>{title}</h4>
       <ul>
-        {items.map((item) => (
+        {items.map(item => (
           <li key={`item-${item.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}>{item}</li>
         ))}
       </ul>
@@ -39,12 +39,12 @@ interface WorkflowStageProps {
  * Shared component for displaying a workflow stage with multiple steps
  * Supports both number/title and stageNumber/stageTitle prop patterns
  */
-const WorkflowStage: React.FC<WorkflowStageProps> = ({ 
+const WorkflowStage: React.FC<WorkflowStageProps> = ({
   number,
   stageNumber,
   title,
   stageTitle,
-  steps 
+  steps,
 }) => {
   const displayNumber = number ?? stageNumber;
   const displayTitle = title ?? stageTitle;
@@ -56,8 +56,8 @@ const WorkflowStage: React.FC<WorkflowStageProps> = ({
         {displayTitle && <h3 className="stage-title">{displayTitle}</h3>}
       </div>
       <div className="stage-steps">
-        {steps.map((step) => (
-          <StepCard 
+        {steps.map(step => (
+          <StepCard
             key={`step-${step.title.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}
             title={step.title}
             items={step.items}

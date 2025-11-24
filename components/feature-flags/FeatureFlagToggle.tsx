@@ -12,7 +12,7 @@ const FeatureFlagToggle: React.FC<FeatureFlagToggleProps> = ({
   featureName,
   initialState,
   implementation,
-  onToggle
+  onToggle,
 }) => {
   const [enabled, setEnabled] = useState<boolean>(initialState);
   const [updating, setUpdating] = useState<boolean>(false);
@@ -25,10 +25,10 @@ const FeatureFlagToggle: React.FC<FeatureFlagToggleProps> = ({
 
       // Use the API client to update the feature flag
       await apiClient.updateFeatureFlag(featureName, !enabled, implementation);
-      
+
       // Update local state
       setEnabled(!enabled);
-      
+
       // Call the onToggle callback if provided
       if (onToggle) {
         onToggle(!enabled);
@@ -46,22 +46,23 @@ const FeatureFlagToggle: React.FC<FeatureFlagToggleProps> = ({
       <div>
         <h3 className="font-medium">{featureName}</h3>
         <p className="text-sm text-gray-500">
-          Status: <span className={enabled ? 'text-green-600' : 'text-red-600'}>
+          Status:{' '}
+          <span className={enabled ? 'text-green-600' : 'text-red-600'}>
             {enabled ? 'Enabled' : 'Disabled'}
           </span>
           {implementation && ` (${implementation})`}
         </p>
-        {error && (
-          <p className="text-sm text-red-600 mt-1">{error}</p>
-        )}
+        {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
       </div>
       <button
         onClick={handleToggle}
         disabled={updating}
         className={`px-4 py-2 rounded-md ${
-          updating ? 'opacity-50 cursor-not-allowed' :
-          enabled ? 'bg-red-500 hover:bg-red-600 text-white' :
-          'bg-green-500 hover:bg-green-600 text-white'
+          updating
+            ? 'opacity-50 cursor-not-allowed'
+            : enabled
+              ? 'bg-red-500 hover:bg-red-600 text-white'
+              : 'bg-green-500 hover:bg-green-600 text-white'
         }`}
       >
         {updating ? 'Updating...' : enabled ? 'Disable' : 'Enable'}

@@ -39,10 +39,10 @@ export const GET = withErrorHandling(async () => {
   // Check authentication
   const authError = await validateAuth();
   if (authError) return authError;
-  
+
   // Log the access to platforms list
   await logPlatformsAccess();
-  
+
   // Return platforms list
   return NextResponse.json(platforms);
 });

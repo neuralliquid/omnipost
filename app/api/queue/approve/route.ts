@@ -25,18 +25,22 @@ function validateQueueItem(item: QueueItem): { valid: boolean; error?: string } 
 /**
  * Validates platform configuration
  */
-function validatePlatformConfig(platformName: string): { valid: boolean; config?: any; error?: string } {
+function validatePlatformConfig(platformName: string): {
+  valid: boolean;
+  config?: any;
+  error?: string;
+} {
   const platformConfig = getPlatformConfig(platformName);
-  
+
   if (!platformConfig) {
     return { valid: false, error: `Platform configuration not found for ${platformName}` };
   }
 
   // Check if API key is missing for a required platform
   if (platformConfig.required && !platformConfig.apiKey) {
-    return { 
-      valid: false, 
-      error: `API key for ${platformName} is not configured. Please set the ${platformName.toUpperCase().replace(/\s+/g, '_')}_API_KEY environment variable.` 
+    return {
+      valid: false,
+      error: `API key for ${platformName} is not configured. Please set the ${platformName.toUpperCase().replaceAll(/\s+/g, '_')}_API_KEY environment variable.`,
     };
   }
 
@@ -56,64 +60,65 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
 
   const platformName = item.platform.name.toLowerCase();
   const contentId = item.content.id || 'unknown';
-  
+
   // Validate platform configuration
   const configValidation = validatePlatformConfig(platformName);
   if (!configValidation.valid) {
     return { item, error: configValidation.error };
   }
-  
+
   const platformConfig = configValidation.config;
 
   try {
     // Log individual publishing attempt
-    const publishLogEntry = await createLogEntry(
-      'PUBLISH_TO_PLATFORM', 
-      { platformName, contentId }
-    );
-    await logToAuditTrail(publishLogEntry);
-    
-    // Publish to platform
-    await axios.post(platformConfig.apiUrl, {
-      content: item.content
-    }, {
-      headers: {
-        ...platformConfig.headers,
-        ...(platformConfig.headers?.Authorization
-          ? { Authorization: platformConfig.headers.Authorization }
-          : platformConfig.apiKey
-            ? { Authorization: `Bearer ${platformConfig.apiKey}` }
-            : {})
-      }
+    const publishLogEntry = await createLogEntry('PUBLISH_TO_PLATFORM', {
+      platformName,
+      contentId,
     });
-    
+    await logToAuditTrail(publishLogEntry);
+
+    // Publish to platform
+    await axios.post(
+      platformConfig.apiUrl,
+      {
+        content: item.content,
+      },
+      {
+        headers: {
+          ...platformConfig.headers,
+          ...(platformConfig.headers?.Authorization
+            ? { Authorization: platformConfig.headers.Authorization }
+            : platformConfig.apiKey
+              ? { Authorization: `Bearer ${platformConfig.apiKey}` }
+              : {}),
+        },
+      }
+    );
+
     // Return successful result without error property
     return { item };
   } catch (err) {
     // Enhanced error handling with AxiosError details
     const axiosError = err as AxiosError;
     const statusCode = axiosError.response?.status;
-    const errorMessage = !platformConfig.apiKey 
-      ? `${axiosError.message} (This may be due to missing API key)`
-      : axiosError.message;
-    
+    const errorMessage = platformConfig.apiKey
+      ? axiosError.message
+      : `${axiosError.message} (This may be due to missing API key)`;
+
     // Enhanced error logging with HTTP status
-    const errorLogEntry = await createLogEntry(
-      'PUBLISH_FAILURE', 
-      { 
-        platformName, 
-        contentId, 
-        error: errorMessage,
-        statusCode: statusCode,
-        responseData: axiosError.response?.data
-      }
-    );
+    const errorLogEntry = await createLogEntry('PUBLISH_FAILURE', {
+      platformName,
+      contentId,
+      error: errorMessage,
+      statusCode: statusCode,
+      responseData: axiosError.response?.data,
+    });
     await logToAuditTrail(errorLogEntry);
-    
+
     // Return failed result with error property
-    return { 
-      item, 
-      error: errorMessage
+    return {
+      item,
+      error: errorMessage,
     };
   }
 }
@@ -132,13 +137,13 @@ export const POST = withErrorHandling(async (request: Request) => {
   // Parse the request body
   const body = await request.json();
   const { queue } = body;
-  
+
   // Validate queue is an array
   const queueError = validateArray(queue, 'Queue');
   if (queueError) {
     return Errors.badRequest(queueError);
   }
-  
+
   // Check if queue is empty
   if (queue.length === 0) {
     return Errors.badRequest('Queue must be a non-empty array');
@@ -150,14 +155,16 @@ export const POST = withErrorHandling(async (request: Request) => {
 
   // Create a concurrency limiter
   const limit = pLimit(MAX_CONCURRENT_REQUESTS);
-  
+
   // Process all items concurrently with throttling
-  const publishPromises: Promise<PublishResult>[] = queue.map((item: QueueItem) => limit(() => publishItem(item)));
+  const publishPromises: Promise<PublishResult>[] = queue.map((item: QueueItem) =>
+    limit(() => publishItem(item))
+  );
   const publishResults = await Promise.allSettled(publishPromises);
-  
+
   // Process results
   const results: { success: QueueItem[]; failed: PublishResult[] } = { success: [], failed: [] };
-  
+
   publishResults.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const publishResult = result.value;
@@ -170,28 +177,25 @@ export const POST = withErrorHandling(async (request: Request) => {
       }
     } else {
       // Handle promise rejection (should be rare since publishItem handles its own errors)
-      results.failed.push({ 
-        item: queue[index], 
-        error: `Unexpected error: ${result.reason?.message || 'Unknown error'}`
+      results.failed.push({
+        item: queue[index],
+        error: `Unexpected error: ${result.reason?.message || 'Unknown error'}`,
       });
     }
   });
 
   // Log the final results
-  const completionLogEntry = await createLogEntry(
-    'QUEUE_APPROVAL_COMPLETE', 
-    { 
-      successful: results.success.length, 
-      failed: results.failed.length 
-    }
-  );
+  const completionLogEntry = await createLogEntry('QUEUE_APPROVAL_COMPLETE', {
+    successful: results.success.length,
+    failed: results.failed.length,
+  });
   await logToAuditTrail(completionLogEntry);
 
   // Return appropriate response based on results
   if (results.failed.length === 0) {
-    return NextResponse.json({ 
-      message: 'Queue approved and published successfully', 
-      results 
+    return NextResponse.json({
+      message: 'Queue approved and published successfully',
+      results,
     });
   } else if (results.success.length === 0) {
     return NextResponse.json(

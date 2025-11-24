@@ -13,19 +13,19 @@ const PerformanceDashboard: React.FC = () => {
   const { data: metrics, isLoading, error, refetch } = useEngagementMetrics();
 
   return (
-    <DashboardLayout 
-      title="Performance Dashboard" 
+    <DashboardLayout
+      title="Performance Dashboard"
       description="Monitor and analyze your content performance across platforms"
     >
       <div className={dashboardStyles.dashboardGrid}>
         {/* Engagement Metrics Card */}
-        <EngagementMetrics 
+        <EngagementMetrics
           metrics={metrics}
           isLoading={isLoading}
           error={error}
           onRefresh={refetch}
         />
-        
+
         {/* Airtable Integration Card */}
         <AirtableIntegration />
       </div>

@@ -6,7 +6,7 @@ import jwt from 'jsonwebtoken';
 if (!process.env.JWT_SECRET) {
   throw new Error(
     'FATAL: JWT_SECRET environment variable is required but not set. ' +
-    'Application cannot start without it. Please set JWT_SECRET in your environment.'
+      'Application cannot start without it. Please set JWT_SECRET in your environment.'
   );
 }
 
@@ -25,10 +25,7 @@ const authenticatedPaths = [
 ];
 
 // Define paths that require admin authentication
-const adminPaths = [
-  '/api/feature-flags',
-  '/api/audit',
-];
+const adminPaths = ['/api/feature-flags', '/api/audit'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -45,7 +42,7 @@ export function middleware(request: NextRequest) {
   if (requiresAuth || requiresAdmin) {
     // Get the authentication token from cookies first
     let token = request.cookies.get('auth-token')?.value;
-    
+
     // If no cookie, try the authorization header
     if (!token) {
       const authHeader = request.headers.get('authorization');
@@ -53,46 +50,37 @@ export function middleware(request: NextRequest) {
         token = authHeader.substring(7);
       }
     }
-    
+
     // If no token is present, return 401 Unauthorized
     if (!token) {
-      return new NextResponse(
-        JSON.stringify({ message: 'Authentication required' }),
-        { 
-          status: 401,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+      return new NextResponse(JSON.stringify({ message: 'Authentication required' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
 
     try {
       // Verify the token using the validated JWT_SECRET
       const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-      
+
       // Check if token has expired
       const now = Math.floor(Date.now() / 1000);
       if (decoded.exp && decoded.exp < now) {
-        return new NextResponse(
-          JSON.stringify({ message: 'Token has expired' }),
-          { 
-            status: 401,
-            headers: { 'Content-Type': 'application/json' }
-          }
-        );
+        return new NextResponse(JSON.stringify({ message: 'Token has expired' }), {
+          status: 401,
+          headers: { 'Content-Type': 'application/json' },
+        });
       }
 
       // For admin paths, perform additional admin verification
       if (requiresAdmin) {
         const isAdmin = decoded.role === 'admin';
-        
+
         if (!isAdmin) {
-          return new NextResponse(
-            JSON.stringify({ message: 'Admin privileges required' }),
-            { 
-              status: 403,
-              headers: { 'Content-Type': 'application/json' }
-            }
-          );
+          return new NextResponse(JSON.stringify({ message: 'Admin privileges required' }), {
+            status: 403,
+            headers: { 'Content-Type': 'application/json' },
+          });
         }
       }
 
@@ -110,14 +98,11 @@ export function middleware(request: NextRequest) {
       });
     } catch (error) {
       console.error('Token verification error:', error);
-      
-      return new NextResponse(
-        JSON.stringify({ message: 'Invalid authentication token' }),
-        { 
-          status: 401,
-          headers: { 'Content-Type': 'application/json' }
-        }
-      );
+
+      return new NextResponse(JSON.stringify({ message: 'Invalid authentication token' }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' },
+      });
     }
   }
 
