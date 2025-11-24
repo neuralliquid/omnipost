@@ -47,7 +47,7 @@ jest.mock('../../config/platforms', () => ({
 
 // Mock authentication functions
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAuthenticated: jest.fn(() => true),
+  isAuthenticated: jest.fn(() => Promise.resolve(true)),
 }));
 
 // Mock audit logging functions
@@ -79,8 +79,10 @@ function createMockRequest(method: string = 'GET'): NextRequest {
 
 describe('Platforms API', () => {
   beforeEach(() => {
-    // Clear all mocks before each test
-    jest.clearAllMocks();
+    // Reset mock implementations before each test
+    const { isAuthenticated } = require('../../app/api/_utils/auth');
+    isAuthenticated.mockClear();
+    isAuthenticated.mockImplementation(() => Promise.resolve(true));
   });
 
   describe('GET /api/platforms', () => {
@@ -105,9 +107,14 @@ describe('Platforms API', () => {
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return Promise<false>
-      const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
+      // Mock headers to return no user ID (unauthenticated)
+      const { headers } = require('next/headers');
+      headers.mockImplementationOnce(() => ({
+        get: jest.fn((name: string) => {
+          if (name === 'x-user-id') return null; // No user ID = not authenticated
+          return null;
+        }),
+      }));
 
       // Create a mock request
       const request = createMockRequest();
@@ -181,9 +188,14 @@ describe('Platforms API', () => {
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return Promise<false>
-      const { isAuthenticated } = require('../../app/api/_utils/auth');
-      jest.mocked(isAuthenticated).mockResolvedValueOnce(false); // Changed from mockReturnValueOnce to mockResolvedValueOnce
+      // Mock headers to return no user ID (unauthenticated)
+      const { headers } = require('next/headers');
+      headers.mockImplementationOnce(() => ({
+        get: jest.fn((name: string) => {
+          if (name === 'x-user-id') return null; // No user ID = not authenticated
+          return null;
+        }),
+      }));
 
       // Create mock request and params
       const request = createMockRequest();

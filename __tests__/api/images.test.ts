@@ -73,19 +73,6 @@ describe('Images API', () => {
   beforeEach(() => {
     // Clear all mocks before each test
     jest.clearAllMocks();
-
-    // Reset the authentication mock to return true by default
-    const { isAuthenticated } = require('../../app/api/_utils/auth');
-    isAuthenticated.mockImplementation(() => true);
-
-    // Reset the feature flags mock to enable image generation by default
-    jest.resetModules();
-    jest.mock('../../utils/featureFlags', () => ({
-      __esModule: true,
-      default: {
-        imageGeneration: true,
-      },
-    }));
   });
 
   describe('POST /api/images (generate image)', () => {
@@ -133,9 +120,14 @@ describe('Images API', () => {
     });
 
     test('should require authentication', async () => {
-      // Mock isAuthenticated to return Promise.resolve(false)
-      const { isAuthenticated } = require('../../app/api/_utils/auth');
-      isAuthenticated.mockResolvedValueOnce(false); // Changed from mockReturnValueOnce
+      // Mock headers to return no user ID (unauthenticated)
+      const { headers } = require('next/headers');
+      headers.mockImplementationOnce(() => ({
+        get: jest.fn((name: string) => {
+          if (name === 'x-user-id') return null; // No user ID = not authenticated
+          return null;
+        }),
+      }));
 
       // Create mock request
       const request = createMockRequest({

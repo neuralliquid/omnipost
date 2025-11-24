@@ -5,7 +5,7 @@ import '../setup';
 
 // Mock isAdmin function
 jest.mock('../../app/api/_utils/auth', () => ({
-  isAdmin: jest.fn(() => true),
+  isAdmin: jest.fn(() => Promise.resolve(true)),
   // Add any other functions from the module that might be used
   verifyToken: jest.fn(),
   getTokenFromRequest: jest.fn(),
@@ -149,9 +149,16 @@ describe('Feature Flags API', () => {
     });
 
     test('should require admin privileges', async () => {
-      // Mock isAdmin to return false for this specific test
-      const { isAdmin } = require('../../app/api/_utils/auth');
-      (isAdmin as jest.MockedFunction<typeof isAdmin>).mockResolvedValueOnce(false);
+      // Mock headers to return non-admin role
+      const { headers } = require('next/headers');
+      headers.mockImplementationOnce(() => ({
+        get: jest.fn((name: string) => {
+          if (name === 'x-user-id') return '1'; // Authenticated
+          if (name === 'x-user-role') return 'user'; // But not admin
+          if (name === 'x-user-name') return 'testuser';
+          return null;
+        }),
+      }));
 
       // Create mock request
       const request = createMockRequest('POST', {
