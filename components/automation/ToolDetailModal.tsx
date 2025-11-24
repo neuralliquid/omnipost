@@ -44,7 +44,11 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
       <div
         className={styles.toolDetailContent}
         onClick={e => e.stopPropagation()}
-        onKeyDown={e => e.stopPropagation()}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.stopPropagation();
+          }
+        }}
       >
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
