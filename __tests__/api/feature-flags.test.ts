@@ -151,13 +151,14 @@ describe('Feature Flags API', () => {
     test('should require admin privileges', async () => {
       // Mock headers to return non-admin role
       const { headers } = require('next/headers');
+      const mockHeaderGet = (name: string) => {
+        if (name === 'x-user-id') return '1'; // Authenticated
+        if (name === 'x-user-role') return 'user'; // But not admin
+        if (name === 'x-user-name') return 'testuser';
+        return null;
+      };
       headers.mockImplementationOnce(() => ({
-        get: jest.fn((name: string) => {
-          if (name === 'x-user-id') return '1'; // Authenticated
-          if (name === 'x-user-role') return 'user'; // But not admin
-          if (name === 'x-user-name') return 'testuser';
-          return null;
-        }),
+        get: jest.fn(mockHeaderGet),
       }));
 
       // Create mock request

@@ -109,11 +109,12 @@ describe('Platforms API', () => {
     test('should require authentication', async () => {
       // Mock headers to return no user ID (unauthenticated)
       const { headers } = require('next/headers');
+      const mockHeaderGet = (name: string) => {
+        if (name === 'x-user-id') return null; // No user ID = not authenticated
+        return null;
+      };
       headers.mockImplementationOnce(() => ({
-        get: jest.fn((name: string) => {
-          if (name === 'x-user-id') return null; // No user ID = not authenticated
-          return null;
-        }),
+        get: jest.fn(mockHeaderGet),
       }));
 
       // Create a mock request
@@ -190,11 +191,12 @@ describe('Platforms API', () => {
     test('should require authentication', async () => {
       // Mock headers to return no user ID (unauthenticated)
       const { headers } = require('next/headers');
+      const mockHeaderGet = (name: string) => {
+        if (name === 'x-user-id') return null; // No user ID = not authenticated
+        return null;
+      };
       headers.mockImplementationOnce(() => ({
-        get: jest.fn((name: string) => {
-          if (name === 'x-user-id') return null; // No user ID = not authenticated
-          return null;
-        }),
+        get: jest.fn(mockHeaderGet),
       }));
 
       // Create mock request and params
