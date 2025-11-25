@@ -70,20 +70,20 @@ jobs:
           done < <(./infra/naming.sh ${{ github.event.inputs.environment || 'dev' }} ${{ env.LOCATION_CODE }} ${{ env.PROJECT_NAME }})
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Create Resource Group
-        uses: azure/cli@v1
+        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
             az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
 
       - name: Deploy Bicep template
-        uses: azure/arm-deploy@v1
+        uses: azure/arm-deploy@65ae74fb7aec7c680c88ef456811f353adae4d06 # v1
         with:
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./infra/main.bicep
@@ -110,7 +110,7 @@ jobs:
         run: unzip node-app.zip
 
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
         with:
           client-id: ${{ secrets.AZURE_CLIENT_ID }}
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
@@ -126,7 +126,7 @@ jobs:
 
       - name: 'Deploy to Azure WebApp'
         id: deploy-to-webapp
-        uses: azure/webapps-deploy@v3
+        uses: azure/webapps-deploy@657f0700ea5214d56a0400d8ac5e8023c963d25d # v3
         with:
           app-name: ${{ env.APP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
