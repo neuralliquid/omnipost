@@ -95,7 +95,7 @@ export function validateApiKeys(silent = false): string[] {
  */
 export function getPlatformConfig(platformName: string): PlatformConfig | undefined {
   // Normalize the platform name to match our keys
-  const normalizedName = platformName.toLowerCase().replaceAll(/\s+/g, '-');
+  const normalizedName = platformName.toLowerCase().replace(/\s+/g, '-');
   return (
     platformConfigurations[normalizedName] || platformConfigurations[platformName.toLowerCase()]
   );
