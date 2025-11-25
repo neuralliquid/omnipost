@@ -79,6 +79,7 @@ $BicepFile = Join-Path -Path $InfraPath -ChildPath 'main.bicep'
 # Generate resource names following the naming convention
 $ResourceGroupName = "$Environment-$LocationCode-rg-$ProjectName"
 $AppName = "$Environment-$LocationCode-app-$ProjectName"
+$AppServicePlanName = "$AppName-asp"
 
 function Write-Header {
     param([string]$Message)
