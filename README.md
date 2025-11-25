@@ -212,6 +212,33 @@ This project is configured for deployment to Azure Web Apps using GitHub Actions
 
 For detailed deployment instructions, see the workflow file at `.github/workflows/azure-webapps-node.yml`.
 
+### Local Infrastructure Deployment (PowerShell)
+
+For local deployment or testing, use the PowerShell deployment script:
+
+```powershell
+# Basic deployment (dev environment)
+./scripts/deploy-infrastructure.ps1
+
+# Preview changes without deploying (what-if)
+./scripts/deploy-infrastructure.ps1 -Preview
+
+# Deploy to production
+./scripts/deploy-infrastructure.ps1 -Environment prod -Location eastus -LocationCode eus
+
+# Deploy with specific SKU
+./scripts/deploy-infrastructure.ps1 -Environment test -Sku S1
+
+# Skip login if already authenticated
+./scripts/deploy-infrastructure.ps1 -SkipLogin
+```
+
+The script will:
+- Authenticate with Azure (via `az login`)
+- Create the resource group if it doesn't exist
+- Deploy the Bicep template with the specified configuration
+- Display deployment outputs (Web App name and URL)
+
 ## 🔌 API Endpoints
 
 The platform provides a comprehensive REST API. Key endpoints include:
