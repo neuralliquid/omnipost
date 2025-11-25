@@ -3,6 +3,7 @@
  * This file manages feature flags for the application
  */
 
+import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import os from 'os';
@@ -102,10 +103,10 @@ export async function saveFeatureFlags(): Promise<void> {
         fs.mkdirSync(dirPath, { recursive: true });
       }
 
-      // Create a temporary file with a unique name
+      // Create a temporary file with a unique name using crypto for secure randomness
       const tmpPath = path.join(
         os.tmpdir(),
-        `feature-flags-${Date.now()}-${Math.random().toString(36).substring(2)}.json`
+        `feature-flags-${Date.now()}-${crypto.randomUUID()}.json`
       );
 
       // Write to temporary file first
