@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import featureFlags, { FeatureFlag, saveFeatureFlags } from '../../../utils/featureFlags';
+import featureFlags, { FeatureFlag, saveFeatureFlags } from '../../../lib/featureFlags';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAdmin } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { platforms, getPlatformConfig } from '../../../../../config/platforms';
+import { platforms, getPlatformConfig } from '../../../../../lib/config/platforms';
 import { withErrorHandling } from '../../../_utils/errors';
 import { Errors } from '../../../_utils/errors';
 import { isAuthenticated } from '../../../_utils/auth';

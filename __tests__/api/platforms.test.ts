@@ -8,7 +8,7 @@ import '../setup';
 type PlatformName = 'facebook' | 'twitter' | 'linkedin';
 
 // Mock platforms data
-jest.mock('../../config/platforms', () => ({
+jest.mock('../../lib/config/platforms', () => ({
   platforms: [
     { id: 1, name: 'Facebook', icon: 'facebook-icon' },
     { id: 2, name: 'Twitter', icon: 'twitter-icon' },

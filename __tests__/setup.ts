@@ -22,7 +22,7 @@ jest.mock('next/headers', () => ({
 }));
 
 // Mock feature flags
-jest.mock('../utils/featureFlags', () => ({
+jest.mock('../lib/featureFlags', () => ({
   __esModule: true,
   default: {
     textParser: {

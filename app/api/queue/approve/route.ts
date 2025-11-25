@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import axios, { AxiosError } from 'axios';
 import pLimit from 'p-limit';
-import { getPlatformConfig } from '../../../../config/platforms';
+import { getPlatformConfig } from '../../../../lib/config/platforms';
 import { QueueItem, PublishResult } from '../../../../types';
-import featureFlags from '../../../../utils/featureFlags';
+import featureFlags from '../../../../lib/featureFlags';
 import { withErrorHandling, Errors } from '../../_utils/errors';
 import { isAuthenticated } from '../../_utils/auth';
 import { createLogEntry, logToAuditTrail } from '../../_utils/audit';

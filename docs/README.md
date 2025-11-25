@@ -1,5 +1,7 @@
 # Documentation Directory
 
+> **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+
 This directory contains all project documentation organized by type and purpose.
 
 ## 📚 Documentation Structure

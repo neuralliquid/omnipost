@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';

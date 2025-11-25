@@ -1,5 +1,14 @@
 # Content Creation Platform
 
+[![CI](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml)
+[![Azure Web App](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js Version](https://img.shields.io/badge/node-20.x-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-latest-black)](https://nextjs.org/)
+
+> **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+
 A comprehensive content creation and management platform built with React and Next.js. This platform streamlines content workflows from creation to publication across multiple platforms, featuring AI-powered text processing, image generation, and multi-platform publishing capabilities.
 
 ## 🚀 Quick Start

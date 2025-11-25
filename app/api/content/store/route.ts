@@ -4,7 +4,7 @@ import { getCurrentUser } from '../../_utils/auth';
 import { Errors, withErrorHandling } from '../../_utils/errors';
 import { validateString } from '../../_utils/validation';
 import { getAirtableTable } from '../../../../lib/airtable';
-import featureFlags from '../../../../utils/featureFlags';
+import featureFlags from '../../../../lib/featureFlags';
 import Airtable, { FieldSet } from 'airtable';
 import { User } from '../../../../lib/auth/auth-service';
 

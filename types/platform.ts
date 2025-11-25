@@ -1,4 +1,4 @@
-import { Platform } from '../config/platforms';
+import { Platform } from '../lib/config/platforms';
 
 export interface ContentType {
   id?: string;

@@ -61,7 +61,7 @@ jest.mock('../../app/api/_utils/sanitize', () => ({
 }));
 
 // Mock feature flags
-jest.mock('../../utils/featureFlags', () => ({
+jest.mock('../../lib/featureFlags', () => ({
   __esModule: true,
   default: {
     imageGeneration: true,
@@ -155,7 +155,7 @@ describe('Images API', () => {
     test('should check if image generation is enabled', async () => {
       // Mock feature flags to disable image generation
       jest.resetModules();
-      jest.mock('../../utils/featureFlags', () => ({
+      jest.mock('../../lib/featureFlags', () => ({
         __esModule: true,
         default: {
           imageGeneration: false,

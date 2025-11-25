@@ -8,7 +8,7 @@ import { WebClient } from '@slack/web-api';
 import twilio from 'twilio';
 
 // Import feature flags
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 
 // Define validation schema using the existing validation functions
 const notificationValidators = {

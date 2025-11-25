@@ -12,7 +12,7 @@ import SuccessMessage from '../components/review/SuccessMessage';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { useReviewProcess } from '../hooks/useReviewProcess';
 import styles from '../styles/HumanReview.module.css';
-import reviewConfig from '../content/reviewConfig.json';
+import reviewConfig from '../data/reviewConfig.json';
 
 /**
  * Human Review Interface page for content review and approval

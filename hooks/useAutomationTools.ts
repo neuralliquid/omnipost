@@ -27,7 +27,7 @@ export function useAutomationTools(initialTools: AutomationTool[] = []) {
         await new Promise(resolve => setTimeout(resolve, 500));
 
         // Import tools from JSON
-        const automationTools = await import('../content/automationTools.json');
+        const automationTools = await import('../data/automationTools.json');
         setTools(automationTools.tools);
       } catch (err) {
         console.error('Error fetching automation tools:', err);
