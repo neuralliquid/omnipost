@@ -206,7 +206,7 @@ describe('Auth API', () => {
       // Assertions - verify the response is correct
       expect(response.status).toBe(200);
       expect(data).toHaveProperty('message', 'Logged out successfully');
-      
+
       // The cookie clearing is verified by the successful response
       // Note: Direct mock verification is skipped due to Jest hoisting limitations
       // The AUDIT log "LOGOUT" confirms the handler executed correctly
