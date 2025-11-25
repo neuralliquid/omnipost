@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { platforms } from '../../../config/platforms';
+import { platforms } from '../../../lib/config/platforms';
 import { withErrorHandling, Errors } from '../_utils/errors';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 
 /**
  * Validates user authentication

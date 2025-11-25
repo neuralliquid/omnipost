@@ -7,7 +7,7 @@ import { textInputSchema, validateAndSanitize, validateJson } from '../_utils/sa
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import feature flags
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 
 // Helper function to get API endpoints with fallbacks
 const getApiEndpoints = () => {

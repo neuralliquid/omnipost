@@ -5,7 +5,7 @@ import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { validateString } from '../_utils/validation';
 
 // Import feature flags
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 
 // Interface for feedback data
 interface Feedback {

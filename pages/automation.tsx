@@ -90,7 +90,7 @@ const AutomationPage: NextPage<AutomationPageProps> = ({
 export async function getStaticProps() {
   try {
     // In a real implementation, you might fetch this data from an API or CMS
-    const automationTools = await import('../content/automationTools.json');
+    const automationTools = await import('../data/automationTools.json');
 
     return {
       props: {

@@ -3,7 +3,7 @@ import { createLogEntry, logToAuditTrail } from '../../_utils/audit';
 import { isAuthenticated } from '../../_utils/auth';
 import { Errors, withErrorHandling } from '../../_utils/errors';
 import { getAirtableTable } from '../../../../lib/airtable';
-import featureFlags from '../../../../utils/featureFlags';
+import featureFlags from '../../../../lib/featureFlags';
 import Airtable, { FieldSet, Records } from 'airtable';
 import DOMPurify from 'dompurify';
 

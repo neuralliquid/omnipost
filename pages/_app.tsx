@@ -10,7 +10,7 @@ import Image from 'next/image'; // Practice #2: Image optimization
 import dynamic from 'next/dynamic'; // Practice #5: Code splitting
 import { useEffect, useState } from 'react';
 import styles from '../styles/App.module.css'; // Extracted CSS
-import siteConfig from '../content/siteConfig.json'; // Extracted JSON content
+import siteConfig from '../data/siteConfig.json'; // Extracted JSON content
 
 // Practice #5: Code splitting with dynamic imports
 const Analytics = dynamic(() => import('../components/dashboard/Analytics'), {

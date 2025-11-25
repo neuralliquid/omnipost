@@ -76,7 +76,7 @@ export async function getStaticProps() {
   try {
     // In a real implementation, you might fetch this data from an API or CMS
     // For now, we'll import it directly
-    const adaptationExamplesModule = await import('../content/adaptationExamples.json');
+    const adaptationExamplesModule = await import('../data/adaptationExamples.json');
     // Access .default since dynamic import of JSON returns a module object
     const adaptationExamples = adaptationExamplesModule.default || adaptationExamplesModule;
 

@@ -7,7 +7,7 @@ import { summarizeTextSchema, validateAndSanitize } from '../_utils/sanitize';
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
 
 // Import feature flags from utils
-import featureFlags from '../../../utils/featureFlags';
+import featureFlags from '../../../lib/featureFlags';
 
 // Helper function to get API configuration
 const getApiConfig = () => {

@@ -22,9 +22,7 @@
       "@/lib/*": ["lib/*"],
       "@/hooks/*": ["hooks/*"],
       "@/types/*": ["types/*"],
-      "@/utils/*": ["utils/*"],
       "@/styles/*": ["styles/*"],
-      "@/config/*": ["config/*"],
       "@/data/*": ["data/*"]
     },
     "plugins": [

@@ -51,9 +51,12 @@ content_creation/
 │   └── ui/              # Shared/common UI components
 │
 ├── lib/                   # Core business logic and utilities
+│   ├── airtable.ts       # Airtable integration
 │   ├── api-client.ts     # API client utilities
+│   ├── featureFlags.ts   # Feature flags management
 │   ├── auth/             # Authentication services
 │   ├── clients/          # External API clients (e.g., Hugging Face)
+│   ├── config/           # Platform and app configuration
 │   ├── data/             # Data access layer (e.g., Airtable)
 │   └── storage/          # Storage utilities (e.g., token storage)
 │
@@ -69,27 +72,18 @@ content_creation/
 │   ├── platform.ts
 │   └── series.ts
 │
-├── utils/                 # Utility functions
-│   └── featureFlags.ts
-│
-├── middleware/            # Middleware functions
-│   └── withAuth.ts       # Authentication middleware
-│
 ├── styles/                # CSS modules and global styles
 │   ├── globals.css       # Global styles
 │   └── *.module.css      # Component-specific CSS modules
 │
-├── config/                # Configuration files
-│   └── platforms.ts      # Platform configurations
-│
-├── content/               # Static content and data
-│   ├── adaptationExamples.json
-│   ├── automationTools.json
-│   └── reviewConfig.json
-│
-├── data/                  # Application data
+├── data/                  # Application data and static content
 │   ├── feature-flags.json
-│   └── workflowStages.ts
+│   ├── workflowStages.ts
+│   ├── engagementMetrics.ts
+│   ├── siteConfig.json
+│   ├── reviewConfig.json
+│   ├── adaptationExamples.json
+│   └── automationTools.json
 │
 ├── docs/                  # Documentation
 │   ├── ARCHITECTURE.md   # Technical architecture documentation
@@ -149,8 +143,18 @@ Contains reusable business logic, services, and utilities:
 
 - **`auth/`**: Authentication and authorization services
 - **`clients/`**: External API clients
+- **`config/`**: Platform and app configuration
 - **`data/`**: Data access and persistence logic
 - **`storage/`**: Storage abstractions
+- **`featureFlags.ts`**: Feature flags management
+
+### `/data/` - Application Data
+
+Static content and configuration data:
+
+- JSON configuration files (siteConfig, reviewConfig, etc.)
+- Feature flags data
+- Workflow and engagement metrics data
 
 ### `/types/` - TypeScript Types
 
@@ -178,6 +182,14 @@ Project documentation organized by type:
 - **API Routes**: lowercase with hyphens (e.g., `feature-flags/`)
 
 ## Recent Improvements
+
+### Directory Structure Consolidation
+
+- ✅ Merged `utils/` into `lib/` - feature flags now in `lib/featureFlags.ts`
+- ✅ Merged `config/` into `lib/config/` - platform configs now in `lib/config/platforms.ts`
+- ✅ Merged `content/` into `data/` - all static content and data in one place
+- ✅ Removed `middleware/` folder - only root `middleware.ts` needed by Next.js
+- ✅ Moved `COMPREHENSIVE_ANALYSIS.md` to `docs/archived/`
 
 ### Component Organization
 
