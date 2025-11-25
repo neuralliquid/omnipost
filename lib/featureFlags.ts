@@ -3,10 +3,10 @@
  * This file manages feature flags for the application
  */
 
-import crypto from 'crypto';
-import fs from 'fs';
-import path from 'path';
-import os from 'os';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
 // Define specific feature flag types
 export interface TextParserFeatureFlag {
   enabled: boolean;
@@ -32,20 +32,21 @@ interface BaseFeatureFlags {
 
 // Extend the base interface with an index signature for dynamic access
 export interface FeatureFlags extends BaseFeatureFlags {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: boolean | TextParserFeatureFlag | any;
 }
 // Simple mutex implementation for synchronizing feature flag updates
 class Mutex {
   private locked = false;
-  private waitQueue: Array<() => void> = [];
+  private readonly waitQueue: Array<() => void> = [];
 
   async acquire(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.locked) {
+      if (this.locked) {
+        this.waitQueue.push(resolve);
+      } else {
         this.locked = true;
         resolve();
-      } else {
-        this.waitQueue.push(resolve);
       }
     });
   }
@@ -91,7 +92,7 @@ export async function saveFeatureFlags(): Promise<void> {
   // Acquire the mutex to prevent concurrent updates
   await mutex.acquire();
   try {
-    if (typeof window !== 'undefined') {
+    if (typeof globalThis.window !== 'undefined') {
       // Browser environment
       localStorage.setItem('featureFlags', JSON.stringify(featureFlags));
     } else if (featureFlagsPath) {
@@ -127,7 +128,7 @@ export async function saveFeatureFlags(): Promise<void> {
  * @returns Current feature flags
  */
 export function loadFeatureFlags(): FeatureFlags {
-  if (typeof window !== 'undefined') {
+  if (typeof globalThis.window !== 'undefined') {
     // Browser environment
     const stored = localStorage.getItem('featureFlags');
     if (stored) {
