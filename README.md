@@ -234,6 +234,7 @@ For local deployment or testing, use the PowerShell deployment script:
 ```
 
 The script will:
+
 - Authenticate with Azure (via `az login`)
 - Create the resource group if it doesn't exist
 - Deploy the Bicep template with the specified configuration
