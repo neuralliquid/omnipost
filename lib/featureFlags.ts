@@ -31,8 +31,10 @@ interface BaseFeatureFlags {
 }
 
 // Extend the base interface with an index signature for dynamic access
+// Note: 'any' is intentionally used here to support dynamic nested feature flag structures
+// (e.g., featureFlags.trigger.cron.enabled) without defining all possible nested types
 export interface FeatureFlags extends BaseFeatureFlags {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint/suspicious/noExplicitAny: Required for dynamic nested feature flag access
   [key: string]: boolean | TextParserFeatureFlag | any;
 }
 // Simple mutex implementation for synchronizing feature flag updates
@@ -92,7 +94,7 @@ export async function saveFeatureFlags(): Promise<void> {
   // Acquire the mutex to prevent concurrent updates
   await mutex.acquire();
   try {
-    if (typeof globalThis.window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       // Browser environment
       localStorage.setItem('featureFlags', JSON.stringify(featureFlags));
     } else if (featureFlagsPath) {
@@ -128,7 +130,7 @@ export async function saveFeatureFlags(): Promise<void> {
  * @returns Current feature flags
  */
 export function loadFeatureFlags(): FeatureFlags {
-  if (typeof globalThis.window !== 'undefined') {
+  if (globalThis.window !== undefined) {
     // Browser environment
     const stored = localStorage.getItem('featureFlags');
     if (stored) {
