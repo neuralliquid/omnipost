@@ -3,9 +3,9 @@
 [![CI](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml)
 [![Azure Web App](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org/)
+[![Node.js Version](https://img.shields.io/badge/node-20.x-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-latest-black)](https://nextjs.org/)
 
 > **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
 
