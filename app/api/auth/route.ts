@@ -105,7 +105,8 @@ async function handleLogin(request: Request): Promise<NextResponse> {
 
     // Authenticate user
     const userOrError = await authenticateUser(username, password);
-    if (userOrError instanceof NextResponse) {
+    // Check if authentication returned an error response (NextResponse)
+    if (userOrError && typeof userOrError === 'object' && 'status' in userOrError) {
       return userOrError; // Return error response if authentication failed
     }
 
