@@ -79,7 +79,6 @@ $BicepFile = Join-Path -Path $InfraPath -ChildPath 'main.bicep'
 # Generate resource names following the naming convention
 $ResourceGroupName = "$Environment-$LocationCode-rg-$ProjectName"
 $AppName = "$Environment-$LocationCode-app-$ProjectName"
-$AppServicePlanName = "$Environment-$LocationCode-asp-$ProjectName"
 
 function Write-Header {
     param([string]$Message)
@@ -116,8 +115,8 @@ function Test-AzureCLI {
         Checks if Azure CLI is installed and accessible.
     #>
     try {
-        $null = az version 2>&1
-        return $true
+        az version 2>&1 | Out-Null
+        return $LASTEXITCODE -eq 0
     }
     catch {
         return $false
@@ -130,11 +129,8 @@ function Test-AzureLogin {
         Checks if the user is logged into Azure.
     #>
     try {
-        $account = az account show 2>&1
-        if ($LASTEXITCODE -eq 0) {
-            return $true
-        }
-        return $false
+        az account show 2>&1 | Out-Null
+        return $LASTEXITCODE -eq 0
     }
     catch {
         return $false
@@ -207,7 +203,6 @@ function New-ResourceGroupIfNotExists {
 
     Write-Step "Creating resource group '$Name' in '$Location'..."
     try {
-        $tagsJson = $Tags | ConvertTo-Json -Compress
         az group create `
             --name $Name `
             --location $Location `
