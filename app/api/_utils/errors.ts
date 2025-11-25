@@ -65,9 +65,9 @@ export const Errors = {
  * @returns A function that handles errors consistently
  */
 export function withErrorHandling(
-  handler: (req: Request, context?: { params: Record<string, string> }) => Promise<NextResponse>
-): (req: Request, context?: { params: Record<string, string> }) => Promise<NextResponse> {
-  return async (req: Request, context?: { params: Record<string, string> }) => {
+  handler: (req: Request, context?: any) => Promise<Response>
+): (req: Request, context?: any) => Promise<Response> {
+  return async (req: Request, context?: any) => {
     try {
       return await handler(req, context);
     } catch (error: any) {
