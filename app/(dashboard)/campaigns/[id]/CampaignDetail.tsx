@@ -231,7 +231,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       platform.enabled ? styles.selected : ''
                     }`}
                     onClick={() => handleTogglePlatform(platform.platformId)}
-                    onKeyDown={(e) => {
+                    onKeyDown={e => {
                       if (e.key === 'Enter' || e.key === ' ') {
                         e.preventDefault();
                         handleTogglePlatform(platform.platformId);

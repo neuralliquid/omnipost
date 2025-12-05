@@ -264,31 +264,46 @@ export class LinkedInAdapter extends BasePlatformAdapter {
 
   private async publishToLinkedIn(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
-    const response = await fetch(config.apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        text: this.formatContent(content),
-        visibility: 'PUBLIC',
-      }),
-    });
+    // AbortController is a global in Node.js 16+ and all modern browsers
+    const controller = new globalThis.AbortController();
+    const timeoutMs = config.timeoutMs ?? 30000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      throw new Error(`LinkedIn API error: ${response.status}`);
+    try {
+      const response = await fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: this.formatContent(content),
+          visibility: 'PUBLIC',
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`LinkedIn API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      return {
+        id: data.id,
+        url: `https://www.linkedin.com/feed/update/${data.id}`,
+        platformData: data,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`LinkedIn API request timed out after ${timeoutMs}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    return {
-      id: data.id,
-      url: `https://www.linkedin.com/feed/update/${data.id}`,
-      platformData: data,
-    };
   }
 
   private formatContent(content: ScheduledJob['content']): string {
@@ -333,30 +348,45 @@ export class FacebookAdapter extends BasePlatformAdapter {
 
   private async publishToFacebook(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
-    const response = await fetch(config.apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: content.text,
-      }),
-    });
+    // AbortController is a global in Node.js 16+ and all modern browsers
+    const controller = new globalThis.AbortController();
+    const timeoutMs = config.timeoutMs ?? 30000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      throw new Error(`Facebook API error: ${response.status}`);
+    try {
+      const response = await fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: content.text,
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Facebook API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      return {
+        id: data.id,
+        url: `https://www.facebook.com/${data.id}`,
+        platformData: data,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Facebook API request timed out after ${timeoutMs}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    return {
-      id: data.id,
-      url: `https://www.facebook.com/${data.id}`,
-      platformData: data,
-    };
   }
 
   protected getMockUrl(postId: string): string {
@@ -386,36 +416,51 @@ export class InstagramAdapter extends BasePlatformAdapter {
 
   private async publishToInstagram(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
     // Instagram requires media for posts
     if (!content.mediaUrls || content.mediaUrls.length === 0) {
       throw new Error('Instagram posts require at least one image');
     }
 
-    const response = await fetch(config.apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${config.apiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        caption: this.formatContent(content),
-        media_url: content.mediaUrls[0],
-      }),
-    });
+    // AbortController is a global in Node.js 16+ and all modern browsers
+    const controller = new globalThis.AbortController();
+    const timeoutMs = config.timeoutMs ?? 10000;
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      throw new Error(`Instagram API error: ${response.status}`);
+    try {
+      const response = await fetch(config.apiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${config.apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          caption: this.formatContent(content),
+          media_url: content.mediaUrls[0],
+        }),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        throw new Error(`Instagram API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      return {
+        id: data.id,
+        url: `https://www.instagram.com/p/${data.id}`,
+        platformData: data,
+      };
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error(`Instagram API request timed out after ${timeoutMs}ms`);
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const data = await response.json();
-
-    return {
-      id: data.id,
-      url: `https://www.instagram.com/p/${data.id}`,
-      platformData: data,
-    };
   }
 
   private formatContent(content: ScheduledJob['content']): string {

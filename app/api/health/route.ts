@@ -63,17 +63,27 @@ function getUptime(): number {
 }
 
 /**
+ * Get feature flag statistics
+ * Returns count of total flags and enabled flags
+ */
+function getFeatureFlagStats(): { total: number; enabled: number } {
+  const flags = featureFlags;
+  const total = Object.keys(flags).length;
+  const enabled = Object.values(flags).filter(flag => {
+    if (typeof flag === 'boolean') return flag;
+    if (typeof flag === 'object' && flag !== null) return flag.enabled;
+    return false;
+  }).length;
+
+  return { total, enabled };
+}
+
+/**
  * Check feature flags health
  */
 function checkFeatureFlags(): ComponentHealth {
   try {
-    const flags = featureFlags;
-    const total = Object.keys(flags).length;
-    const enabled = Object.values(flags).filter(flag => {
-      if (typeof flag === 'boolean') return flag;
-      if (typeof flag === 'object' && flag !== null) return flag.enabled;
-      return false;
-    }).length;
+    const { total, enabled } = getFeatureFlagStats();
 
     return {
       name: 'feature-flags',
@@ -194,13 +204,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
   const components: ComponentHealth[] = [checkFeatureFlags(), checkMemory(), checkEnvironment()];
 
   const memoryUsage = process.memoryUsage();
-  const featureFlagsObj = featureFlags;
-  const totalFlags = Object.keys(featureFlagsObj).length;
-  const enabledFlags = Object.values(featureFlagsObj).filter(flag => {
-    if (typeof flag === 'boolean') return flag;
-    if (typeof flag === 'object' && flag !== null) return flag.enabled;
-    return false;
-  }).length;
+  const { total: totalFlags, enabled: enabledFlags } = getFeatureFlagStats();
 
   const overallStatus = calculateOverallStatus(components);
   const statusCode = overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 200 : 503;
