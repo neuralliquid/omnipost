@@ -4,7 +4,7 @@
  */
 
 import bcrypt from 'bcryptjs';
-import { randomInt } from 'crypto';
+import { randomInt } from 'node:crypto';
 
 /**
  * Configuration for password hashing

@@ -10,11 +10,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import featureFlags from '@/lib/featureFlags';
 
 /**
+ * Health status type alias
+ */
+type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+
+/**
  * Component health status
  */
 interface ComponentHealth {
   name: string;
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: HealthStatus;
   latencyMs?: number;
   message?: string;
   lastChecked: string;
@@ -24,7 +29,7 @@ interface ComponentHealth {
  * Health check response
  */
 interface HealthResponse {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: HealthStatus;
   timestamp: string;
   version: string;
   uptime: number;

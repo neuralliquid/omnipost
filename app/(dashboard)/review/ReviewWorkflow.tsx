@@ -44,10 +44,10 @@ function SubmitButton({ children, className }: { children: React.ReactNode; clas
 function ProgressBar({
   steps,
   currentStep,
-}: {
+}: Readonly<{
   steps: ReviewConfigStep[];
   currentStep: ReviewStep;
-}) {
+}>) {
   const stepOrder: ReviewStep[] = [
     'input',
     'parsing',
