@@ -72,12 +72,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
       <div className={styles.campaignMeta}>
         <span className={styles.metaItem}>
-          <svg
-            className={styles.metaIcon}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className={styles.metaIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -88,12 +83,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
           {formattedDate}
         </span>
         <span className={styles.metaItem}>
-          <svg
-            className={styles.metaIcon}
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className={styles.metaIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -105,12 +95,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
         </span>
         {campaign.seriesIds.length > 0 ? (
           <span className={styles.metaItem}>
-            <svg
-              className={styles.metaIcon}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg className={styles.metaIcon} fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -166,13 +151,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             className={styles.iconButton}
             title="Duplicate campaign"
           >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -188,13 +167,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
             className={`${styles.iconButton} ${styles.dangerButton}`}
             title="Delete campaign"
           >
-            <svg
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"

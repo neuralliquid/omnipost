@@ -36,10 +36,7 @@ export async function GET(request: Request) {
     });
   } catch (error) {
     console.error('Error fetching jobs:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch jobs' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 });
   }
 }
 
@@ -55,28 +52,19 @@ export async function POST(request: Request) {
     const required = ['type', 'contentId', 'platformId', 'content', 'scheduledTime'];
     for (const field of required) {
       if (!body[field]) {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
       }
     }
 
     // Validate content has text
     if (!body.content.text) {
-      return NextResponse.json(
-        { error: 'Content must include text' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Content must include text' }, { status: 400 });
     }
 
     // Validate scheduled time is in the future
     const scheduledTime = new Date(body.scheduledTime);
     if (isNaN(scheduledTime.getTime())) {
-      return NextResponse.json(
-        { error: 'Invalid scheduledTime format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
     }
 
     const input: CreateJobInput = {
@@ -98,9 +86,6 @@ export async function POST(request: Request) {
   } catch (error) {
     console.error('Error creating job:', error);
     const message = error instanceof Error ? error.message : 'Failed to create job';
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

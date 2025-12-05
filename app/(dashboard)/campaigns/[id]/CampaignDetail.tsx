@@ -145,7 +145,9 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
             <h1 className={styles.pageTitle} style={{ marginTop: '1rem' }}>
               {campaign.name}
             </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}
+            >
               <CampaignStatusBadge status={campaign.status} />
               <span style={{ color: '#666', fontSize: '0.875rem' }}>
                 Last updated:{' '}
@@ -163,8 +165,8 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                 {campaign.status === 'paused'
                   ? 'Resume'
                   : campaign.status === 'draft'
-                  ? 'Activate'
-                  : 'Pause'}
+                    ? 'Activate'
+                    : 'Pause'}
               </button>
             ) : null}
             <button onClick={() => setIsEditing(true)} className={styles.secondaryButton}>
@@ -274,9 +276,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       <div>
                         <div style={{ fontWeight: 500 }}>{s.title}</div>
                         {s.description ? (
-                          <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                            {s.description}
-                          </div>
+                          <div style={{ fontSize: '0.75rem', color: '#666' }}>{s.description}</div>
                         ) : null}
                       </div>
                     </div>
@@ -296,10 +296,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                 }}
               >
                 <h3>Campaign Content</h3>
-                <button
-                  onClick={() => setShowAddContent(true)}
-                  className={styles.secondaryButton}
-                >
+                <button onClick={() => setShowAddContent(true)} className={styles.secondaryButton}>
                   Add Content
                 </button>
               </div>
@@ -319,9 +316,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                     <input
                       type="text"
                       value={newContent.title}
-                      onChange={e =>
-                        setNewContent(prev => ({ ...prev, title: e.target.value }))
-                      }
+                      onChange={e => setNewContent(prev => ({ ...prev, title: e.target.value }))}
                       className={styles.formInput}
                       placeholder="Content title"
                     />
@@ -347,9 +342,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                     <label className={styles.formLabel}>Body</label>
                     <textarea
                       value={newContent.body}
-                      onChange={e =>
-                        setNewContent(prev => ({ ...prev, body: e.target.value }))
-                      }
+                      onChange={e => setNewContent(prev => ({ ...prev, body: e.target.value }))}
                       className={styles.formTextarea}
                       placeholder="Write your content..."
                     />
@@ -427,9 +420,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                           whiteSpace: 'pre-wrap',
                         }}
                       >
-                        {item.body.length > 200
-                          ? `${item.body.substring(0, 200)}...`
-                          : item.body}
+                        {item.body.length > 200 ? `${item.body.substring(0, 200)}...` : item.body}
                       </p>
                       {item.adaptations.length > 0 ? (
                         <div

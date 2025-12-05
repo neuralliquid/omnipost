@@ -22,10 +22,7 @@ export type {
   WebhookEvent,
 } from './types';
 
-export {
-  RATE_LIMITS,
-  DEFAULT_SCHEDULER_CONFIG,
-} from './types';
+export { RATE_LIMITS, DEFAULT_SCHEDULER_CONFIG } from './types';
 
 // Queue
 export { getQueue, generateJobId, InMemoryQueue } from './queue';

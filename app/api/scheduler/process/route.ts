@@ -24,10 +24,7 @@ export async function POST(request: Request) {
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
       // In production, require authentication
       if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json(
-          { error: 'Unauthorized' },
-          { status: 401 }
-        );
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
       }
     }
 
@@ -51,10 +48,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Error processing jobs:', error);
-    return NextResponse.json(
-      { error: 'Failed to process jobs' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to process jobs' }, { status: 500 });
   }
 }
 

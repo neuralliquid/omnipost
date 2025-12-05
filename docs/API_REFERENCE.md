@@ -27,12 +27,12 @@ Authorization: Bearer <token>
 
 ### Rate Limits
 
-| Endpoint Type | Limit | Window |
-|--------------|-------|--------|
-| Authentication | 5 requests | 15 minutes |
-| AI Services | 10 requests | 1 minute |
-| General API | 100 requests | 15 minutes |
-| Admin | 50 requests | 15 minutes |
+| Endpoint Type  | Limit        | Window     |
+| -------------- | ------------ | ---------- |
+| Authentication | 5 requests   | 15 minutes |
+| AI Services    | 10 requests  | 1 minute   |
+| General API    | 100 requests | 15 minutes |
+| Admin          | 50 requests  | 15 minutes |
 
 ### Response Format
 
@@ -61,8 +61,8 @@ Returns system health status.
 
 **Query Parameters:**
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
+| Parameter  | Type    | Description                      |
+| ---------- | ------- | -------------------------------- |
 | `detailed` | boolean | Include component health details |
 
 **Response (200 OK):**
@@ -149,11 +149,11 @@ Authenticate user and receive JWT token.
 
 **Errors:**
 
-| Status | Error | Description |
-|--------|-------|-------------|
-| 400 | VALIDATION_ERROR | Missing or invalid credentials |
-| 401 | INVALID_CREDENTIALS | Username or password incorrect |
-| 429 | RATE_LIMITED | Too many login attempts |
+| Status | Error               | Description                    |
+| ------ | ------------------- | ------------------------------ |
+| 400    | VALIDATION_ERROR    | Missing or invalid credentials |
+| 401    | INVALID_CREDENTIALS | Username or password incorrect |
+| 429    | RATE_LIMITED        | Too many login attempts        |
 
 ---
 
@@ -239,11 +239,11 @@ Parse raw text input using AI.
 
 **Errors:**
 
-| Status | Error | Description |
-|--------|-------|-------------|
-| 400 | VALIDATION_ERROR | Invalid input |
-| 429 | RATE_LIMITED | AI service rate limit |
-| 503 | SERVICE_UNAVAILABLE | AI provider unavailable |
+| Status | Error               | Description             |
+| ------ | ------------------- | ----------------------- |
+| 400    | VALIDATION_ERROR    | Invalid input           |
+| 429    | RATE_LIMITED        | AI service rate limit   |
+| 503    | SERVICE_UNAVAILABLE | AI provider unavailable |
 
 ---
 
@@ -315,11 +315,11 @@ Generate image from prompt.
 
 **Errors:**
 
-| Status | Error | Description |
-|--------|-------|-------------|
-| 400 | VALIDATION_ERROR | Invalid prompt or options |
-| 429 | RATE_LIMITED | AI service rate limit |
-| 503 | SERVICE_UNAVAILABLE | Image provider unavailable |
+| Status | Error               | Description                |
+| ------ | ------------------- | -------------------------- |
+| 400    | VALIDATION_ERROR    | Invalid prompt or options  |
+| 429    | RATE_LIMITED        | AI service rate limit      |
+| 503    | SERVICE_UNAVAILABLE | Image provider unavailable |
 
 ---
 
@@ -463,16 +463,16 @@ Update a feature flag.
 
 ## Error Codes
 
-| Code | HTTP Status | Description |
-|------|-------------|-------------|
-| `VALIDATION_ERROR` | 400 | Request validation failed |
-| `UNAUTHORIZED` | 401 | Authentication required |
-| `INVALID_CREDENTIALS` | 401 | Wrong username/password |
-| `FORBIDDEN` | 403 | Insufficient permissions |
-| `NOT_FOUND` | 404 | Resource not found |
-| `RATE_LIMITED` | 429 | Too many requests |
-| `INTERNAL_ERROR` | 500 | Server error |
-| `SERVICE_UNAVAILABLE` | 503 | External service down |
+| Code                  | HTTP Status | Description               |
+| --------------------- | ----------- | ------------------------- |
+| `VALIDATION_ERROR`    | 400         | Request validation failed |
+| `UNAUTHORIZED`        | 401         | Authentication required   |
+| `INVALID_CREDENTIALS` | 401         | Wrong username/password   |
+| `FORBIDDEN`           | 403         | Insufficient permissions  |
+| `NOT_FOUND`           | 404         | Resource not found        |
+| `RATE_LIMITED`        | 429         | Too many requests         |
+| `INTERNAL_ERROR`      | 500         | Server error              |
+| `SERVICE_UNAVAILABLE` | 503         | External service down     |
 
 ---
 
@@ -491,7 +491,7 @@ const api = axios.create({
 });
 
 // Add auth interceptor
-api.interceptors.request.use((config) => {
+api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -527,6 +527,6 @@ curl http://localhost:3000/api/health?detailed=true
 
 ## Changelog
 
-| Version | Date | Changes |
-|---------|------|---------|
-| 1.0.0 | 2025-12 | Initial API documentation |
+| Version | Date    | Changes                   |
+| ------- | ------- | ------------------------- |
+| 1.0.0   | 2025-12 | Initial API documentation |

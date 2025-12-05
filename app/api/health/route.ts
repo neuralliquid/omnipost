@@ -10,11 +10,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import featureFlags from '@/lib/featureFlags';
 
 /**
+ * Health status type alias
+ */
+type HealthStatus = 'healthy' | 'degraded' | 'unhealthy';
+
+/**
  * Component health status
  */
 interface ComponentHealth {
   name: string;
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: HealthStatus;
   latencyMs?: number;
   message?: string;
   lastChecked: string;
@@ -24,7 +29,7 @@ interface ComponentHealth {
  * Health check response
  */
 interface HealthResponse {
-  status: 'healthy' | 'degraded' | 'unhealthy';
+  status: HealthStatus;
   timestamp: string;
   version: string;
   uptime: number;
@@ -64,7 +69,7 @@ function checkFeatureFlags(): ComponentHealth {
   try {
     const flags = featureFlags;
     const total = Object.keys(flags).length;
-    const enabled = Object.values(flags).filter((flag) => {
+    const enabled = Object.values(flags).filter(flag => {
       if (typeof flag === 'boolean') return flag;
       if (typeof flag === 'object' && flag !== null) return flag.enabled;
       return false;
@@ -124,7 +129,7 @@ function checkMemory(): ComponentHealth {
  */
 function checkEnvironment(): ComponentHealth {
   const requiredVars = ['JWT_SECRET', 'NEXT_PUBLIC_API_URL'];
-  const missingVars = requiredVars.filter((v) => !process.env[v]);
+  const missingVars = requiredVars.filter(v => !process.env[v]);
 
   if (missingVars.length > 0) {
     return {
@@ -146,9 +151,11 @@ function checkEnvironment(): ComponentHealth {
 /**
  * Calculate overall status from component health
  */
-function calculateOverallStatus(components: ComponentHealth[]): 'healthy' | 'degraded' | 'unhealthy' {
-  const hasUnhealthy = components.some((c) => c.status === 'unhealthy');
-  const hasDegraded = components.some((c) => c.status === 'degraded');
+function calculateOverallStatus(
+  components: ComponentHealth[]
+): 'healthy' | 'degraded' | 'unhealthy' {
+  const hasUnhealthy = components.some(c => c.status === 'unhealthy');
+  const hasDegraded = components.some(c => c.status === 'degraded');
 
   if (hasUnhealthy) return 'unhealthy';
   if (hasDegraded) return 'degraded';
@@ -187,7 +194,7 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
   const memoryUsage = process.memoryUsage();
   const featureFlagsObj = featureFlags;
   const totalFlags = Object.keys(featureFlagsObj).length;
-  const enabledFlags = Object.values(featureFlagsObj).filter((flag) => {
+  const enabledFlags = Object.values(featureFlagsObj).filter(flag => {
     if (typeof flag === 'boolean') return flag;
     if (typeof flag === 'object' && flag !== null) return flag.enabled;
     return false;

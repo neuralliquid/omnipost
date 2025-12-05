@@ -10,7 +10,7 @@ import Link from 'next/link';
 import Layout from '@/components/layouts/Layout';
 import { CampaignCard, CampaignForm, EmptyState } from '@/components/campaigns';
 import { useCampaign } from '@/hooks/useCampaign';
-import { CampaignStatus, CreateCampaignInput } from '@/types/campaign';
+import { Campaign, CampaignStatus, CreateCampaignInput } from '@/types/campaign';
 import styles from '@/styles/Campaign.module.css';
 
 const STATUS_FILTERS: { label: string; value: CampaignStatus | 'all' }[] = [
@@ -22,15 +22,62 @@ const STATUS_FILTERS: { label: string; value: CampaignStatus | 'all' }[] = [
   { label: 'Completed', value: 'completed' },
 ];
 
+/**
+ * Renders the campaign content based on loading state and data
+ */
+function CampaignContent({
+  isLoading,
+  campaigns,
+  filteredCampaigns,
+  onCreateClick,
+  onClearFilter,
+  onDelete,
+  onDuplicate,
+}: Readonly<{
+  isLoading: boolean;
+  campaigns: Campaign[];
+  filteredCampaigns: Campaign[];
+  onCreateClick: () => void;
+  onClearFilter: () => void;
+  onDelete: (id: string) => boolean;
+  onDuplicate: (id: string) => Campaign | null;
+}>) {
+  if (isLoading) {
+    return <div className={styles.loadingState}>Loading campaigns...</div>;
+  }
+
+  if (campaigns.length === 0) {
+    return <EmptyState onCreateClick={onCreateClick} />;
+  }
+
+  if (filteredCampaigns.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <p>No campaigns match the selected filter.</p>
+        <button onClick={onClearFilter} className={styles.secondaryButton}>
+          Clear Filter
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.campaignGrid}>
+      {filteredCampaigns.map(campaign => (
+        <CampaignCard
+          key={campaign.id}
+          campaign={campaign}
+          onDelete={onDelete}
+          onDuplicate={onDuplicate}
+        />
+      ))}
+    </div>
+  );
+}
+
 export default function CampaignList() {
-  const {
-    campaigns,
-    isLoading,
-    error,
-    createCampaign,
-    deleteCampaign,
-    duplicateCampaign,
-  } = useCampaign();
+  const { campaigns, isLoading, error, createCampaign, deleteCampaign, duplicateCampaign } =
+    useCampaign();
 
   const [showForm, setShowForm] = useState(false);
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | 'all'>('all');
@@ -41,9 +88,7 @@ export default function CampaignList() {
   };
 
   const filteredCampaigns =
-    statusFilter === 'all'
-      ? campaigns
-      : campaigns.filter(c => c.status === statusFilter);
+    statusFilter === 'all' ? campaigns : campaigns.filter(c => c.status === statusFilter);
 
   return (
     <Layout
@@ -53,8 +98,8 @@ export default function CampaignList() {
       <div className={styles.container}>
         <h1 className={styles.pageTitle}>Campaigns</h1>
         <p className={styles.pageDescription}>
-          Create and manage multi-platform content distribution campaigns. Link your content
-          series, schedule posts, and track engagement across all platforms.
+          Create and manage multi-platform content distribution campaigns. Link your content series,
+          schedule posts, and track engagement across all platforms.
         </p>
 
         {error ? <div className={styles.errorMessage}>{error}</div> : null}
@@ -89,38 +134,18 @@ export default function CampaignList() {
         ) : null}
 
         {showForm ? (
-          <CampaignForm
-            onSubmit={handleCreateCampaign}
-            onCancel={() => setShowForm(false)}
-          />
+          <CampaignForm onSubmit={handleCreateCampaign} onCancel={() => setShowForm(false)} />
         ) : null}
 
-        {isLoading ? (
-          <div className={styles.loadingState}>Loading campaigns...</div>
-        ) : campaigns.length === 0 ? (
-          <EmptyState onCreateClick={() => setShowForm(true)} />
-        ) : filteredCampaigns.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p>No campaigns match the selected filter.</p>
-            <button
-              onClick={() => setStatusFilter('all')}
-              className={styles.secondaryButton}
-            >
-              Clear Filter
-            </button>
-          </div>
-        ) : (
-          <div className={styles.campaignGrid}>
-            {filteredCampaigns.map(campaign => (
-              <CampaignCard
-                key={campaign.id}
-                campaign={campaign}
-                onDelete={deleteCampaign}
-                onDuplicate={duplicateCampaign}
-              />
-            ))}
-          </div>
-        )}
+        <CampaignContent
+          isLoading={isLoading}
+          campaigns={campaigns}
+          filteredCampaigns={filteredCampaigns}
+          onCreateClick={() => setShowForm(true)}
+          onClearFilter={() => setStatusFilter('all')}
+          onDelete={deleteCampaign}
+          onDuplicate={duplicateCampaign}
+        />
 
         <div className={styles.navigationLinks}>
           <Link href="/series" className={styles.navLink}>

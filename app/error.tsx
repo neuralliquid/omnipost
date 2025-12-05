@@ -56,13 +56,9 @@ export default function Error({ error, reset }: ErrorProps) {
         {process.env.NODE_ENV === 'development' && (
           <div className="rounded-lg bg-muted p-4 text-left">
             <p className="text-xs font-medium text-muted-foreground mb-2">Error details:</p>
-            <pre className="text-xs text-destructive overflow-auto max-h-32">
-              {error.message}
-            </pre>
+            <pre className="text-xs text-destructive overflow-auto max-h-32">{error.message}</pre>
             {error.digest && (
-              <p className="text-xs text-muted-foreground mt-2">
-                Error ID: {error.digest}
-              </p>
+              <p className="text-xs text-muted-foreground mt-2">Error ID: {error.digest}</p>
             )}
           </div>
         )}
@@ -86,10 +82,7 @@ export default function Error({ error, reset }: ErrorProps) {
         {/* Help text */}
         <p className="text-xs text-muted-foreground">
           If this problem persists, please{' '}
-          <a
-            href="mailto:support@example.com"
-            className="text-primary hover:underline"
-          >
+          <a href="mailto:support@example.com" className="text-primary hover:underline">
             contact support
           </a>
           .

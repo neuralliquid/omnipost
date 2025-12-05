@@ -20,10 +20,7 @@ const statusConfig: Record<CampaignStatusType, { label: string; className: strin
   completed: { label: 'Completed', className: styles.statusCompleted },
 };
 
-export const CampaignStatusBadge: React.FC<CampaignStatusProps> = ({
-  status,
-  size = 'medium'
-}) => {
+export const CampaignStatusBadge: React.FC<CampaignStatusProps> = ({ status, size = 'medium' }) => {
   const config = statusConfig[status];
 
   return (

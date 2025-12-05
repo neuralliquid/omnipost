@@ -4,6 +4,7 @@
  */
 
 import bcrypt from 'bcryptjs';
+import { randomInt } from 'node:crypto';
 
 /**
  * Configuration for password hashing
@@ -109,7 +110,7 @@ export function validatePassword(password: string): PasswordValidationResult {
     errors.push('Password must contain at least one number');
   }
 
-  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('Password must contain at least one special character');
   }
 
@@ -232,18 +233,18 @@ export function generateSecurePassword(length: number = 16): string {
   const minLength = Math.max(length, currentConfig.minLength);
   const chars: string[] = [];
 
-  // Add required character types
+  // Add required character types using cryptographically secure random
   if (currentConfig.requireUppercase) {
-    chars.push(uppercase[secureRandomIndex(uppercase.length)]);
+    chars.push(uppercase[randomInt(uppercase.length)]);
   }
   if (currentConfig.requireLowercase) {
-    chars.push(lowercase[secureRandomIndex(lowercase.length)]);
+    chars.push(lowercase[randomInt(lowercase.length)]);
   }
   if (currentConfig.requireNumber) {
-    chars.push(numbers[secureRandomIndex(numbers.length)]);
+    chars.push(numbers[randomInt(numbers.length)]);
   }
   if (currentConfig.requireSpecial) {
-    chars.push(special[secureRandomIndex(special.length)]);
+    chars.push(special[randomInt(special.length)]);
   }
 
   // Fill remaining with random characters from all allowed sets
@@ -252,7 +253,7 @@ export function generateSecurePassword(length: number = 16): string {
     chars.push(allChars[secureRandomIndex(allChars.length)]);
   }
 
-  // Shuffle the array
+  // Shuffle the array using cryptographically secure random
   for (let i = chars.length - 1; i > 0; i--) {
     const j = secureRandomIndex(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];

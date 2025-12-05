@@ -14,13 +14,13 @@ DevOps assessment covers CI/CD pipelines, infrastructure automation, deployment 
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| CI Pipeline | 25% | 85% | ✅ Good |
-| CD Pipeline | 25% | 75% | ✅ Good |
-| Infrastructure as Code | 20% | 80% | ✅ Good |
-| Monitoring & Observability | 20% | 30% | ❌ Minimal |
-| Production Readiness | 10% | 50% | ⚠️ Partial |
+| Criterion                  | Weight | Score | Status     |
+| -------------------------- | ------ | ----- | ---------- |
+| CI Pipeline                | 25%    | 85%   | ✅ Good    |
+| CD Pipeline                | 25%    | 75%   | ✅ Good    |
+| Infrastructure as Code     | 20%    | 80%   | ✅ Good    |
+| Monitoring & Observability | 20%    | 30%   | ❌ Minimal |
+| Production Readiness       | 10%    | 50%   | ⚠️ Partial |
 
 **Overall: 66% (Adequate)**
 
@@ -50,6 +50,7 @@ jobs:
 ```
 
 **Strengths:**
+
 - ✅ Deterministic installs (npm ci)
 - ✅ Type checking before tests
 - ✅ Test suite runs with env vars
@@ -77,6 +78,7 @@ jobs:
 ```
 
 **Strengths:**
+
 - ✅ Multi-environment support (dev/test/prod)
 - ✅ Infrastructure before deploy
 - ✅ Artifact management
@@ -85,6 +87,7 @@ jobs:
 ### 3. Infrastructure as Code (80%)
 
 **Bicep Templates:**
+
 ```bicep
 // infra/main.bicep
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
@@ -111,6 +114,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
 ```
 
 **Strengths:**
+
 - ✅ Parameterized templates
 - ✅ Multiple SKU options
 - ✅ Security settings (TLS, HTTP/2)
@@ -124,14 +128,14 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
 
 **Current state:** Minimal
 
-| Capability | Status |
-|------------|--------|
-| Application Insights | ❌ Not configured |
-| Health endpoint | ❌ Missing |
-| Log aggregation | ❌ Console only |
-| Alerting | ❌ Not configured |
+| Capability             | Status            |
+| ---------------------- | ----------------- |
+| Application Insights   | ❌ Not configured |
+| Health endpoint        | ❌ Missing        |
+| Log aggregation        | ❌ Console only   |
+| Alerting               | ❌ Not configured |
 | Performance monitoring | ❌ Not configured |
-| Error tracking | ❌ Not configured |
+| Error tracking         | ❌ Not configured |
 
 **Required additions:**
 
@@ -165,23 +169,23 @@ export async function GET() {
 
 ### 2. Production Readiness (50%)
 
-| Check | Status | Notes |
-|-------|--------|-------|
-| Health check | ❌ | No /api/health endpoint |
-| Graceful shutdown | ⚠️ | Not explicitly handled |
-| Secrets in Key Vault | ❌ | Environment vars only |
-| Deployment slots | ❌ | Single slot |
-| Auto-scaling | ⚠️ | Configured but not tested |
-| Backup strategy | ❌ | No persistent data backup |
+| Check                | Status | Notes                     |
+| -------------------- | ------ | ------------------------- |
+| Health check         | ❌     | No /api/health endpoint   |
+| Graceful shutdown    | ⚠️     | Not explicitly handled    |
+| Secrets in Key Vault | ❌     | Environment vars only     |
+| Deployment slots     | ❌     | Single slot               |
+| Auto-scaling         | ⚠️     | Configured but not tested |
+| Backup strategy      | ❌     | No persistent data backup |
 
 ### 3. Missing CI Checks
 
-| Check | Priority | Notes |
-|-------|----------|-------|
-| Security audit | High | npm audit not in CI |
-| License check | Medium | No compliance check |
-| Bundle size | Medium | No size budgets |
-| Coverage threshold | Medium | No minimum enforcement |
+| Check              | Priority | Notes                  |
+| ------------------ | -------- | ---------------------- |
+| Security audit     | High     | npm audit not in CI    |
+| License check      | Medium   | No compliance check    |
+| Bundle size        | Medium   | No size budgets        |
+| Coverage threshold | Medium   | No minimum enforcement |
 
 ---
 
@@ -233,21 +237,22 @@ export async function GET() {
 
 ### Current Setup
 
-| Environment | Trigger | Infrastructure |
-|-------------|---------|----------------|
-| Development | Manual | dev-euw-content-creation-* |
-| Test | Manual | test-euw-content-creation-* |
-| Production | Push to main | prod-euw-content-creation-* |
+| Environment | Trigger      | Infrastructure               |
+| ----------- | ------------ | ---------------------------- |
+| Development | Manual       | dev-euw-content-creation-\*  |
+| Test        | Manual       | test-euw-content-creation-\* |
+| Production  | Push to main | prod-euw-content-creation-\* |
 
 ### Secrets Management
 
-| Secret | Location | Status |
-|--------|----------|--------|
-| Azure credentials | GitHub Secrets | ✅ |
-| JWT_SECRET | GitHub Secrets (CI) | ✅ |
-| API keys | Not configured | ❌ |
+| Secret            | Location            | Status |
+| ----------------- | ------------------- | ------ |
+| Azure credentials | GitHub Secrets      | ✅     |
+| JWT_SECRET        | GitHub Secrets (CI) | ✅     |
+| API keys          | Not configured      | ❌     |
 
 **Recommendation:** Use Azure Key Vault references:
+
 ```bicep
 appSettings: [
   {
@@ -262,6 +267,7 @@ appSettings: [
 ## Recommended CI Improvements
 
 ### Security Audit Job
+
 ```yaml
 security:
   runs-on: ubuntu-latest
@@ -272,6 +278,7 @@ security:
 ```
 
 ### Bundle Size Check
+
 ```yaml
 bundle-check:
   runs-on: ubuntu-latest
@@ -281,10 +288,11 @@ bundle-check:
     - run: npm run build
     - uses: preactjs/compressed-size-action@v2
       with:
-        pattern: ".next/**/*.js"
+        pattern: '.next/**/*.js'
 ```
 
 ### Coverage Threshold
+
 ```yaml
 - run: npm run test:coverage
 - name: Check coverage
@@ -301,6 +309,7 @@ bundle-check:
 ## Best Practices Checklist
 
 ### Implemented ✅
+
 - [x] Automated CI pipeline
 - [x] Automated CD pipeline
 - [x] Infrastructure as Code (Bicep)
@@ -311,6 +320,7 @@ bundle-check:
 - [x] Multi-environment support
 
 ### Not Implemented ❌
+
 - [ ] Health check endpoint
 - [ ] Application monitoring
 - [ ] Log aggregation
@@ -327,21 +337,25 @@ bundle-check:
 ## Recommendations
 
 ### Immediate
+
 1. Add `/api/health` endpoint
 2. Add npm audit to CI
 3. Configure Application Insights
 
 ### Short-term
+
 1. Move secrets to Azure Key Vault
 2. Add deployment slots for staging
 3. Set up alerting rules
 
 ### Medium-term
+
 1. Implement blue-green deployments
 2. Add performance testing in CI
 3. Create runbook documentation
 
 ### Long-term
+
 1. Full observability stack
 2. Chaos engineering
 3. Multi-region deployment
@@ -350,13 +364,13 @@ bundle-check:
 
 ## Infrastructure Costs (Estimated)
 
-| Resource | SKU | Est. Monthly |
-|----------|-----|--------------|
-| App Service Plan | B1 | ~$13 |
-| App Service Plan | S1 | ~$73 |
-| Application Insights | Basic | ~$5-10 |
-| Key Vault | Standard | ~$3 |
+| Resource             | SKU      | Est. Monthly |
+| -------------------- | -------- | ------------ |
+| App Service Plan     | B1       | ~$13         |
+| App Service Plan     | S1       | ~$73         |
+| Application Insights | Basic    | ~$5-10       |
+| Key Vault            | Standard | ~$3          |
 
 ---
 
-*This document assesses DevOps practices for the Content Creation Platform.*
+_This document assesses DevOps practices for the Content Creation Platform._

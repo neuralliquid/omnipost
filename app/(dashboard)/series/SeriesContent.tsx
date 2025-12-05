@@ -24,11 +24,15 @@ export default function SeriesContent() {
   };
 
   return (
-    <Layout title="Manage Content Series" description="Create and manage your technical content series">
+    <Layout
+      title="Manage Content Series"
+      description="Create and manage your technical content series"
+    >
       <div className={styles.container}>
         <h1 className={styles.pageTitle}>Manage Content Series</h1>
         <p className={styles.pageDescription}>
-          Organize your technical content into structured series for better planning and distribution
+          Organize your technical content into structured series for better planning and
+          distribution
         </p>
 
         {error ? <div className={styles.errorMessage}>{error}</div> : null}

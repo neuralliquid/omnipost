@@ -94,11 +94,7 @@ export class Publisher {
     if (!canProceed) {
       return {
         success: false,
-        error: new PublishError(
-          'Rate limit exceeded',
-          'RATE_LIMITED',
-          true
-        ),
+        error: new PublishError('Rate limit exceeded', 'RATE_LIMITED', true),
         duration: Date.now() - startTime,
         rateLimited: true,
       };
@@ -164,11 +160,16 @@ export class Publisher {
   /**
    * Get rate limit status for all platforms
    */
-  async getRateLimitStatus(): Promise<Record<string, {
-    remaining: number;
-    resetAt: string;
-    isBackingOff: boolean;
-  }>> {
+  async getRateLimitStatus(): Promise<
+    Record<
+      string,
+      {
+        remaining: number;
+        resetAt: string;
+        isBackingOff: boolean;
+      }
+    >
+  > {
     return this.rateLimiter.getStatus();
   }
 }

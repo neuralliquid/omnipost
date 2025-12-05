@@ -10,6 +10,7 @@
 ## Context
 
 The Content Creation Platform needs a robust system for:
+
 1. **Scheduling** content for future publication
 2. **Executing** scheduled posts at the correct time
 3. **Handling failures** with retries and notifications
@@ -102,7 +103,7 @@ interface ScheduledJob {
   platformId: string;
 
   // Scheduling
-  scheduledTime: string;        // ISO 8601
+  scheduledTime: string; // ISO 8601
   timezone: string;
 
   // Execution state
@@ -124,13 +125,13 @@ interface ScheduledJob {
 }
 
 type JobStatus =
-  | 'pending'      // Waiting to be scheduled
-  | 'scheduled'    // In the schedule queue
-  | 'processing'   // Currently being published
-  | 'published'    // Successfully published
-  | 'failed'       // Failed, will retry
-  | 'dead'         // Exceeded max retries
-  | 'cancelled';   // Manually cancelled
+  | 'pending' // Waiting to be scheduled
+  | 'scheduled' // In the schedule queue
+  | 'processing' // Currently being published
+  | 'published' // Successfully published
+  | 'failed' // Failed, will retry
+  | 'dead' // Exceeded max retries
+  | 'cancelled'; // Manually cancelled
 
 interface JobResult {
   jobId: string;
@@ -157,7 +158,7 @@ interface PlatformRateLimit {
 
   // Current window
   windowStart: string;
-  windowDuration: number;      // seconds
+  windowDuration: number; // seconds
   requestCount: number;
   requestLimit: number;
 
@@ -173,10 +174,10 @@ interface PlatformRateLimit {
 
 // Platform-specific defaults
 const RATE_LIMITS: Record<string, { requests: number; window: number; daily?: number }> = {
-  twitter: { requests: 300, window: 900, daily: 2400 },     // 300/15min, 2400/day
-  linkedin: { requests: 100, window: 86400 },               // 100/day
-  facebook: { requests: 200, window: 3600 },                // 200/hour
-  instagram: { requests: 200, window: 3600 },               // 200/hour
+  twitter: { requests: 300, window: 900, daily: 2400 }, // 300/15min, 2400/day
+  linkedin: { requests: 100, window: 86400 }, // 100/day
+  facebook: { requests: 200, window: 3600 }, // 200/hour
+  instagram: { requests: 200, window: 3600 }, // 200/hour
 };
 ```
 
@@ -209,14 +210,14 @@ app/api/scheduler/
 // lib/scheduler/scheduler.ts
 
 interface SchedulerConfig {
-  checkInterval: number;      // How often to check for due jobs (ms)
-  batchSize: number;          // Max jobs to process per cycle
-  maxRetries: number;         // Default max retry attempts
-  retryDelays: number[];      // Backoff delays in seconds
+  checkInterval: number; // How often to check for due jobs (ms)
+  batchSize: number; // Max jobs to process per cycle
+  maxRetries: number; // Default max retry attempts
+  retryDelays: number[]; // Backoff delays in seconds
 }
 
 const DEFAULT_CONFIG: SchedulerConfig = {
-  checkInterval: 60000,       // 1 minute
+  checkInterval: 60000, // 1 minute
   batchSize: 50,
   maxRetries: 5,
   retryDelays: [60, 300, 900, 3600, 14400], // 1m, 5m, 15m, 1h, 4h
@@ -238,7 +239,9 @@ class Scheduler {
   /**
    * Schedule a new job
    */
-  async schedule(job: Omit<ScheduledJob, 'id' | 'status' | 'attempts' | 'createdAt' | 'updatedAt'>): Promise<ScheduledJob> {
+  async schedule(
+    job: Omit<ScheduledJob, 'id' | 'status' | 'attempts' | 'createdAt' | 'updatedAt'>
+  ): Promise<ScheduledJob> {
     const newJob: ScheduledJob = {
       ...job,
       id: generateJobId(),
@@ -264,7 +267,7 @@ class Scheduler {
 
     for (const job of dueJobs) {
       // Check rate limits before processing
-      if (!await this.rateLimiter.canProcess(job.platformId)) {
+      if (!(await this.rateLimiter.canProcess(job.platformId))) {
         // Skip, will be picked up in next cycle
         continue;
       }
@@ -312,8 +315,9 @@ class Scheduler {
     const hasRetriesLeft = attempts < job.maxAttempts;
 
     if (isRetryable && hasRetriesLeft) {
-      const nextRetryDelay = this.config.retryDelays[attempts - 1] ||
-                             this.config.retryDelays[this.config.retryDelays.length - 1];
+      const nextRetryDelay =
+        this.config.retryDelays[attempts - 1] ||
+        this.config.retryDelays[this.config.retryDelays.length - 1];
       const nextRetryAt = new Date(Date.now() + nextRetryDelay * 1000);
 
       await this.queue.updateStatus(job.id, 'failed', {
@@ -487,8 +491,8 @@ class InMemoryQueue implements JobQueue {
       }
     }
 
-    return due.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return due.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 }
@@ -502,7 +506,8 @@ class RedisQueue implements JobQueue {
   async add(job: ScheduledJob): Promise<void> {
     const score = new Date(job.scheduledTime).getTime();
 
-    await this.redis.multi()
+    await this.redis
+      .multi()
       .hset(this.QUEUE_KEY, job.id, JSON.stringify(job))
       .zadd(this.DUE_SET, score, job.id)
       .exec();
@@ -548,15 +553,15 @@ class DatabaseQueue implements JobQueue {
 
 ### Schedule Management
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/scheduler` | GET | List scheduled jobs (with filters) |
-| `/api/scheduler` | POST | Create new scheduled job |
-| `/api/scheduler/[id]` | GET | Get job details |
-| `/api/scheduler/[id]` | DELETE | Cancel scheduled job |
-| `/api/scheduler/[id]/retry` | POST | Manually retry failed job |
-| `/api/scheduler/process` | POST | Trigger job processing (cron endpoint) |
-| `/api/scheduler/stats` | GET | Get scheduler statistics |
+| Route                       | Method | Purpose                                |
+| --------------------------- | ------ | -------------------------------------- |
+| `/api/scheduler`            | GET    | List scheduled jobs (with filters)     |
+| `/api/scheduler`            | POST   | Create new scheduled job               |
+| `/api/scheduler/[id]`       | GET    | Get job details                        |
+| `/api/scheduler/[id]`       | DELETE | Cancel scheduled job                   |
+| `/api/scheduler/[id]/retry` | POST   | Manually retry failed job              |
+| `/api/scheduler/process`    | POST   | Trigger job processing (cron endpoint) |
+| `/api/scheduler/stats`      | GET    | Get scheduler statistics               |
 
 ### Example Requests
 
@@ -676,7 +681,11 @@ interface UseCampaignReturn {
   // ... existing methods
 
   // Scheduling
-  scheduleContent: (campaignId: string, contentId: string, options: ScheduleOptions) => Promise<void>;
+  scheduleContent: (
+    campaignId: string,
+    contentId: string,
+    options: ScheduleOptions
+  ) => Promise<void>;
   bulkSchedule: (campaignId: string, schedule: BulkScheduleConfig) => Promise<void>;
   getScheduledPosts: (campaignId: string) => ScheduledJob[];
   cancelScheduledPost: (jobId: string) => Promise<void>;
@@ -758,11 +767,14 @@ interface SchedulerMetrics {
   deadCount: number;
 
   // By platform
-  platformStats: Record<string, {
-    published: number;
-    failed: number;
-    avgLatency: number;
-  }>;
+  platformStats: Record<
+    string,
+    {
+      published: number;
+      failed: number;
+      avgLatency: number;
+    }
+  >;
 }
 ```
 
@@ -771,24 +783,28 @@ interface SchedulerMetrics {
 ## Migration & Rollout
 
 ### Phase 1: Foundation
+
 - [ ] Create scheduler types and interfaces
 - [ ] Implement in-memory queue for development
 - [ ] Add `/api/scheduler` routes
 - [ ] Unit tests for scheduler logic
 
 ### Phase 2: Publishing
+
 - [ ] Implement platform adapters (Twitter, LinkedIn)
 - [ ] Add rate limiting logic
 - [ ] Implement retry handler with backoff
 - [ ] Integration tests with mock APIs
 
 ### Phase 3: Production
+
 - [ ] Add Redis queue implementation
 - [ ] Configure Vercel Cron
 - [ ] Set up monitoring and alerts
 - [ ] Add scheduler dashboard UI
 
 ### Phase 4: Campaign Integration
+
 - [ ] Connect Campaign UI to scheduler
 - [ ] Add bulk scheduling feature
 - [ ] Calendar view for schedule visualization
@@ -815,12 +831,12 @@ interface SchedulerMetrics {
 
 ### Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Missed schedules | Medium | High | Monitoring, alerts, redundant workers |
-| Rate limit exhaustion | High | Medium | Conservative limits, backoff, user warnings |
-| Platform API changes | Medium | High | Adapter pattern, version pinning, tests |
-| Queue data loss | Low | High | Persistent storage, backups |
+| Risk                  | Likelihood | Impact | Mitigation                                  |
+| --------------------- | ---------- | ------ | ------------------------------------------- |
+| Missed schedules      | Medium     | High   | Monitoring, alerts, redundant workers       |
+| Rate limit exhaustion | High       | Medium | Conservative limits, backoff, user warnings |
+| Platform API changes  | Medium     | High   | Adapter pattern, version pinning, tests     |
+| Queue data loss       | Low        | High   | Persistent storage, backups                 |
 
 ---
 
@@ -845,6 +861,6 @@ interface SchedulerMetrics {
 
 ## Changelog
 
-| Date | Author | Change |
-|------|--------|--------|
+| Date    | Author           | Change           |
+| ------- | ---------------- | ---------------- |
 | 2025-12 | Development Team | Initial proposal |

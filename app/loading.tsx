@@ -5,7 +5,12 @@
 
 export default function Loading() {
   return (
-    <div className="flex min-h-screen items-center justify-center" role="status" aria-label="Loading">
+    <main
+      className="flex min-h-screen items-center justify-center"
+      role="status"
+      aria-label="Loading"
+      aria-live="polite"
+    >
       <div className="flex flex-col items-center gap-4">
         {/* Spinner */}
         <div className="relative">
@@ -16,6 +21,6 @@ export default function Loading() {
         {/* Loading text */}
         <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
       </div>
-    </div>
+    </main>
   );
 }

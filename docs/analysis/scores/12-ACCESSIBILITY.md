@@ -14,13 +14,13 @@ Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology sup
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| Semantic HTML | 25% | 50% | ⚠️ Basic |
-| ARIA implementation | 20% | 30% | ❌ Minimal |
-| Keyboard navigation | 20% | 40% | ⚠️ Partial |
-| Color & contrast | 15% | 30% | ❌ Unknown |
-| Testing & tooling | 20% | 25% | ❌ Minimal |
+| Criterion           | Weight | Score | Status     |
+| ------------------- | ------ | ----- | ---------- |
+| Semantic HTML       | 25%    | 50%   | ⚠️ Basic   |
+| ARIA implementation | 20%    | 30%   | ❌ Minimal |
+| Keyboard navigation | 20%    | 40%   | ⚠️ Partial |
+| Color & contrast    | 15%    | 30%   | ❌ Unknown |
+| Testing & tooling   | 20%    | 25%   | ❌ Minimal |
 
 **Overall: 35% (Needs Work)**
 
@@ -31,6 +31,7 @@ Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology sup
 ### What Exists
 
 **Some semantic HTML:**
+
 ```tsx
 // Basic semantic elements observed
 <header>...</header>
@@ -40,11 +41,10 @@ Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology sup
 ```
 
 **Error messages:**
+
 ```tsx
 // ErrorMessage component exists
-<div className="error-message">
-  {error}
-</div>
+<div className="error-message">{error}</div>
 ```
 
 ### What's Missing
@@ -64,35 +64,35 @@ Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology sup
 
 ### Perceivable
 
-| Guideline | Status | Notes |
-|-----------|--------|-------|
-| 1.1 Text Alternatives | ⚠️ Unknown | Images may lack alt text |
-| 1.2 Time-based Media | N/A | No audio/video |
-| 1.3 Adaptable | ⚠️ Unknown | Semantic structure unclear |
-| 1.4 Distinguishable | ⚠️ Unknown | Color contrast not verified |
+| Guideline             | Status     | Notes                       |
+| --------------------- | ---------- | --------------------------- |
+| 1.1 Text Alternatives | ⚠️ Unknown | Images may lack alt text    |
+| 1.2 Time-based Media  | N/A        | No audio/video              |
+| 1.3 Adaptable         | ⚠️ Unknown | Semantic structure unclear  |
+| 1.4 Distinguishable   | ⚠️ Unknown | Color contrast not verified |
 
 ### Operable
 
-| Guideline | Status | Notes |
-|-----------|--------|-------|
-| 2.1 Keyboard Accessible | ⚠️ Partial | No explicit testing |
-| 2.2 Enough Time | ⚠️ Unknown | No timeout handling |
-| 2.3 Seizures | ✅ Likely | No flashing content |
-| 2.4 Navigable | ❌ Missing | No skip links, focus management |
-| 2.5 Input Modalities | ⚠️ Unknown | Touch targets not verified |
+| Guideline               | Status     | Notes                           |
+| ----------------------- | ---------- | ------------------------------- |
+| 2.1 Keyboard Accessible | ⚠️ Partial | No explicit testing             |
+| 2.2 Enough Time         | ⚠️ Unknown | No timeout handling             |
+| 2.3 Seizures            | ✅ Likely  | No flashing content             |
+| 2.4 Navigable           | ❌ Missing | No skip links, focus management |
+| 2.5 Input Modalities    | ⚠️ Unknown | Touch targets not verified      |
 
 ### Understandable
 
-| Guideline | Status | Notes |
-|-----------|--------|-------|
-| 3.1 Readable | ⚠️ Unknown | Language not set |
-| 3.2 Predictable | ⚠️ Unknown | Consistency not verified |
-| 3.3 Input Assistance | ⚠️ Partial | Error messages exist |
+| Guideline            | Status     | Notes                    |
+| -------------------- | ---------- | ------------------------ |
+| 3.1 Readable         | ⚠️ Unknown | Language not set         |
+| 3.2 Predictable      | ⚠️ Unknown | Consistency not verified |
+| 3.3 Input Assistance | ⚠️ Partial | Error messages exist     |
 
 ### Robust
 
-| Guideline | Status | Notes |
-|-----------|--------|-------|
+| Guideline      | Status     | Notes                     |
+| -------------- | ---------- | ------------------------- |
 | 4.1 Compatible | ⚠️ Unknown | No assistive tech testing |
 
 ---
@@ -102,16 +102,18 @@ Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology sup
 ### 1. No Accessibility Testing
 
 **Missing packages:**
+
 ```json
 {
   "devDependencies": {
-    "jest-axe": "^8.0.0",           // ❌ Not installed
-    "eslint-plugin-jsx-a11y": "^6.8.0"  // ❌ Not installed
+    "jest-axe": "^8.0.0", // ❌ Not installed
+    "eslint-plugin-jsx-a11y": "^6.8.0" // ❌ Not installed
   }
 }
 ```
 
 **Required test:**
+
 ```typescript
 // __tests__/a11y/components.test.tsx
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -128,6 +130,7 @@ it('should have no accessibility violations', async () => {
 ### 2. No Skip Links
 
 **Should implement:**
+
 ```tsx
 // components/ui/SkipLink.tsx
 export function SkipLink() {
@@ -157,6 +160,7 @@ export function SkipLink() {
 ### 3. No Focus Management
 
 **Should implement:**
+
 ```tsx
 // After navigation or modal open
 useEffect(() => {
@@ -170,12 +174,13 @@ import { FocusTrap } from '@headlessui/react';
 
 <FocusTrap>
   <Modal>...</Modal>
-</FocusTrap>
+</FocusTrap>;
 ```
 
 ### 4. No ARIA Labels
 
 **Common issues to check:**
+
 ```tsx
 // Icon buttons need labels
 <button aria-label="Close modal">
@@ -195,33 +200,39 @@ import { FocusTrap } from '@headlessui/react';
 ## Component Audit Checklist
 
 ### Forms
+
 - [ ] All inputs have associated labels
 - [ ] Error messages linked via aria-describedby
 - [ ] Required fields marked with aria-required
 - [ ] Form validation announced
 
 ### Buttons
+
 - [ ] All buttons have accessible names
 - [ ] Icon-only buttons have aria-label
 - [ ] Button state communicated (aria-pressed, aria-expanded)
 
 ### Navigation
+
 - [ ] Skip link to main content
 - [ ] Current page indicated (aria-current)
 - [ ] Mobile menu accessible
 
 ### Modals
+
 - [ ] Focus trapped when open
 - [ ] Focus returned on close
 - [ ] Escape key closes
 - [ ] Background marked inert
 
 ### Images
+
 - [ ] All images have alt text
 - [ ] Decorative images have alt=""
 - [ ] Complex images have long descriptions
 
 ### Tables
+
 - [ ] Headers marked with <th>
 - [ ] scope attribute used
 - [ ] Caption provided
@@ -235,9 +246,7 @@ import { FocusTrap } from '@headlessui/react';
 ```json
 // .eslintrc.js
 {
-  "extends": [
-    "plugin:jsx-a11y/recommended"
-  ],
+  "extends": ["plugin:jsx-a11y/recommended"],
   "plugins": ["jsx-a11y"]
 }
 ```
@@ -270,37 +279,41 @@ it('is accessible', async () => {
 
 ### Manual Testing
 
-| Tool | Purpose |
-|------|---------|
-| NVDA | Screen reader (Windows) |
-| VoiceOver | Screen reader (Mac) |
-| Lighthouse | Automated audit |
-| axe DevTools | Browser extension |
-| WAVE | Visual feedback |
+| Tool         | Purpose                 |
+| ------------ | ----------------------- |
+| NVDA         | Screen reader (Windows) |
+| VoiceOver    | Screen reader (Mac)     |
+| Lighthouse   | Automated audit         |
+| axe DevTools | Browser extension       |
+| WAVE         | Visual feedback         |
 
 ---
 
 ## Implementation Priorities
 
 ### Phase 1: Quick Wins
+
 1. Add `lang` attribute to HTML
 2. Add skip link
 3. Add alt text to images
 4. Add aria-labels to icon buttons
 
 ### Phase 2: Form Accessibility
+
 1. Associate all labels with inputs
 2. Add error message associations
 3. Add required field indicators
 4. Implement live regions for errors
 
 ### Phase 3: Navigation
+
 1. Add keyboard navigation
 2. Implement focus management
 3. Add focus indicators
 4. Handle modal focus trapping
 
 ### Phase 4: Testing
+
 1. Add eslint-plugin-jsx-a11y
 2. Add jest-axe tests
 3. Add Lighthouse CI
@@ -311,6 +324,7 @@ it('is accessible', async () => {
 ## Accessibility Checklist
 
 ### Basic Requirements
+
 - [ ] HTML lang attribute set
 - [ ] Page titles descriptive
 - [ ] Heading hierarchy correct
@@ -318,6 +332,7 @@ it('is accessible', async () => {
 - [ ] Color contrast 4.5:1 (AA)
 
 ### Interactive Elements
+
 - [ ] All buttons accessible
 - [ ] All links have purpose
 - [ ] Focus visible on all elements
@@ -325,17 +340,20 @@ it('is accessible', async () => {
 - [ ] No keyboard traps
 
 ### Forms
+
 - [ ] Labels associated
 - [ ] Errors announced
 - [ ] Required fields indicated
 - [ ] Instructions provided
 
 ### Media
+
 - [ ] Images have alt text
 - [ ] Videos have captions
 - [ ] No auto-playing media
 
 ### Testing
+
 - [ ] Automated tests pass
 - [ ] Screen reader tested
 - [ ] Keyboard-only tested
@@ -346,6 +364,7 @@ it('is accessible', async () => {
 ## Best Practices
 
 ### Do
+
 ```tsx
 // Semantic HTML
 <button onClick={...}>Submit</button>
@@ -364,6 +383,7 @@ it('is accessible', async () => {
 ```
 
 ### Don't
+
 ```tsx
 // Non-semantic
 <div onClick={...}>Submit</div>
@@ -385,24 +405,28 @@ it('is accessible', async () => {
 ## Recommendations
 
 ### Immediate
+
 1. Install eslint-plugin-jsx-a11y
 2. Add lang="en" to HTML
 3. Add skip link
 4. Audit and fix alt text
 
 ### Short-term
+
 1. Add jest-axe testing
 2. Fix form accessibility
 3. Add focus indicators
 4. Add ARIA labels
 
 ### Medium-term
+
 1. Screen reader testing
 2. Keyboard navigation audit
 3. Color contrast verification
 4. Focus management implementation
 
 ### Long-term
+
 1. VPAT documentation
 2. Accessibility statement
 3. Regular audits
@@ -419,4 +443,4 @@ it('is accessible', async () => {
 
 ---
 
-*This document assesses accessibility practices for the Content Creation Platform.*
+_This document assesses accessibility practices for the Content Creation Platform._
