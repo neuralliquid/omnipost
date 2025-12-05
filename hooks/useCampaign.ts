@@ -23,26 +23,6 @@ import { generateCampaignId, generateContentId, generatePostId } from '@/lib/uti
 const STORAGE_KEY = 'content-campaigns';
 
 /**
- * Generate unique ID
- * NOTE: Uses Math.random() intentionally - these IDs are for local storage
- * keys only, not security-sensitive operations. The timestamp prefix ensures
- * uniqueness for practical purposes.
- */
-function generateId(): string {
-  return `campaign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-/**
- * Generate content ID
- * NOTE: Uses Math.random() intentionally - these IDs are for local storage
- * keys only, not security-sensitive operations. The timestamp prefix ensures
- * uniqueness for practical purposes.
- */
-function generateContentId(): string {
-  return `content_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-}
-
-/**
  * Load campaigns from localStorage
  */
 function loadCampaigns(): Campaign[] {

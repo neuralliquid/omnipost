@@ -17,8 +17,8 @@ import { AutomationTool } from '@/types/automation';
 import styles from '@/styles/Automation.module.css';
 
 interface AutomationContentProps {
-  initialTools: AutomationTool[];
-  initialError: string | null;
+  readonly initialTools: AutomationTool[];
+  readonly initialError: string | null;
 }
 
 export default function AutomationContent({ initialTools, initialError }: AutomationContentProps) {
