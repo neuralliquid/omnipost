@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Link from 'next/link';
 import styles from '../../styles/Series.module.css';
 import { Series } from '../../types/series';
 
@@ -88,6 +89,13 @@ const SeriesCard: React.FC<SeriesCardProps> = ({ series, index, onEdit, onDelete
           </div>
 
           <div className={styles.seriesActions}>
+            <Link
+              href={`/campaigns?seriesId=${series.id}`}
+              className={styles.campaignButton}
+              title="Create a campaign using this series"
+            >
+              Create Campaign
+            </Link>
             <button onClick={() => setIsEditing(true)} className={styles.editButton}>
               Edit
             </button>

@@ -1,4 +1,5 @@
 export interface Series {
+  id: string;
   title: string;
   description: string;
   topics?: string[];
@@ -6,5 +7,8 @@ export interface Series {
   estimatedArticles?: number;
   publishFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
   status?: 'planning' | 'in-progress' | 'completed' | 'paused';
-  [key: string]: any;
+  campaignIds?: string[];
+  createdAt?: string;
+  updatedAt?: string;
+  [key: string]: unknown;
 }

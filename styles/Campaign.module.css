@@ -1,0 +1,535 @@
+/**
+ * Campaign Module Styles
+ * Styles for campaign management pages and components
+ */
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Page Header */
+.pageTitle {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+  margin-bottom: 0.5rem;
+}
+
+.pageDescription {
+  color: var(--color-text-secondary, #666);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Header Actions */
+.headerActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Campaign Grid */
+.campaignGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Campaign Card */
+.campaignCard {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.campaignCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.campaignHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.campaignTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a2e);
+  margin: 0;
+}
+
+.campaignDescription {
+  color: var(--color-text-secondary, #666);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Status Badge */
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.statusDraft {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.statusScheduled {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.statusActive {
+  background-color: #d1fae5;
+  color: #059669;
+}
+
+.statusPaused {
+  background-color: #fef3c7;
+  color: #d97706;
+}
+
+.statusCompleted {
+  background-color: #e0e7ff;
+  color: #4338ca;
+}
+
+/* Campaign Meta */
+.campaignMeta {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.metaIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Platform Icons */
+.platformIcons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.platformIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  background: var(--color-bg-secondary, #f3f4f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.platformIcon.enabled {
+  background: #1da1f2;
+  color: white;
+}
+
+.platformIcon.linkedin {
+  background: #0077b5;
+}
+
+.platformIcon.facebook {
+  background: #1877f2;
+}
+
+.platformIcon.instagram {
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+}
+
+/* Metrics Row */
+.metricsRow {
+  display: flex;
+  gap: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.metric {
+  display: flex;
+  flex-direction: column;
+}
+
+.metricValue {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.metricLabel {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Campaign Actions */
+.campaignActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+/* Tags */
+.tagList {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tag {
+  padding: 0.125rem 0.5rem;
+  background: var(--color-bg-secondary, #f3f4f6);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Buttons */
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: var(--color-primary, #4f46e5);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.primaryButton:hover {
+  background: var(--color-primary-dark, #4338ca);
+}
+
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  background: transparent;
+  color: var(--color-text-primary, #1a1a2e);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.secondaryButton:hover {
+  background: var(--color-bg-secondary, #f3f4f6);
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.iconButton:hover {
+  background: var(--color-bg-secondary, #f3f4f6);
+}
+
+.dangerButton {
+  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.dangerButton:hover {
+  background: #fef2f2;
+}
+
+/* Filter Buttons */
+.filterButton {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterButton.active {
+  background: var(--color-primary, #4f46e5);
+  color: white;
+  border-color: var(--color-primary, #4f46e5);
+}
+
+/* Form Styles */
+.form {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.formTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.formGroupFull {
+  grid-column: 1 / -1;
+}
+
+.formLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.formInput,
+.formTextarea,
+.formSelect {
+  padding: 0.75rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  transition: border-color 0.2s ease;
+}
+
+.formInput:focus,
+.formTextarea:focus,
+.formSelect:focus {
+  outline: none;
+  border-color: var(--color-primary, #4f46e5);
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.formActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+/* Platform Selection */
+.platformSelection {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.platformOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 2px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.platformOption:hover {
+  border-color: var(--color-primary, #4f46e5);
+}
+
+.platformOption.selected {
+  border-color: var(--color-primary, #4f46e5);
+  background: #f5f3ff;
+}
+
+.platformOption input {
+  display: none;
+}
+
+.platformLogo {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.platformName {
+  font-weight: 500;
+}
+
+/* Series Selection */
+.seriesSelection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.seriesOption {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.seriesOption:hover {
+  background: var(--color-bg-secondary, #f3f4f6);
+}
+
+.seriesOption.selected {
+  border-color: var(--color-primary, #4f46e5);
+  background: #f5f3ff;
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-bg-card, #ffffff);
+  border: 2px dashed var(--color-border, #e2e8f0);
+  border-radius: 12px;
+}
+
+.emptyIcon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 1rem;
+  color: var(--color-text-secondary, #666);
+}
+
+.emptyTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a2e);
+  margin-bottom: 0.5rem;
+}
+
+.emptyDescription {
+  color: var(--color-text-secondary, #666);
+  margin-bottom: 1.5rem;
+}
+
+/* Loading State */
+.loadingState {
+  text-align: center;
+  padding: 4rem;
+  color: var(--color-text-secondary, #666);
+}
+
+/* Error State */
+.errorMessage {
+  padding: 1rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #dc2626;
+  margin-bottom: 1.5rem;
+}
+
+/* Navigation Links */
+.navigationLinks {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.navLink {
+  color: var(--color-primary, #4f46e5);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.navLink:hover {
+  color: var(--color-primary-dark, #4338ca);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .headerActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .campaignGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .navigationLinks {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}
