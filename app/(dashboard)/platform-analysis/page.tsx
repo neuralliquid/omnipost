@@ -1,9 +1,19 @@
-import React from 'react';
-import MainLayout from '../components/layouts/MainLayout';
-import PlatformCard from '../components/content/PlatformCard';
-import styles from '../styles/shared.module.css';
+/**
+ * Platform Analysis Page - App Router
+ * Static page showing platform analysis and strategy
+ */
 
-// Define platform data following DRY principle
+import { Metadata } from 'next';
+import MainLayout from '@/components/layouts/MainLayout';
+import PlatformCard from '@/components/content/PlatformCard';
+import styles from '@/styles/shared.module.css';
+
+export const metadata: Metadata = {
+  title: 'Platform Analysis & Strategy',
+  description:
+    'A comprehensive breakdown of key platforms for your technical content series, including audience characteristics, content optimization strategies, and implementation guidance.',
+};
+
 const platforms = [
   {
     icon: '🌐',
@@ -97,7 +107,7 @@ const platforms = [
   },
 ];
 
-const PlatformAnalysisPage: React.FC = () => {
+export default function PlatformAnalysisPage() {
   return (
     <MainLayout title="Platform Analysis">
       <div className={styles.section}>
@@ -123,6 +133,4 @@ const PlatformAnalysisPage: React.FC = () => {
       </div>
     </MainLayout>
   );
-};
-
-export default PlatformAnalysisPage;
+}

@@ -1,11 +1,21 @@
-import React from 'react';
-import MainLayout from '../components/layouts/MainLayout';
-import ContentHeader from '../components/content/ContentHeader';
-import WorkflowDiagram from '../components/content/WorkflowDiagram';
-import ContentAdaptation from '../components/content/ContentAdaptation';
-import styles from '../styles/shared.module.css';
+/**
+ * Workflow Page - App Router
+ * Static page showing content production workflow
+ */
 
-// Define workflow stages data following DRY principle
+import { Metadata } from 'next';
+import MainLayout from '@/components/layouts/MainLayout';
+import ContentHeader from '@/components/content/ContentHeader';
+import WorkflowDiagram from '@/components/content/WorkflowDiagram';
+import ContentAdaptation from '@/components/content/ContentAdaptation';
+import styles from '@/styles/shared.module.css';
+
+export const metadata: Metadata = {
+  title: 'Content Production Workflow',
+  description:
+    'A detailed, step-by-step process for efficiently creating and distributing your technical content series across multiple platforms.',
+};
+
 const workflowStages = [
   {
     number: 1,
@@ -156,7 +166,6 @@ const workflowStages = [
   },
 ];
 
-// Define adaptation examples data
 const adaptationExamples = [
   {
     platform: 'LinkedIn',
@@ -202,7 +211,7 @@ const adaptationExamples = [
   },
 ];
 
-const WorkflowPage: React.FC = () => {
+export default function WorkflowPage() {
   return (
     <MainLayout title="Content Production Workflow">
       <ContentHeader
@@ -223,6 +232,4 @@ const WorkflowPage: React.FC = () => {
       </div>
     </MainLayout>
   );
-};
-
-export default WorkflowPage;
+}

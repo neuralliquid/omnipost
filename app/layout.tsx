@@ -6,6 +6,14 @@
 import type { Metadata, Viewport } from 'next';
 import '../styles/globals.css';
 
+// Font configuration using CSS custom properties
+// Note: Google Fonts (Inter) can be enabled when network access is available
+// by importing { Inter } from 'next/font/google' and using inter.variable/className
+const fontConfig = {
+  variable: '--font-inter',
+  className: 'font-sans',
+};
+
 export const metadata: Metadata = {
   title: {
     template: '%s | Content Creation Platform',
@@ -46,11 +54,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={fontConfig.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
-      <body className="min-h-screen bg-background font-sans antialiased">
+      <body className={`${fontConfig.className} min-h-screen bg-background font-sans antialiased`}>
         {/* Skip to main content for accessibility */}
         <a
           href="#main-content"

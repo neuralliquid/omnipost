@@ -58,10 +58,26 @@ export default function NotFound() {
             </li>
             <li>
               <Link
-                href="/human-review"
+                href="/review"
                 className="text-sm text-primary hover:underline"
               >
                 Content Review
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/workflow"
+                className="text-sm text-primary hover:underline"
+              >
+                Workflow
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/platform-analysis"
+                className="text-sm text-primary hover:underline"
+              >
+                Platform Analysis
               </Link>
             </li>
           </ul>
