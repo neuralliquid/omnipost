@@ -8,6 +8,14 @@ import { getPlatformConfig } from '@/lib/config/platforms';
 import { generatePlatformPostId } from '@/lib/utils/id';
 
 /**
+ * Default timeout values for platform API requests (in milliseconds)
+ * LinkedIn/Facebook use longer timeouts for text-heavy API calls
+ * Instagram uses shorter timeout as media upload endpoints typically respond faster
+ */
+const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
+const INSTAGRAM_TIMEOUT_MS = 10000; // 10 seconds for media-focused API
+
+/**
  * Error class for partial thread publish failures
  * Thrown when some tweets in a thread are published but later ones fail
  */
@@ -268,7 +276,7 @@ export class LinkedInAdapter extends BasePlatformAdapter {
   ): Promise<PlatformPublishResult> {
     // AbortController is a global in Node.js 16+ and all modern browsers
     const controller = new globalThis.AbortController();
-    const timeoutMs = config.timeoutMs ?? 30000;
+    const timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
@@ -352,7 +360,7 @@ export class FacebookAdapter extends BasePlatformAdapter {
   ): Promise<PlatformPublishResult> {
     // AbortController is a global in Node.js 16+ and all modern browsers
     const controller = new globalThis.AbortController();
-    const timeoutMs = config.timeoutMs ?? 30000;
+    const timeoutMs = config.timeoutMs ?? DEFAULT_TIMEOUT_MS;
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
@@ -425,7 +433,7 @@ export class InstagramAdapter extends BasePlatformAdapter {
 
     // AbortController is a global in Node.js 16+ and all modern browsers
     const controller = new globalThis.AbortController();
-    const timeoutMs = config.timeoutMs ?? 10000;
+    const timeoutMs = config.timeoutMs ?? INSTAGRAM_TIMEOUT_MS;
     const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     try {
