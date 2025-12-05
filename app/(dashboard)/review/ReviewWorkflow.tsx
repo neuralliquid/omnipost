@@ -21,7 +21,7 @@ import {
 import styles from '@/styles/HumanReview.module.css';
 import reviewConfig from '@/data/reviewConfig.json';
 
-type ReviewStep = 'input' | 'parsing' | 'summarizing' | 'generating' | 'approving' | 'approved';
+import type { ReviewStep } from '@/hooks/useReviewProcess';
 
 // Type for review config steps
 interface ReviewConfigStep {
