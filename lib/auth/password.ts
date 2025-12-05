@@ -214,6 +214,14 @@ export function needsRehash(hash: string): boolean {
  * @param length Length of the password (default: 16)
  * @returns A randomly generated password meeting all requirements
  */
+import { randomBytes } from 'crypto';
+
+function secureRandomIndex(max: number): number {
+  const randomBuffer = randomBytes(4);
+  const randomValue = randomBuffer.readUInt32BE(0);
+  return randomValue % max;
+}
+
 export function generateSecurePassword(length: number = 16): string {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
@@ -226,27 +234,27 @@ export function generateSecurePassword(length: number = 16): string {
 
   // Add required character types
   if (currentConfig.requireUppercase) {
-    chars.push(uppercase[Math.floor(Math.random() * uppercase.length)]);
+    chars.push(uppercase[secureRandomIndex(uppercase.length)]);
   }
   if (currentConfig.requireLowercase) {
-    chars.push(lowercase[Math.floor(Math.random() * lowercase.length)]);
+    chars.push(lowercase[secureRandomIndex(lowercase.length)]);
   }
   if (currentConfig.requireNumber) {
-    chars.push(numbers[Math.floor(Math.random() * numbers.length)]);
+    chars.push(numbers[secureRandomIndex(numbers.length)]);
   }
   if (currentConfig.requireSpecial) {
-    chars.push(special[Math.floor(Math.random() * special.length)]);
+    chars.push(special[secureRandomIndex(special.length)]);
   }
 
   // Fill remaining with random characters from all allowed sets
   const allChars = uppercase + lowercase + numbers + (currentConfig.requireSpecial ? special : '');
   while (chars.length < minLength) {
-    chars.push(allChars[Math.floor(Math.random() * allChars.length)]);
+    chars.push(allChars[secureRandomIndex(allChars.length)]);
   }
 
   // Shuffle the array
   for (let i = chars.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = secureRandomIndex(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
 
