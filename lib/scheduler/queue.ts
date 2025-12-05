@@ -171,7 +171,7 @@ export class InMemoryQueue implements JobQueue {
 
 // Server-side in-memory queue (no localStorage)
 class ServerMemoryQueue implements JobQueue {
-  private jobs: Map<string, ScheduledJob> = new Map();
+  private readonly jobs: Map<string, ScheduledJob> = new Map();
 
   async add(job: ScheduledJob): Promise<void> {
     this.jobs.set(job.id, job);

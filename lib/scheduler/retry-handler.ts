@@ -20,8 +20,8 @@ export interface ErrorClassification {
  * Determines retry strategy based on error type
  */
 export class RetryHandler {
-  private retryDelays: number[];
-  private maxRetries: number;
+  private readonly retryDelays: number[];
+  private readonly maxRetries: number;
 
   constructor(
     retryDelays: number[] = DEFAULT_SCHEDULER_CONFIG.retryDelays,

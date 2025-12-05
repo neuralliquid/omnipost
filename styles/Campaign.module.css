@@ -101,12 +101,12 @@
 
 .statusDraft {
   background-color: #f3f4f6;
-  color: #6b7280;
+  color: #374151;
 }
 
 .statusScheduled {
   background-color: #dbeafe;
-  color: #1d4ed8;
+  color: #1e40af;
 }
 
 .statusActive {
@@ -116,7 +116,7 @@
 
 .statusPaused {
   background-color: #fef3c7;
-  color: #d97706;
+  color: #b45309;
 }
 
 .statusCompleted {
@@ -165,7 +165,7 @@
 }
 
 .platformIcon.enabled {
-  background: #1da1f2;
+  background: #0c7abf;
   color: white;
 }
 
@@ -490,7 +490,7 @@
   background: #fef2f2;
   border: 1px solid #fecaca;
   border-radius: 8px;
-  color: #dc2626;
+  color: #b91c1c;
   margin-bottom: 1.5rem;
 }
 

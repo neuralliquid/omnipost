@@ -47,7 +47,7 @@ function saveToStorage(limits: Map<string, PlatformRateLimit>): void {
  */
 export class RateLimiter {
   private limits: Map<string, PlatformRateLimit>;
-  private configs: Record<string, RateLimitConfig>;
+  private readonly configs: Record<string, RateLimitConfig>;
   private initialized: boolean = false;
 
   constructor(configs: Record<string, RateLimitConfig> = RATE_LIMITS) {

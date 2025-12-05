@@ -41,8 +41,8 @@ export interface PublishResultWithMeta {
  * Coordinates content validation and publishing
  */
 export class Publisher {
-  private rateLimiter = getRateLimiter();
-  private retryHandler = getRetryHandler();
+  private readonly rateLimiter = getRateLimiter();
+  private readonly retryHandler = getRetryHandler();
 
   /**
    * Validate content for a platform

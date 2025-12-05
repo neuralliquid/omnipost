@@ -51,7 +51,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
       newErrors.name = 'Campaign name is required';
     }
 
-    if (formData.platforms && formData.platforms.length === 0) {
+    if (formData.platforms?.length === 0) {
       newErrors.platforms = 'Select at least one platform';
     }
 
@@ -155,14 +155,15 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           {formData.tags && formData.tags.length > 0 ? (
             <div className={styles.tagList} style={{ marginTop: '0.5rem' }}>
               {formData.tags.map(tag => (
-                <span
+                <button
                   key={tag}
+                  type="button"
                   className={styles.tag}
                   onClick={() => removeTag(tag)}
-                  style={{ cursor: 'pointer' }}
+                  aria-label={`Remove tag ${tag}`}
                 >
                   {tag} ×
-                </span>
+                </button>
               ))}
             </div>
           ) : null}
@@ -185,8 +186,10 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
         {/* Platform Selection */}
         <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-          <label className={styles.formLabel}>Target Platforms *</label>
-          <div className={styles.platformSelection}>
+          <label className={styles.formLabel} htmlFor="platform-selection">
+            Target Platforms *
+          </label>
+          <div id="platform-selection" className={styles.platformSelection} role="group" aria-label="Target platforms">
             {availablePlatforms.map(platform => (
               <label
                 key={platform.slug}
@@ -224,8 +227,10 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
         {/* Series Selection */}
         {series.length > 0 ? (
           <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-            <label className={styles.formLabel}>Link to Content Series (optional)</label>
-            <div className={styles.seriesSelection}>
+            <label className={styles.formLabel} htmlFor="series-selection">
+              Link to Content Series (optional)
+            </label>
+            <div id="series-selection" className={styles.seriesSelection} role="group" aria-label="Content series">
               {series.map(s => (
                 <label
                   key={s.id}
@@ -273,7 +278,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           Cancel
         </button>
         <button type="submit" className={styles.primaryButton} disabled={isLoading}>
-          {isLoading ? 'Saving...' : initialData ? 'Update Campaign' : 'Create Campaign'}
+          {isLoading ? 'Saving...' : (initialData ? 'Update Campaign' : 'Create Campaign')}
         </button>
       </div>
     </form>

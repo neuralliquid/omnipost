@@ -82,7 +82,7 @@ export interface UsageMetrics {
  * Implements retry logic, cost monitoring, and comprehensive error handling
  */
 export class AzureAIFoundryClient {
-  private config: AzureAIFoundryConfig;
+  private readonly config: AzureAIFoundryConfig;
   private usageMetrics: UsageMetrics[] = [];
 
   // Pricing per 1K tokens (approximate, varies by model)

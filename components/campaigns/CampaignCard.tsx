@@ -62,8 +62,8 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
 
       {campaign.tags.length > 0 ? (
         <div className={styles.tagList}>
-          {campaign.tags.map((tag, index) => (
-            <span key={index} className={styles.tag}>
+          {campaign.tags.map(tag => (
+            <span key={tag} className={styles.tag}>
               {tag}
             </span>
           ))}

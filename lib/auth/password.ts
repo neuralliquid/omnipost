@@ -215,7 +215,7 @@ export function needsRehash(hash: string): boolean {
  * @param length Length of the password (default: 16)
  * @returns A randomly generated password meeting all requirements
  */
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 
 function secureRandomIndex(max: number): number {
   const randomBuffer = randomBytes(4);

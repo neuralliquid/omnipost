@@ -37,7 +37,9 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
           onClose();
         }
       }}
-      aria-label="Modal backdrop"
+      role="button"
+      tabIndex={0}
+      aria-label="Close modal"
     >
       <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />

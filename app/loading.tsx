@@ -5,13 +5,12 @@
 
 export default function Loading() {
   return (
-    <main
-      className="flex min-h-screen items-center justify-center"
-      role="status"
-      aria-label="Loading"
-      aria-live="polite"
-    >
-      <div className="flex flex-col items-center gap-4">
+    <main className="flex min-h-screen items-center justify-center">
+      <output
+        className="flex flex-col items-center gap-4"
+        aria-label="Loading"
+        aria-live="polite"
+      >
         {/* Spinner */}
         <div className="relative">
           <div className="h-12 w-12 rounded-full border-4 border-muted" />
@@ -19,8 +18,8 @@ export default function Loading() {
         </div>
 
         {/* Loading text */}
-        <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
-      </div>
+        <p className="text-sm text-muted-foreground">Loading...</p>
+      </output>
     </main>
   );
 }

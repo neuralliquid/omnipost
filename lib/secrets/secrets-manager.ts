@@ -80,8 +80,8 @@ interface CacheEntry {
  */
 class SecretsManager {
   private config: SecretsConfig;
-  private cache: Map<string, CacheEntry> = new Map();
-  private requiredSecrets: Set<string> = new Set();
+  private readonly cache: Map<string, CacheEntry> = new Map();
+  private readonly requiredSecrets: Set<string> = new Set();
 
   constructor(config: Partial<SecretsConfig> = {}) {
     this.config = { ...defaultConfig, ...config };

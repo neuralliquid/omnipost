@@ -25,12 +25,12 @@ import { getPublisher, Publisher } from './publisher';
  * Manages job scheduling, processing, and lifecycle
  */
 export class Scheduler {
-  private config: SchedulerConfig;
-  private queue: JobQueue;
-  private rateLimiter: RateLimiter;
-  private retryHandler: RetryHandler;
-  private publisher: Publisher;
-  private webhookUrls: Map<WebhookEventType, string[]> = new Map();
+  private readonly config: SchedulerConfig;
+  private readonly queue: JobQueue;
+  private readonly rateLimiter: RateLimiter;
+  private readonly retryHandler: RetryHandler;
+  private readonly publisher: Publisher;
+  private readonly webhookUrls: Map<WebhookEventType, string[]> = new Map();
 
   constructor(config?: Partial<SchedulerConfig>) {
     this.config = { ...DEFAULT_SCHEDULER_CONFIG, ...config };

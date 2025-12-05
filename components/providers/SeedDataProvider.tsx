@@ -18,7 +18,6 @@ export function SeedDataProvider({ children }: SeedDataProviderProps) {
   useEffect(() => {
     // Only run in browser
     if (typeof window === 'undefined') {
-      setIsReady(true);
       return;
     }
 
