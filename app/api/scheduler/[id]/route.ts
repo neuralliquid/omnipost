@@ -85,7 +85,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     // Handle reschedule
     if (body.scheduledTime) {
       const scheduledTime = new Date(body.scheduledTime);
-      if (isNaN(scheduledTime.getTime())) {
+      if (Number.isNaN(scheduledTime.getTime())) {
         return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
       }
 
