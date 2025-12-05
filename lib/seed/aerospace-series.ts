@@ -26,7 +26,8 @@ export const aerospaceSeriesSeed: Series = {
     'Swarm Defense',
     'Cybersecurity',
   ],
-  targetAudience: 'Security professionals, defense contractors, airport operators, critical infrastructure managers, and technology enthusiasts',
+  targetAudience:
+    'Security professionals, defense contractors, airport operators, critical infrastructure managers, and technology enthusiasts',
   estimatedArticles: 90,
   publishFrequency: 'weekly',
   status: 'in-progress',

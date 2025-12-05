@@ -23,14 +23,8 @@ const STATUS_FILTERS: { label: string; value: CampaignStatus | 'all' }[] = [
 ];
 
 export default function CampaignList() {
-  const {
-    campaigns,
-    isLoading,
-    error,
-    createCampaign,
-    deleteCampaign,
-    duplicateCampaign,
-  } = useCampaign();
+  const { campaigns, isLoading, error, createCampaign, deleteCampaign, duplicateCampaign } =
+    useCampaign();
 
   const [showForm, setShowForm] = useState(false);
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | 'all'>('all');
@@ -41,9 +35,7 @@ export default function CampaignList() {
   };
 
   const filteredCampaigns =
-    statusFilter === 'all'
-      ? campaigns
-      : campaigns.filter(c => c.status === statusFilter);
+    statusFilter === 'all' ? campaigns : campaigns.filter(c => c.status === statusFilter);
 
   return (
     <Layout
@@ -53,8 +45,8 @@ export default function CampaignList() {
       <div className={styles.container}>
         <h1 className={styles.pageTitle}>Campaigns</h1>
         <p className={styles.pageDescription}>
-          Create and manage multi-platform content distribution campaigns. Link your content
-          series, schedule posts, and track engagement across all platforms.
+          Create and manage multi-platform content distribution campaigns. Link your content series,
+          schedule posts, and track engagement across all platforms.
         </p>
 
         {error ? <div className={styles.errorMessage}>{error}</div> : null}
@@ -89,10 +81,7 @@ export default function CampaignList() {
         ) : null}
 
         {showForm ? (
-          <CampaignForm
-            onSubmit={handleCreateCampaign}
-            onCancel={() => setShowForm(false)}
-          />
+          <CampaignForm onSubmit={handleCreateCampaign} onCancel={() => setShowForm(false)} />
         ) : null}
 
         {isLoading ? (
@@ -102,10 +91,7 @@ export default function CampaignList() {
         ) : filteredCampaigns.length === 0 ? (
           <div className={styles.emptyState}>
             <p>No campaigns match the selected filter.</p>
-            <button
-              onClick={() => setStatusFilter('all')}
-              className={styles.secondaryButton}
-            >
+            <button onClick={() => setStatusFilter('all')} className={styles.secondaryButton}>
               Clear Filter
             </button>
           </div>

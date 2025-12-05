@@ -83,9 +83,7 @@ export class RateLimiter {
         requestLimit: config.requests,
         dailyCount: config.daily ? 0 : undefined,
         dailyLimit: config.daily,
-        dailyResetAt: config.daily
-          ? this.getNextDailyReset().toISOString()
-          : undefined,
+        dailyResetAt: config.daily ? this.getNextDailyReset().toISOString() : undefined,
         isBackingOff: false,
       };
       this.limits.set(platformId, limit);
@@ -150,7 +148,11 @@ export class RateLimiter {
     }
 
     // Check daily limit
-    if (limit.dailyLimit && limit.dailyCount !== undefined && limit.dailyCount >= limit.dailyLimit) {
+    if (
+      limit.dailyLimit &&
+      limit.dailyCount !== undefined &&
+      limit.dailyCount >= limit.dailyLimit
+    ) {
       return false;
     }
 
@@ -191,26 +193,32 @@ export class RateLimiter {
 
     return {
       window: Math.max(0, limit.requestLimit - limit.requestCount),
-      daily: limit.dailyLimit
-        ? Math.max(0, limit.dailyLimit - (limit.dailyCount || 0))
-        : undefined,
+      daily: limit.dailyLimit ? Math.max(0, limit.dailyLimit - (limit.dailyCount || 0)) : undefined,
     };
   }
 
   /**
    * Get rate limit status for all platforms
    */
-  async getStatus(): Promise<Record<string, {
-    remaining: number;
-    resetAt: string;
-    isBackingOff: boolean;
-  }>> {
+  async getStatus(): Promise<
+    Record<
+      string,
+      {
+        remaining: number;
+        resetAt: string;
+        isBackingOff: boolean;
+      }
+    >
+  > {
     this.ensureInitialized();
-    const status: Record<string, {
-      remaining: number;
-      resetAt: string;
-      isBackingOff: boolean;
-    }> = {};
+    const status: Record<
+      string,
+      {
+        remaining: number;
+        resetAt: string;
+        isBackingOff: boolean;
+      }
+    > = {};
 
     for (const platformId of Object.keys(this.configs)) {
       const limit = this.getOrCreateLimit(platformId);

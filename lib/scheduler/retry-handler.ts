@@ -12,7 +12,7 @@ export interface ErrorClassification {
   retryable: boolean;
   code: string;
   message: string;
-  backoffMultiplier?: number;  // Multiply standard backoff (e.g., 2x for rate limits)
+  backoffMultiplier?: number; // Multiply standard backoff (e.g., 2x for rate limits)
 }
 
 /**
@@ -125,11 +125,13 @@ export class RetryHandler {
   /**
    * Check if error is axios-like with response
    */
-  private isAxiosError(error: unknown): error is { response?: { status?: number; data?: { message?: string } }; message?: string; code?: string } {
+  private isAxiosError(error: unknown): error is {
+    response?: { status?: number; data?: { message?: string } };
+    message?: string;
+    code?: string;
+  } {
     return (
-      typeof error === 'object' &&
-      error !== null &&
-      ('response' in error || 'message' in error)
+      typeof error === 'object' && error !== null && ('response' in error || 'message' in error)
     );
   }
 
@@ -214,7 +216,10 @@ export class RetryHandler {
   /**
    * Determine if a job should be retried
    */
-  shouldRetry(job: ScheduledJob, error: unknown): {
+  shouldRetry(
+    job: ScheduledJob,
+    error: unknown
+  ): {
     retry: boolean;
     nextRetryAt?: Date;
     classification: ErrorClassification;

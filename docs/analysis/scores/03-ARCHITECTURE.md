@@ -14,13 +14,13 @@ Architecture assessment evaluates the overall system design, layer separation, d
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| Layer separation | 25% | 80% | ✅ Good |
-| Design patterns | 20% | 75% | ✅ Good |
-| API design | 20% | 85% | ✅ Good |
-| Scalability design | 15% | 60% | ⚠️ Limited |
-| SOLID principles | 20% | 80% | ✅ Good |
+| Criterion          | Weight | Score | Status     |
+| ------------------ | ------ | ----- | ---------- |
+| Layer separation   | 25%    | 80%   | ✅ Good    |
+| Design patterns    | 20%    | 75%   | ✅ Good    |
+| API design         | 20%    | 85%   | ✅ Good    |
+| Scalability design | 15%    | 60%   | ⚠️ Limited |
+| SOLID principles   | 20%    | 80%   | ✅ Good    |
 
 **Overall: 77% (Good)**
 
@@ -67,14 +67,15 @@ Architecture assessment evaluates the overall system design, layer separation, d
 
 ### 1. Clean Layer Separation (80%)
 
-| Layer | Location | Responsibility |
-|-------|----------|----------------|
-| Presentation | `/pages`, `/components` | UI rendering, user interaction |
-| Application | `/app/api` | Request handling, orchestration |
-| Domain | `/lib/auth`, `/lib` | Business logic, rules |
-| Infrastructure | `/lib/clients`, `/lib/data` | External services |
+| Layer          | Location                    | Responsibility                  |
+| -------------- | --------------------------- | ------------------------------- |
+| Presentation   | `/pages`, `/components`     | UI rendering, user interaction  |
+| Application    | `/app/api`                  | Request handling, orchestration |
+| Domain         | `/lib/auth`, `/lib`         | Business logic, rules           |
+| Infrastructure | `/lib/clients`, `/lib/data` | External services               |
 
 **Strengths:**
+
 - Clear boundaries between layers
 - Dependencies flow downward
 - Shared utilities are centralized
@@ -97,6 +98,7 @@ export const POST = withRateLimit(
 ```
 
 **Strengths:**
+
 - RESTful conventions
 - Consistent middleware chain
 - Standardized error responses
@@ -133,15 +135,15 @@ Response
 
 ### 4. Design Patterns in Use
 
-| Pattern | Implementation | Location |
-|---------|---------------|----------|
-| **Middleware** | Request processing chain | `middleware.ts`, route wrappers |
-| **Service** | Business logic encapsulation | `AuthService`, `HuggingFaceClient` |
-| **Repository** | Data access abstraction | `airtable.ts` |
-| **Strategy** | Switchable implementations | `textParser.implementation` |
-| **Factory** | Object creation | Test mocks, config |
-| **Singleton** | Single instance services | `authService` export |
-| **Observer** | Feature flag reactivity | localStorage events |
+| Pattern        | Implementation               | Location                           |
+| -------------- | ---------------------------- | ---------------------------------- |
+| **Middleware** | Request processing chain     | `middleware.ts`, route wrappers    |
+| **Service**    | Business logic encapsulation | `AuthService`, `HuggingFaceClient` |
+| **Repository** | Data access abstraction      | `airtable.ts`                      |
+| **Strategy**   | Switchable implementations   | `textParser.implementation`        |
+| **Factory**    | Object creation              | Test mocks, config                 |
+| **Singleton**  | Single instance services     | `authService` export               |
+| **Observer**   | Feature flag reactivity      | localStorage events                |
 
 ### 5. Feature Flag Architecture
 
@@ -170,14 +172,15 @@ if (featureFlags.textParser.enabled) {
 
 **Current limitations:**
 
-| Component | Issue | Impact |
-|-----------|-------|--------|
-| Rate limiting | In-memory Map | Single instance only |
-| Token blacklist | In-memory Map | Lost on restart |
-| Feature flags | File-based | Single server |
-| Sessions | No persistence | Stateless only |
+| Component       | Issue          | Impact               |
+| --------------- | -------------- | -------------------- |
+| Rate limiting   | In-memory Map  | Single instance only |
+| Token blacklist | In-memory Map  | Lost on restart      |
+| Feature flags   | File-based     | Single server        |
+| Sessions        | No persistence | Stateless only       |
 
 **Recommended solutions:**
+
 - Redis for rate limiting and caching
 - Database for user/session storage
 - Distributed feature flag service
@@ -188,7 +191,7 @@ if (featureFlags.textParser.enabled) {
 
 ```typescript
 // Example of mixed concerns
-export const POST = handler(async (request) => {
+export const POST = handler(async request => {
   const body = await request.json();
 
   // Business logic mixed with handler
@@ -201,6 +204,7 @@ export const POST = handler(async (request) => {
 ```
 
 **Better approach:**
+
 ```typescript
 // Separate service
 class NotificationService {
@@ -211,7 +215,7 @@ class NotificationService {
 }
 
 // Clean handler
-export const POST = handler(async (request) => {
+export const POST = handler(async request => {
   const body = await request.json();
   await notificationService.send(body);
 });
@@ -228,6 +232,7 @@ const client = new HuggingFaceClient(process.env.API_KEY);
 ```
 
 **Better approach:**
+
 ```typescript
 // Container-based DI
 const container = {
@@ -241,13 +246,13 @@ const container = {
 
 ## SOLID Principles Compliance
 
-| Principle | Score | Notes |
-|-----------|-------|-------|
-| **S**ingle Responsibility | 80% | Most components focused, some mixed |
-| **O**pen/Closed | 75% | Feature flags enable extension |
-| **L**iskov Substitution | 85% | Interfaces used appropriately |
-| **I**nterface Segregation | 85% | Small, focused interfaces |
-| **D**ependency Inversion | 70% | Some direct dependencies |
+| Principle                 | Score | Notes                               |
+| ------------------------- | ----- | ----------------------------------- |
+| **S**ingle Responsibility | 80%   | Most components focused, some mixed |
+| **O**pen/Closed           | 75%   | Feature flags enable extension      |
+| **L**iskov Substitution   | 85%   | Interfaces used appropriately       |
+| **I**nterface Segregation | 85%   | Small, focused interfaces           |
+| **D**ependency Inversion  | 70%   | Some direct dependencies            |
 
 ---
 
@@ -320,12 +325,14 @@ const container = {
 **Current:** No versioning
 
 **Recommended approach:**
+
 ```
 /api/v1/content
 /api/v2/content (future)
 ```
 
 Or header-based:
+
 ```
 Accept: application/vnd.api+json;version=1
 ```
@@ -335,24 +342,28 @@ Accept: application/vnd.api+json;version=1
 ## Recommendations
 
 ### Immediate
+
 1. Extract business logic from route handlers to services
 2. Document architectural decisions (ADRs)
 
 ### Short-term
+
 1. Add Redis for rate limiting and caching
 2. Implement proper dependency injection
 3. Add health check endpoint
 
 ### Medium-term
+
 1. Database integration (PostgreSQL)
 2. API versioning strategy
 3. Event-driven patterns for notifications
 
 ### Long-term
+
 1. Microservices consideration (if scale requires)
 2. CQRS for read/write separation
 3. Event sourcing for audit trail
 
 ---
 
-*This document assesses architectural practices for the Content Creation Platform.*
+_This document assesses architectural practices for the Content Creation Platform._

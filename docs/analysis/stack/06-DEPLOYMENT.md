@@ -45,15 +45,15 @@ The Content Creation Platform is deployed to Azure Web Apps using infrastructure
 
 ### Azure Web Apps
 
-| Setting | Value |
-|---------|-------|
-| **Runtime** | Node.js 20 LTS |
-| **OS** | Linux |
-| **SKU** | B1 (configurable) |
-| **Region** | West Europe (default) |
-| **TLS** | 1.2 minimum |
-| **HTTP/2** | Enabled |
-| **Always On** | Enabled |
+| Setting       | Value                 |
+| ------------- | --------------------- |
+| **Runtime**   | Node.js 20 LTS        |
+| **OS**        | Linux                 |
+| **SKU**       | B1 (configurable)     |
+| **Region**    | West Europe (default) |
+| **TLS**       | 1.2 minimum           |
+| **HTTP/2**    | Enabled               |
+| **Always On** | Enabled               |
 
 ### Bicep Template
 
@@ -114,11 +114,11 @@ output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 # Example: dev-euw-content-creation-app
 ```
 
-| Resource | Naming Pattern |
-|----------|----------------|
-| Resource Group | `{env}-{region}-{project}-rg` |
+| Resource         | Naming Pattern                 |
+| ---------------- | ------------------------------ |
+| Resource Group   | `{env}-{region}-{project}-rg`  |
 | App Service Plan | `{env}-{region}-{project}-asp` |
-| Web App | `{env}-{region}-{project}-app` |
+| Web App          | `{env}-{region}-{project}-app` |
 
 ---
 
@@ -180,7 +180,7 @@ name: Azure Web App - Node.js CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
     inputs:
       environment:
@@ -253,20 +253,22 @@ jobs:
 
 ### Environment Configuration
 
-| Environment | Trigger | Purpose |
-|-------------|---------|---------|
+| Environment     | Trigger         | Purpose             |
+| --------------- | --------------- | ------------------- |
 | **Development** | Manual dispatch | Feature development |
-| **Test** | Manual dispatch | QA testing |
-| **Production** | Push to main | Live users |
+| **Test**        | Manual dispatch | QA testing          |
+| **Production**  | Push to main    | Live users          |
 
 ### Environment Variables
 
 **Required (All Environments):**
+
 ```bash
 JWT_SECRET=<secure-random-string>
 ```
 
 **Optional (Feature-dependent):**
+
 ```bash
 # AI Services
 HUGGING_FACE_API_KEY=<key>
@@ -284,12 +286,12 @@ EMAIL_USER=<email>
 
 ### GitHub Secrets
 
-| Secret | Purpose |
-|--------|---------|
-| `AZURE_CLIENT_ID` | Azure service principal |
-| `AZURE_TENANT_ID` | Azure AD tenant |
-| `AZURE_SUBSCRIPTION_ID` | Azure subscription |
-| `JWT_SECRET` | JWT signing (CI) |
+| Secret                  | Purpose                 |
+| ----------------------- | ----------------------- |
+| `AZURE_CLIENT_ID`       | Azure service principal |
+| `AZURE_TENANT_ID`       | Azure AD tenant         |
+| `AZURE_SUBSCRIPTION_ID` | Azure subscription      |
+| `JWT_SECRET`            | JWT signing (CI)        |
 
 ---
 
@@ -332,6 +334,7 @@ npm run build
 ```
 
 **Output:**
+
 - `.next/` directory with optimized production build
 - Static assets in `.next/static/`
 - Server bundles in `.next/server/`
@@ -355,13 +358,13 @@ npm run build
 
 ### Current State
 
-| Feature | Status | Notes |
-|---------|--------|-------|
-| Application Insights | ❌ Not configured | Planned |
-| Health endpoint | ❌ Not implemented | Recommended |
-| Log aggregation | ❌ Console only | Azure logs available |
-| Alerting | ❌ Not configured | Recommended |
-| Performance monitoring | ❌ Not configured | Recommended |
+| Feature                | Status             | Notes                |
+| ---------------------- | ------------------ | -------------------- |
+| Application Insights   | ❌ Not configured  | Planned              |
+| Health endpoint        | ❌ Not implemented | Recommended          |
+| Log aggregation        | ❌ Console only    | Azure logs available |
+| Alerting               | ❌ Not configured  | Recommended          |
+| Performance monitoring | ❌ Not configured  | Recommended          |
 
 ### Planned Additions
 
@@ -459,38 +462,41 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 
 ## Best Practices Compliance
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| Infrastructure as Code | ✅ | Bicep templates |
-| CI/CD automation | ✅ | GitHub Actions |
-| Environment separation | ✅ | dev/test/prod |
-| Secrets management | ⚠️ | GitHub secrets (not Key Vault) |
-| Build verification | ✅ | Tests required before deploy |
-| Artifact management | ✅ | Upload/download artifacts |
-| Health checks | ❌ | Not implemented |
-| Monitoring | ❌ | Not configured |
-| Alerting | ❌ | Not configured |
-| Blue-green deployment | ❌ | Single slot only |
+| Practice               | Status | Notes                          |
+| ---------------------- | ------ | ------------------------------ |
+| Infrastructure as Code | ✅     | Bicep templates                |
+| CI/CD automation       | ✅     | GitHub Actions                 |
+| Environment separation | ✅     | dev/test/prod                  |
+| Secrets management     | ⚠️     | GitHub secrets (not Key Vault) |
+| Build verification     | ✅     | Tests required before deploy   |
+| Artifact management    | ✅     | Upload/download artifacts      |
+| Health checks          | ❌     | Not implemented                |
+| Monitoring             | ❌     | Not configured                 |
+| Alerting               | ❌     | Not configured                 |
+| Blue-green deployment  | ❌     | Single slot only               |
 
 ---
 
 ## Recommendations
 
 ### Short-term
+
 1. Add health check endpoint (`/api/health`)
 2. Configure Application Insights
 3. Add deployment slot for staging
 
 ### Medium-term
+
 1. Move secrets to Azure Key Vault
 2. Implement blue-green deployments
 3. Add performance monitoring
 
 ### Long-term
+
 1. Consider Azure Front Door for CDN/WAF
 2. Implement auto-scaling rules
 3. Add disaster recovery strategy
 
 ---
 
-*This document details the deployment technology stack for the Content Creation Platform.*
+_This document details the deployment technology stack for the Content Creation Platform._

@@ -136,7 +136,7 @@ function calculateDelay(attempt: number, options: Required<RetryOptions>): numbe
  * Sleep for a specified duration
  */
 function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 /**
@@ -225,13 +225,10 @@ export async function withRetryResult<T>(
   let attempts = 0;
 
   try {
-    const data = await withRetry(
-      async () => {
-        attempts++;
-        return operation();
-      },
-      options
-    );
+    const data = await withRetry(async () => {
+      attempts++;
+      return operation();
+    }, options);
 
     return {
       success: true,

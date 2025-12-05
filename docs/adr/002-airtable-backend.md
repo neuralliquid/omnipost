@@ -10,12 +10,14 @@
 ## Context
 
 The Content Creation Platform needs a backend data store for managing:
+
 - Content items and metadata
 - Platform configurations
 - User preferences
 - Workflow states
 
 The application is currently designed as a content creation and management tool that integrates with multiple publishing platforms. Data persistence requirements include:
+
 - CRUD operations on content
 - Relational data (content ↔ platforms)
 - Simple querying and filtering
@@ -43,12 +45,14 @@ We will use **Airtable** as the primary backend data store for the Content Creat
 ### Option 1: Traditional SQL Database (PostgreSQL) ❌
 
 **Pros:**
+
 - Strong consistency
 - Complex queries
 - Mature ecosystem
 - Scalability
 
 **Cons:**
+
 - Requires database administration
 - Schema migrations needed
 - Higher infrastructure complexity
@@ -57,11 +61,13 @@ We will use **Airtable** as the primary backend data store for the Content Creat
 ### Option 2: NoSQL Database (MongoDB) ❌
 
 **Pros:**
+
 - Flexible schema
 - Good for document-based data
 - Scalable
 
 **Cons:**
+
 - Still requires administration
 - No visual interface
 - Query complexity for relational data
@@ -69,6 +75,7 @@ We will use **Airtable** as the primary backend data store for the Content Creat
 ### Option 3: Airtable ✅ (Selected)
 
 **Pros:**
+
 - Visual spreadsheet-like interface
 - Built-in REST API
 - Relational capabilities
@@ -77,6 +84,7 @@ We will use **Airtable** as the primary backend data store for the Content Creat
 - Built-in views and filters
 
 **Cons:**
+
 - Rate limits (5 requests/second)
 - Record limits (50,000/base on free tier)
 - Limited query capabilities
@@ -86,11 +94,13 @@ We will use **Airtable** as the primary backend data store for the Content Creat
 ### Option 4: Headless CMS (Contentful, Strapi) ❌
 
 **Pros:**
+
 - Content-focused
 - API-first
 - Media handling
 
 **Cons:**
+
 - Higher cost
 - More complex setup
 - Overkill for current needs
@@ -157,9 +167,7 @@ const airtableRateLimiter = new RateLimiter({
   windowMs: 1000,
 });
 
-export async function airtableRequest<T>(
-  operation: () => Promise<T>
-): Promise<T> {
+export async function airtableRequest<T>(operation: () => Promise<T>): Promise<T> {
   await airtableRateLimiter.acquire();
   return operation();
 }
@@ -206,13 +214,13 @@ export async function getContent(id: string) {
 
 ### Risks and Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Rate limit hits | Medium | Medium | Implement caching, batch operations |
-| Record limit reached | Low | High | Monitor usage, plan migration path |
-| API downtime | Low | High | Implement retry logic, fallback cache |
-| Cost increase | Medium | Medium | Monitor usage, evaluate alternatives |
-| Data migration needed | Medium | High | Document schema, maintain export scripts |
+| Risk                  | Likelihood | Impact | Mitigation                               |
+| --------------------- | ---------- | ------ | ---------------------------------------- |
+| Rate limit hits       | Medium     | Medium | Implement caching, batch operations      |
+| Record limit reached  | Low        | High   | Monitor usage, plan migration path       |
+| API downtime          | Low        | High   | Implement retry logic, fallback cache    |
+| Cost increase         | Medium     | Medium | Monitor usage, evaluate alternatives     |
+| Data migration needed | Medium     | High   | Document schema, maintain export scripts |
 
 ---
 
@@ -230,6 +238,7 @@ If Airtable becomes insufficient, the migration path would be:
 ### Migration Triggers
 
 Consider migration when:
+
 - Approaching 50,000 records in any table
 - Rate limits causing user-facing issues
 - Complex queries needed (aggregations, joins)
@@ -262,6 +271,6 @@ This allows switching to an alternative backend without code changes.
 
 ## Changelog
 
-| Date | Author | Change |
-|------|--------|--------|
+| Date    | Author           | Change             |
+| ------- | ---------------- | ------------------ |
 | 2025-12 | Development Team | Initial acceptance |

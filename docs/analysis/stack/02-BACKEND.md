@@ -16,12 +16,13 @@ The backend is built entirely within the Next.js framework, utilizing both the m
 
 ### Next.js API Routes
 
-| Router | Location | Status |
-|--------|----------|--------|
-| **App Router** | `/app/api/*/route.ts` | Primary (active) |
-| **Pages Router** | `/pages/api/*.ts` | Legacy (migration pending) |
+| Router           | Location              | Status                     |
+| ---------------- | --------------------- | -------------------------- |
+| **App Router**   | `/app/api/*/route.ts` | Primary (active)           |
+| **Pages Router** | `/pages/api/*.ts`     | Legacy (migration pending) |
 
 ### Runtime
+
 - **Node.js 20 LTS** (Azure deployment target)
 - **Edge Runtime**: Not currently used
 
@@ -125,31 +126,31 @@ export const POST = withRateLimit(
 
 ### App Router Endpoints (Primary)
 
-| Endpoint | Methods | Purpose | Auth Required |
-|----------|---------|---------|---------------|
-| `/api/auth` | POST, DELETE | Login/logout | No (login), Yes (logout) |
-| `/api/audit` | GET | Retrieve audit logs | Admin |
-| `/api/content/store` | POST | Store content to Airtable | Yes |
-| `/api/content/track` | POST | Track published content | Yes |
-| `/api/engagement-metrics` | GET | Get engagement metrics | Yes |
-| `/api/feature-flags` | GET, POST | Manage feature flags | Admin |
-| `/api/feedback` | POST | Submit user feedback | Yes |
-| `/api/images` | POST, PUT | Generate/review images | Yes |
-| `/api/notifications` | POST | Send notifications | Yes |
-| `/api/parse` | POST | Parse text content | Yes |
-| `/api/platforms` | GET | List platforms | Yes |
-| `/api/platforms/[id]/capabilities` | GET | Platform capabilities | Yes |
-| `/api/queue/approve` | POST | Approve content queue | Yes |
-| `/api/summarize` | POST | Summarize text | Yes |
+| Endpoint                           | Methods      | Purpose                   | Auth Required            |
+| ---------------------------------- | ------------ | ------------------------- | ------------------------ |
+| `/api/auth`                        | POST, DELETE | Login/logout              | No (login), Yes (logout) |
+| `/api/audit`                       | GET          | Retrieve audit logs       | Admin                    |
+| `/api/content/store`               | POST         | Store content to Airtable | Yes                      |
+| `/api/content/track`               | POST         | Track published content   | Yes                      |
+| `/api/engagement-metrics`          | GET          | Get engagement metrics    | Yes                      |
+| `/api/feature-flags`               | GET, POST    | Manage feature flags      | Admin                    |
+| `/api/feedback`                    | POST         | Submit user feedback      | Yes                      |
+| `/api/images`                      | POST, PUT    | Generate/review images    | Yes                      |
+| `/api/notifications`               | POST         | Send notifications        | Yes                      |
+| `/api/parse`                       | POST         | Parse text content        | Yes                      |
+| `/api/platforms`                   | GET          | List platforms            | Yes                      |
+| `/api/platforms/[id]/capabilities` | GET          | Platform capabilities     | Yes                      |
+| `/api/queue/approve`               | POST         | Approve content queue     | Yes                      |
+| `/api/summarize`                   | POST         | Summarize text            | Yes                      |
 
 ### Rate Limit Configuration
 
-| Preset | Requests | Window | Use Case |
-|--------|----------|--------|----------|
-| AUTH | 5 | 15 min | Login attempts |
-| AI_SERVICE | 10 | 1 min | Image/text generation |
-| GENERAL | 100 | 15 min | Standard endpoints |
-| ADMIN | 50 | 1 hour | Admin operations |
+| Preset     | Requests | Window | Use Case              |
+| ---------- | -------- | ------ | --------------------- |
+| AUTH       | 5        | 15 min | Login attempts        |
+| AI_SERVICE | 10       | 1 min  | Image/text generation |
+| GENERAL    | 100      | 15 min | Standard endpoints    |
+| ADMIN      | 50       | 1 hour | Admin operations      |
 
 ---
 
@@ -157,32 +158,32 @@ export const POST = withRateLimit(
 
 ### Location: `/app/api/_utils/`
 
-| Utility | File | Purpose |
-|---------|------|---------|
-| **Audit Logging** | `audit.ts` | Action logging with user context |
-| **Authentication** | `auth.ts` | Auth helpers for route handlers |
-| **Error Handling** | `errors.ts` | Standardized error responses |
-| **Rate Limiting** | `rateLimit.ts` | Request throttling |
-| **RBAC** | `rbac.ts` | Role-based access control |
-| **Sanitization** | `sanitize.ts` | Input sanitization with Zod |
-| **Validation** | `validation.ts` | Input validation schemas |
+| Utility            | File            | Purpose                          |
+| ------------------ | --------------- | -------------------------------- |
+| **Audit Logging**  | `audit.ts`      | Action logging with user context |
+| **Authentication** | `auth.ts`       | Auth helpers for route handlers  |
+| **Error Handling** | `errors.ts`     | Standardized error responses     |
+| **Rate Limiting**  | `rateLimit.ts`  | Request throttling               |
+| **RBAC**           | `rbac.ts`       | Role-based access control        |
+| **Sanitization**   | `sanitize.ts`   | Input sanitization with Zod      |
+| **Validation**     | `validation.ts` | Input validation schemas         |
 
 ### Error Response Structure
 
 ```typescript
 interface ErrorResponse {
-  message: string;      // Human-readable message
-  code?: string;        // Machine-readable code
-  details?: any;        // Additional context
+  message: string; // Human-readable message
+  code?: string; // Machine-readable code
+  details?: any; // Additional context
 }
 
 // Standard error codes
 const Errors = {
   badRequest: (msg, details) => createErrorResponse(msg, 400, details, 'BAD_REQUEST'),
-  unauthorized: (msg) => createErrorResponse(msg, 401, null, 'UNAUTHORIZED'),
-  forbidden: (msg) => createErrorResponse(msg, 403, null, 'FORBIDDEN'),
-  notFound: (msg) => createErrorResponse(msg, 404, null, 'NOT_FOUND'),
-  internalServerError: (msg) => createErrorResponse(msg, 500, null, 'INTERNAL_SERVER_ERROR'),
+  unauthorized: msg => createErrorResponse(msg, 401, null, 'UNAUTHORIZED'),
+  forbidden: msg => createErrorResponse(msg, 403, null, 'FORBIDDEN'),
+  notFound: msg => createErrorResponse(msg, 404, null, 'NOT_FOUND'),
+  internalServerError: msg => createErrorResponse(msg, 500, null, 'INTERNAL_SERVER_ERROR'),
 };
 ```
 
@@ -234,18 +235,18 @@ export class AuthService {
 
 ### Protected Routes
 
-| Route Pattern | Auth Level |
-|---------------|------------|
-| `/api/platforms/*` | Authenticated |
-| `/api/queue/*` | Authenticated |
-| `/api/images/*` | Authenticated |
-| `/api/parse` | Authenticated |
-| `/api/summarize` | Authenticated |
-| `/api/content/*` | Authenticated |
-| `/api/feedback` | Authenticated |
+| Route Pattern        | Auth Level    |
+| -------------------- | ------------- |
+| `/api/platforms/*`   | Authenticated |
+| `/api/queue/*`       | Authenticated |
+| `/api/images/*`      | Authenticated |
+| `/api/parse`         | Authenticated |
+| `/api/summarize`     | Authenticated |
+| `/api/content/*`     | Authenticated |
+| `/api/feedback`      | Authenticated |
 | `/api/notifications` | Authenticated |
-| `/api/feature-flags` | Admin |
-| `/api/audit` | Admin |
+| `/api/feature-flags` | Admin         |
+| `/api/audit`         | Admin         |
 
 ---
 
@@ -279,7 +280,7 @@ export const imageContextSchema = z.object({
 
 ```typescript
 // HTML sanitization
-function sanitizeHtml(input: string, options?: { allowedTags, allowedAttributes }): string;
+function sanitizeHtml(input: string, options?: { allowedTags; allowedAttributes }): string;
 
 // Plain text (strip all HTML)
 function sanitizeText(input: string): string;
@@ -297,17 +298,17 @@ function validateJson(input: string): object | null;
 
 ### Service Classes
 
-| Service | Location | Purpose |
-|---------|----------|---------|
-| `AuthService` | `/lib/auth/auth-service.ts` | Authentication operations |
-| `HuggingFaceClient` | `/lib/clients/huggingface.ts` | AI image generation |
+| Service             | Location                      | Purpose                   |
+| ------------------- | ----------------------------- | ------------------------- |
+| `AuthService`       | `/lib/auth/auth-service.ts`   | Authentication operations |
+| `HuggingFaceClient` | `/lib/clients/huggingface.ts` | AI image generation       |
 
 ### Data Access
 
-| Module | Location | Purpose |
-|--------|----------|---------|
-| `airtable.ts` | `/lib/data/airtable.ts` | Airtable integration |
-| `featureFlags.ts` | `/lib/featureFlags.ts` | Feature flag management |
+| Module            | Location                | Purpose                 |
+| ----------------- | ----------------------- | ----------------------- |
+| `airtable.ts`     | `/lib/data/airtable.ts` | Airtable integration    |
+| `featureFlags.ts` | `/lib/featureFlags.ts`  | Feature flag management |
 
 ---
 
@@ -355,11 +356,7 @@ interface RateLimitConfig {
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
 // Wrapper function
-export function withRateLimit<T>(
-  handler: T,
-  endpoint: string,
-  config: RateLimitConfig
-): T;
+export function withRateLimit<T>(handler: T, endpoint: string, config: RateLimitConfig): T;
 ```
 
 ### Error Handling
@@ -388,22 +385,22 @@ export function withErrorHandling(
 
 ```typescript
 interface AuditLogEntry {
-  action: string;        // Action type (e.g., 'LOGIN_SUCCESS')
-  user: string;          // User ID
-  timestamp: string;     // ISO 8601
-  path: string;          // Request path
-  method: string;        // HTTP method
-  body?: object;         // Sanitized request body
+  action: string; // Action type (e.g., 'LOGIN_SUCCESS')
+  user: string; // User ID
+  timestamp: string; // ISO 8601
+  path: string; // Request path
+  method: string; // HTTP method
+  body?: object; // Sanitized request body
 }
 ```
 
 ### Action Types
 
-| Category | Actions |
-|----------|---------|
-| Auth | LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT |
-| Data | GET_PLATFORMS_LIST, GET_FEATURE_FLAGS, GET_PLATFORM_CAPABILITIES |
-| Mutations | UPDATE_FEATURE_FLAG, GENERATE_IMAGE, REVIEW_IMAGE |
+| Category  | Actions                                                          |
+| --------- | ---------------------------------------------------------------- |
+| Auth      | LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT               |
+| Data      | GET_PLATFORMS_LIST, GET_FEATURE_FLAGS, GET_PLATFORM_CAPABILITIES |
+| Mutations | UPDATE_FEATURE_FLAG, GENERATE_IMAGE, REVIEW_IMAGE                |
 
 ---
 
@@ -441,15 +438,15 @@ GMAIL_CLIENT_SECRET=<secret>
 
 ### Migration Status
 
-| Endpoint | Status |
-|----------|--------|
-| Auth | Migrated to App Router |
+| Endpoint      | Status                 |
+| ------------- | ---------------------- |
+| Auth          | Migrated to App Router |
 | Feature Flags | Migrated to App Router |
-| Images | Migrated to App Router |
-| Parse | Migrated to App Router |
-| Platforms | Migrated to App Router |
-| Queue | Migrated to App Router |
-| Others | Pending migration |
+| Images        | Migrated to App Router |
+| Parse         | Migrated to App Router |
+| Platforms     | Migrated to App Router |
+| Queue         | Migrated to App Router |
+| Others        | Pending migration      |
 
 ### Migration Path
 
@@ -464,36 +461,39 @@ GMAIL_CLIENT_SECRET=<secret>
 
 ## Best Practices Compliance
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| App Router for API | ✅ | Primary pattern |
-| Input validation | ✅ | Zod schemas |
-| Input sanitization | ✅ | DOMPurify |
-| Rate limiting | ✅ | All endpoints |
-| Error handling | ✅ | Standardized responses |
-| Audit logging | ✅ | All actions logged |
-| JWT authentication | ✅ | With blacklist |
-| RBAC | ✅ | Admin/user roles |
+| Practice           | Status | Notes                  |
+| ------------------ | ------ | ---------------------- |
+| App Router for API | ✅     | Primary pattern        |
+| Input validation   | ✅     | Zod schemas            |
+| Input sanitization | ✅     | DOMPurify              |
+| Rate limiting      | ✅     | All endpoints          |
+| Error handling     | ✅     | Standardized responses |
+| Audit logging      | ✅     | All actions logged     |
+| JWT authentication | ✅     | With blacklist         |
+| RBAC               | ✅     | Admin/user roles       |
 
 ---
 
 ## Recommendations
 
 ### Short-term
+
 1. Complete Pages Router API migration
 2. Add request ID correlation for tracing
 3. Implement health check endpoint
 
 ### Medium-term
+
 1. Replace in-memory rate limiting with Redis
 2. Add structured logging service
 3. Implement database for user storage
 
 ### Long-term
+
 1. Consider API versioning strategy
 2. Add OpenAPI/Swagger documentation
 3. Implement API gateway pattern
 
 ---
 
-*This document details the backend technology stack for the Content Creation Platform.*
+_This document details the backend technology stack for the Content Creation Platform._

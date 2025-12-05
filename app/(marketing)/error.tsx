@@ -23,9 +23,7 @@ export default function MarketingError({ error, reset }: ErrorProps) {
       <div className="w-full max-w-md space-y-6 text-center">
         <div className="space-y-2">
           <h1 className="text-4xl font-bold">Oops!</h1>
-          <p className="text-muted-foreground">
-            Something went wrong while loading this page.
-          </p>
+          <p className="text-muted-foreground">Something went wrong while loading this page.</p>
         </div>
 
         <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">

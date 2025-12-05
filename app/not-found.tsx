@@ -36,47 +36,30 @@ export default function NotFound() {
 
         {/* Suggestions */}
         <div className="pt-6 border-t">
-          <p className="text-xs text-muted-foreground mb-3">
-            Here are some helpful links:
-          </p>
+          <p className="text-xs text-muted-foreground mb-3">Here are some helpful links:</p>
           <ul className="space-y-2">
             <li>
-              <Link
-                href="/"
-                className="text-sm text-primary hover:underline"
-              >
+              <Link href="/" className="text-sm text-primary hover:underline">
                 Home
               </Link>
             </li>
             <li>
-              <Link
-                href="/dashboard"
-                className="text-sm text-primary hover:underline"
-              >
+              <Link href="/dashboard" className="text-sm text-primary hover:underline">
                 Dashboard
               </Link>
             </li>
             <li>
-              <Link
-                href="/review"
-                className="text-sm text-primary hover:underline"
-              >
+              <Link href="/review" className="text-sm text-primary hover:underline">
                 Content Review
               </Link>
             </li>
             <li>
-              <Link
-                href="/workflow"
-                className="text-sm text-primary hover:underline"
-              >
+              <Link href="/workflow" className="text-sm text-primary hover:underline">
                 Workflow
               </Link>
             </li>
             <li>
-              <Link
-                href="/platform-analysis"
-                className="text-sm text-primary hover:underline"
-              >
+              <Link href="/platform-analysis" className="text-sm text-primary hover:underline">
                 Platform Analysis
               </Link>
             </li>

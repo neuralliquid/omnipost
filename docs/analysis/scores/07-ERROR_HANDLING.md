@@ -14,13 +14,13 @@ Error handling assessment covers exception management, logging practices, error 
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| API error handling | 25% | 90% | ✅ Excellent |
-| Client error boundaries | 20% | 80% | ✅ Good |
-| Logging implementation | 25% | 50% | ⚠️ Basic |
-| Error messages | 15% | 75% | ✅ Good |
-| Recovery strategies | 15% | 55% | ⚠️ Basic |
+| Criterion               | Weight | Score | Status       |
+| ----------------------- | ------ | ----- | ------------ |
+| API error handling      | 25%    | 90%   | ✅ Excellent |
+| Client error boundaries | 20%    | 80%   | ✅ Good      |
+| Logging implementation  | 25%    | 50%   | ⚠️ Basic     |
+| Error messages          | 15%    | 75%   | ✅ Good      |
+| Recovery strategies     | 15%    | 55%   | ⚠️ Basic     |
 
 **Overall: 68% (Adequate)**
 
@@ -31,24 +31,26 @@ Error handling assessment covers exception management, logging practices, error 
 ### 1. API Error Handling (90%)
 
 **Standardized Error Response:**
+
 ```typescript
 // app/api/_utils/errors.ts
 export interface ErrorResponse {
-  message: string;      // Human-readable
-  code?: string;        // Machine-readable
-  details?: any;        // Additional context
+  message: string; // Human-readable
+  code?: string; // Machine-readable
+  details?: any; // Additional context
 }
 
 export const Errors = {
   badRequest: (msg, details) => createErrorResponse(msg, 400, details, 'BAD_REQUEST'),
-  unauthorized: (msg) => createErrorResponse(msg, 401, null, 'UNAUTHORIZED'),
-  forbidden: (msg) => createErrorResponse(msg, 403, null, 'FORBIDDEN'),
-  notFound: (msg) => createErrorResponse(msg, 404, null, 'NOT_FOUND'),
-  internalServerError: (msg) => createErrorResponse(msg, 500, null, 'INTERNAL_SERVER_ERROR'),
+  unauthorized: msg => createErrorResponse(msg, 401, null, 'UNAUTHORIZED'),
+  forbidden: msg => createErrorResponse(msg, 403, null, 'FORBIDDEN'),
+  notFound: msg => createErrorResponse(msg, 404, null, 'NOT_FOUND'),
+  internalServerError: msg => createErrorResponse(msg, 500, null, 'INTERNAL_SERVER_ERROR'),
 };
 ```
 
 **Error Handler Wrapper:**
+
 ```typescript
 export function withErrorHandling(handler) {
   return async (req, context) => {
@@ -75,6 +77,7 @@ export function withErrorHandling(handler) {
 ### 2. Client Error Boundaries (80%)
 
 **ErrorBoundary Component:**
+
 ```typescript
 // components/ErrorBoundary.tsx
 export class ErrorBoundary extends Component<Props, State> {
@@ -98,6 +101,7 @@ export class ErrorBoundary extends Component<Props, State> {
 ### 3. Validation Errors (85%)
 
 **Zod Error Transformation:**
+
 ```typescript
 export function validateAndSanitize<T>(schema: T, data: unknown) {
   try {
@@ -143,12 +147,14 @@ console.error('API Error:', error);
 ```
 
 **Issues:**
+
 - Logs lost on container restart
 - No log aggregation
 - No structured querying
 - No alerting capability
 
 **Recommended:**
+
 ```typescript
 // Structured logging service
 import { logger } from '@/lib/logger';
@@ -201,6 +207,7 @@ async function withRetry<T>(
 **Current:** No correlation IDs
 
 **Recommended:**
+
 ```typescript
 // Middleware to add request ID
 export function middleware(request: NextRequest) {
@@ -241,14 +248,14 @@ window.onerror = (message, source, line, col, error) => {
 
 ### Current Implementation (Good)
 
-| Status | Code | Usage |
-|--------|------|-------|
-| 400 | BAD_REQUEST | Validation failures |
-| 401 | UNAUTHORIZED | Missing/invalid token |
-| 403 | FORBIDDEN | Insufficient permissions |
-| 404 | NOT_FOUND | Resource not found |
-| 429 | (rate limit) | Too many requests |
-| 500 | INTERNAL_SERVER_ERROR | Unexpected errors |
+| Status | Code                  | Usage                    |
+| ------ | --------------------- | ------------------------ |
+| 400    | BAD_REQUEST           | Validation failures      |
+| 401    | UNAUTHORIZED          | Missing/invalid token    |
+| 403    | FORBIDDEN             | Insufficient permissions |
+| 404    | NOT_FOUND             | Resource not found       |
+| 429    | (rate limit)          | Too many requests        |
+| 500    | INTERNAL_SERVER_ERROR | Unexpected errors        |
 
 ### Response Format
 
@@ -281,14 +288,15 @@ interface AuditLogEntry {
   timestamp: string;
   path: string;
   method: string;
-  body?: object;  // Sanitized
+  body?: object; // Sanitized
 }
 
 // Logged actions
-- LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAILED
-- GET_FEATURE_FLAGS, UPDATE_FEATURE_FLAG
-- GENERATE_IMAGE, REVIEW_IMAGE
-- GET_PLATFORMS_LIST
+(-LOGIN_ATTEMPT,
+  LOGIN_SUCCESS,
+  LOGIN_FAILED - GET_FEATURE_FLAGS,
+  UPDATE_FEATURE_FLAG - GENERATE_IMAGE,
+  REVIEW_IMAGE - GET_PLATFORMS_LIST);
 ```
 
 ### Sensitive Data Handling (Good)
@@ -307,6 +315,7 @@ function sanitizeLogBody(body: object): object {
 ## Best Practices Checklist
 
 ### Implemented ✅
+
 - [x] Standardized error response format
 - [x] Error handler wrapper (withErrorHandling)
 - [x] Client-side error boundaries
@@ -317,6 +326,7 @@ function sanitizeLogBody(body: object): object {
 - [x] Error code constants
 
 ### Not Implemented ❌
+
 - [ ] Structured logging service
 - [ ] Log aggregation/persistence
 - [ ] Request ID correlation
@@ -331,21 +341,25 @@ function sanitizeLogBody(body: object): object {
 ## Recommendations
 
 ### Immediate
+
 1. Add request ID correlation
 2. Implement retry logic for external services
 3. Add error tracking service (Sentry/similar)
 
 ### Short-term
+
 1. Implement structured logging
 2. Add log persistence (Azure Monitor)
 3. Set up error alerting
 
 ### Medium-term
+
 1. Implement circuit breaker pattern
 2. Add client error reporting
 3. Create error analytics dashboard
 
 ### Long-term
+
 1. Full observability stack
 2. Distributed tracing
 3. Chaos engineering for resilience
@@ -354,13 +368,13 @@ function sanitizeLogBody(body: object): object {
 
 ## Logging Levels Guide
 
-| Level | When to Use | Example |
-|-------|-------------|---------|
-| ERROR | Unexpected failures | Unhandled exceptions |
-| WARN | Recoverable issues | Rate limit approaching |
-| INFO | Business events | User login, content published |
-| DEBUG | Development info | Request/response details |
+| Level | When to Use         | Example                       |
+| ----- | ------------------- | ----------------------------- |
+| ERROR | Unexpected failures | Unhandled exceptions          |
+| WARN  | Recoverable issues  | Rate limit approaching        |
+| INFO  | Business events     | User login, content published |
+| DEBUG | Development info    | Request/response details      |
 
 ---
 
-*This document assesses error handling and logging for the Content Creation Platform.*
+_This document assesses error handling and logging for the Content Creation Platform._

@@ -8,7 +8,8 @@ import SeriesContent from './SeriesContent';
 
 export const metadata: Metadata = {
   title: 'Manage Content Series',
-  description: 'Create and manage your technical content series for better planning and distribution.',
+  description:
+    'Create and manage your technical content series for better planning and distribution.',
 };
 
 export default function SeriesPage() {

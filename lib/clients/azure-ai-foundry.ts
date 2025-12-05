@@ -167,11 +167,7 @@ export class AzureAIFoundryClient {
   /**
    * Make API request to Azure AI Foundry
    */
-  private async makeRequest<T>(
-    path: string,
-    body: object,
-    operationName: string
-  ): Promise<T> {
+  private async makeRequest<T>(path: string, body: object, operationName: string): Promise<T> {
     if (!this.isConfigured()) {
       throw new AzureAIError('Azure AI Foundry is not configured', 500, 'NOT_CONFIGURED');
     }
@@ -218,12 +214,15 @@ export class AzureAIFoundryClient {
     const totalTokens = usage.total_tokens || promptTokens + completionTokens;
 
     // Calculate estimated cost based on model
-    const pricing = AzureAIFoundryClient.PRICING[this.config.deploymentName as keyof typeof AzureAIFoundryClient.PRICING] ||
-      AzureAIFoundryClient.PRICING['gpt-35-turbo'];
+    const pricing =
+      AzureAIFoundryClient.PRICING[
+        this.config.deploymentName as keyof typeof AzureAIFoundryClient.PRICING
+      ] || AzureAIFoundryClient.PRICING['gpt-35-turbo'];
 
     let estimatedCost = 0;
     if ('input' in pricing && 'output' in pricing) {
-      estimatedCost = (promptTokens / 1000) * pricing.input + (completionTokens / 1000) * pricing.output;
+      estimatedCost =
+        (promptTokens / 1000) * pricing.input + (completionTokens / 1000) * pricing.output;
     }
 
     const metrics: UsageMetrics = {
@@ -340,7 +339,8 @@ export class AzureAIFoundryClient {
       [
         {
           role: 'system',
-          content: 'You are a helpful assistant that extracts and structures information from text.',
+          content:
+            'You are a helpful assistant that extracts and structures information from text.',
         },
         {
           role: 'user',
@@ -424,7 +424,8 @@ export class AzureAIFoundryClient {
 
     // Store original deployment and switch to embedding model
     const originalDeployment = this.config.deploymentName;
-    this.config.deploymentName = process.env.AZURE_AI_EMBEDDING_DEPLOYMENT || 'text-embedding-ada-002';
+    this.config.deploymentName =
+      process.env.AZURE_AI_EMBEDDING_DEPLOYMENT || 'text-embedding-ada-002';
 
     try {
       const result = await this.withRetry(
@@ -463,10 +464,7 @@ export class AzureAIFoundryClient {
     const startTime = Date.now();
 
     try {
-      await this.chatCompletion(
-        [{ role: 'user', content: 'Hello' }],
-        { maxTokens: 5 }
-      );
+      await this.chatCompletion([{ role: 'user', content: 'Hello' }], { maxTokens: 5 });
 
       return {
         healthy: true,

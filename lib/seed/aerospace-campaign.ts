@@ -54,7 +54,10 @@ function createPost(
 // All 90 posts organized by day
 export const aerospaceCampaignPosts: CampaignContent[] = [
   // Day 1: Campaign Launch & Introduction
-  createPost(1, 1, 'Campaign Launch - Counter-Drone Deep Dive',
+  createPost(
+    1,
+    1,
+    'Campaign Launch - Counter-Drone Deep Dive',
     `Launching our deep dive into counter-drone technology and aerospace security.
 
 Over the next 30 days, we'll explore how organizations protect critical airspace from unauthorized UAVs.
@@ -62,7 +65,10 @@ Over the next 30 days, we'll explore how organizations protect critical airspace
 Follow along for insights into the tech securing our skies.`,
     ['CounterUAS', 'DroneDefense', 'AerospaceSecurity']
   ),
-  createPost(1, 2, 'Understanding the Counter-UAS Kill Chain',
+  createPost(
+    1,
+    2,
+    'Understanding the Counter-UAS Kill Chain',
     `Understanding the Counter-UAS Kill Chain:
 
 1. DETECT - Identify drone presence
@@ -73,7 +79,10 @@ Follow along for insights into the tech securing our skies.`,
 Each step requires different technologies working in concert.`,
     ['DroneDetection', 'SecurityTech']
   ),
-  createPost(1, 3, 'Why Counter-Drone Technology Matters',
+  createPost(
+    1,
+    3,
+    'Why Counter-Drone Technology Matters',
     `Why counter-drone technology matters:
 
 • Protects critical infrastructure
@@ -87,7 +96,10 @@ The invisible shield protecting modern society.`,
   ),
 
   // Day 2: Detection Technologies
-  createPost(2, 1, 'Radio Frequency (RF) Detection Explained',
+  createPost(
+    2,
+    1,
+    'Radio Frequency (RF) Detection Explained',
     `Radio Frequency (RF) Detection Explained:
 
 Most drones communicate on 2.4GHz or 5.8GHz frequencies. RF sensors detect these signals from up to 10km away, identifying both the drone AND the operator's location.
@@ -95,7 +107,10 @@ Most drones communicate on 2.4GHz or 5.8GHz frequencies. RF sensors detect these
 Key advantage: Works in all weather conditions.`,
     ['RFDetection', 'TechExplained']
   ),
-  createPost(2, 2, 'Radar for Drone Detection',
+  createPost(
+    2,
+    2,
+    'Radar for Drone Detection',
     `Radar for Drone Detection: Not Your Grandfather's Technology
 
 Modern 3D radars can detect objects as small as a sparrow. Using Doppler shift, they distinguish drone propeller signatures from birds.
@@ -103,7 +118,10 @@ Modern 3D radars can detect objects as small as a sparrow. Using Doppler shift, 
 Challenge: Expensive, but unmatched for tracking multiple targets.`,
     ['RadarTechnology', 'DroneTracking']
   ),
-  createPost(2, 3, 'Detection Tech Comparison',
+  createPost(
+    2,
+    3,
+    'Detection Tech Comparison',
     `Detection Tech Comparison:
 
 RF Sensors: Best for communication-based drones
@@ -116,7 +134,10 @@ Each has strengths—integration is key.`,
   ),
 
   // Day 3: Identification & Tracking
-  createPost(3, 1, 'The Identification Challenge',
+  createPost(
+    3,
+    1,
+    'The Identification Challenge',
     `The Identification Challenge:
 
 Is it a bird? A drone? A plastic bag?
@@ -130,7 +151,10 @@ Modern AI systems analyze:
 Machine learning reduces false positives by up to 95%.`,
     ['AI', 'MachineLearning', 'DroneID']
   ),
-  createPost(3, 2, 'Computer Vision in Counter-UAS',
+  createPost(
+    3,
+    2,
+    'Computer Vision in Counter-UAS',
     `Computer Vision in Counter-UAS:
 
 High-res cameras + AI algorithms can:
@@ -144,7 +168,10 @@ Processing time: <100ms per frame
 The eye in the sky that never blinks.`,
     ['ComputerVision', 'AIDetection']
   ),
-  createPost(3, 3, 'Multi-Sensor Fusion Tracking',
+  createPost(
+    3,
+    3,
+    'Multi-Sensor Fusion Tracking',
     `How do you track a drone in a crowded airspace?
 
 Multi-sensor fusion combines:
@@ -158,7 +185,10 @@ Creates a unified track with position accuracy within 5 meters at 1km range.`,
   ),
 
   // Day 4: Mitigation Technologies
-  createPost(4, 1, 'Electronic Warfare - The Invisible Defense',
+  createPost(
+    4,
+    1,
+    'Electronic Warfare - The Invisible Defense',
     `Electronic Warfare: The Invisible Defense
 
 RF Jamming disrupts the control link between drone and operator. When jammed, most drones:
@@ -170,7 +200,10 @@ Effective range: 500m to 5km
 Success rate: High for commercial drones`,
     ['EW', 'Jamming', 'DroneDefense']
   ),
-  createPost(4, 2, 'GPS Spoofing - Redirecting the Unwanted',
+  createPost(
+    4,
+    2,
+    'GPS Spoofing - Redirecting the Unwanted',
     `GPS Spoofing: Redirecting the Unwanted
 
 By broadcasting false GPS signals, systems can:
@@ -181,7 +214,10 @@ By broadcasting false GPS signals, systems can:
 Precision matters—one miscalculation affects all GPS devices nearby.`,
     ['GPSSpoofing', 'CounterUAS']
   ),
-  createPost(4, 3, 'Physical Capture Systems',
+  createPost(
+    4,
+    3,
+    'Physical Capture Systems',
     `Physical Capture Systems:
 
 Net guns, net drones, and tethered capture systems physically snare targets.
@@ -196,7 +232,10 @@ Challenge: Limited range, typically <100m`,
   ),
 
   // Day 5: Directed Energy Systems
-  createPost(5, 1, 'High-Power Microwave (HPM) Systems',
+  createPost(
+    5,
+    1,
+    'High-Power Microwave (HPM) Systems',
     `High-Power Microwave (HPM) Systems:
 
 Directed energy that disrupts drone electronics without visible damage.
@@ -209,7 +248,10 @@ Directed energy that disrupts drone electronics without visible damage.
 The future is electromagnetic.`,
     ['DirectedEnergy', 'HPM']
   ),
-  createPost(5, 2, 'Laser Systems for Counter-UAS',
+  createPost(
+    5,
+    2,
+    'Laser Systems for Counter-UAS',
     `Laser Systems for Counter-UAS:
 
 High-energy lasers can:
@@ -221,7 +263,10 @@ Speed of light engagement, near-zero cost per shot.
 Currently operational at select military sites.`,
     ['LaserWeapons', 'DEW']
   ),
-  createPost(5, 3, 'Directed Energy Pros & Cons',
+  createPost(
+    5,
+    3,
+    'Directed Energy Pros & Cons',
     `Directed Energy Pros & Cons:
 
 PROS:
@@ -239,7 +284,10 @@ Revolutionary but not universal.`,
   ),
 
   // Day 6: Integration & Command Systems
-  createPost(6, 1, 'Command & Control (C2) Systems',
+  createPost(
+    6,
+    1,
+    'Command & Control (C2) Systems',
     `Command & Control (C2) Systems:
 
 The brain of counter-drone operations, integrating:
@@ -251,7 +299,10 @@ The brain of counter-drone operations, integrating:
 Modern C2 reduces decision time from minutes to seconds.`,
     ['C2Systems', 'Integration']
   ),
-  createPost(6, 2, 'The Power of Integration',
+  createPost(
+    6,
+    2,
+    'The Power of Integration',
     `The Power of Integration:
 
 Single-point solutions fail against sophisticated threats. Layered defense combines:
@@ -262,7 +313,10 @@ Layer 3: Confirmation (RF sensors)
 Layer 4: Mitigation (selected response)`,
     ['LayeredDefense', 'SystemIntegration']
   ),
-  createPost(6, 3, 'Real-Time Data Fusion',
+  createPost(
+    6,
+    3,
+    'Real-Time Data Fusion',
     `Real-Time Data Fusion:
 
 Modern systems process:
@@ -277,7 +331,10 @@ All synthesized into a single operational picture in milliseconds.`,
   ),
 
   // Day 7: Airport Applications
-  createPost(7, 1, 'Airports - The Front Line',
+  createPost(
+    7,
+    1,
+    'Airports - The Front Line',
     `Airports: The Front Line of Counter-UAS
 
 A single drone incursion can:
@@ -289,7 +346,10 @@ A single drone incursion can:
 That's why airports lead counter-drone adoption.`,
     ['AirportSecurity', 'Aviation']
   ),
-  createPost(7, 2, 'Airport Counter-Drone Challenges',
+  createPost(
+    7,
+    2,
+    'Airport Counter-Drone Challenges',
     `Airport Counter-Drone Challenges:
 
 • Dense RF environment
@@ -301,7 +361,10 @@ That's why airports lead counter-drone adoption.`,
 Solutions must be precise and reliable.`,
     ['AviationSafety', 'Challenges']
   ),
-  createPost(7, 3, 'Best Practices for Airport C-UAS',
+  createPost(
+    7,
+    3,
+    'Best Practices for Airport C-UAS',
     `Best Practices for Airport C-UAS:
 
 1. Multi-layered detection perimeter
@@ -315,7 +378,10 @@ Safety first, always.`,
   ),
 
   // Day 8: Critical Infrastructure Protection
-  createPost(8, 1, 'Protecting Critical Infrastructure',
+  createPost(
+    8,
+    1,
+    'Protecting Critical Infrastructure',
     `Protecting Critical Infrastructure:
 
 Power plants, water facilities, and data centers face unique drone threats:
@@ -327,7 +393,10 @@ Power plants, water facilities, and data centers face unique drone threats:
 Each facility needs tailored protection.`,
     ['InfrastructureProtection', 'Security']
   ),
-  createPost(8, 2, 'Nuclear Facility Drone Defense',
+  createPost(
+    8,
+    2,
+    'Nuclear Facility Drone Defense',
     `Nuclear Facility Drone Defense:
 
 Requirements:
@@ -340,7 +409,10 @@ Requirements:
 The highest stakes demand the best technology.`,
     ['NuclearSecurity', 'CriticalAssets']
   ),
-  createPost(8, 3, 'Water Infrastructure Security',
+  createPost(
+    8,
+    3,
+    'Water Infrastructure Security',
     `Water Infrastructure: An Overlooked Target
 
 Drones could:
@@ -356,7 +428,10 @@ Time to close this gap.`,
   ),
 
   // Day 9: Prison & Correctional Facilities
-  createPost(9, 1, 'The Prison Contraband Problem',
+  createPost(
+    9,
+    1,
+    'The Prison Contraband Problem',
     `The Prison Contraband Problem:
 
 Drones deliver:
@@ -368,7 +443,10 @@ Drones deliver:
 Some facilities report multiple attempts weekly. Traditional security can't look up.`,
     ['PrisonSecurity', 'Contraband']
   ),
-  createPost(9, 2, 'Prison-Specific C-UAS Requirements',
+  createPost(
+    9,
+    2,
+    'Prison-Specific C-UAS Requirements',
     `Prison-Specific C-UAS Requirements:
 
 • Continuous 360° coverage
@@ -380,7 +458,10 @@ Some facilities report multiple attempts weekly. Traditional security can't look
 Stopping drops while maintaining safety.`,
     ['CorrectionalSecurity', 'DroneDefense']
   ),
-  createPost(9, 3, 'ROI of Prison Counter-Drone Systems',
+  createPost(
+    9,
+    3,
+    'ROI of Prison Counter-Drone Systems',
     `ROI of Prison Counter-Drone Systems:
 
 Cost of one successful contraband delivery:
@@ -394,7 +475,10 @@ Often exceeds entire C-UAS system cost. Prevention pays dividends.`,
   ),
 
   // Day 10: Military & Defense Applications
-  createPost(10, 1, 'Military Counter-UAS Evolution',
+  createPost(
+    10,
+    1,
+    'Military Counter-UAS Evolution',
     `Military Counter-UAS Evolution:
 
 From hobbyist quadcopters with grenades to AI-powered swarms, the battlefield has changed.
@@ -408,7 +492,10 @@ Modern military C-UAS must counter:
 Adaptation is survival.`,
     ['MilitaryTech', 'Defense']
   ),
-  createPost(10, 2, 'Force Protection Priorities',
+  createPost(
+    10,
+    2,
+    'Force Protection Priorities',
     `Force Protection Priorities:
 
 Mobile military units need:
@@ -421,7 +508,10 @@ Mobile military units need:
 Every vehicle a potential target, every unit needs protection.`,
     ['ForceProtection', 'Military']
   ),
-  createPost(10, 3, 'Lessons from Recent Conflicts',
+  createPost(
+    10,
+    3,
+    'Lessons from Recent Conflicts',
     `Lessons from Recent Conflicts:
 
 Counter-UAS is no longer optional in modern warfare. Key observations:
@@ -436,7 +526,10 @@ Doctrine must evolve.`,
   ),
 
   // Day 11: Border & Perimeter Security
-  createPost(11, 1, 'Border Security Challenge',
+  createPost(
+    11,
+    1,
+    'Border Security Challenge',
     `Border Security Challenge:
 
 Drones easily bypass traditional barriers:
@@ -448,7 +541,10 @@ Drones easily bypass traditional barriers:
 Securing thousands of miles requires smart, scalable solutions.`,
     ['BorderSecurity', 'DroneDetection']
   ),
-  createPost(11, 2, 'Perimeter Protection Strategy',
+  createPost(
+    11,
+    2,
+    'Perimeter Protection Strategy',
     `Perimeter Protection Strategy:
 
 Effective border C-UAS uses:
@@ -461,7 +557,10 @@ Effective border C-UAS uses:
 Technology multiplies human capability.`,
     ['PerimeterSecurity', 'Technology']
   ),
-  createPost(11, 3, 'Geographic Challenges',
+  createPost(
+    11,
+    3,
+    'Geographic Challenges',
     `Geographic Challenges:
 
 Desert: Heat affects sensors
@@ -475,7 +574,10 @@ Each environment demands adapted solutions.`,
   ),
 
   // Day 12: Regulatory Framework
-  createPost(12, 1, 'The Regulatory Challenge',
+  createPost(
+    12,
+    1,
+    'The Regulatory Challenge',
     `The Regulatory Challenge:
 
 Counter-drone operations must balance:
@@ -488,7 +590,10 @@ Counter-drone operations must balance:
 Getting it right requires careful framework design.`,
     ['Regulation', 'LegalFramework']
   ),
-  createPost(12, 2, 'Key Regulatory Considerations',
+  createPost(
+    12,
+    2,
+    'Key Regulatory Considerations',
     `Key Regulatory Considerations:
 
 • Who can deploy C-UAS?
@@ -500,7 +605,10 @@ Getting it right requires careful framework design.`,
 Clear rules enable effective protection.`,
     ['Compliance', 'Regulations']
   ),
-  createPost(12, 3, 'International Regulatory Variations',
+  createPost(
+    12,
+    3,
+    'International Regulatory Variations',
     `International Regulatory Variations:
 
 USA: Federal authority primary
@@ -513,7 +621,10 @@ Global operations need local expertise.`,
   ),
 
   // Day 13: Privacy & Ethical Considerations
-  createPost(13, 1, 'Privacy in Counter-Drone Operations',
+  createPost(
+    13,
+    1,
+    'Privacy in Counter-Drone Operations',
     `Privacy in Counter-Drone Operations:
 
 Detection systems may inadvertently:
@@ -525,7 +636,10 @@ Detection systems may inadvertently:
 Responsible deployment protects both security AND privacy.`,
     ['Privacy', 'Ethics']
   ),
-  createPost(13, 2, 'Ethical Use Framework',
+  createPost(
+    13,
+    2,
+    'Ethical Use Framework',
     `Ethical Use Framework:
 
 • Proportional response
@@ -537,7 +651,10 @@ Responsible deployment protects both security AND privacy.`,
 Security without surveillance overreach.`,
     ['EthicalTech', 'Responsibility']
   ),
-  createPost(13, 3, 'Balancing Security and Privacy',
+  createPost(
+    13,
+    3,
+    'Balancing Security and Privacy',
     `Balancing Act:
 
 Security vs Privacy isn't zero-sum. Best practices:
@@ -552,7 +669,10 @@ Protecting people, not surveilling them.`,
   ),
 
   // Day 14: Training & Procedures
-  createPost(14, 1, 'The Human Factor',
+  createPost(
+    14,
+    1,
+    'The Human Factor',
     `The Human Factor:
 
 Best technology fails without proper training. Operators need:
@@ -565,7 +685,10 @@ Best technology fails without proper training. Operators need:
 People make systems effective.`,
     ['Training', 'HumanFactor']
   ),
-  createPost(14, 2, 'Standard Operating Procedures',
+  createPost(
+    14,
+    2,
+    'Standard Operating Procedures',
     `Standard Operating Procedures (SOPs):
 
 Essential SOPs include:
@@ -578,7 +701,10 @@ Essential SOPs include:
 Clear procedures prevent costly mistakes.`,
     ['SOPs', 'Operations']
   ),
-  createPost(14, 3, 'Training Best Practices',
+  createPost(
+    14,
+    3,
+    'Training Best Practices',
     `Training Best Practices:
 
 • Regular drills with varied scenarios
@@ -592,7 +718,10 @@ Competence comes from preparation.`,
   ),
 
   // Day 15: Technology Limitations
-  createPost(15, 1, 'Understanding C-UAS Limitations',
+  createPost(
+    15,
+    1,
+    'Understanding C-UAS Limitations',
     `Understanding C-UAS Limitations:
 
 No system is perfect:
@@ -605,7 +734,10 @@ No system is perfect:
 Honest assessment improves security.`,
     ['TechLimitations', 'Reality']
   ),
-  createPost(15, 2, 'The Small Drone Problem',
+  createPost(
+    15,
+    2,
+    'The Small Drone Problem',
     `The Small Drone Problem:
 
 Micro-drones (<250g) challenge detection:
@@ -617,7 +749,10 @@ Micro-drones (<250g) challenge detection:
 Innovation needed for sub-250g threats.`,
     ['MicroDrones', 'Challenges']
   ),
-  createPost(15, 3, 'Environmental Factors',
+  createPost(
+    15,
+    3,
+    'Environmental Factors',
     `Environmental Factors:
 
 Rain: Reduces laser effectiveness
@@ -631,7 +766,10 @@ Nature always has a vote.`,
   ),
 
   // Day 16: Cost Considerations
-  createPost(16, 1, 'C-UAS Investment Scales',
+  createPost(
+    16,
+    1,
+    'C-UAS Investment Scales',
     `C-UAS Investment Scales:
 
 Basic: $100K-500K
@@ -647,7 +785,10 @@ Advanced: $2M-10M
 Cost matches consequence.`,
     ['Investment', 'SecurityBudget']
   ),
-  createPost(16, 2, 'Total Cost of Ownership',
+  createPost(
+    16,
+    2,
+    'Total Cost of Ownership',
     `Total Cost of Ownership:
 
 Beyond purchase price:
@@ -660,7 +801,10 @@ Beyond purchase price:
 TCO often 2-3x initial investment over 5 years.`,
     ['TCO', 'BudgetPlanning']
   ),
-  createPost(16, 3, 'Cost-Benefit Analysis',
+  createPost(
+    16,
+    3,
+    'Cost-Benefit Analysis',
     `Cost-Benefit Analysis:
 
 Calculate:
@@ -675,7 +819,10 @@ Most facilities find positive ROI within 24 months.`,
   ),
 
   // Day 17: Emerging Threats
-  createPost(17, 1, 'Next-Generation Threats',
+  createPost(
+    17,
+    1,
+    'Next-Generation Threats',
     `Next-Generation Threats:
 
 Evolving challenges:
@@ -688,7 +835,10 @@ Evolving challenges:
 Tomorrow's threats need today's innovation.`,
     ['EmergingThreats', 'Future']
   ),
-  createPost(17, 2, 'Swarm Attack Scenarios',
+  createPost(
+    17,
+    2,
+    'Swarm Attack Scenarios',
     `Swarm Attack Scenarios:
 
 Coordinated swarms could:
@@ -701,7 +851,10 @@ Coordinated swarms could:
 Current defenses struggle with 10+ simultaneous targets.`,
     ['SwarmThreats', 'Innovation']
   ),
-  createPost(17, 3, 'Autonomous Threat Evolution',
+  createPost(
+    17,
+    3,
+    'Autonomous Threat Evolution',
     `Autonomous Threat Evolution:
 
 No RF signature. No GPS dependence. No operator link.
@@ -717,7 +870,10 @@ Traditional C-UAS must evolve.`,
   ),
 
   // Day 18: Success Stories
-  createPost(18, 1, 'Success Story - Major Sporting Event',
+  createPost(
+    18,
+    1,
+    'Success Story - Major Sporting Event',
     `Success Story: Major Sporting Event
 
 Challenge: Protect 70,000 attendees
@@ -731,7 +887,10 @@ Result:
 Preparation prevents problems.`,
     ['SuccessStory', 'EventSecurity']
   ),
-  createPost(18, 2, 'Industrial Site Protection Win',
+  createPost(
+    18,
+    2,
+    'Industrial Site Protection Win',
     `Industrial Site Protection Win:
 
 Oil refinery deployment:
@@ -743,7 +902,10 @@ Oil refinery deployment:
 Protecting critical operations.`,
     ['IndustrialSecurity', 'CaseStudy']
   ),
-  createPost(18, 3, 'Government Facility Success',
+  createPost(
+    18,
+    3,
+    'Government Facility Success',
     `Government Facility Success:
 
 High-profile location implemented:
@@ -757,7 +919,10 @@ Security without disruption.`,
   ),
 
   // Day 19: Technology Partnerships
-  createPost(19, 1, 'Why Partnerships Matter',
+  createPost(
+    19,
+    1,
+    'Why Partnerships Matter',
     `Why Partnerships Matter:
 
 No single company has all solutions. Successful C-UAS requires:
@@ -770,7 +935,10 @@ No single company has all solutions. Successful C-UAS requires:
 Collaboration drives innovation.`,
     ['Partnerships', 'Collaboration']
   ),
-  createPost(19, 2, 'Integration Partner Selection',
+  createPost(
+    19,
+    2,
+    'Integration Partner Selection',
     `Integration Partner Selection:
 
 Key criteria:
@@ -783,7 +951,10 @@ Key criteria:
 Choose partners, not just products.`,
     ['PartnerSelection', 'Integration']
   ),
-  createPost(19, 3, 'The Ecosystem Approach',
+  createPost(
+    19,
+    3,
+    'The Ecosystem Approach',
     `The Ecosystem Approach:
 
 Best-in-class solutions combine:
@@ -798,7 +969,10 @@ Ecosystem > Single vendor`,
   ),
 
   // Day 20: Data & Analytics
-  createPost(20, 1, 'The Data Opportunity',
+  createPost(
+    20,
+    1,
+    'The Data Opportunity',
     `The Data Opportunity:
 
 C-UAS systems generate massive data:
@@ -811,7 +985,10 @@ C-UAS systems generate massive data:
 Mining this data improves security.`,
     ['DataAnalytics', 'Intelligence']
   ),
-  createPost(20, 2, 'Predictive Analytics in C-UAS',
+  createPost(
+    20,
+    2,
+    'Predictive Analytics in C-UAS',
     `Predictive Analytics in C-UAS:
 
 Machine learning identifies:
@@ -824,7 +1001,10 @@ Machine learning identifies:
 From reactive to predictive security.`,
     ['PredictiveAnalytics', 'ML']
   ),
-  createPost(20, 3, 'Performance Metrics That Matter',
+  createPost(
+    20,
+    3,
+    'Performance Metrics That Matter',
     `Performance Metrics That Matter:
 
 Track:
@@ -839,7 +1019,10 @@ What gets measured gets improved.`,
   ),
 
   // Day 21: Global Market Dynamics
-  createPost(21, 1, 'Global C-UAS Market Drivers',
+  createPost(
+    21,
+    1,
+    'Global C-UAS Market Drivers',
     `Global C-UAS Market Drivers:
 
 • Rising security incidents
@@ -851,7 +1034,10 @@ What gets measured gets improved.`,
 Demand exceeding supply in key sectors.`,
     ['MarketDynamics', 'Global']
   ),
-  createPost(21, 2, 'Regional Market Differences',
+  createPost(
+    21,
+    2,
+    'Regional Market Differences',
     `Regional Market Differences:
 
 North America: Regulation driven
@@ -863,7 +1049,10 @@ Africa: Emerging market
 One size doesn't fit all.`,
     ['GlobalMarkets', 'Regional']
   ),
-  createPost(21, 3, 'Market Consolidation Trends',
+  createPost(
+    21,
+    3,
+    'Market Consolidation Trends',
     `Market Consolidation Trends:
 
 Large defense contractors acquiring innovative startups.
@@ -879,7 +1068,10 @@ Innovation meets scale.`,
   ),
 
   // Day 22: Urban Environment Challenges
-  createPost(22, 1, 'Urban Counter-UAS Complexity',
+  createPost(
+    22,
+    1,
+    'Urban Counter-UAS Complexity',
     `Urban Counter-UAS Complexity:
 
 Cities present unique challenges:
@@ -892,7 +1084,10 @@ Cities present unique challenges:
 Urban security requires precision.`,
     ['UrbanSecurity', 'CityDefense']
   ),
-  createPost(22, 2, 'Smart City Integration',
+  createPost(
+    22,
+    2,
+    'Smart City Integration',
     `Smart City Integration:
 
 C-UAS as part of urban infrastructure:
@@ -905,7 +1100,10 @@ C-UAS as part of urban infrastructure:
 Connected cities need connected defense.`,
     ['SmartCities', 'Integration']
   ),
-  createPost(22, 3, 'Urban Air Mobility Impact',
+  createPost(
+    22,
+    3,
+    'Urban Air Mobility Impact',
     `Urban Air Mobility Impact:
 
 Future cities with:
@@ -919,7 +1117,10 @@ Require sophisticated traffic management AND security.`,
   ),
 
   // Day 23: Research & Development
-  createPost(23, 1, 'R&D Focus Areas',
+  createPost(
+    23,
+    1,
+    'R&D Focus Areas',
     `R&D Focus Areas:
 
 Current research priorities:
@@ -932,7 +1133,10 @@ Current research priorities:
 Innovation never stops.`,
     ['RnD', 'Innovation']
   ),
-  createPost(23, 2, 'University Research Programs',
+  createPost(
+    23,
+    2,
+    'University Research Programs',
     `University Research Programs:
 
 Academic institutions advancing:
@@ -945,7 +1149,10 @@ Academic institutions advancing:
 Academia-industry partnership crucial.`,
     ['Research', 'Academic']
   ),
-  createPost(23, 3, 'Breakthrough Technologies',
+  createPost(
+    23,
+    3,
+    'Breakthrough Technologies',
     `Breakthrough Technologies:
 
 On the horizon:
@@ -960,7 +1167,10 @@ The future is closer than you think.`,
   ),
 
   // Day 24: Cybersecurity Aspects
-  createPost(24, 1, 'C-UAS Cybersecurity',
+  createPost(
+    24,
+    1,
+    'C-UAS Cybersecurity',
     `C-UAS Cybersecurity:
 
 Counter-drone systems are targets too:
@@ -973,7 +1183,10 @@ Counter-drone systems are targets too:
 Securing the security system.`,
     ['Cybersecurity', 'InfoSec']
   ),
-  createPost(24, 2, 'Cyber-Physical Security',
+  createPost(
+    24,
+    2,
+    'Cyber-Physical Security',
     `Cyber-Physical Security:
 
 Drones as cyber vectors:
@@ -986,7 +1199,10 @@ Drones as cyber vectors:
 Physical and cyber merge.`,
     ['CyberPhysical', 'Security']
   ),
-  createPost(24, 3, 'Best Practices for C-UAS Cybersecurity',
+  createPost(
+    24,
+    3,
+    'Best Practices for C-UAS Cybersecurity',
     `Best Practices for C-UAS Cybersecurity:
 
 • Regular updates
@@ -1001,7 +1217,10 @@ Defense in depth applies.`,
   ),
 
   // Day 25: Standards & Certification
-  createPost(25, 1, 'Industry Standards Evolution',
+  createPost(
+    25,
+    1,
+    'Industry Standards Evolution',
     `Industry Standards Evolution:
 
 Emerging standards for:
@@ -1014,7 +1233,10 @@ Emerging standards for:
 Standards drive adoption.`,
     ['Standards', 'Industry']
   ),
-  createPost(25, 2, 'Certification Importance',
+  createPost(
+    25,
+    2,
+    'Certification Importance',
     `Certification Importance:
 
 Why certification matters:
@@ -1027,7 +1249,10 @@ Why certification matters:
 Look for certified solutions.`,
     ['Certification', 'Quality']
   ),
-  createPost(25, 3, 'Testing & Evaluation',
+  createPost(
+    25,
+    3,
+    'Testing & Evaluation',
     `Testing & Evaluation:
 
 Rigorous T&E includes:
@@ -1042,7 +1267,10 @@ Trust but verify.`,
   ),
 
   // Day 26: Small UAS vs Large UAS
-  createPost(26, 1, 'Size Matters in Counter-UAS',
+  createPost(
+    26,
+    1,
+    'Size Matters in Counter-UAS',
     `Size Matters in Counter-UAS:
 
 Small drones (<55 lbs):
@@ -1060,7 +1288,10 @@ Large drones:
 Different threats, different responses.`,
     ['DroneSize', 'Threats']
   ),
-  createPost(26, 2, 'Detection Range by Size',
+  createPost(
+    26,
+    2,
+    'Detection Range by Size',
     `Detection Range by Size:
 
 Micro (<250g): 100-500m
@@ -1071,7 +1302,10 @@ Large (>150kg): 10km+
 Smaller = harder to detect early.`,
     ['Detection', 'RangeCapability']
   ),
-  createPost(26, 3, 'Response Scaling',
+  createPost(
+    26,
+    3,
+    'Response Scaling',
     `Response Scaling:
 
 Small drone: RF jamming sufficient
@@ -1084,7 +1318,10 @@ Right tool for right threat.`,
   ),
 
   // Day 27: Environmental Applications
-  createPost(27, 1, 'Protecting Natural Resources',
+  createPost(
+    27,
+    1,
+    'Protecting Natural Resources',
     `Protecting Natural Resources:
 
 C-UAS for environmental protection:
@@ -1096,7 +1333,10 @@ C-UAS for environmental protection:
 Technology serving nature.`,
     ['Environmental', 'Conservation']
   ),
-  createPost(27, 2, 'Wildlife Protection Success',
+  createPost(
+    27,
+    2,
+    'Wildlife Protection Success',
     `Wildlife Protection Success:
 
 African reserve deployment:
@@ -1108,7 +1348,10 @@ African reserve deployment:
 Conservation through technology.`,
     ['Wildlife', 'ConservationTech']
   ),
-  createPost(27, 3, 'Marine Environment Challenges',
+  createPost(
+    27,
+    3,
+    'Marine Environment Challenges',
     `Marine Environment Challenges:
 
 Sea-based C-UAS faces:
@@ -1123,7 +1366,10 @@ Unique environment, unique solutions.`,
   ),
 
   // Day 28: Future Technologies
-  createPost(28, 1, 'Next-Gen Detection',
+  createPost(
+    28,
+    1,
+    'Next-Gen Detection',
     `Next-Gen Detection:
 
 Coming soon:
@@ -1136,7 +1382,10 @@ Coming soon:
 Detection evolving rapidly.`,
     ['FutureTech', 'NextGen']
   ),
-  createPost(28, 2, 'Counter-Swarm Technologies',
+  createPost(
+    28,
+    2,
+    'Counter-Swarm Technologies',
     `Counter-Swarm Technologies:
 
 Emerging solutions:
@@ -1149,7 +1398,10 @@ Emerging solutions:
 Many vs many.`,
     ['CounterSwarm', 'Future']
   ),
-  createPost(28, 3, '2030 Vision',
+  createPost(
+    28,
+    3,
+    '2030 Vision',
     `2030 Vision:
 
 Expect:
@@ -1164,7 +1416,10 @@ The future is autonomous.`,
   ),
 
   // Day 29: Lessons Learned
-  createPost(29, 1, 'Key Lessons from Deployments',
+  createPost(
+    29,
+    1,
+    'Key Lessons from Deployments',
     `Key Lessons from Deployments:
 
 1. One sensor type isn't enough
@@ -1176,7 +1431,10 @@ The future is autonomous.`,
 Experience teaches.`,
     ['LessonsLearned', 'Experience']
   ),
-  createPost(29, 2, 'Common Mistakes to Avoid',
+  createPost(
+    29,
+    2,
+    'Common Mistakes to Avoid',
     `Common Mistakes to Avoid:
 
 • Underestimating complexity
@@ -1188,7 +1446,10 @@ Experience teaches.`,
 Learn from others' experiences.`,
     ['Mistakes', 'Learning']
   ),
-  createPost(29, 3, 'Success Factors',
+  createPost(
+    29,
+    3,
+    'Success Factors',
     `Success Factors:
 
 • Executive support
@@ -1202,7 +1463,10 @@ Getting it right from the start.`,
   ),
 
   // Day 30: Campaign Wrap-Up
-  createPost(30, 1, '30 Days of Counter-UAS Insights',
+  createPost(
+    30,
+    1,
+    '30 Days of Counter-UAS Insights',
     `30 Days of Counter-UAS Insights:
 
 We've explored:
@@ -1215,7 +1479,10 @@ We've explored:
 The journey to secure airspace continues.`,
     ['MonthComplete', 'CounterUAS']
   ),
-  createPost(30, 2, 'Key Takeaways',
+  createPost(
+    30,
+    2,
+    'Key Takeaways',
     `Key Takeaways:
 
 • Threats are evolving rapidly
@@ -1227,7 +1494,10 @@ The journey to secure airspace continues.`,
 Knowledge enables protection.`,
     ['KeyTakeaways', 'Summary']
   ),
-  createPost(30, 3, 'Looking Ahead',
+  createPost(
+    30,
+    3,
+    'Looking Ahead',
     `Looking Ahead:
 
 The counter-drone industry is just beginning. As drones become ubiquitous, so must our defenses.
@@ -1314,14 +1584,7 @@ export const aerospaceCampaignSeed: Campaign = {
   },
   createdAt: '2025-12-01T00:00:00Z',
   updatedAt: '2025-12-05T00:00:00Z',
-  tags: [
-    'counter-uas',
-    'drone-defense',
-    'aerospace',
-    'security',
-    'technology',
-    'month1',
-  ],
+  tags: ['counter-uas', 'drone-defense', 'aerospace', 'security', 'technology', 'month1'],
 };
 
 export default aerospaceCampaignSeed;

@@ -107,7 +107,7 @@ class SecretsManager {
    * Register multiple required secrets
    */
   registerRequiredSecrets(names: string[]): void {
-    names.forEach((name) => this.requiredSecrets.add(name));
+    names.forEach(name => this.requiredSecrets.add(name));
   }
 
   /**
@@ -194,7 +194,9 @@ class SecretsManager {
       const secretsModule = await import('@azure/keyvault-secrets' as any).catch(() => null);
 
       if (!identityModule || !secretsModule) {
-        console.warn('Azure SDK packages not installed. Install with: npm install @azure/identity @azure/keyvault-secrets');
+        console.warn(
+          'Azure SDK packages not installed. Install with: npm install @azure/identity @azure/keyvault-secrets'
+        );
         return undefined;
       }
 
@@ -297,7 +299,7 @@ class SecretsManager {
     const results = new Map<string, string | undefined>();
 
     // Fetch all in parallel
-    const promises = names.map(async (name) => {
+    const promises = names.map(async name => {
       const value = await this.get(name);
       results.set(name, value);
     });
@@ -349,10 +351,7 @@ class SecretsManager {
 export const secretsManager = new SecretsManager();
 
 // Register commonly used secrets
-secretsManager.registerRequiredSecrets([
-  'JWT_SECRET',
-  'NEXT_PUBLIC_API_URL',
-]);
+secretsManager.registerRequiredSecrets(['JWT_SECRET', 'NEXT_PUBLIC_API_URL']);
 
 // Convenience exports
 export async function getSecret(name: string, required?: boolean): Promise<string | undefined> {

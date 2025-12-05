@@ -90,7 +90,7 @@ interface Campaign {
   status: 'draft' | 'scheduled' | 'active' | 'paused' | 'completed';
 
   // Content Sources
-  seriesIds: string[];           // Links to Series
+  seriesIds: string[]; // Links to Series
   contentItems: CampaignContent[]; // Direct content pieces
 
   // Platform Configuration
@@ -111,7 +111,7 @@ interface Campaign {
 interface CampaignContent {
   id: string;
   type: 'series-article' | 'standalone' | 'thread' | 'announcement';
-  sourceId?: string;        // Reference to Series content
+  sourceId?: string; // Reference to Series content
   title: string;
   body: string;
   adaptations: PlatformAdaptation[];
@@ -119,7 +119,7 @@ interface CampaignContent {
 
 interface PlatformAdaptation {
   platformId: string;
-  content: string;          // Platform-specific version
+  content: string; // Platform-specific version
   mediaUrls?: string[];
   hashtags?: string[];
   scheduledTime?: Date;
@@ -133,9 +133,9 @@ interface CampaignPlatform {
   enabled: boolean;
   config: {
     postFrequency: 'hourly' | 'daily' | 'weekly' | 'custom';
-    bestTimes?: string[];     // Optimal posting times
+    bestTimes?: string[]; // Optimal posting times
     hashtagStrategy?: string[];
-    threadEnabled?: boolean;  // For Twitter threads
+    threadEnabled?: boolean; // For Twitter threads
   };
 }
 
@@ -250,16 +250,16 @@ interface UseCampaignReturn {
 
 ### API Routes
 
-| Route | Method | Purpose |
-|-------|--------|---------|
-| `/api/campaigns` | GET | List campaigns with filters |
-| `/api/campaigns` | POST | Create campaign |
-| `/api/campaigns/[id]` | GET | Get campaign detail |
-| `/api/campaigns/[id]` | PATCH | Update campaign |
-| `/api/campaigns/[id]` | DELETE | Delete campaign |
-| `/api/campaigns/[id]/publish` | POST | Publish campaign content |
-| `/api/campaigns/[id]/schedule` | POST | Schedule posts |
-| `/api/campaigns/[id]/metrics` | GET | Get campaign metrics |
+| Route                          | Method | Purpose                     |
+| ------------------------------ | ------ | --------------------------- |
+| `/api/campaigns`               | GET    | List campaigns with filters |
+| `/api/campaigns`               | POST   | Create campaign             |
+| `/api/campaigns/[id]`          | GET    | Get campaign detail         |
+| `/api/campaigns/[id]`          | PATCH  | Update campaign             |
+| `/api/campaigns/[id]`          | DELETE | Delete campaign             |
+| `/api/campaigns/[id]/publish`  | POST   | Publish campaign content    |
+| `/api/campaigns/[id]/schedule` | POST   | Schedule posts              |
+| `/api/campaigns/[id]/metrics`  | GET    | Get campaign metrics        |
 
 ---
 
@@ -304,16 +304,18 @@ import { publishQueue } from '@/lib/api-client';
 async function publishCampaignContent(campaign: Campaign, contentIds: string[]) {
   const queueItems = contentIds.flatMap(contentId => {
     const content = campaign.contentItems.find(c => c.id === contentId);
-    return content?.adaptations
-      .filter(a => a.status === 'scheduled')
-      .map(adaptation => ({
-        platform: getPlatformById(adaptation.platformId),
-        content: {
-          id: content.id,
-          title: content.title,
-          description: adaptation.content,
-        },
-      })) || [];
+    return (
+      content?.adaptations
+        .filter(a => a.status === 'scheduled')
+        .map(adaptation => ({
+          platform: getPlatformById(adaptation.platformId),
+          content: {
+            id: content.id,
+            title: content.title,
+            description: adaptation.content,
+          },
+        })) || []
+    );
   });
 
   return publishQueue(queueItems);
@@ -375,26 +377,31 @@ Series Page
 ## Migration & Rollout
 
 ### Phase 1: Foundation
+
 - Create Campaign types and interfaces
 - Implement useCampaign hook with localStorage
 - Add feature flag: `campaignManagement`
 
 ### Phase 2: Basic UI
+
 - Campaign list and detail pages
 - Create/Edit campaign forms
 - Series selection interface
 
 ### Phase 3: Platform Integration
+
 - Content adaptation editor
 - Platform-specific previews
 - Publishing integration
 
 ### Phase 4: Scheduling
+
 - Schedule builder UI
 - Calendar visualization
 - Automated publishing queue
 
 ### Phase 5: Analytics
+
 - Campaign metrics dashboard
 - Per-platform analytics
 - Performance comparison
@@ -419,12 +426,12 @@ Series Page
 
 ### Risks & Mitigations
 
-| Risk | Likelihood | Impact | Mitigation |
-|------|------------|--------|------------|
-| Data model complexity | Medium | Medium | Start with MVP, iterate |
-| Platform API limits | High | High | Implement rate limiting, queuing |
-| Schedule conflicts | Medium | Low | Validation in scheduler |
-| Storage growth | Low | Medium | Implement archiving |
+| Risk                  | Likelihood | Impact | Mitigation                       |
+| --------------------- | ---------- | ------ | -------------------------------- |
+| Data model complexity | Medium     | Medium | Start with MVP, iterate          |
+| Platform API limits   | High       | High   | Implement rate limiting, queuing |
+| Schedule conflicts    | Medium     | Low    | Validation in scheduler          |
+| Storage growth        | Low        | Medium | Implement archiving              |
 
 ---
 
@@ -433,12 +440,14 @@ Series Page
 ### Storage Strategy
 
 For MVP, use localStorage like Series:
+
 ```typescript
 // Simple approach matching existing pattern
 const STORAGE_KEY = 'content-campaigns';
 ```
 
 For production, extend to Airtable:
+
 ```typescript
 // Airtable tables
 Campaigns: id, name, status, config, ...
@@ -475,6 +484,6 @@ CampaignSchedule: id, campaignId, platformId, scheduledTime, status, ...
 
 ## Changelog
 
-| Date | Author | Change |
-|------|--------|--------|
+| Date    | Author           | Change                          |
+| ------- | ---------------- | ------------------------------- |
 | 2025-12 | Development Team | Initial proposal and acceptance |

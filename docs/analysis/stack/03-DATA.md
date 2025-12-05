@@ -36,6 +36,7 @@ The Content Creation Platform uses a combination of external services and local 
 ## Airtable Integration
 
 ### Purpose
+
 Primary content management system (CMS) backend for storing and tracking content across the platform.
 
 ### Configuration
@@ -64,6 +65,7 @@ interface AirtableClient {
 ### Data Models
 
 **Content Record:**
+
 ```typescript
 interface ContentRecord {
   id: string;
@@ -79,6 +81,7 @@ interface ContentRecord {
 ```
 
 **Tracking Record:**
+
 ```typescript
 interface TrackingRecord {
   contentId: string;
@@ -96,17 +99,18 @@ interface TrackingRecord {
 
 ### API Endpoints Using Airtable
 
-| Endpoint | Operation |
-|----------|-----------|
-| `POST /api/content/store` | Create/update content record |
-| `POST /api/content/track` | Add tracking data |
-| `GET /api/engagement-metrics` | Retrieve engagement stats |
+| Endpoint                      | Operation                    |
+| ----------------------------- | ---------------------------- |
+| `POST /api/content/store`     | Create/update content record |
+| `POST /api/content/track`     | Add tracking data            |
+| `GET /api/engagement-metrics` | Retrieve engagement stats    |
 
 ### Feature Flag Dependency
 
 Airtable integration is controlled by a feature flag:
+
 ```typescript
-featureFlags.airtableIntegration // boolean
+featureFlags.airtableIntegration; // boolean
 ```
 
 ---
@@ -145,7 +149,10 @@ export async function saveFeatureFlags(): Promise<void> {
       localStorage.setItem('featureFlags', JSON.stringify(featureFlags));
     } else {
       // Node.js: Atomic file write
-      const tmpPath = path.join(os.tmpdir(), `feature-flags-${Date.now()}-${crypto.randomUUID()}.json`);
+      const tmpPath = path.join(
+        os.tmpdir(),
+        `feature-flags-${Date.now()}-${crypto.randomUUID()}.json`
+      );
       fs.writeFileSync(tmpPath, JSON.stringify(featureFlags, null, 2), 'utf8');
       fs.renameSync(tmpPath, featureFlagsPath); // Atomic rename
     }
@@ -156,6 +163,7 @@ export async function saveFeatureFlags(): Promise<void> {
 ```
 
 **Thread Safety:**
+
 - Mutex-based synchronization
 - Atomic file operations (write to temp, then rename)
 - Crypto-based unique temp file names
@@ -164,11 +172,11 @@ export async function saveFeatureFlags(): Promise<void> {
 
 **Location:** `/data/` and `/config/`
 
-| File | Purpose |
-|------|---------|
-| `platforms.json` | Platform definitions |
-| `categories.json` | Content categories |
-| Static lookup data | Reference data |
+| File               | Purpose              |
+| ------------------ | -------------------- |
+| `platforms.json`   | Platform definitions |
+| `categories.json`  | Content categories   |
+| Static lookup data | Reference data       |
 
 ---
 
@@ -199,6 +207,7 @@ setInterval(() => {
 ```
 
 **Limitations:**
+
 - Not shared across multiple instances
 - Lost on server restart
 - Suitable for single-instance deployment only
@@ -234,15 +243,15 @@ private cleanupBlacklist(): void {
 
 ### localStorage Usage
 
-| Key | Purpose | Scope |
-|-----|---------|-------|
-| `featureFlags` | Feature flag state | Client-side |
-| `auth-token` | JWT token (fallback) | Client-side |
+| Key            | Purpose              | Scope       |
+| -------------- | -------------------- | ----------- |
+| `featureFlags` | Feature flag state   | Client-side |
+| `auth-token`   | JWT token (fallback) | Client-side |
 
 ### Cookie Storage
 
-| Cookie | Purpose | Attributes |
-|--------|---------|------------|
+| Cookie       | Purpose            | Attributes                     |
+| ------------ | ------------------ | ------------------------------ |
 | `auth-token` | JWT authentication | HttpOnly (prod), Secure (prod) |
 
 ---
@@ -398,22 +407,22 @@ const sanitizedContent = {
 
 ### Current Limitations
 
-| Component | Limitation | Impact |
-|-----------|------------|--------|
-| Rate limiting | In-memory | Single instance only |
-| Token blacklist | In-memory | Lost on restart |
-| Feature flags | File-based | Single server deployment |
-| Airtable | API limits | Rate limited by provider |
+| Component       | Limitation | Impact                   |
+| --------------- | ---------- | ------------------------ |
+| Rate limiting   | In-memory  | Single instance only     |
+| Token blacklist | In-memory  | Lost on restart          |
+| Feature flags   | File-based | Single server deployment |
+| Airtable        | API limits | Rate limited by provider |
 
 ### Production Recommendations
 
-| Component | Recommendation |
-|-----------|---------------|
-| Rate limiting | Redis or Upstash Rate Limit |
-| Token blacklist | Redis with TTL |
-| Feature flags | Database or LaunchDarkly |
-| Content storage | Consider PostgreSQL for scale |
-| Caching | Redis for API response caching |
+| Component       | Recommendation                 |
+| --------------- | ------------------------------ |
+| Rate limiting   | Redis or Upstash Rate Limit    |
+| Token blacklist | Redis with TTL                 |
+| Feature flags   | Database or LaunchDarkly       |
+| Content storage | Consider PostgreSQL for scale  |
+| Caching         | Redis for API response caching |
 
 ---
 
@@ -457,34 +466,37 @@ App → PostgreSQL (primary database)
 
 ## Best Practices Compliance
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| External data validation | ✅ | Zod schemas |
-| Input sanitization | ✅ | DOMPurify |
-| Atomic file operations | ✅ | Feature flags |
-| Thread safety | ✅ | Mutex for concurrent access |
-| Environment-based config | ✅ | Sensitive data in env vars |
-| Scalable storage | ❌ | In-memory stores limit scaling |
+| Practice                 | Status | Notes                          |
+| ------------------------ | ------ | ------------------------------ |
+| External data validation | ✅     | Zod schemas                    |
+| Input sanitization       | ✅     | DOMPurify                      |
+| Atomic file operations   | ✅     | Feature flags                  |
+| Thread safety            | ✅     | Mutex for concurrent access    |
+| Environment-based config | ✅     | Sensitive data in env vars     |
+| Scalable storage         | ❌     | In-memory stores limit scaling |
 
 ---
 
 ## Recommendations
 
 ### Short-term
+
 1. Add database connection (PostgreSQL)
 2. Implement user table with proper password hashing
 3. Add audit log persistence
 
 ### Medium-term
+
 1. Add Redis for rate limiting and caching
 2. Migrate token blacklist to Redis
 3. Implement database migrations
 
 ### Long-term
+
 1. Consider database sharding for scale
 2. Implement CQRS if read/write patterns diverge
 3. Add data replication for reliability
 
 ---
 
-*This document details the data and storage technology stack for the Content Creation Platform.*
+_This document details the data and storage technology stack for the Content Creation Platform._

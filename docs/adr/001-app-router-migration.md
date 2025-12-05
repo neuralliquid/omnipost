@@ -67,28 +67,28 @@ We will migrate incrementally to the App Router following a phased approach that
 
 ### Pages to App Router Mapping
 
-| Current (Pages Router) | Target (App Router) | Type | Priority |
-|------------------------|---------------------|------|----------|
-| `pages/_app.tsx` | `app/layout.tsx` | Layout | ✅ Done |
-| `pages/_document.tsx` | `app/layout.tsx` | Layout | ✅ Done |
-| `pages/index.tsx` | `app/(marketing)/page.tsx` | Static | Phase 2 |
-| `pages/dashboard.tsx` | `app/(dashboard)/dashboard/page.tsx` | Dynamic | Phase 3 |
-| `pages/human-review/index.tsx` | `app/(dashboard)/review/page.tsx` | Complex | Phase 4 |
-| `pages/human-review/[id].tsx` | `app/(dashboard)/review/[id]/page.tsx` | Complex | Phase 4 |
+| Current (Pages Router)         | Target (App Router)                    | Type    | Priority |
+| ------------------------------ | -------------------------------------- | ------- | -------- |
+| `pages/_app.tsx`               | `app/layout.tsx`                       | Layout  | ✅ Done  |
+| `pages/_document.tsx`          | `app/layout.tsx`                       | Layout  | ✅ Done  |
+| `pages/index.tsx`              | `app/(marketing)/page.tsx`             | Static  | Phase 2  |
+| `pages/dashboard.tsx`          | `app/(dashboard)/dashboard/page.tsx`   | Dynamic | Phase 3  |
+| `pages/human-review/index.tsx` | `app/(dashboard)/review/page.tsx`      | Complex | Phase 4  |
+| `pages/human-review/[id].tsx`  | `app/(dashboard)/review/[id]/page.tsx` | Complex | Phase 4  |
 
 ### Component Classification
 
-| Component | Type | Reason | Migration Action |
-|-----------|------|--------|------------------|
-| `Header` | Server | Static content | Keep as-is |
-| `Footer` | Server | Static content | Keep as-is |
-| `Toast` | Client | Uses state/effects | Add 'use client' |
-| `LoginForm` | Client | Form interactivity | Add 'use client' |
-| `FeatureFlagToggle` | Client | State management | Add 'use client' |
-| `ReviewStepIndicator` | Server | Display only | Keep as-is |
-| `ContentEditor` | Client | Rich text editing | Add 'use client' |
-| `ImagePreview` | Server | Static display | Keep as-is |
-| `PlatformSelector` | Client | Interactive selection | Add 'use client' |
+| Component             | Type   | Reason                | Migration Action |
+| --------------------- | ------ | --------------------- | ---------------- |
+| `Header`              | Server | Static content        | Keep as-is       |
+| `Footer`              | Server | Static content        | Keep as-is       |
+| `Toast`               | Client | Uses state/effects    | Add 'use client' |
+| `LoginForm`           | Client | Form interactivity    | Add 'use client' |
+| `FeatureFlagToggle`   | Client | State management      | Add 'use client' |
+| `ReviewStepIndicator` | Server | Display only          | Keep as-is       |
+| `ContentEditor`       | Client | Rich text editing     | Add 'use client' |
+| `ImagePreview`        | Server | Static display        | Keep as-is       |
+| `PlatformSelector`    | Client | Interactive selection | Add 'use client' |
 
 ---
 
@@ -99,6 +99,7 @@ We will migrate incrementally to the App Router following a phased approach that
 **Status**: Complete
 
 **Completed Items**:
+
 - [x] Add root layout (`app/layout.tsx`)
 - [x] Create loading component (`app/loading.tsx`)
 - [x] Create error boundary (`app/error.tsx`)
@@ -107,6 +108,7 @@ We will migrate incrementally to the App Router following a phased approach that
 - [x] Add accessibility skip link
 
 **Files Created**:
+
 ```
 app/
 ├── layout.tsx      # Root layout with metadata
@@ -132,6 +134,7 @@ mkdir -p app/(marketing)
 #### Step 2.2: Migrate Landing Page
 
 **Before** (`pages/index.tsx`):
+
 ```typescript
 export default function Home() {
   return <LandingPage />;
@@ -139,6 +142,7 @@ export default function Home() {
 ```
 
 **After** (`app/(marketing)/page.tsx`):
+
 ```typescript
 import { Metadata } from 'next';
 
@@ -172,6 +176,7 @@ export default function MarketingLayout({
 ```
 
 #### Step 2.4: Validation Checklist
+
 - [ ] Page renders correctly
 - [ ] Metadata appears in HTML head
 - [ ] Loading state works
@@ -222,6 +227,7 @@ export default async function DashboardLayout({
 #### Step 3.3: Migrate Dashboard Page
 
 **Before** (`pages/dashboard.tsx`):
+
 ```typescript
 import { useEffect, useState } from 'react';
 
@@ -242,6 +248,7 @@ export default function Dashboard() {
 ```
 
 **After** (`app/(dashboard)/dashboard/page.tsx`):
+
 ```typescript
 import { Suspense } from 'react';
 import { Metadata } from 'next';
@@ -282,6 +289,7 @@ export default function DashboardLoading() {
 ```
 
 #### Step 3.5: Validation Checklist
+
 - [ ] Authentication redirect works
 - [ ] Data fetches on server
 - [ ] Streaming/Suspense works
@@ -507,6 +515,7 @@ export default async function ReviewDetailPage({ params }: Props) {
 ```
 
 #### Step 4.6: Validation Checklist
+
 - [ ] Server Actions execute correctly
 - [ ] Form validation works
 - [ ] Error handling displays properly
@@ -546,6 +555,7 @@ const nextConfig = {
 Search and replace any imports from `pages/` directory.
 
 #### Step 5.4: Final Validation
+
 - [ ] All routes accessible
 - [ ] No 404 errors
 - [ ] Performance benchmarks met
@@ -632,12 +642,12 @@ test('complete review workflow', async ({ page }) => {
 
 ### Test Coverage Requirements
 
-| Phase | Coverage Target | Critical Paths |
-|-------|-----------------|----------------|
-| Phase 2 | 70% | Landing page renders |
-| Phase 3 | 75% | Dashboard loads, auth redirect |
-| Phase 4 | 80% | Full review workflow |
-| Phase 5 | 80% | All routes functional |
+| Phase   | Coverage Target | Critical Paths                 |
+| ------- | --------------- | ------------------------------ |
+| Phase 2 | 70%             | Landing page renders           |
+| Phase 3 | 75%             | Dashboard loads, auth redirect |
+| Phase 4 | 80%             | Full review workflow           |
+| Phase 5 | 80%             | All routes functional          |
 
 ---
 
@@ -648,6 +658,7 @@ test('complete review workflow', async ({ page }) => {
 Each phase can be rolled back independently:
 
 #### Phase 2 Rollback
+
 ```bash
 # Revert landing page
 git revert <phase-2-commit>
@@ -656,6 +667,7 @@ rm -rf app/(marketing)
 ```
 
 #### Phase 3 Rollback
+
 ```bash
 # Revert dashboard migration
 git revert <phase-3-commit>
@@ -663,6 +675,7 @@ rm -rf app/(dashboard)
 ```
 
 #### Phase 4 Rollback
+
 ```bash
 # Revert review workflow
 git revert <phase-4-commit>
@@ -728,17 +741,17 @@ git checkout -b hotfix/app-router-issue
 
 ### Dependencies to Update
 
-| Package | Current | Required | Reason |
-|---------|---------|----------|--------|
-| `next` | 14.x | 14.x+ | App Router support |
-| `react` | 18.x | 18.x+ | Server Components |
-| `react-dom` | 18.x | 18.x+ | Server Components |
+| Package     | Current | Required | Reason             |
+| ----------- | ------- | -------- | ------------------ |
+| `next`      | 14.x    | 14.x+    | App Router support |
+| `react`     | 18.x    | 18.x+    | Server Components  |
+| `react-dom` | 18.x    | 18.x+    | Server Components  |
 
 ### Dependencies to Add
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `server-only` | latest | Prevent server code in client |
+| Package       | Version | Purpose                       |
+| ------------- | ------- | ----------------------------- |
+| `server-only` | latest  | Prevent server code in client |
 
 ```bash
 npm install server-only
@@ -746,13 +759,13 @@ npm install server-only
 
 ### Dependencies to Audit for RSC Compatibility
 
-| Package | RSC Compatible | Action |
-|---------|----------------|--------|
-| `axios` | Yes | No change |
-| `zod` | Yes | No change |
-| `date-fns` | Yes | No change |
-| `dompurify` | Client-only | Add 'use client' where used |
-| `react-hook-form` | Client-only | Add 'use client' where used |
+| Package           | RSC Compatible | Action                      |
+| ----------------- | -------------- | --------------------------- |
+| `axios`           | Yes            | No change                   |
+| `zod`             | Yes            | No change                   |
+| `date-fns`        | Yes            | No change                   |
+| `dompurify`       | Client-only    | Add 'use client' where used |
+| `react-hook-form` | Client-only    | Add 'use client' where used |
 
 ### Server-Only Utilities
 
@@ -775,6 +788,7 @@ export async function getSecureData() {
 The main workflow hook needs to be restructured for Server Components:
 
 **Current Structure**:
+
 ```typescript
 // hooks/useReviewProcess.ts
 export function useReviewProcess() {
@@ -822,22 +836,22 @@ Measure before migration:
 npx lighthouse http://localhost:3000 --output json --output-path ./baseline.json
 ```
 
-| Metric | Target | Baseline |
-|--------|--------|----------|
-| First Load JS | < 100KB | ~150KB |
-| LCP | < 2.5s | TBD |
-| FID | < 100ms | TBD |
-| CLS | < 0.1 | TBD |
-| TTFB | < 800ms | TBD |
+| Metric        | Target  | Baseline |
+| ------------- | ------- | -------- |
+| First Load JS | < 100KB | ~150KB   |
+| LCP           | < 2.5s  | TBD      |
+| FID           | < 100ms | TBD      |
+| CLS           | < 0.1   | TBD      |
+| TTFB          | < 800ms | TBD      |
 
 ### Expected Improvements
 
-| Metric | Expected Change | Reason |
-|--------|-----------------|--------|
-| First Load JS | -30% to -50% | Server Components |
-| LCP | -20% to -40% | Server rendering |
-| TTFB | Varies | Depends on data fetching |
-| Bundle Size | -30% | Less client JS |
+| Metric        | Expected Change | Reason                   |
+| ------------- | --------------- | ------------------------ |
+| First Load JS | -30% to -50%    | Server Components        |
+| LCP           | -20% to -40%    | Server rendering         |
+| TTFB          | Varies          | Depends on data fetching |
+| Bundle Size   | -30%            | Less client JS           |
 
 ### Measurement Script
 
@@ -883,10 +897,12 @@ console.log('Total JS:', report.audits['total-byte-weight'].numericValue);
 Migrate everything at once.
 
 **Pros:**
+
 - Single migration effort
 - Consistent codebase after completion
 
 **Cons:**
+
 - High risk of regressions
 - Long development cycle
 - Difficult rollback
@@ -897,12 +913,14 @@ Migrate everything at once.
 Migrate page-by-page, feature-by-feature.
 
 **Pros:**
+
 - Lower risk per change
 - Continuous delivery
 - Easy rollback
 - Validates patterns incrementally
 
 **Cons:**
+
 - Longer total timeline
 - Temporary inconsistency
 - Need to maintain both patterns temporarily
@@ -912,10 +930,12 @@ Migrate page-by-page, feature-by-feature.
 Keep current architecture.
 
 **Pros:**
+
 - No migration effort
 - Known patterns
 
 **Cons:**
+
 - Missing Server Component benefits
 - Increasing technical debt
 - Future migration will be harder
@@ -1008,12 +1028,12 @@ export default function RootLayout({ children }) {
 
 ### Risks
 
-| Risk | Mitigation |
-|------|------------|
-| Regressions | Comprehensive test coverage before migration |
-| Performance issues | Benchmark each page before/after |
-| Team velocity | Training and documentation |
-| Third-party compatibility | Audit dependencies for RSC support |
+| Risk                      | Mitigation                                   |
+| ------------------------- | -------------------------------------------- |
+| Regressions               | Comprehensive test coverage before migration |
+| Performance issues        | Benchmark each page before/after             |
+| Team velocity             | Training and documentation                   |
+| Third-party compatibility | Audit dependencies for RSC support           |
 
 ---
 
@@ -1092,25 +1112,25 @@ export default function RootLayout({ children }) {
 
 ## Glossary
 
-| Term | Definition |
-|------|------------|
-| **RSC** | React Server Components - Components that render on the server only |
-| **Server Actions** | Functions that run on the server, callable from client forms |
-| **Route Groups** | Folders with `(name)` that organize routes without affecting URL |
-| **Streaming SSR** | Sending HTML to client in chunks as it renders |
-| **ISR** | Incremental Static Regeneration - Updating static pages after build |
-| **SSG** | Static Site Generation - Pre-rendering pages at build time |
+| Term               | Definition                                                          |
+| ------------------ | ------------------------------------------------------------------- |
+| **RSC**            | React Server Components - Components that render on the server only |
+| **Server Actions** | Functions that run on the server, callable from client forms        |
+| **Route Groups**   | Folders with `(name)` that organize routes without affecting URL    |
+| **Streaming SSR**  | Sending HTML to client in chunks as it renders                      |
+| **ISR**            | Incremental Static Regeneration - Updating static pages after build |
+| **SSG**            | Static Site Generation - Pre-rendering pages at build time          |
 
 ---
 
 ## Changelog
 
-| Date | Author | Change |
-|------|--------|--------|
-| 2025-12 | Development Team | Initial proposal |
-| 2025-12 | Development Team | Accepted: Added detailed migration phases |
+| Date    | Author           | Change                                                    |
+| ------- | ---------------- | --------------------------------------------------------- |
+| 2025-12 | Development Team | Initial proposal                                          |
+| 2025-12 | Development Team | Accepted: Added detailed migration phases                 |
 | 2025-12 | Development Team | Added file mapping, testing strategy, rollback procedures |
-| 2025-12 | Development Team | Completed Phase 1 preparation |
+| 2025-12 | Development Team | Completed Phase 1 preparation                             |
 | 2025-12 | Development Team | **IMPLEMENTED**: All phases complete. Migration finished. |
 
 ---
