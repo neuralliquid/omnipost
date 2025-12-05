@@ -7,12 +7,12 @@
 
 import { useEffect } from 'react';
 
-interface ErrorProps {
+interface AppErrorProps {
   error: Error & { digest?: string };
   reset: () => void;
 }
 
-export default function Error({ error, reset }: ErrorProps) {
+export default function AppError({ error, reset }: AppErrorProps) {
   useEffect(() => {
     // Log error to error reporting service
     console.error('Application error:', error);
