@@ -23,19 +23,13 @@ export async function GET(request: Request, { params }: RouteParams) {
     const job = await scheduler.getJob(id);
 
     if (!job) {
-      return NextResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     return NextResponse.json({ job });
   } catch (error) {
     console.error('Error fetching job:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch job' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch job' }, { status: 500 });
   }
 }
 
@@ -50,10 +44,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     const cancelled = await scheduler.cancel(id);
 
     if (!cancelled) {
-      return NextResponse.json(
-        { error: 'Job not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -63,10 +54,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
   } catch (error) {
     console.error('Error cancelling job:', error);
     const message = error instanceof Error ? error.message : 'Failed to cancel job';
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }
 
@@ -85,10 +73,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       const job = await scheduler.retry(id);
 
       if (!job) {
-        return NextResponse.json(
-          { error: 'Job not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
       }
 
       return NextResponse.json({
@@ -101,19 +86,13 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     if (body.scheduledTime) {
       const scheduledTime = new Date(body.scheduledTime);
       if (isNaN(scheduledTime.getTime())) {
-        return NextResponse.json(
-          { error: 'Invalid scheduledTime format' },
-          { status: 400 }
-        );
+        return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
       }
 
       const job = await scheduler.reschedule(id, body.scheduledTime);
 
       if (!job) {
-        return NextResponse.json(
-          { error: 'Job not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
       }
 
       return NextResponse.json({
@@ -122,16 +101,10 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       });
     }
 
-    return NextResponse.json(
-      { error: 'No valid update provided' },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: 'No valid update provided' }, { status: 400 });
   } catch (error) {
     console.error('Error updating job:', error);
     const message = error instanceof Error ? error.message : 'Failed to update job';
-    return NextResponse.json(
-      { error: message },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: message }, { status: 400 });
   }
 }

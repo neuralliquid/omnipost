@@ -7,13 +7,13 @@
  * Job status in the scheduling pipeline
  */
 export type JobStatus =
-  | 'pending'      // Waiting to be scheduled
-  | 'scheduled'    // In the schedule queue
-  | 'processing'   // Currently being published
-  | 'published'    // Successfully published
-  | 'failed'       // Failed, will retry
-  | 'dead'         // Exceeded max retries
-  | 'cancelled';   // Manually cancelled
+  | 'pending' // Waiting to be scheduled
+  | 'scheduled' // In the schedule queue
+  | 'processing' // Currently being published
+  | 'published' // Successfully published
+  | 'failed' // Failed, will retry
+  | 'dead' // Exceeded max retries
+  | 'cancelled'; // Manually cancelled
 
 /**
  * Job type classification
@@ -43,7 +43,7 @@ export interface ScheduledJob {
   };
 
   // Scheduling
-  scheduledTime: string;        // ISO 8601
+  scheduledTime: string; // ISO 8601
   timezone: string;
 
   // Execution state
@@ -92,7 +92,7 @@ export interface PlatformRateLimit {
 
   // Current window
   windowStart: string;
-  windowDuration: number;      // seconds
+  windowDuration: number; // seconds
   requestCount: number;
   requestLimit: number;
 
@@ -110,37 +110,37 @@ export interface PlatformRateLimit {
  * Rate limit configuration per platform
  */
 export interface RateLimitConfig {
-  requests: number;     // Max requests
-  window: number;       // Window in seconds
-  daily?: number;       // Optional daily limit
+  requests: number; // Max requests
+  window: number; // Window in seconds
+  daily?: number; // Optional daily limit
 }
 
 /**
  * Platform rate limit defaults
  */
 export const RATE_LIMITS: Record<string, RateLimitConfig> = {
-  twitter: { requests: 300, window: 900, daily: 2400 },     // 300/15min, 2400/day
-  linkedin: { requests: 100, window: 86400 },               // 100/day
-  facebook: { requests: 200, window: 3600 },                // 200/hour
-  instagram: { requests: 200, window: 3600 },               // 200/hour
-  'custom-channel': { requests: 1000, window: 3600 },       // 1000/hour
+  twitter: { requests: 300, window: 900, daily: 2400 }, // 300/15min, 2400/day
+  linkedin: { requests: 100, window: 86400 }, // 100/day
+  facebook: { requests: 200, window: 3600 }, // 200/hour
+  instagram: { requests: 200, window: 3600 }, // 200/hour
+  'custom-channel': { requests: 1000, window: 3600 }, // 1000/hour
 };
 
 /**
  * Scheduler configuration
  */
 export interface SchedulerConfig {
-  checkInterval: number;      // How often to check for due jobs (ms)
-  batchSize: number;          // Max jobs to process per cycle
-  maxRetries: number;         // Default max retry attempts
-  retryDelays: number[];      // Backoff delays in seconds
+  checkInterval: number; // How often to check for due jobs (ms)
+  batchSize: number; // Max jobs to process per cycle
+  maxRetries: number; // Default max retry attempts
+  retryDelays: number[]; // Backoff delays in seconds
 }
 
 /**
  * Default scheduler configuration
  */
 export const DEFAULT_SCHEDULER_CONFIG: SchedulerConfig = {
-  checkInterval: 60000,       // 1 minute
+  checkInterval: 60000, // 1 minute
   batchSize: 50,
   maxRetries: 5,
   retryDelays: [60, 300, 900, 3600, 14400], // 1m, 5m, 15m, 1h, 4h
@@ -215,11 +215,14 @@ export interface SchedulerStats {
   publishedToday: number;
   failedToday: number;
   scheduledTotal: number;
-  rateLimits: Record<string, {
-    remaining: number;
-    resetAt: string;
-    isBackingOff: boolean;
-  }>;
+  rateLimits: Record<
+    string,
+    {
+      remaining: number;
+      resetAt: string;
+      isBackingOff: boolean;
+    }
+  >;
 }
 
 /**

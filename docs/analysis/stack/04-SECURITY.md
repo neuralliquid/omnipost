@@ -73,17 +73,19 @@ The Content Creation Platform implements a comprehensive security stack addressi
 **Library:** `jsonwebtoken` (^9.0.2)
 
 **Token Structure:**
+
 ```typescript
 interface TokenPayload {
-  id: string;        // User ID
-  username: string;  // Username
-  role: string;      // 'admin' | 'user'
-  iat: number;       // Issued at (Unix timestamp)
-  exp: number;       // Expiration (Unix timestamp)
+  id: string; // User ID
+  username: string; // Username
+  role: string; // 'admin' | 'user'
+  iat: number; // Issued at (Unix timestamp)
+  exp: number; // Expiration (Unix timestamp)
 }
 ```
 
 **Token Generation:**
+
 ```typescript
 // lib/auth/auth-service.ts
 public generateToken(user: User, expiresIn = '1h'): string {
@@ -126,10 +128,10 @@ try {
 
 ### Token Sources
 
-| Source | Priority | Usage |
-|--------|----------|-------|
-| Cookie (`auth-token`) | 1st | Browser requests |
-| Authorization header | 2nd | API clients |
+| Source                | Priority | Usage            |
+| --------------------- | -------- | ---------------- |
+| Cookie (`auth-token`) | 1st      | Browser requests |
+| Authorization header  | 2nd      | API clients      |
 
 ### Token Blacklisting
 
@@ -154,14 +156,15 @@ isTokenBlacklisted(token: string): boolean {
 
 ### Role Definitions
 
-| Role | Capabilities |
-|------|-------------|
-| `user` | Standard API access |
+| Role    | Capabilities                  |
+| ------- | ----------------------------- |
+| `user`  | Standard API access           |
 | `admin` | User access + admin endpoints |
 
 ### Protected Routes
 
 **Authenticated Routes:**
+
 ```typescript
 const authenticatedPaths = [
   '/api/platforms',
@@ -176,11 +179,9 @@ const authenticatedPaths = [
 ```
 
 **Admin Routes:**
+
 ```typescript
-const adminPaths = [
-  '/api/feature-flags',
-  '/api/audit',
-];
+const adminPaths = ['/api/feature-flags', '/api/audit'];
 ```
 
 ### Middleware Enforcement
@@ -190,10 +191,7 @@ const adminPaths = [
 if (requiresAdmin) {
   const isAdmin = decoded.role === 'admin';
   if (!isAdmin) {
-    return NextResponse.json(
-      { message: 'Admin privileges required' },
-      { status: 403 }
-    );
+    return NextResponse.json({ message: 'Admin privileges required' }, { status: 403 });
   }
 }
 ```
@@ -208,9 +206,9 @@ if (requiresAdmin) {
 
 ```typescript
 interface RateLimitConfig {
-  maxRequests: number;  // Maximum requests allowed
-  windowMs: number;     // Time window in milliseconds
-  message?: string;     // Custom error message
+  maxRequests: number; // Maximum requests allowed
+  windowMs: number; // Time window in milliseconds
+  message?: string; // Custom error message
 }
 
 // IP extraction (proxy-aware)
@@ -224,12 +222,12 @@ function getRateLimitKey(request: NextRequest, endpoint: string): string {
 
 ### Preset Configurations
 
-| Preset | Requests | Window | Use Case |
-|--------|----------|--------|----------|
-| `AUTH` | 5 | 15 min | Login attempts |
-| `AI_SERVICE` | 10 | 1 min | AI endpoints |
-| `GENERAL` | 100 | 15 min | Standard endpoints |
-| `ADMIN` | 50 | 1 hour | Admin operations |
+| Preset       | Requests | Window | Use Case           |
+| ------------ | -------- | ------ | ------------------ |
+| `AUTH`       | 5        | 15 min | Login attempts     |
+| `AI_SERVICE` | 10       | 1 min  | AI endpoints       |
+| `GENERAL`    | 100      | 15 min | Standard endpoints |
+| `ADMIN`      | 50       | 1 hour | Admin operations   |
 
 ### Response Headers
 
@@ -324,10 +322,13 @@ export function sanitizeText(input: string): string {
 }
 
 // Allow specific HTML
-export function sanitizeHtml(input: string, options?: {
-  allowedTags?: string[];
-  allowedAttributes?: string[];
-}): string {
+export function sanitizeHtml(
+  input: string,
+  options?: {
+    allowedTags?: string[];
+    allowedAttributes?: string[];
+  }
+): string {
   return DOMPurify.sanitize(input, {
     ALLOWED_TAGS: options?.allowedTags || [],
     ALLOWED_ATTR: options?.allowedAttributes || [],
@@ -351,8 +352,7 @@ export function sanitizeUrl(url: string, allowedDomains?: string[]): string | nu
     // Domain whitelist (if provided)
     if (allowedDomains?.length) {
       const isAllowed = allowedDomains.some(
-        domain => parsed.hostname === domain ||
-                  parsed.hostname.endsWith(`.${domain}`)
+        domain => parsed.hostname === domain || parsed.hostname.endsWith(`.${domain}`)
       );
       if (!isAllowed) return null;
     }
@@ -411,15 +411,15 @@ async headers() {
 
 ### Header Details
 
-| Header | Value | Protection |
-|--------|-------|------------|
-| `Strict-Transport-Security` | 2 year max-age, preload | Force HTTPS |
-| `X-Frame-Options` | SAMEORIGIN | Clickjacking |
-| `X-Content-Type-Options` | nosniff | MIME sniffing |
-| `X-XSS-Protection` | 1; mode=block | XSS (legacy browsers) |
-| `Content-Security-Policy` | Restrictive | XSS, injection |
-| `Permissions-Policy` | Disabled APIs | Feature abuse |
-| `Referrer-Policy` | origin-when-cross-origin | Information leakage |
+| Header                      | Value                    | Protection            |
+| --------------------------- | ------------------------ | --------------------- |
+| `Strict-Transport-Security` | 2 year max-age, preload  | Force HTTPS           |
+| `X-Frame-Options`           | SAMEORIGIN               | Clickjacking          |
+| `X-Content-Type-Options`    | nosniff                  | MIME sniffing         |
+| `X-XSS-Protection`          | 1; mode=block            | XSS (legacy browsers) |
+| `Content-Security-Policy`   | Restrictive              | XSS, injection        |
+| `Permissions-Policy`        | Disabled APIs            | Feature abuse         |
+| `Referrer-Policy`           | origin-when-cross-origin | Information leakage   |
 
 ---
 
@@ -463,12 +463,12 @@ export function auditLog(
 
 ### Logged Actions
 
-| Category | Actions |
-|----------|---------|
+| Category       | Actions                                            |
+| -------------- | -------------------------------------------------- |
 | Authentication | LOGIN_ATTEMPT, LOGIN_SUCCESS, LOGIN_FAILED, LOGOUT |
-| Feature Flags | GET_FEATURE_FLAGS, UPDATE_FEATURE_FLAG |
-| Content | GENERATE_IMAGE, REVIEW_IMAGE, STORE_CONTENT |
-| Platform | GET_PLATFORMS_LIST, GET_PLATFORM_CAPABILITIES |
+| Feature Flags  | GET_FEATURE_FLAGS, UPDATE_FEATURE_FLAG             |
+| Content        | GENERATE_IMAGE, REVIEW_IMAGE, STORE_CONTENT        |
+| Platform       | GET_PLATFORMS_LIST, GET_PLATFORM_CAPABILITIES      |
 
 ### Sensitive Data Redaction
 
@@ -491,18 +491,18 @@ function sanitizeLogBody(body: object): object {
 
 ## OWASP Compliance
 
-| Risk | Mitigation | Status |
-|------|------------|--------|
-| **A01: Broken Access Control** | RBAC, middleware checks | ✅ |
-| **A02: Cryptographic Failures** | JWT signing, env secrets | ⚠️ |
-| **A03: Injection** | Zod + DOMPurify | ✅ |
-| **A04: Insecure Design** | Security headers, CSP | ✅ |
-| **A05: Security Misconfiguration** | Fail-fast validation | ✅ |
-| **A06: Vulnerable Components** | npm audit clean | ✅ |
-| **A07: Auth Failures** | Rate limiting, token blacklist | ✅ |
-| **A08: Software Integrity** | npm ci | ⚠️ |
-| **A09: Logging Failures** | Audit logging | ⚠️ |
-| **A10: SSRF** | URL sanitization | ✅ |
+| Risk                               | Mitigation                     | Status |
+| ---------------------------------- | ------------------------------ | ------ |
+| **A01: Broken Access Control**     | RBAC, middleware checks        | ✅     |
+| **A02: Cryptographic Failures**    | JWT signing, env secrets       | ⚠️     |
+| **A03: Injection**                 | Zod + DOMPurify                | ✅     |
+| **A04: Insecure Design**           | Security headers, CSP          | ✅     |
+| **A05: Security Misconfiguration** | Fail-fast validation           | ✅     |
+| **A06: Vulnerable Components**     | npm audit clean                | ✅     |
+| **A07: Auth Failures**             | Rate limiting, token blacklist | ✅     |
+| **A08: Software Integrity**        | npm ci                         | ⚠️     |
+| **A09: Logging Failures**          | Audit logging                  | ⚠️     |
+| **A10: SSRF**                      | URL sanitization               | ✅     |
 
 ---
 
@@ -537,20 +537,23 @@ function sanitizeLogBody(body: object): object {
 ## Recommendations
 
 ### Short-term
+
 1. Implement bcrypt for password hashing
 2. Add CSRF protection for state-changing requests
 3. Move secrets to Azure Key Vault
 
 ### Medium-term
+
 1. Add security monitoring/alerting
 2. Implement centralized logging
 3. Add penetration testing
 
 ### Long-term
+
 1. Consider WAF (Web Application Firewall)
 2. Implement threat detection
 3. Add security compliance reporting
 
 ---
 
-*This document details the security technology stack for the Content Creation Platform.*
+_This document details the security technology stack for the Content Creation Platform._

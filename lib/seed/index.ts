@@ -146,9 +146,4 @@ export function getSeedStats() {
 }
 
 // Export individual seed items for direct access
-export {
-  aerospaceSeriesSeed,
-  aerospaceCampaignSeed,
-  AEROSPACE_SERIES_ID,
-  AEROSPACE_CAMPAIGN_ID,
-};
+export { aerospaceSeriesSeed, aerospaceCampaignSeed, AEROSPACE_SERIES_ID, AEROSPACE_CAMPAIGN_ID };

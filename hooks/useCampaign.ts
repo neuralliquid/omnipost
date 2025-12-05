@@ -23,6 +23,9 @@ const STORAGE_KEY = 'content-campaigns';
 
 /**
  * Generate unique ID
+ * NOTE: Uses Math.random() intentionally - these IDs are for local storage
+ * keys only, not security-sensitive operations. The timestamp prefix ensures
+ * uniqueness for practical purposes.
  */
 function generateId(): string {
   return `campaign_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -30,6 +33,9 @@ function generateId(): string {
 
 /**
  * Generate content ID
+ * NOTE: Uses Math.random() intentionally - these IDs are for local storage
+ * keys only, not security-sensitive operations. The timestamp prefix ensures
+ * uniqueness for practical purposes.
  */
 function generateContentId(): string {
   return `content_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -91,17 +97,37 @@ export interface UseCampaignReturn {
   removeSeriesFromCampaign: (campaignId: string, seriesId: string) => Campaign | null;
 
   // Content Management
-  addContent: (campaignId: string, content: Omit<CampaignContent, 'id' | 'createdAt' | 'updatedAt'>) => Campaign | null;
-  updateContent: (campaignId: string, contentId: string, updates: Partial<CampaignContent>) => Campaign | null;
+  addContent: (
+    campaignId: string,
+    content: Omit<CampaignContent, 'id' | 'createdAt' | 'updatedAt'>
+  ) => Campaign | null;
+  updateContent: (
+    campaignId: string,
+    contentId: string,
+    updates: Partial<CampaignContent>
+  ) => Campaign | null;
   removeContent: (campaignId: string, contentId: string) => Campaign | null;
 
   // Platform Management
   togglePlatform: (campaignId: string, platformId: string) => Campaign | null;
-  updatePlatformConfig: (campaignId: string, platformId: string, config: Partial<CampaignPlatform['config']>) => Campaign | null;
+  updatePlatformConfig: (
+    campaignId: string,
+    platformId: string,
+    config: Partial<CampaignPlatform['config']>
+  ) => Campaign | null;
 
   // Content Adaptation
-  addAdaptation: (campaignId: string, contentId: string, adaptation: Omit<PlatformAdaptation, 'status'>) => Campaign | null;
-  updateAdaptation: (campaignId: string, contentId: string, platformId: string, updates: Partial<PlatformAdaptation>) => Campaign | null;
+  addAdaptation: (
+    campaignId: string,
+    contentId: string,
+    adaptation: Omit<PlatformAdaptation, 'status'>
+  ) => Campaign | null;
+  updateAdaptation: (
+    campaignId: string,
+    contentId: string,
+    platformId: string,
+    updates: Partial<PlatformAdaptation>
+  ) => Campaign | null;
 
   // Scheduling
   schedulePost: (campaignId: string, post: Omit<ScheduledPost, 'id' | 'status'>) => Campaign | null;
@@ -109,11 +135,25 @@ export interface UseCampaignReturn {
   cancelScheduledPost: (campaignId: string, postId: string) => Campaign | null;
 
   // Publishing
-  markAsPublished: (campaignId: string, contentId: string, platformId: string, publishedUrl?: string) => Campaign | null;
-  markAsFailed: (campaignId: string, contentId: string, platformId: string, error: string) => Campaign | null;
+  markAsPublished: (
+    campaignId: string,
+    contentId: string,
+    platformId: string,
+    publishedUrl?: string
+  ) => Campaign | null;
+  markAsFailed: (
+    campaignId: string,
+    contentId: string,
+    platformId: string,
+    error: string
+  ) => Campaign | null;
 
   // Metrics
-  updateMetrics: (campaignId: string, platformId: string, metrics: Partial<Campaign['metrics']['platformMetrics'][string]>) => Campaign | null;
+  updateMetrics: (
+    campaignId: string,
+    platformId: string,
+    metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
+  ) => Campaign | null;
   recalculateMetrics: (campaignId: string) => Campaign | null;
 }
 
@@ -155,9 +195,12 @@ export function useCampaign(): UseCampaignReturn {
     setSelectedCampaignId(id);
   }, []);
 
-  const getCampaign = useCallback((id: string) => {
-    return campaigns.find(c => c.id === id);
-  }, [campaigns]);
+  const getCampaign = useCallback(
+    (id: string) => {
+      return campaigns.find(c => c.id === id);
+    },
+    [campaigns]
+  );
 
   // Create campaign
   const createCampaign = useCallback((input: CreateCampaignInput): Campaign => {
@@ -183,7 +226,9 @@ export function useCampaign(): UseCampaignReturn {
       seriesIds: input.seriesIds || [],
       contentItems: [],
       platforms: campaignPlatforms,
-      schedule: input.schedule ? { ...createEmptySchedule(), ...input.schedule } : createEmptySchedule(),
+      schedule: input.schedule
+        ? { ...createEmptySchedule(), ...input.schedule }
+        : createEmptySchedule(),
       metrics: createEmptyMetrics(),
       createdAt: now,
       updatedAt: now,
@@ -195,470 +240,543 @@ export function useCampaign(): UseCampaignReturn {
   }, []);
 
   // Update campaign
-  const updateCampaign = useCallback((id: string, updates: UpdateCampaignInput): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === id) {
-        updated = {
-          ...c,
-          ...updates,
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const updateCampaign = useCallback(
+    (id: string, updates: UpdateCampaignInput): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === id) {
+            updated = {
+              ...c,
+              ...updates,
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   // Delete campaign
-  const deleteCampaign = useCallback((id: string): boolean => {
-    const exists = campaigns.some(c => c.id === id);
-    if (exists) {
-      setCampaigns(prev => prev.filter(c => c.id !== id));
-      if (selectedCampaignId === id) {
-        setSelectedCampaignId(null);
+  const deleteCampaign = useCallback(
+    (id: string): boolean => {
+      const exists = campaigns.some(c => c.id === id);
+      if (exists) {
+        setCampaigns(prev => prev.filter(c => c.id !== id));
+        if (selectedCampaignId === id) {
+          setSelectedCampaignId(null);
+        }
       }
-    }
-    return exists;
-  }, [campaigns, selectedCampaignId]);
+      return exists;
+    },
+    [campaigns, selectedCampaignId]
+  );
 
   // Duplicate campaign
-  const duplicateCampaign = useCallback((id: string): Campaign | null => {
-    const source = campaigns.find(c => c.id === id);
-    if (!source) return null;
+  const duplicateCampaign = useCallback(
+    (id: string): Campaign | null => {
+      const source = campaigns.find(c => c.id === id);
+      if (!source) return null;
 
-    const now = new Date().toISOString();
-    const duplicated: Campaign = {
-      ...JSON.parse(JSON.stringify(source)),
-      id: generateId(),
-      name: `${source.name} (Copy)`,
-      status: 'draft',
-      createdAt: now,
-      updatedAt: now,
-      metrics: createEmptyMetrics(),
-    };
+      const now = new Date().toISOString();
+      const duplicated: Campaign = {
+        ...JSON.parse(JSON.stringify(source)),
+        id: generateId(),
+        name: `${source.name} (Copy)`,
+        status: 'draft',
+        createdAt: now,
+        updatedAt: now,
+        metrics: createEmptyMetrics(),
+      };
 
-    // Reset content IDs and statuses
-    duplicated.contentItems = duplicated.contentItems.map(item => ({
-      ...item,
-      id: generateContentId(),
-      adaptations: item.adaptations.map(a => ({
-        ...a,
-        status: 'pending' as const,
-        publishedAt: undefined,
-        publishedUrl: undefined,
-        engagementMetrics: undefined,
-      })),
-    }));
+      // Reset content IDs and statuses
+      duplicated.contentItems = duplicated.contentItems.map(item => ({
+        ...item,
+        id: generateContentId(),
+        adaptations: item.adaptations.map(a => ({
+          ...a,
+          status: 'pending' as const,
+          publishedAt: undefined,
+          publishedUrl: undefined,
+          engagementMetrics: undefined,
+        })),
+      }));
 
-    duplicated.schedule.posts = [];
+      duplicated.schedule.posts = [];
 
-    setCampaigns(prev => [...prev, duplicated]);
-    return duplicated;
-  }, [campaigns]);
+      setCampaigns(prev => [...prev, duplicated]);
+      return duplicated;
+    },
+    [campaigns]
+  );
 
   // Status management
-  const updateStatus = useCallback((id: string, status: CampaignStatus): Campaign | null => {
-    return updateCampaign(id, { status });
-  }, [updateCampaign]);
+  const updateStatus = useCallback(
+    (id: string, status: CampaignStatus): Campaign | null => {
+      return updateCampaign(id, { status });
+    },
+    [updateCampaign]
+  );
 
-  const pauseCampaign = useCallback((id: string): Campaign | null => {
-    return updateStatus(id, 'paused');
-  }, [updateStatus]);
+  const pauseCampaign = useCallback(
+    (id: string): Campaign | null => {
+      return updateStatus(id, 'paused');
+    },
+    [updateStatus]
+  );
 
-  const resumeCampaign = useCallback((id: string): Campaign | null => {
-    const campaign = campaigns.find(c => c.id === id);
-    if (!campaign) return null;
-    const newStatus = campaign.schedule.posts.some(p => p.status === 'scheduled') ? 'scheduled' : 'active';
-    return updateStatus(id, newStatus);
-  }, [campaigns, updateStatus]);
+  const resumeCampaign = useCallback(
+    (id: string): Campaign | null => {
+      const campaign = campaigns.find(c => c.id === id);
+      if (!campaign) return null;
+      const newStatus = campaign.schedule.posts.some(p => p.status === 'scheduled')
+        ? 'scheduled'
+        : 'active';
+      return updateStatus(id, newStatus);
+    },
+    [campaigns, updateStatus]
+  );
 
   // Series integration
-  const addSeriesToCampaign = useCallback((campaignId: string, seriesId: string): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId && !c.seriesIds.includes(seriesId)) {
-        updated = {
-          ...c,
-          seriesIds: [...c.seriesIds, seriesId],
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const addSeriesToCampaign = useCallback(
+    (campaignId: string, seriesId: string): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId && !c.seriesIds.includes(seriesId)) {
+            updated = {
+              ...c,
+              seriesIds: [...c.seriesIds, seriesId],
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
-  const removeSeriesFromCampaign = useCallback((campaignId: string, seriesId: string): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          seriesIds: c.seriesIds.filter(id => id !== seriesId),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const removeSeriesFromCampaign = useCallback(
+    (campaignId: string, seriesId: string): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              seriesIds: c.seriesIds.filter(id => id !== seriesId),
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   // Content management
-  const addContent = useCallback((
-    campaignId: string,
-    content: Omit<CampaignContent, 'id' | 'createdAt' | 'updatedAt'>
-  ): Campaign | null => {
-    const now = new Date().toISOString();
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const newContent: CampaignContent = {
-          ...content,
-          id: generateContentId(),
-          createdAt: now,
-          updatedAt: now,
-        };
-        updated = {
-          ...c,
-          contentItems: [...c.contentItems, newContent],
-          updatedAt: now,
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const addContent = useCallback(
+    (
+      campaignId: string,
+      content: Omit<CampaignContent, 'id' | 'createdAt' | 'updatedAt'>
+    ): Campaign | null => {
+      const now = new Date().toISOString();
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            const newContent: CampaignContent = {
+              ...content,
+              id: generateContentId(),
+              createdAt: now,
+              updatedAt: now,
+            };
+            updated = {
+              ...c,
+              contentItems: [...c.contentItems, newContent],
+              updatedAt: now,
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
-  const updateContent = useCallback((
-    campaignId: string,
-    contentId: string,
-    updates: Partial<CampaignContent>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          contentItems: c.contentItems.map(item =>
-            item.id === contentId
-              ? { ...item, ...updates, updatedAt: new Date().toISOString() }
-              : item
-          ),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const updateContent = useCallback(
+    (campaignId: string, contentId: string, updates: Partial<CampaignContent>): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              contentItems: c.contentItems.map(item =>
+                item.id === contentId
+                  ? { ...item, ...updates, updatedAt: new Date().toISOString() }
+                  : item
+              ),
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   const removeContent = useCallback((campaignId: string, contentId: string): Campaign | null => {
     let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          contentItems: c.contentItems.filter(item => item.id !== contentId),
-          schedule: {
-            ...c.schedule,
-            posts: c.schedule.posts.filter(p => p.contentId !== contentId),
-          },
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
+    setCampaigns(prev =>
+      prev.map(c => {
+        if (c.id === campaignId) {
+          updated = {
+            ...c,
+            contentItems: c.contentItems.filter(item => item.id !== contentId),
+            schedule: {
+              ...c.schedule,
+              posts: c.schedule.posts.filter(p => p.contentId !== contentId),
+            },
+            updatedAt: new Date().toISOString(),
+          };
+          return updated;
+        }
+        return c;
+      })
+    );
     return updated;
   }, []);
 
   // Platform management
   const togglePlatform = useCallback((campaignId: string, platformId: string): Campaign | null => {
     let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          platforms: c.platforms.map(p =>
-            p.platformId === platformId ? { ...p, enabled: !p.enabled } : p
-          ),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
+    setCampaigns(prev =>
+      prev.map(c => {
+        if (c.id === campaignId) {
+          updated = {
+            ...c,
+            platforms: c.platforms.map(p =>
+              p.platformId === platformId ? { ...p, enabled: !p.enabled } : p
+            ),
+            updatedAt: new Date().toISOString(),
+          };
+          return updated;
+        }
+        return c;
+      })
+    );
     return updated;
   }, []);
 
-  const updatePlatformConfig = useCallback((
-    campaignId: string,
-    platformId: string,
-    config: Partial<CampaignPlatform['config']>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          platforms: c.platforms.map(p =>
-            p.platformId === platformId ? { ...p, config: { ...p.config, ...config } } : p
-          ),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const updatePlatformConfig = useCallback(
+    (
+      campaignId: string,
+      platformId: string,
+      config: Partial<CampaignPlatform['config']>
+    ): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              platforms: c.platforms.map(p =>
+                p.platformId === platformId ? { ...p, config: { ...p.config, ...config } } : p
+              ),
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   // Content adaptation
-  const addAdaptation = useCallback((
-    campaignId: string,
-    contentId: string,
-    adaptation: Omit<PlatformAdaptation, 'status'>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          contentItems: c.contentItems.map(item => {
-            if (item.id === contentId) {
-              return {
-                ...item,
-                adaptations: [...item.adaptations, { ...adaptation, status: 'pending' as const }],
-                updatedAt: new Date().toISOString(),
-              };
-            }
-            return item;
-          }),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const addAdaptation = useCallback(
+    (
+      campaignId: string,
+      contentId: string,
+      adaptation: Omit<PlatformAdaptation, 'status'>
+    ): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              contentItems: c.contentItems.map(item => {
+                if (item.id === contentId) {
+                  return {
+                    ...item,
+                    adaptations: [
+                      ...item.adaptations,
+                      { ...adaptation, status: 'pending' as const },
+                    ],
+                    updatedAt: new Date().toISOString(),
+                  };
+                }
+                return item;
+              }),
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
-  const updateAdaptation = useCallback((
-    campaignId: string,
-    contentId: string,
-    platformId: string,
-    updates: Partial<PlatformAdaptation>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          contentItems: c.contentItems.map(item => {
-            if (item.id === contentId) {
-              return {
-                ...item,
-                adaptations: item.adaptations.map(a =>
-                  a.platformId === platformId ? { ...a, ...updates } : a
-                ),
-                updatedAt: new Date().toISOString(),
-              };
-            }
-            return item;
-          }),
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const updateAdaptation = useCallback(
+    (
+      campaignId: string,
+      contentId: string,
+      platformId: string,
+      updates: Partial<PlatformAdaptation>
+    ): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              contentItems: c.contentItems.map(item => {
+                if (item.id === contentId) {
+                  return {
+                    ...item,
+                    adaptations: item.adaptations.map(a =>
+                      a.platformId === platformId ? { ...a, ...updates } : a
+                    ),
+                    updatedAt: new Date().toISOString(),
+                  };
+                }
+                return item;
+              }),
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   // Scheduling
-  const schedulePost = useCallback((
-    campaignId: string,
-    post: Omit<ScheduledPost, 'id' | 'status'>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const newPost: ScheduledPost = {
-          ...post,
-          id: `post_${Date.now()}`,
-          status: 'scheduled',
-        };
-        updated = {
-          ...c,
-          schedule: {
-            ...c.schedule,
-            posts: [...c.schedule.posts, newPost],
-          },
-          status: c.status === 'draft' ? 'scheduled' : c.status,
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const schedulePost = useCallback(
+    (campaignId: string, post: Omit<ScheduledPost, 'id' | 'status'>): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            const newPost: ScheduledPost = {
+              ...post,
+              id: `post_${Date.now()}`,
+              status: 'scheduled',
+            };
+            updated = {
+              ...c,
+              schedule: {
+                ...c.schedule,
+                posts: [...c.schedule.posts, newPost],
+              },
+              status: c.status === 'draft' ? 'scheduled' : c.status,
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
-  const reschedulePost = useCallback((
-    campaignId: string,
-    postId: string,
-    newTime: string
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          schedule: {
-            ...c.schedule,
-            posts: c.schedule.posts.map(p =>
-              p.id === postId ? { ...p, scheduledTime: newTime } : p
-            ),
-          },
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+  const reschedulePost = useCallback(
+    (campaignId: string, postId: string, newTime: string): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            updated = {
+              ...c,
+              schedule: {
+                ...c.schedule,
+                posts: c.schedule.posts.map(p =>
+                  p.id === postId ? { ...p, scheduledTime: newTime } : p
+                ),
+              },
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   const cancelScheduledPost = useCallback((campaignId: string, postId: string): Campaign | null => {
     let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        updated = {
-          ...c,
-          schedule: {
-            ...c.schedule,
-            posts: c.schedule.posts.filter(p => p.id !== postId),
-          },
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
+    setCampaigns(prev =>
+      prev.map(c => {
+        if (c.id === campaignId) {
+          updated = {
+            ...c,
+            schedule: {
+              ...c.schedule,
+              posts: c.schedule.posts.filter(p => p.id !== postId),
+            },
+            updatedAt: new Date().toISOString(),
+          };
+          return updated;
+        }
+        return c;
+      })
+    );
     return updated;
   }, []);
 
   // Publishing
-  const markAsPublished = useCallback((
-    campaignId: string,
-    contentId: string,
-    platformId: string,
-    publishedUrl?: string
-  ): Campaign | null => {
-    const now = new Date().toISOString();
-    return updateAdaptation(campaignId, contentId, platformId, {
-      status: 'published',
-      publishedAt: now,
-      publishedUrl,
-    });
-  }, [updateAdaptation]);
+  const markAsPublished = useCallback(
+    (
+      campaignId: string,
+      contentId: string,
+      platformId: string,
+      publishedUrl?: string
+    ): Campaign | null => {
+      const now = new Date().toISOString();
+      return updateAdaptation(campaignId, contentId, platformId, {
+        status: 'published',
+        publishedAt: now,
+        publishedUrl,
+      });
+    },
+    [updateAdaptation]
+  );
 
-  const markAsFailed = useCallback((
-    campaignId: string,
-    contentId: string,
-    platformId: string,
-    error: string
-  ): Campaign | null => {
-    return updateAdaptation(campaignId, contentId, platformId, {
-      status: 'failed',
-      error,
-    });
-  }, [updateAdaptation]);
+  const markAsFailed = useCallback(
+    (campaignId: string, contentId: string, platformId: string, error: string): Campaign | null => {
+      return updateAdaptation(campaignId, contentId, platformId, {
+        status: 'failed',
+        error,
+      });
+    },
+    [updateAdaptation]
+  );
 
   // Metrics
-  const updateMetrics = useCallback((
-    campaignId: string,
-    platformId: string,
-    metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
-  ): Campaign | null => {
-    let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        const platformMetrics = {
-          ...c.metrics.platformMetrics,
-          [platformId]: {
-            ...(c.metrics.platformMetrics[platformId] || {
-              impressions: 0,
-              engagements: 0,
-              clicks: 0,
-              shares: 0,
-              comments: 0,
-            }),
-            ...metrics,
-          },
-        };
+  const updateMetrics = useCallback(
+    (
+      campaignId: string,
+      platformId: string,
+      metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
+    ): Campaign | null => {
+      let updated: Campaign | null = null;
+      setCampaigns(prev =>
+        prev.map(c => {
+          if (c.id === campaignId) {
+            const platformMetrics = {
+              ...c.metrics.platformMetrics,
+              [platformId]: {
+                ...(c.metrics.platformMetrics[platformId] || {
+                  impressions: 0,
+                  engagements: 0,
+                  clicks: 0,
+                  shares: 0,
+                  comments: 0,
+                }),
+                ...metrics,
+              },
+            };
 
-        // Calculate totals
-        const totalEngagement = Object.values(platformMetrics).reduce(
-          (sum, m) => sum + (m.engagements || 0),
-          0
-        );
+            // Calculate totals
+            const totalEngagement = Object.values(platformMetrics).reduce(
+              (sum, m) => sum + (m.engagements || 0),
+              0
+            );
 
-        updated = {
-          ...c,
-          metrics: {
-            ...c.metrics,
-            platformMetrics,
-            totalEngagement,
-          },
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
-    return updated;
-  }, []);
+            updated = {
+              ...c,
+              metrics: {
+                ...c.metrics,
+                platformMetrics,
+                totalEngagement,
+              },
+              updatedAt: new Date().toISOString(),
+            };
+            return updated;
+          }
+          return c;
+        })
+      );
+      return updated;
+    },
+    []
+  );
 
   const recalculateMetrics = useCallback((campaignId: string): Campaign | null => {
     let updated: Campaign | null = null;
-    setCampaigns(prev => prev.map(c => {
-      if (c.id === campaignId) {
-        let totalPosts = 0;
-        let publishedPosts = 0;
-        let scheduledPosts = 0;
-        let failedPosts = 0;
+    setCampaigns(prev =>
+      prev.map(c => {
+        if (c.id === campaignId) {
+          let totalPosts = 0;
+          let publishedPosts = 0;
+          let scheduledPosts = 0;
+          let failedPosts = 0;
 
-        c.contentItems.forEach(item => {
-          item.adaptations.forEach(a => {
-            totalPosts++;
-            if (a.status === 'published') publishedPosts++;
-            if (a.status === 'scheduled') scheduledPosts++;
-            if (a.status === 'failed') failedPosts++;
+          c.contentItems.forEach(item => {
+            item.adaptations.forEach(a => {
+              totalPosts++;
+              if (a.status === 'published') publishedPosts++;
+              if (a.status === 'scheduled') scheduledPosts++;
+              if (a.status === 'failed') failedPosts++;
+            });
           });
-        });
 
-        updated = {
-          ...c,
-          metrics: {
-            ...c.metrics,
-            totalPosts,
-            publishedPosts,
-            scheduledPosts,
-            failedPosts,
-          },
-          updatedAt: new Date().toISOString(),
-        };
-        return updated;
-      }
-      return c;
-    }));
+          updated = {
+            ...c,
+            metrics: {
+              ...c.metrics,
+              totalPosts,
+              publishedPosts,
+              scheduledPosts,
+              failedPosts,
+            },
+            updatedAt: new Date().toISOString(),
+          };
+          return updated;
+        }
+        return c;
+      })
+    );
     return updated;
   }, []);
 

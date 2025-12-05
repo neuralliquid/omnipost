@@ -4,6 +4,7 @@
  */
 
 import bcrypt from 'bcryptjs';
+import { randomInt } from 'crypto';
 
 /**
  * Configuration for password hashing
@@ -109,7 +110,7 @@ export function validatePassword(password: string): PasswordValidationResult {
     errors.push('Password must contain at least one number');
   }
 
-  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('Password must contain at least one special character');
   }
 
@@ -224,29 +225,29 @@ export function generateSecurePassword(length: number = 16): string {
   const minLength = Math.max(length, currentConfig.minLength);
   const chars: string[] = [];
 
-  // Add required character types
+  // Add required character types using cryptographically secure random
   if (currentConfig.requireUppercase) {
-    chars.push(uppercase[Math.floor(Math.random() * uppercase.length)]);
+    chars.push(uppercase[randomInt(uppercase.length)]);
   }
   if (currentConfig.requireLowercase) {
-    chars.push(lowercase[Math.floor(Math.random() * lowercase.length)]);
+    chars.push(lowercase[randomInt(lowercase.length)]);
   }
   if (currentConfig.requireNumber) {
-    chars.push(numbers[Math.floor(Math.random() * numbers.length)]);
+    chars.push(numbers[randomInt(numbers.length)]);
   }
   if (currentConfig.requireSpecial) {
-    chars.push(special[Math.floor(Math.random() * special.length)]);
+    chars.push(special[randomInt(special.length)]);
   }
 
   // Fill remaining with random characters from all allowed sets
   const allChars = uppercase + lowercase + numbers + (currentConfig.requireSpecial ? special : '');
   while (chars.length < minLength) {
-    chars.push(allChars[Math.floor(Math.random() * allChars.length)]);
+    chars.push(allChars[randomInt(allChars.length)]);
   }
 
-  // Shuffle the array
+  // Shuffle the array using cryptographically secure random
   for (let i = chars.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
+    const j = randomInt(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
 

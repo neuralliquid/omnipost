@@ -41,8 +41,21 @@ function SubmitButton({ children, className }: { children: React.ReactNode; clas
 }
 
 // Progress bar component
-function ProgressBar({ steps, currentStep }: { steps: ReviewConfigStep[]; currentStep: ReviewStep }) {
-  const stepOrder: ReviewStep[] = ['input', 'parsing', 'summarizing', 'generating', 'approving', 'approved'];
+function ProgressBar({
+  steps,
+  currentStep,
+}: {
+  steps: ReviewConfigStep[];
+  currentStep: ReviewStep;
+}) {
+  const stepOrder: ReviewStep[] = [
+    'input',
+    'parsing',
+    'summarizing',
+    'generating',
+    'approving',
+    'approved',
+  ];
   const currentIndex = stepOrder.indexOf(currentStep);
 
   return (
@@ -71,10 +84,22 @@ export function ReviewWorkflow() {
   const [rawInput, setRawInput] = useState('');
 
   // Action states
-  const [parseResult, parseAction] = useActionState<ParseResult | null, FormData>(parseContent, null);
-  const [summaryResult, summaryAction] = useActionState<SummarizeResult | null, FormData>(summarizeContent, null);
-  const [imageResult, imageAction] = useActionState<ImageResult | null, FormData>(generateImage, null);
-  const [approveResult, approveAction] = useActionState<ApproveResult | null, FormData>(approveContent, null);
+  const [parseResult, parseAction] = useActionState<ParseResult | null, FormData>(
+    parseContent,
+    null
+  );
+  const [summaryResult, summaryAction] = useActionState<SummarizeResult | null, FormData>(
+    summarizeContent,
+    null
+  );
+  const [imageResult, imageAction] = useActionState<ImageResult | null, FormData>(
+    generateImage,
+    null
+  );
+  const [approveResult, approveAction] = useActionState<ApproveResult | null, FormData>(
+    approveContent,
+    null
+  );
 
   // Error state - explicitly typed to avoid unknown inference issues
   const error: string | undefined =
@@ -150,7 +175,7 @@ export function ReviewWorkflow() {
             id="rawInput"
             name="rawInput"
             value={rawInput}
-            onChange={(e) => setRawInput(e.target.value)}
+            onChange={e => setRawInput(e.target.value)}
             rows={10}
             className={styles.textArea}
             placeholder="Enter your content here..."
@@ -167,14 +192,16 @@ export function ReviewWorkflow() {
           <h2>Step 2: Review & Summarize</h2>
           <div className={styles.parsedContent}>
             <h3>Parsed Content:</h3>
-            <pre className={styles.preformatted}>
-              {JSON.stringify(parseResult.data, null, 2)}
-            </pre>
+            <pre className={styles.preformatted}>{JSON.stringify(parseResult.data, null, 2)}</pre>
           </div>
           <input
             type="hidden"
             name="content"
-            value={typeof parseResult.data === 'string' ? parseResult.data : JSON.stringify(parseResult.data)}
+            value={
+              typeof parseResult.data === 'string'
+                ? parseResult.data
+                : JSON.stringify(parseResult.data)
+            }
           />
           <div className={styles.buttonGroup}>
             <button type="button" onClick={handleReset} className={styles.secondaryButton}>
@@ -202,7 +229,11 @@ export function ReviewWorkflow() {
             value={`Generate an image for: ${typeof summaryResult.data === 'string' ? summaryResult.data : JSON.stringify(summaryResult.data)}`}
           />
           <div className={styles.buttonGroup}>
-            <button type="button" onClick={() => goBack('summarizing')} className={styles.secondaryButton}>
+            <button
+              type="button"
+              onClick={() => goBack('summarizing')}
+              className={styles.secondaryButton}
+            >
               Back
             </button>
             <SubmitButton>Generate Image</SubmitButton>
@@ -215,7 +246,9 @@ export function ReviewWorkflow() {
           <h2>Step 4: Final Review & Approve</h2>
           <div className={styles.imagePreview}>
             <h3>Generated Image:</h3>
-            {typeof imageResult.data === 'object' && imageResult.data !== null && 'imageUrl' in imageResult.data ? (
+            {typeof imageResult.data === 'object' &&
+            imageResult.data !== null &&
+            'imageUrl' in imageResult.data ? (
               <img
                 src={(imageResult.data as { imageUrl: string }).imageUrl}
                 alt="Generated content"
@@ -230,11 +263,19 @@ export function ReviewWorkflow() {
           <input
             type="hidden"
             name="summary"
-            value={typeof summaryResult?.data === 'string' ? summaryResult.data : JSON.stringify(summaryResult?.data)}
+            value={
+              typeof summaryResult?.data === 'string'
+                ? summaryResult.data
+                : JSON.stringify(summaryResult?.data)
+            }
           />
           <input type="hidden" name="image" value={JSON.stringify(imageResult.data)} />
           <div className={styles.buttonGroup}>
-            <button type="button" onClick={() => goBack('generating')} className={styles.secondaryButton}>
+            <button
+              type="button"
+              onClick={() => goBack('generating')}
+              className={styles.secondaryButton}
+            >
               Back
             </button>
             <SubmitButton className={styles.approveButton}>Approve & Publish</SubmitButton>

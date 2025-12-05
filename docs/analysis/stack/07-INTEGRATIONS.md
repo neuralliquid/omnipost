@@ -57,14 +57,15 @@ The Content Creation Platform integrates with multiple external services for AI 
 
 ### Hugging Face
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | AI image generation |
-| **API** | Inference API |
-| **Model** | Stable Diffusion |
-| **Rate Limit** | 10 requests/minute |
+| Aspect         | Details             |
+| -------------- | ------------------- |
+| **Purpose**    | AI image generation |
+| **API**        | Inference API       |
+| **Model**      | Stable Diffusion    |
+| **Rate Limit** | 10 requests/minute  |
 
 **Configuration:**
+
 ```bash
 HUGGING_FACE_API_KEY=<your-api-key>
 ```
@@ -83,7 +84,7 @@ export class HuggingFaceClient {
     const response = await fetch(`${this.baseUrl}/${this.model}`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${this.apiKey}`,
+        Authorization: `Bearer ${this.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ inputs: context }),
@@ -113,27 +114,30 @@ export class HuggingFaceClient {
 ```
 
 **Feature Flag:**
+
 ```typescript
-featureFlags.imageGeneration // boolean
+featureFlags.imageGeneration; // boolean
 ```
 
 **API Endpoint:**
+
 - `POST /api/images` - Generate image
 - `PUT /api/images` - Approve/reject/regenerate
 
 ### Text Processing (Configurable)
 
-| Provider | Status | Feature Flag |
-|----------|--------|--------------|
-| OpenAI | Available | `textParser.implementation: 'openai'` |
-| DeepSeek | Available | `textParser.implementation: 'deepseek'` |
-| Azure OpenAI | Available | `textParser.implementation: 'azure'` |
+| Provider     | Status    | Feature Flag                            |
+| ------------ | --------- | --------------------------------------- |
+| OpenAI       | Available | `textParser.implementation: 'openai'`   |
+| DeepSeek     | Available | `textParser.implementation: 'deepseek'` |
+| Azure OpenAI | Available | `textParser.implementation: 'azure'`    |
 
 **Feature Flag Configuration:**
+
 ```typescript
 featureFlags.textParser = {
   enabled: true,
-  implementation: 'openai' | 'deepseek' | 'azure'
+  implementation: 'openai' | 'deepseek' | 'azure',
 };
 ```
 
@@ -143,13 +147,14 @@ featureFlags.textParser = {
 
 ### Airtable
 
-| Aspect | Details |
-|--------|---------|
-| **Purpose** | Content CMS backend |
-| **Operations** | CRUD for content records |
-| **Tracking** | Publishing history, engagement |
+| Aspect         | Details                        |
+| -------------- | ------------------------------ |
+| **Purpose**    | Content CMS backend            |
+| **Operations** | CRUD for content records       |
+| **Tracking**   | Publishing history, engagement |
 
 **Configuration:**
+
 ```bash
 AIRTABLE_API_KEY=<your-api-key>
 AIRTABLE_BASE_ID=<your-base-id>
@@ -176,11 +181,13 @@ export class AirtableClient {
 ```
 
 **Feature Flag:**
+
 ```typescript
-featureFlags.airtableIntegration // boolean
+featureFlags.airtableIntegration; // boolean
 ```
 
 **API Endpoints:**
+
 - `POST /api/content/store` - Store content
 - `POST /api/content/track` - Track published content
 - `GET /api/engagement-metrics` - Get metrics
@@ -191,18 +198,20 @@ featureFlags.airtableIntegration // boolean
 
 ### Slack
 
-| Aspect | Details |
-|--------|---------|
+| Aspect      | Details                   |
+| ----------- | ------------------------- |
 | **Package** | `@slack/web-api` (^7.9.1) |
-| **Purpose** | Team notifications |
-| **Method** | Bot token API |
+| **Purpose** | Team notifications        |
+| **Method**  | Bot token API             |
 
 **Configuration:**
+
 ```bash
 SLACK_TOKEN=<your-bot-token>
 ```
 
 **Usage:**
+
 ```typescript
 import { WebClient } from '@slack/web-api';
 
@@ -216,13 +225,14 @@ await slack.chat.postMessage({
 
 ### Twilio (SMS)
 
-| Aspect | Details |
-|--------|---------|
+| Aspect      | Details           |
+| ----------- | ----------------- |
 | **Package** | `twilio` (^5.5.2) |
 | **Purpose** | SMS notifications |
-| **Method** | REST API |
+| **Method**  | REST API          |
 
 **Configuration:**
+
 ```bash
 TWILIO_ACCOUNT_SID=<your-account-sid>
 TWILIO_AUTH_TOKEN=<your-auth-token>
@@ -230,13 +240,11 @@ TWILIO_PHONE_NUMBER=<your-phone-number>
 ```
 
 **Usage:**
+
 ```typescript
 import twilio from 'twilio';
 
-const client = twilio(
-  process.env.TWILIO_ACCOUNT_SID,
-  process.env.TWILIO_AUTH_TOKEN
-);
+const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 
 await client.messages.create({
   body: 'Your content has been published!',
@@ -247,13 +255,14 @@ await client.messages.create({
 
 ### Nodemailer (Email)
 
-| Aspect | Details |
-|--------|---------|
-| **Package** | `nodemailer` (^7.0.7) |
-| **Purpose** | Email notifications |
-| **Provider** | Gmail (OAuth2) |
+| Aspect       | Details               |
+| ------------ | --------------------- |
+| **Package**  | `nodemailer` (^7.0.7) |
+| **Purpose**  | Email notifications   |
+| **Provider** | Gmail (OAuth2)        |
 
 **Configuration:**
+
 ```bash
 EMAIL_USER=<your-email>
 GMAIL_CLIENT_ID=<client-id>
@@ -262,6 +271,7 @@ GMAIL_REFRESH_TOKEN=<refresh-token>
 ```
 
 **Usage:**
+
 ```typescript
 import nodemailer from 'nodemailer';
 
@@ -289,6 +299,7 @@ await transporter.sendMail({
 **Endpoint:** `POST /api/notifications`
 
 **Request:**
+
 ```typescript
 interface NotificationRequest {
   message: string;
@@ -298,8 +309,9 @@ interface NotificationRequest {
 ```
 
 **Feature Flag:**
+
 ```typescript
-featureFlags.notificationSystem // boolean
+featureFlags.notificationSystem; // boolean
 ```
 
 ---
@@ -369,9 +381,10 @@ TWITTER_API_KEY=<your-api-key>
 - `GET /api/platforms/[id]/capabilities` - Get platform capabilities
 
 **Feature Flags:**
+
 ```typescript
-featureFlags.platformConnectors // boolean
-featureFlags.multiPlatformPublishing // boolean
+featureFlags.platformConnectors; // boolean
+featureFlags.multiPlatformPublishing; // boolean
 ```
 
 ---
@@ -380,14 +393,14 @@ featureFlags.multiPlatformPublishing // boolean
 
 ### Integration Feature Flags
 
-| Flag | Controls |
-|------|----------|
-| `imageGeneration` | Hugging Face image API |
-| `textParser` | Text processing (with implementation) |
-| `airtableIntegration` | Airtable storage |
-| `notificationSystem` | All notification channels |
-| `platformConnectors` | Social platform APIs |
-| `multiPlatformPublishing` | Multi-platform posting |
+| Flag                      | Controls                              |
+| ------------------------- | ------------------------------------- |
+| `imageGeneration`         | Hugging Face image API                |
+| `textParser`              | Text processing (with implementation) |
+| `airtableIntegration`     | Airtable storage                      |
+| `notificationSystem`      | All notification channels             |
+| `platformConnectors`      | Social platform APIs                  |
+| `multiPlatformPublishing` | Multi-platform posting                |
 
 ### Runtime Checking
 
@@ -453,13 +466,13 @@ async function withRetry<T>(
 
 ### External Service Limits
 
-| Service | Limit | Implementation |
-|---------|-------|----------------|
+| Service      | Limit         | Implementation    |
+| ------------ | ------------- | ----------------- |
 | Hugging Face | API-dependent | 10 req/min preset |
-| Airtable | 5 req/sec | Queuing |
-| Slack | Varies | Token bucket |
-| Twilio | Account-based | Per-account |
-| Gmail | 500/day free | Batch recommended |
+| Airtable     | 5 req/sec     | Queuing           |
+| Slack        | Varies        | Token bucket      |
+| Twilio       | Account-based | Per-account       |
+| Gmail        | 500/day free  | Batch recommended |
 
 ### Internal Rate Limiting
 
@@ -480,12 +493,15 @@ export const POST = withRateLimit(
 
 ```typescript
 // Console logging for integrations
-console.log('[AUDIT]', JSON.stringify({
-  action: 'GENERATE_IMAGE',
-  user: userId,
-  timestamp: new Date().toISOString(),
-  body: { contextLength: context.length },
-}));
+console.log(
+  '[AUDIT]',
+  JSON.stringify({
+    action: 'GENERATE_IMAGE',
+    user: userId,
+    timestamp: new Date().toISOString(),
+    body: { contextLength: context.length },
+  })
+);
 ```
 
 ### Recommended Additions
@@ -501,10 +517,10 @@ console.log('[AUDIT]', JSON.stringify({
 
 ### API Key Storage
 
-| Current | Recommended |
-|---------|-------------|
-| Environment variables | Azure Key Vault |
-| GitHub Secrets (CI) | Managed identities |
+| Current               | Recommended        |
+| --------------------- | ------------------ |
+| Environment variables | Azure Key Vault    |
+| GitHub Secrets (CI)   | Managed identities |
 
 ### Data in Transit
 
@@ -522,46 +538,49 @@ console.log('[AUDIT]', JSON.stringify({
 
 ## Dependency Versions
 
-| Package | Version | Purpose |
-|---------|---------|---------|
-| `@slack/web-api` | ^7.9.1 | Slack integration |
-| `twilio` | ^5.5.2 | SMS notifications |
-| `nodemailer` | ^7.0.7 | Email notifications |
-| `axios` | ^1.9.0 | HTTP client |
+| Package          | Version | Purpose             |
+| ---------------- | ------- | ------------------- |
+| `@slack/web-api` | ^7.9.1  | Slack integration   |
+| `twilio`         | ^5.5.2  | SMS notifications   |
+| `nodemailer`     | ^7.0.7  | Email notifications |
+| `axios`          | ^1.9.0  | HTTP client         |
 
 ---
 
 ## Best Practices Compliance
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| Feature flag control | ✅ | All integrations flagged |
-| Error handling | ✅ | Try-catch with logging |
-| Rate limiting | ✅ | AI_SERVICE preset |
-| Secrets in env vars | ✅ | All API keys |
-| Retry logic | ⚠️ | Basic implementation |
-| Health checks | ❌ | Not implemented |
-| Cost monitoring | ❌ | Not implemented |
+| Practice             | Status | Notes                    |
+| -------------------- | ------ | ------------------------ |
+| Feature flag control | ✅     | All integrations flagged |
+| Error handling       | ✅     | Try-catch with logging   |
+| Rate limiting        | ✅     | AI_SERVICE preset        |
+| Secrets in env vars  | ✅     | All API keys             |
+| Retry logic          | ⚠️     | Basic implementation     |
+| Health checks        | ❌     | Not implemented          |
+| Cost monitoring      | ❌     | Not implemented          |
 
 ---
 
 ## Recommendations
 
 ### Short-term
+
 1. Add health check endpoints for external services
 2. Implement proper retry with exponential backoff
 3. Add response time logging
 
 ### Medium-term
+
 1. Move secrets to Azure Key Vault
 2. Add cost tracking for AI services
 3. Implement circuit breaker pattern
 
 ### Long-term
+
 1. Add service mesh for external calls
 2. Implement comprehensive monitoring
 3. Consider caching layer for repeated requests
 
 ---
 
-*This document details the external integrations for the Content Creation Platform.*
+_This document details the external integrations for the Content Creation Platform._

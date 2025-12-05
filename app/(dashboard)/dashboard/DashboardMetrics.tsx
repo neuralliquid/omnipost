@@ -73,7 +73,7 @@ export function DashboardMetrics({ initialMetrics }: DashboardMetricsProps) {
                 </tr>
               </thead>
               <tbody>
-                {metrics.map((metric) => (
+                {metrics.map(metric => (
                   <tr key={metric.platform}>
                     <td>{metric.platform}</td>
                     <td>{metric.value}</td>

@@ -16,14 +16,15 @@ The Content Creation Platform frontend is built on a modern React foundation usi
 
 ### Next.js 14+
 
-| Aspect | Details |
-|--------|---------|
-| **Version** | Latest (14+) |
-| **Router** | Hybrid: App Router (API) + Pages Router (UI) |
-| **Rendering** | SSR/SSG capable, currently client-heavy |
-| **Configuration** | `next.config.ts` with TypeScript |
+| Aspect            | Details                                      |
+| ----------------- | -------------------------------------------- |
+| **Version**       | Latest (14+)                                 |
+| **Router**        | Hybrid: App Router (API) + Pages Router (UI) |
+| **Rendering**     | SSR/SSG capable, currently client-heavy      |
+| **Configuration** | `next.config.ts` with TypeScript             |
 
 **Key Features Used:**
+
 - App Router for API routes (`/app/api/*/route.ts`)
 - Pages Router for page components (`/pages/*.tsx`)
 - Middleware for authentication (`middleware.ts`)
@@ -32,6 +33,7 @@ The Content Creation Platform frontend is built on a modern React foundation usi
 - React Strict Mode enabled
 
 **Configuration Highlights:**
+
 ```typescript
 // next.config.ts
 const nextConfig: NextConfig = {
@@ -44,14 +46,15 @@ const nextConfig: NextConfig = {
 
 ### React 18+
 
-| Aspect | Details |
-|--------|---------|
-| **Version** | Latest (18+) |
-| **Components** | 100% Function Components |
-| **Hooks** | useState, useEffect, custom hooks |
-| **State** | Local state + Context API |
+| Aspect         | Details                           |
+| -------------- | --------------------------------- |
+| **Version**    | Latest (18+)                      |
+| **Components** | 100% Function Components          |
+| **Hooks**      | useState, useEffect, custom hooks |
+| **State**      | Local state + Context API         |
 
 **Patterns Used:**
+
 - Function components exclusively
 - Custom hooks for business logic encapsulation
 - Error boundaries for graceful error handling
@@ -67,14 +70,15 @@ const nextConfig: NextConfig = {
 
 ### TypeScript 5.3+
 
-| Aspect | Details |
-|--------|---------|
-| **Version** | ^5.3.3 |
+| Aspect          | Details |
+| --------------- | ------- |
+| **Version**     | ^5.3.3  |
 | **Strict Mode** | Enabled |
-| **Target** | ES2015 |
-| **Module** | ESNext |
+| **Target**      | ES2015  |
+| **Module**      | ESNext  |
 
 **Strict Mode Settings:**
+
 ```json
 {
   "compilerOptions": {
@@ -88,6 +92,7 @@ const nextConfig: NextConfig = {
 ```
 
 **Path Aliases:**
+
 ```json
 {
   "@/*": ["./*"],
@@ -184,6 +189,7 @@ components/
 ### Component Patterns
 
 **Standard Component Structure:**
+
 ```typescript
 // components/feature/FeatureComponent.tsx
 import { useState } from 'react';
@@ -213,11 +219,11 @@ export function FeatureComponent({ data, onAction }: Props) {
 
 ### Approach
 
-| Method | Usage |
-|--------|-------|
-| **CSS Modules** | Component-scoped styles |
-| **Global CSS** | Application-wide styles |
-| **Inline Styles** | Dynamic styling |
+| Method            | Usage                   |
+| ----------------- | ----------------------- |
+| **CSS Modules**   | Component-scoped styles |
+| **Global CSS**    | Application-wide styles |
+| **Inline Styles** | Dynamic styling         |
 
 ### File Structure
 
@@ -232,18 +238,22 @@ styles/
 ## State Management
 
 ### Local State
+
 - `useState` for component-level state
 - `useReducer` for complex state logic
 
 ### Server State
+
 - Custom hooks with Axios for API calls
 - Manual loading/error state management
 
 ### Global State
+
 - Feature flags via custom module
 - Authentication state via Context (implicit)
 
 ### URL State
+
 - Next.js router for navigation
 - Query parameters for filters
 
@@ -277,6 +287,7 @@ export function useReviewProcess() {
 ```
 
 ### HTTP Client
+
 - **Axios** for all API requests
 - Centralized API client in `/lib/api-client.ts`
 
@@ -285,9 +296,11 @@ export function useReviewProcess() {
 ## UI Libraries
 
 ### Markdown Rendering
+
 - **react-markdown** (^10.1.0) for content display
 
 ### No UI Framework
+
 - Custom CSS styling
 - No Tailwind, Material UI, or similar
 
@@ -315,6 +328,7 @@ pages/
 ## Type Definitions
 
 ### Location
+
 - `/types/` directory for shared types
 - Inline interfaces for component props
 
@@ -362,6 +376,7 @@ npm run format       # Prettier format
 ```
 
 ### Development Experience
+
 - Hot Module Replacement (HMR)
 - TypeScript error overlay
 - ESLint integration
@@ -371,35 +386,38 @@ npm run format       # Prettier format
 
 ## Best Practices Compliance
 
-| Practice | Status | Notes |
-|----------|--------|-------|
-| Function components | ✅ | 100% compliance |
-| TypeScript strict mode | ✅ | Enabled |
-| React Strict Mode | ✅ | Enabled |
-| Custom hooks | ✅ | Business logic extracted |
-| Error boundaries | ✅ | ErrorBoundary component |
-| Server Components | ❌ | Pages Router doesn't support |
-| App Router migration | 🔄 | In progress (API only) |
+| Practice               | Status | Notes                        |
+| ---------------------- | ------ | ---------------------------- |
+| Function components    | ✅     | 100% compliance              |
+| TypeScript strict mode | ✅     | Enabled                      |
+| React Strict Mode      | ✅     | Enabled                      |
+| Custom hooks           | ✅     | Business logic extracted     |
+| Error boundaries       | ✅     | ErrorBoundary component      |
+| Server Components      | ❌     | Pages Router doesn't support |
+| App Router migration   | 🔄     | In progress (API only)       |
 
 ---
 
 ## Recommendations
 
 ### Short-term
+
 1. Complete App Router migration for pages
 2. Add React.memo() to expensive components
 3. Implement loading.tsx and error.tsx boundaries
 
 ### Medium-term
+
 1. Adopt Server Components where beneficial
 2. Add SWR or React Query for server state
 3. Consider Tailwind CSS for consistent styling
 
 ### Long-term
+
 1. Full App Router adoption
 2. Streaming SSR implementation
 3. Component library extraction
 
 ---
 
-*This document details the frontend technology stack for the Content Creation Platform.*
+_This document details the frontend technology stack for the Content Creation Platform._

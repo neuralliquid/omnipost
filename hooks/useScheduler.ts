@@ -4,12 +4,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import {
-  ScheduledJob,
-  JobStatus,
-  CreateJobInput,
-  SchedulerStats,
-} from '@/lib/scheduler/types';
+import { ScheduledJob, JobStatus, CreateJobInput, SchedulerStats } from '@/lib/scheduler/types';
 
 interface UseSchedulerReturn {
   // State
@@ -86,121 +81,130 @@ export function useScheduler(): UseSchedulerReturn {
   }, [refreshJobs, refreshStats]);
 
   // Schedule a new job
-  const scheduleJob = useCallback(async (input: CreateJobInput): Promise<ScheduledJob | null> => {
-    setError(null);
+  const scheduleJob = useCallback(
+    async (input: CreateJobInput): Promise<ScheduledJob | null> => {
+      setError(null);
 
-    try {
-      const response = await fetch('/api/scheduler', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(input),
-      });
+      try {
+        const response = await fetch('/api/scheduler', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(input),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to schedule job');
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to schedule job');
+        }
+
+        // Refresh jobs list
+        await refreshJobs();
+
+        return data.job;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to schedule job';
+        setError(message);
+        console.error('Error scheduling job:', err);
+        return null;
       }
-
-      // Refresh jobs list
-      await refreshJobs();
-
-      return data.job;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to schedule job';
-      setError(message);
-      console.error('Error scheduling job:', err);
-      return null;
-    }
-  }, [refreshJobs]);
+    },
+    [refreshJobs]
+  );
 
   // Cancel a job
-  const cancelJob = useCallback(async (jobId: string): Promise<boolean> => {
-    setError(null);
+  const cancelJob = useCallback(
+    async (jobId: string): Promise<boolean> => {
+      setError(null);
 
-    try {
-      const response = await fetch(`/api/scheduler/${jobId}`, {
-        method: 'DELETE',
-      });
+      try {
+        const response = await fetch(`/api/scheduler/${jobId}`, {
+          method: 'DELETE',
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to cancel job');
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to cancel job');
+        }
+
+        // Refresh jobs list
+        await refreshJobs();
+
+        return true;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to cancel job';
+        setError(message);
+        console.error('Error cancelling job:', err);
+        return false;
       }
-
-      // Refresh jobs list
-      await refreshJobs();
-
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to cancel job';
-      setError(message);
-      console.error('Error cancelling job:', err);
-      return false;
-    }
-  }, [refreshJobs]);
+    },
+    [refreshJobs]
+  );
 
   // Retry a failed job
-  const retryJob = useCallback(async (jobId: string): Promise<ScheduledJob | null> => {
-    setError(null);
+  const retryJob = useCallback(
+    async (jobId: string): Promise<ScheduledJob | null> => {
+      setError(null);
 
-    try {
-      const response = await fetch(`/api/scheduler/${jobId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'retry' }),
-      });
+      try {
+        const response = await fetch(`/api/scheduler/${jobId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'retry' }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to retry job');
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to retry job');
+        }
+
+        // Refresh jobs list
+        await refreshJobs();
+
+        return data.job;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to retry job';
+        setError(message);
+        console.error('Error retrying job:', err);
+        return null;
       }
-
-      // Refresh jobs list
-      await refreshJobs();
-
-      return data.job;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to retry job';
-      setError(message);
-      console.error('Error retrying job:', err);
-      return null;
-    }
-  }, [refreshJobs]);
+    },
+    [refreshJobs]
+  );
 
   // Reschedule a job
-  const rescheduleJob = useCallback(async (
-    jobId: string,
-    newTime: string
-  ): Promise<ScheduledJob | null> => {
-    setError(null);
+  const rescheduleJob = useCallback(
+    async (jobId: string, newTime: string): Promise<ScheduledJob | null> => {
+      setError(null);
 
-    try {
-      const response = await fetch(`/api/scheduler/${jobId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ scheduledTime: newTime }),
-      });
+      try {
+        const response = await fetch(`/api/scheduler/${jobId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ scheduledTime: newTime }),
+        });
 
-      const data = await response.json();
+        const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to reschedule job');
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to reschedule job');
+        }
+
+        // Refresh jobs list
+        await refreshJobs();
+
+        return data.job;
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to reschedule job';
+        setError(message);
+        console.error('Error rescheduling job:', err);
+        return null;
       }
-
-      // Refresh jobs list
-      await refreshJobs();
-
-      return data.job;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to reschedule job';
-      setError(message);
-      console.error('Error rescheduling job:', err);
-      return null;
-    }
-  }, [refreshJobs]);
+    },
+    [refreshJobs]
+  );
 
   // Get jobs by campaign
   const getJobsByCampaign = useCallback(async (campaignId: string): Promise<ScheduledJob[]> => {

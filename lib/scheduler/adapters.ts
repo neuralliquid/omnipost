@@ -3,12 +3,7 @@
  * Platform-specific implementations for content publishing
  */
 
-import {
-  PlatformAdapter,
-  PlatformPublishResult,
-  ValidationResult,
-  ScheduledJob,
-} from './types';
+import { PlatformAdapter, PlatformPublishResult, ValidationResult, ScheduledJob } from './types';
 import { getPlatformConfig } from '@/lib/config/platforms';
 
 /**
@@ -30,7 +25,9 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
     }
 
     if (content.text && content.text.length > maxLength) {
-      errors.push(`Content exceeds maximum length of ${maxLength} characters (${content.text.length})`);
+      errors.push(
+        `Content exceeds maximum length of ${maxLength} characters (${content.text.length})`
+      );
     }
 
     if (content.hashtags && content.hashtags.length > 10) {
@@ -46,15 +43,17 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
 
   /**
    * Simulate API call for development
+   * NOTE: Uses Math.random() intentionally - only for development simulation
+   * and mock IDs, not security-sensitive operations
    */
   protected async simulatePublish(
     content: ScheduledJob['content'],
     platformName: string
   ): Promise<PlatformPublishResult> {
-    // Simulate network delay
+    // Simulate network delay (not security-sensitive)
     await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
 
-    // Generate mock response
+    // Generate mock response ID (development only, not security-sensitive)
     const postId = `${this.platformId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     return {
@@ -106,7 +105,7 @@ export class TwitterAdapter extends BasePlatformAdapter {
     const response = await fetch(config.apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -138,7 +137,7 @@ export class TwitterAdapter extends BasePlatformAdapter {
       const response = await fetch(config.apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${config.apiKey}`,
+          Authorization: `Bearer ${config.apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -169,7 +168,7 @@ export class TwitterAdapter extends BasePlatformAdapter {
 
     // Add hashtags if space allows
     if (content.hashtags && content.hashtags.length > 0) {
-      const hashtags = content.hashtags.map(h => h.startsWith('#') ? h : `#${h}`).join(' ');
+      const hashtags = content.hashtags.map(h => (h.startsWith('#') ? h : `#${h}`)).join(' ');
       if (text.length + 1 + hashtags.length <= this.getMaxLength()) {
         text = `${text}\n\n${hashtags}`;
       }
@@ -227,7 +226,7 @@ export class LinkedInAdapter extends BasePlatformAdapter {
     const response = await fetch(config.apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -256,7 +255,7 @@ export class LinkedInAdapter extends BasePlatformAdapter {
     if (content.hashtags && content.hashtags.length > 0) {
       const hashtags = content.hashtags
         .slice(0, 5)
-        .map(h => h.startsWith('#') ? h : `#${h}`)
+        .map(h => (h.startsWith('#') ? h : `#${h}`))
         .join(' ');
       text = `${text}\n\n${hashtags}`;
     }
@@ -296,7 +295,7 @@ export class FacebookAdapter extends BasePlatformAdapter {
     const response = await fetch(config.apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -354,7 +353,7 @@ export class InstagramAdapter extends BasePlatformAdapter {
     const response = await fetch(config.apiUrl, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -381,9 +380,7 @@ export class InstagramAdapter extends BasePlatformAdapter {
 
     // Instagram uses more hashtags
     if (content.hashtags && content.hashtags.length > 0) {
-      const hashtags = content.hashtags
-        .map(h => h.startsWith('#') ? h : `#${h}`)
-        .join(' ');
+      const hashtags = content.hashtags.map(h => (h.startsWith('#') ? h : `#${h}`)).join(' ');
       text = `${text}\n\n.\n.\n.\n${hashtags}`;
     }
 

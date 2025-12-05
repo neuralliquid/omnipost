@@ -14,12 +14,12 @@ Performance assessment covers bundle optimization, rendering efficiency, API res
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| Bundle optimization | 25% | 50% | ⚠️ Basic |
-| Rendering performance | 25% | 55% | ⚠️ Basic |
-| API performance | 25% | 60% | ⚠️ Adequate |
-| Monitoring & measurement | 25% | 20% | ❌ Minimal |
+| Criterion                | Weight | Score | Status      |
+| ------------------------ | ------ | ----- | ----------- |
+| Bundle optimization      | 25%    | 50%   | ⚠️ Basic    |
+| Rendering performance    | 25%    | 55%   | ⚠️ Basic    |
+| API performance          | 25%    | 60%   | ⚠️ Adequate |
+| Monitoring & measurement | 25%    | 20%   | ❌ Minimal  |
 
 **Overall: 46% (Needs Work)**
 
@@ -31,35 +31,35 @@ Performance assessment covers bundle optimization, rendering efficiency, API res
 
 **Estimated bundle sizes (no analyzer configured):**
 
-| Bundle | Est. Size | Status |
-|--------|-----------|--------|
-| First Load JS | ~150-200KB | ⚠️ Unknown |
-| Core (Next/React) | ~100KB gzip | Expected |
-| Dependencies | ~50-100KB gzip | Varies |
-| Application code | ~30-50KB gzip | Estimated |
+| Bundle            | Est. Size      | Status     |
+| ----------------- | -------------- | ---------- |
+| First Load JS     | ~150-200KB     | ⚠️ Unknown |
+| Core (Next/React) | ~100KB gzip    | Expected   |
+| Dependencies      | ~50-100KB gzip | Varies     |
+| Application code  | ~30-50KB gzip  | Estimated  |
 
 **Issue:** No bundle analyzer configured
 
 ### Rendering Strategy
 
-| Page | Current | Optimal |
-|------|---------|---------|
-| Landing | CSR (Pages Router) | SSG |
-| Dashboard | CSR | SSR/ISR |
-| Content pages | CSR | SSG/ISR |
-| API routes | Server | Server ✅ |
+| Page          | Current            | Optimal   |
+| ------------- | ------------------ | --------- |
+| Landing       | CSR (Pages Router) | SSG       |
+| Dashboard     | CSR                | SSR/ISR   |
+| Content pages | CSR                | SSG/ISR   |
+| API routes    | Server             | Server ✅ |
 
 **Issue:** Pages Router doesn't leverage Server Components
 
 ### API Response Times
 
-| Endpoint | Est. Time | Notes |
-|----------|-----------|-------|
-| Auth | <100ms | Local validation |
-| Platforms | <100ms | Static data |
-| Feature flags | <50ms | In-memory |
-| Image generation | 5-30s | External API |
-| Parse/Summarize | 1-10s | External API |
+| Endpoint         | Est. Time | Notes            |
+| ---------------- | --------- | ---------------- |
+| Auth             | <100ms    | Local validation |
+| Platforms        | <100ms    | Static data      |
+| Feature flags    | <50ms     | In-memory        |
+| Image generation | 5-30s     | External API     |
+| Parse/Summarize  | 1-10s     | External API     |
 
 ---
 
@@ -97,6 +97,7 @@ siteConfig: {
 ### 1. No Bundle Analysis
 
 **Missing:**
+
 ```javascript
 // next.config.js - NOT CONFIGURED
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
@@ -105,6 +106,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 ```
 
 **Impact:** Cannot identify:
+
 - Large dependencies
 - Duplicate code
 - Unused imports
@@ -112,11 +114,13 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 ### 2. No Performance Monitoring
 
 **Missing:**
+
 - Core Web Vitals tracking
 - Real User Monitoring (RUM)
 - Synthetic monitoring
 
 **Should implement:**
+
 ```typescript
 // pages/_app.tsx
 export function reportWebVitals(metric: NextWebVitalsMetric) {
@@ -134,6 +138,7 @@ export function reportWebVitals(metric: NextWebVitalsMetric) {
 **Current:** No client-side caching
 
 **Should implement:**
+
 ```typescript
 // SWR with caching
 const { data } = useSWR('/api/platforms', fetcher, {
@@ -146,6 +151,7 @@ const { data } = useSWR('/api/platforms', fetcher, {
 ### 4. No Image Optimization Usage
 
 **Configured but underutilized:**
+
 ```typescript
 // next.config.ts
 images: {
@@ -163,12 +169,12 @@ import Image from 'next/image';
 
 ### Current State: Unknown
 
-| Metric | Target | Current | Status |
-|--------|--------|---------|--------|
-| LCP (Largest Contentful Paint) | <2.5s | Unknown | ⚠️ |
-| FID (First Input Delay) | <100ms | Unknown | ⚠️ |
-| CLS (Cumulative Layout Shift) | <0.1 | Unknown | ⚠️ |
-| TTFB (Time to First Byte) | <800ms | Unknown | ⚠️ |
+| Metric                         | Target | Current | Status |
+| ------------------------------ | ------ | ------- | ------ |
+| LCP (Largest Contentful Paint) | <2.5s  | Unknown | ⚠️     |
+| FID (First Input Delay)        | <100ms | Unknown | ⚠️     |
+| CLS (Cumulative Layout Shift)  | <0.1   | Unknown | ⚠️     |
+| TTFB (Time to First Byte)      | <800ms | Unknown | ⚠️     |
 
 ### Measurement Required
 
@@ -251,10 +257,10 @@ import Image from 'next/image';
   width={1200}
   height={600}
   alt="Hero image"
-  priority  // For above-fold images
+  priority // For above-fold images
   placeholder="blur"
   blurDataURL={blurDataUrl}
-/>
+/>;
 ```
 
 ---
@@ -262,6 +268,7 @@ import Image from 'next/image';
 ## Recommended Tooling
 
 ### Bundle Analysis
+
 ```bash
 npm install @next/bundle-analyzer
 # Add to next.config.js and run:
@@ -269,11 +276,13 @@ ANALYZE=true npm run build
 ```
 
 ### Performance Monitoring
+
 - **Vercel Analytics** (if using Vercel)
 - **Google Analytics 4** (Web Vitals)
 - **Application Insights** (Azure)
 
 ### Lighthouse CI
+
 ```yaml
 # .github/workflows/lighthouse.yml
 - name: Lighthouse CI
@@ -291,16 +300,17 @@ ANALYZE=true npm run build
 
 ### Recommended Targets
 
-| Metric | Target | Action |
-|--------|--------|--------|
-| First Load JS | <100KB | Dynamic imports |
-| Total Bundle | <500KB | Tree shaking |
-| LCP | <2.5s | Optimize images |
-| FID | <100ms | Reduce JS execution |
-| CLS | <0.1 | Reserve space for dynamic content |
-| TTFB | <800ms | Edge caching |
+| Metric        | Target | Action                            |
+| ------------- | ------ | --------------------------------- |
+| First Load JS | <100KB | Dynamic imports                   |
+| Total Bundle  | <500KB | Tree shaking                      |
+| LCP           | <2.5s  | Optimize images                   |
+| FID           | <100ms | Reduce JS execution               |
+| CLS           | <0.1   | Reserve space for dynamic content |
+| TTFB          | <800ms | Edge caching                      |
 
 ### Bundle Budget
+
 ```json
 // lighthouse-budget.json
 {
@@ -321,6 +331,7 @@ ANALYZE=true npm run build
 ## Best Practices Checklist
 
 ### Implemented ✅
+
 - [x] Automatic code splitting (Next.js)
 - [x] HTTP/2 enabled
 - [x] Rate limiting for APIs
@@ -328,6 +339,7 @@ ANALYZE=true npm run build
 - [x] Always-on (no cold starts)
 
 ### Not Implemented ❌
+
 - [ ] Bundle analyzer
 - [ ] Core Web Vitals monitoring
 - [ ] Performance budgets
@@ -344,21 +356,25 @@ ANALYZE=true npm run build
 ## Recommendations
 
 ### Immediate
+
 1. Add @next/bundle-analyzer
 2. Implement Web Vitals reporting
 3. Add React.memo to expensive components
 
 ### Short-term
+
 1. Set up Lighthouse CI
 2. Implement SWR for API caching
 3. Use next/image consistently
 
 ### Medium-term
+
 1. Migrate to Server Components
 2. Implement streaming SSR
 3. Add CDN/Edge caching
 
 ### Long-term
+
 1. Performance monitoring dashboard
 2. Automated performance regression testing
 3. Edge runtime for API routes
@@ -367,15 +383,15 @@ ANALYZE=true npm run build
 
 ## Impact Assessment
 
-| Optimization | Effort | Impact |
-|-------------|--------|--------|
-| Bundle analyzer | Low | Medium |
-| React.memo | Low | Medium |
-| SWR caching | Medium | High |
-| Server Components | High | High |
-| CDN caching | Medium | High |
-| Web Vitals monitoring | Low | Medium |
+| Optimization          | Effort | Impact |
+| --------------------- | ------ | ------ |
+| Bundle analyzer       | Low    | Medium |
+| React.memo            | Low    | Medium |
+| SWR caching           | Medium | High   |
+| Server Components     | High   | High   |
+| CDN caching           | Medium | High   |
+| Web Vitals monitoring | Low    | Medium |
 
 ---
 
-*This document assesses performance practices for the Content Creation Platform.*
+_This document assesses performance practices for the Content Creation Platform._

@@ -14,17 +14,17 @@ Security encompasses authentication, authorization, input validation, data prote
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| Authentication | 20% | 85% | ✅ Good |
-| Authorization (RBAC) | 15% | 90% | ✅ Excellent |
-| Input validation | 15% | 95% | ✅ Excellent |
-| XSS prevention | 10% | 95% | ✅ Excellent |
-| Rate limiting | 10% | 90% | ✅ Excellent |
-| Security headers | 10% | 95% | ✅ Excellent |
-| Dependency security | 10% | 90% | ✅ Good |
-| Password handling | 5% | 20% | ❌ Critical gap |
-| Secrets management | 5% | 60% | ⚠️ Needs work |
+| Criterion            | Weight | Score | Status          |
+| -------------------- | ------ | ----- | --------------- |
+| Authentication       | 20%    | 85%   | ✅ Good         |
+| Authorization (RBAC) | 15%    | 90%   | ✅ Excellent    |
+| Input validation     | 15%    | 95%   | ✅ Excellent    |
+| XSS prevention       | 10%    | 95%   | ✅ Excellent    |
+| Rate limiting        | 10%    | 90%   | ✅ Excellent    |
+| Security headers     | 10%    | 95%   | ✅ Excellent    |
+| Dependency security  | 10%    | 90%   | ✅ Good         |
+| Password handling    | 5%     | 20%   | ❌ Critical gap |
+| Secrets management   | 5%     | 60%   | ⚠️ Needs work   |
 
 **Overall: 79% (Good)**
 
@@ -52,6 +52,7 @@ export function middleware(request: NextRequest) {
 ```
 
 **Strengths:**
+
 - ✅ Token validation in middleware
 - ✅ Expiration checking
 - ✅ Token blacklisting on logout
@@ -69,6 +70,7 @@ if (requiresAdmin && decoded.role !== 'admin') {
 ```
 
 **Strengths:**
+
 - ✅ Clear role definitions (admin/user)
 - ✅ Route-level protection
 - ✅ Middleware enforcement
@@ -93,6 +95,7 @@ if (!validation.success) {
 ```
 
 **Strengths:**
+
 - ✅ Type-safe validation with Zod
 - ✅ Size limits on all inputs
 - ✅ Validation before processing
@@ -114,6 +117,7 @@ export function sanitizeText(input: string): string {
 ```
 
 **Strengths:**
+
 - ✅ Isomorphic DOMPurify (server + client)
 - ✅ Strict default (strip all HTML)
 - ✅ Configurable allowed tags
@@ -131,6 +135,7 @@ export const RateLimitPresets = {
 ```
 
 **Strengths:**
+
 - ✅ Different presets for different endpoint types
 - ✅ IP-based tracking (proxy-aware)
 - ✅ Standard rate limit headers
@@ -146,10 +151,11 @@ headers: [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Content-Security-Policy', value: '...' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-]
+];
 ```
 
 **Strengths:**
+
 - ✅ HSTS with preload
 - ✅ Clickjacking protection
 - ✅ MIME sniffing prevention
@@ -176,6 +182,7 @@ return user.password === password;
 ```
 
 **Required fix:**
+
 ```typescript
 import bcrypt from 'bcrypt';
 
@@ -199,11 +206,13 @@ HUGGING_FACE_API_KEY=api-key
 ```
 
 **Issues:**
+
 - No rotation strategy
 - No centralized management
 - Risk of exposure in logs/errors
 
 **Recommended:**
+
 - Azure Key Vault for production
 - Managed identities for Azure services
 - Regular rotation schedule
@@ -212,24 +221,25 @@ HUGGING_FACE_API_KEY=api-key
 
 ## OWASP Top 10 Compliance
 
-| Risk | Status | Implementation |
-|------|--------|----------------|
-| A01: Broken Access Control | ✅ | RBAC, middleware checks |
-| A02: Cryptographic Failures | ⚠️ | JWT good, passwords not hashed |
-| A03: Injection | ✅ | Zod + DOMPurify |
-| A04: Insecure Design | ✅ | Security headers, CSP |
-| A05: Security Misconfiguration | ✅ | Fail-fast validation |
-| A06: Vulnerable Components | ✅ | 0 npm vulnerabilities |
-| A07: Auth Failures | ⚠️ | Rate limiting good, passwords weak |
-| A08: Software Integrity | ⚠️ | npm ci used, no signing |
-| A09: Logging Failures | ⚠️ | Audit logging, console only |
-| A10: SSRF | ✅ | URL sanitization |
+| Risk                           | Status | Implementation                     |
+| ------------------------------ | ------ | ---------------------------------- |
+| A01: Broken Access Control     | ✅     | RBAC, middleware checks            |
+| A02: Cryptographic Failures    | ⚠️     | JWT good, passwords not hashed     |
+| A03: Injection                 | ✅     | Zod + DOMPurify                    |
+| A04: Insecure Design           | ✅     | Security headers, CSP              |
+| A05: Security Misconfiguration | ✅     | Fail-fast validation               |
+| A06: Vulnerable Components     | ✅     | 0 npm vulnerabilities              |
+| A07: Auth Failures             | ⚠️     | Rate limiting good, passwords weak |
+| A08: Software Integrity        | ⚠️     | npm ci used, no signing            |
+| A09: Logging Failures          | ⚠️     | Audit logging, console only        |
+| A10: SSRF                      | ✅     | URL sanitization                   |
 
 ---
 
 ## Security Checklist
 
 ### Implemented ✅
+
 - [x] JWT-based authentication
 - [x] Token expiration validation
 - [x] Token blacklisting
@@ -245,6 +255,7 @@ HUGGING_FACE_API_KEY=api-key
 - [x] Dependency vulnerability scanning
 
 ### Not Implemented ❌
+
 - [ ] Password hashing (bcrypt)
 - [ ] User database
 - [ ] CSRF protection tokens
@@ -259,21 +270,25 @@ HUGGING_FACE_API_KEY=api-key
 ## Recommendations
 
 ### Immediate (P0)
+
 1. **Implement password hashing** with bcrypt (cost factor 12+)
 2. **Add user database** (PostgreSQL recommended)
 3. **Remove hardcoded credentials** from source code
 
 ### Short-term (P1)
+
 1. Add CSRF protection for state-changing requests
 2. Move secrets to Azure Key Vault
 3. Implement security alerting
 
 ### Medium-term (P2)
+
 1. Add penetration testing
 2. Implement Web Application Firewall
 3. Add security compliance reporting
 
 ### Long-term (P3)
+
 1. Consider bug bounty program
 2. Implement threat detection
 3. Add security training documentation
@@ -282,14 +297,14 @@ HUGGING_FACE_API_KEY=api-key
 
 ## Risk Assessment
 
-| Risk | Likelihood | Impact | Priority |
-|------|------------|--------|----------|
-| Password exposure | High | Critical | P0 |
-| API key leak | Medium | High | P1 |
-| CSRF attack | Medium | Medium | P2 |
-| XSS attack | Low | High | Mitigated |
-| Rate limit bypass | Low | Medium | Mitigated |
+| Risk              | Likelihood | Impact   | Priority  |
+| ----------------- | ---------- | -------- | --------- |
+| Password exposure | High       | Critical | P0        |
+| API key leak      | Medium     | High     | P1        |
+| CSRF attack       | Medium     | Medium   | P2        |
+| XSS attack        | Low        | High     | Mitigated |
+| Rate limit bypass | Low        | Medium   | Mitigated |
 
 ---
 
-*This document assesses security practices for the Content Creation Platform.*
+_This document assesses security practices for the Content Creation Platform._

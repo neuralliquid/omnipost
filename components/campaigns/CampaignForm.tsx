@@ -66,9 +66,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
     }
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
@@ -120,9 +118,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
   return (
     <form onSubmit={handleSubmit} className={styles.form}>
-      <h2 className={styles.formTitle}>
-        {initialData ? 'Edit Campaign' : 'Create New Campaign'}
-      </h2>
+      <h2 className={styles.formTitle}>{initialData ? 'Edit Campaign' : 'Create New Campaign'}</h2>
 
       <div className={styles.formGrid}>
         {/* Campaign Name */}
@@ -139,9 +135,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
             className={styles.formInput}
             placeholder="e.g., Q1 Product Launch"
           />
-          {errors.name ? (
-            <span className={styles.errorMessage}>{errors.name}</span>
-          ) : null}
+          {errors.name ? <span className={styles.errorMessage}>{errors.name}</span> : null}
         </div>
 
         {/* Tags */}
@@ -245,13 +239,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                     onChange={() => toggleSeries(s.id)}
                     style={{ display: 'none' }}
                   />
-                  <svg
-                    width="20"
-                    height="20"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"

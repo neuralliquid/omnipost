@@ -14,13 +14,13 @@ State management assessment evaluates how application state is organized, update
 
 ## Score Breakdown
 
-| Criterion | Weight | Score | Status |
-|-----------|--------|-------|--------|
-| Local state management | 25% | 85% | ✅ Good |
-| Form state handling | 20% | 75% | ✅ Good |
-| Server state management | 25% | 50% | ⚠️ Basic |
-| Global state management | 15% | 65% | ⚠️ Adequate |
-| State synchronization | 15% | 60% | ⚠️ Basic |
+| Criterion               | Weight | Score | Status      |
+| ----------------------- | ------ | ----- | ----------- |
+| Local state management  | 25%    | 85%   | ✅ Good     |
+| Form state handling     | 20%    | 75%   | ✅ Good     |
+| Server state management | 25%    | 50%   | ⚠️ Basic    |
+| Global state management | 15%    | 65%   | ⚠️ Adequate |
+| State synchronization   | 15%    | 60%   | ⚠️ Basic    |
 
 **Overall: 67% (Adequate)**
 
@@ -40,6 +40,7 @@ const [searchTerm, setSearchTerm] = useState('');
 ```
 
 **Assessment:** ✅ Well-implemented
+
 - Colocated with components
 - Simple, predictable
 - No unnecessary lifting
@@ -58,11 +59,13 @@ const handleRawInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
 ```
 
 **Assessment:** ✅ Good
+
 - Controlled inputs
 - Form state isolated in hooks
 - Basic validation support
 
 **Could improve with:**
+
 - React Hook Form for complex forms
 - Client-side validation feedback
 
@@ -90,12 +93,14 @@ const parseText = async () => {
 ```
 
 **Assessment:** ⚠️ Basic
+
 - Manual loading/error states
 - No caching
 - No automatic revalidation
 - No optimistic updates
 
 **Should implement:**
+
 - SWR or React Query
 - Automatic caching
 - Background revalidation
@@ -123,6 +128,7 @@ export async function saveFeatureFlags(): Promise<void> {
 ```
 
 **Assessment:** ⚠️ Adequate
+
 - Feature flags work globally
 - Persistence implemented
 - No React context for reactivity
@@ -170,6 +176,7 @@ export function useReviewProcess() {
 ```
 
 **Strengths:**
+
 - Encapsulation of related logic
 - Reusable across components
 - Testable in isolation
@@ -193,6 +200,7 @@ const { id } = router.query;
 ### 1. Server State Library
 
 **Current:**
+
 ```typescript
 // Manual cache management (none)
 // Manual loading states (every hook)
@@ -200,6 +208,7 @@ const { id } = router.query;
 ```
 
 **Recommended (SWR):**
+
 ```typescript
 import useSWR from 'swr';
 
@@ -225,21 +234,22 @@ function usePlatforms() {
 ```typescript
 const updateFlag = async () => {
   setIsLoading(true);
-  await api.updateFlag(flag);  // Wait for server
-  setFlag(newValue);           // Then update UI
+  await api.updateFlag(flag); // Wait for server
+  setFlag(newValue); // Then update UI
   setIsLoading(false);
 };
 ```
 
 **Recommended:**
+
 ```typescript
 const updateFlag = async () => {
   const previousValue = flag;
-  setFlag(newValue);           // Optimistic update
+  setFlag(newValue); // Optimistic update
   try {
     await api.updateFlag(flag);
   } catch (error) {
-    setFlag(previousValue);    // Rollback on error
+    setFlag(previousValue); // Rollback on error
     showError(error);
   }
 };
@@ -250,6 +260,7 @@ const updateFlag = async () => {
 **Current:** Limited to feature flags
 
 **Could add:**
+
 - User preferences
 - Draft content
 - Form state recovery
@@ -264,11 +275,9 @@ const filteredPlatforms = platforms.filter(p => p.enabled);
 ```
 
 **Better with useMemo:**
+
 ```typescript
-const filteredPlatforms = useMemo(
-  () => platforms.filter(p => p.enabled),
-  [platforms]
-);
+const filteredPlatforms = useMemo(() => platforms.filter(p => p.enabled), [platforms]);
 ```
 
 ---
@@ -311,6 +320,7 @@ const filteredPlatforms = useMemo(
 ## Best Practices Checklist
 
 ### Implemented ✅
+
 - [x] useState for local state
 - [x] Custom hooks for encapsulation
 - [x] State colocation (close to usage)
@@ -320,6 +330,7 @@ const filteredPlatforms = useMemo(
 - [x] Immutable state updates
 
 ### Not Implemented ❌
+
 - [ ] Server state library (SWR/React Query)
 - [ ] Optimistic updates
 - [ ] Global state management (Context/Zustand)
@@ -333,21 +344,25 @@ const filteredPlatforms = useMemo(
 ## Recommendations
 
 ### Immediate
+
 1. Add useMemo for expensive computations
 2. Implement optimistic updates for better UX
 3. Add React Context for auth state
 
 ### Short-term
+
 1. Adopt SWR or React Query for server state
 2. Implement proper cache invalidation
 3. Add state debugging in development
 
 ### Medium-term
+
 1. Consider Zustand for global state if needed
 2. Implement offline support with persistence
 3. Add state synchronization across tabs
 
 ### Long-term
+
 1. Evaluate React Server Components for state
 2. Consider state machines (XState) for complex flows
 3. Implement comprehensive state monitoring
@@ -376,20 +391,19 @@ function usePlatforms() {
 
 // After (SWR)
 function usePlatforms() {
-  const { data, error, isLoading, mutate } = useSWR(
-    '/api/platforms',
-    url => fetch(url).then(r => r.json())
+  const { data, error, isLoading, mutate } = useSWR('/api/platforms', url =>
+    fetch(url).then(r => r.json())
   );
 
   return {
     platforms: data ?? [],
     loading: isLoading,
     error,
-    refresh: mutate
+    refresh: mutate,
   };
 }
 ```
 
 ---
 
-*This document assesses state management practices for the Content Creation Platform.*
+_This document assesses state management practices for the Content Creation Platform._

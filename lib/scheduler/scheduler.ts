@@ -150,7 +150,7 @@ export class Scheduler {
 
     for (const job of dueJobs) {
       // Check rate limits before processing
-      if (!await this.rateLimiter.canProcess(job.platformId)) {
+      if (!(await this.rateLimiter.canProcess(job.platformId))) {
         // Skip, will be picked up in next cycle
         continue;
       }
@@ -221,7 +221,10 @@ export class Scheduler {
   /**
    * Handle job failure with retry logic
    */
-  private async handleFailure(job: ScheduledJob, error: Error & { code?: string; retryable?: boolean }): Promise<JobResult> {
+  private async handleFailure(
+    job: ScheduledJob,
+    error: Error & { code?: string; retryable?: boolean }
+  ): Promise<JobResult> {
     const now = new Date().toISOString();
 
     const shouldRetry = this.retryHandler.shouldRetry(job, error);

@@ -103,7 +103,9 @@ export class InMemoryQueue implements JobQueue {
       // Check if job is due
       const isDue =
         (job.status === 'scheduled' && new Date(job.scheduledTime).getTime() <= beforeTime) ||
-        (job.status === 'failed' && job.nextRetryAt && new Date(job.nextRetryAt).getTime() <= beforeTime);
+        (job.status === 'failed' &&
+          job.nextRetryAt &&
+          new Date(job.nextRetryAt).getTime() <= beforeTime);
 
       if (isDue) {
         due.push(job);
@@ -112,8 +114,8 @@ export class InMemoryQueue implements JobQueue {
     }
 
     // Sort by scheduled time
-    return due.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return due.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -128,8 +130,8 @@ export class InMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -143,15 +145,15 @@ export class InMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
   async getAll(): Promise<ScheduledJob[]> {
     this.ensureInitialized();
-    return Array.from(this.jobs.values()).sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return Array.from(this.jobs.values()).sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -200,7 +202,9 @@ class ServerMemoryQueue implements JobQueue {
     for (const job of this.jobs.values()) {
       const isDue =
         (job.status === 'scheduled' && new Date(job.scheduledTime).getTime() <= beforeTime) ||
-        (job.status === 'failed' && job.nextRetryAt && new Date(job.nextRetryAt).getTime() <= beforeTime);
+        (job.status === 'failed' &&
+          job.nextRetryAt &&
+          new Date(job.nextRetryAt).getTime() <= beforeTime);
 
       if (isDue) {
         due.push(job);
@@ -208,8 +212,8 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return due.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return due.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -276,6 +280,9 @@ export function getQueue(): JobQueue {
 
 /**
  * Generate unique job ID
+ * NOTE: Uses Math.random() intentionally - these IDs are for internal job
+ * queue management only, not security-sensitive operations. The timestamp
+ * prefix ensures uniqueness for practical purposes.
  */
 export function generateJobId(): string {
   return `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
