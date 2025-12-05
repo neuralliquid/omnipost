@@ -44,6 +44,8 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
 
   /**
    * Simulate API call for development
+   * NOTE: Uses Math.random() intentionally - only for development simulation
+   * and mock IDs, not security-sensitive operations
    */
   protected async simulatePublish(
     content: ScheduledJob['content'],
@@ -396,7 +398,8 @@ export class InstagramAdapter extends BasePlatformAdapter {
     // Instagram requires media (in production)
     if (process.env.NODE_ENV === 'production') {
       if (!content.mediaUrls || content.mediaUrls.length === 0) {
-        result.warnings.push('Instagram posts typically require an image');
+        result.errors.push('Instagram posts require at least one image');
+        result.valid = false;
       }
     }
 

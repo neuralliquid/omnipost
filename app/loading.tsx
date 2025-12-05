@@ -5,7 +5,7 @@
 
 export default function Loading() {
   return (
-    <div
+    <main
       className="flex min-h-screen items-center justify-center"
       role="status"
       aria-label="Loading"
@@ -21,6 +21,6 @@ export default function Loading() {
         {/* Loading text */}
         <p className="text-sm text-muted-foreground animate-pulse">Loading...</p>
       </div>
-    </div>
+    </main>
   );
 }

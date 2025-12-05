@@ -18,7 +18,61 @@ interface DashboardMetricsProps {
   initialMetrics: EngagementMetric[];
 }
 
-export function DashboardMetrics({ initialMetrics }: DashboardMetricsProps) {
+/**
+ * Renders the metrics content based on state
+ */
+function MetricsContent({
+  error,
+  metrics,
+  isPending,
+  onRefresh,
+}: Readonly<{
+  error: string | null;
+  metrics: EngagementMetric[];
+  isPending: boolean;
+  onRefresh: () => void;
+}>) {
+  if (error) {
+    return (
+      <div className={dashboardStyles.errorMessage}>
+        <p>Error loading metrics: {error}</p>
+        <button onClick={onRefresh} disabled={isPending} className={dashboardStyles.refreshButton}>
+          {isPending ? 'Refreshing...' : 'Try Again'}
+        </button>
+      </div>
+    );
+  }
+
+  if (metrics.length === 0) {
+    return <p>No metrics available</p>;
+  }
+
+  return (
+    <div className={dashboardStyles.tableContainer}>
+      <table className={dashboardStyles.metricsTable}>
+        <thead>
+          <tr>
+            <th>Platform</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {metrics.map(metric => (
+            <tr key={metric.platform}>
+              <td>{metric.platform}</td>
+              <td>{metric.value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button onClick={onRefresh} disabled={isPending} className={dashboardStyles.refreshButton}>
+        {isPending ? 'Refreshing...' : 'Refresh Data'}
+      </button>
+    </div>
+  );
+}
+
+export function DashboardMetrics({ initialMetrics }: Readonly<DashboardMetricsProps>) {
   const [metrics, setMetrics] = useState(initialMetrics);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
@@ -50,46 +104,12 @@ export function DashboardMetrics({ initialMetrics }: DashboardMetricsProps) {
         <h2>Engagement Metrics</h2>
       </div>
       <div className={dashboardStyles.cardContent}>
-        {error ? (
-          <div className={dashboardStyles.errorMessage}>
-            <p>Error loading metrics: {error}</p>
-            <button
-              onClick={handleRefresh}
-              disabled={isPending}
-              className={dashboardStyles.refreshButton}
-            >
-              {isPending ? 'Refreshing...' : 'Try Again'}
-            </button>
-          </div>
-        ) : metrics.length === 0 ? (
-          <p>No metrics available</p>
-        ) : (
-          <div className={dashboardStyles.tableContainer}>
-            <table className={dashboardStyles.metricsTable}>
-              <thead>
-                <tr>
-                  <th>Platform</th>
-                  <th>Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {metrics.map(metric => (
-                  <tr key={metric.platform}>
-                    <td>{metric.platform}</td>
-                    <td>{metric.value}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <button
-              onClick={handleRefresh}
-              disabled={isPending}
-              className={dashboardStyles.refreshButton}
-            >
-              {isPending ? 'Refreshing...' : 'Refresh Data'}
-            </button>
-          </div>
-        )}
+        <MetricsContent
+          error={error}
+          metrics={metrics}
+          isPending={isPending}
+          onRefresh={handleRefresh}
+        />
       </div>
     </div>
   );

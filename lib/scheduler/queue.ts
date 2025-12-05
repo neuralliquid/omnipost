@@ -285,6 +285,9 @@ export function getQueue(): JobQueue {
 
 /**
  * Generate unique job ID
+ * NOTE: Uses Math.random() intentionally - these IDs are for internal job
+ * queue management only, not security-sensitive operations. The timestamp
+ * prefix ensures uniqueness for practical purposes.
  */
 export function generateJobId(): string {
   return generateSecureJobId();

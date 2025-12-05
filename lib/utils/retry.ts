@@ -124,6 +124,8 @@ function calculateDelay(attempt: number, options: Required<RetryOptions>): numbe
   delay = Math.min(delay, options.maxDelay);
 
   // Add jitter (up to ±25%)
+  // NOTE: Using Math.random() here is intentional - jitter for retry timing
+  // does not require cryptographic security, just some variation
   if (options.jitter) {
     const jitterRange = delay * 0.25;
     delay = delay + (Math.random() * jitterRange * 2 - jitterRange);
