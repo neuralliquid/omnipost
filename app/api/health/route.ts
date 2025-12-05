@@ -171,16 +171,18 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
 
   // Quick health check response
   if (!detailed) {
+    const envCheck = checkEnvironment();
+    const quickStatus = envCheck.status === 'unhealthy' ? 'unhealthy' : 'healthy';
     return NextResponse.json(
       {
-        status: 'healthy',
+        status: quickStatus,
         timestamp: new Date().toISOString(),
         version: getVersion(),
         uptime: getUptime(),
         environment: process.env.NODE_ENV || 'development',
       },
       {
-        status: 200,
+        status: quickStatus === 'unhealthy' ? 503 : 200,
         headers: {
           'Cache-Control': 'no-store, max-age=0',
         },
