@@ -7,6 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/scheduler';
+import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -14,16 +15,31 @@ interface RouteParams {
 
 /**
  * GET /api/scheduler/[id]
- * Get job details
+ * Get job details (user-scoped)
  */
 export async function GET(request: Request, { params }: RouteParams) {
   try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    }
+
     const { id } = await params;
     const scheduler = getScheduler();
     const job = await scheduler.getJob(id);
 
     if (!job) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+    }
+
+    // Verify ownership
+    if (job.createdBy !== currentUserId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     return NextResponse.json({ job });
@@ -35,16 +51,37 @@ export async function GET(request: Request, { params }: RouteParams) {
 
 /**
  * DELETE /api/scheduler/[id]
- * Cancel a scheduled job
+ * Cancel a scheduled job (user-scoped)
  */
 export async function DELETE(request: Request, { params }: RouteParams) {
   try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    }
+
     const { id } = await params;
     const scheduler = getScheduler();
+    const job = await scheduler.getJob(id);
+
+    if (!job) {
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+    }
+
+    // Verify ownership
+    if (job.createdBy !== currentUserId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
+
     const cancelled = await scheduler.cancel(id);
 
     if (!cancelled) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+      return NextResponse.json({ error: 'Failed to cancel job' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -60,13 +97,33 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 
 /**
  * PATCH /api/scheduler/[id]
- * Update job (reschedule or retry)
+ * Update job (reschedule or retry) - user-scoped
  */
 export async function PATCH(request: Request, { params }: RouteParams) {
   try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    }
+
     const { id } = await params;
     const body = await request.json();
     const scheduler = getScheduler();
+
+    // Verify job exists and user owns it
+    const existingJob = await scheduler.getJob(id);
+    if (!existingJob) {
+      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+    }
+
+    if (existingJob.createdBy !== currentUserId) {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
 
     // Handle retry action
     if (body.action === 'retry') {

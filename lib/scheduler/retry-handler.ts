@@ -37,63 +37,7 @@ export class RetryHandler {
   classifyError(error: unknown): ErrorClassification {
     // Handle axios-style errors with status codes
     if (this.isAxiosError(error)) {
-      const status = error.response?.status;
-      const message = error.response?.data?.message || error.message || 'Unknown error';
-
-      // Rate limit errors - retryable with longer backoff
-      if (status === 429) {
-        return {
-          retryable: true,
-          code: 'RATE_LIMITED',
-          message: `Rate limited: ${message}`,
-          backoffMultiplier: 2,
-        };
-      }
-
-      // Server errors - retryable
-      if (status && status >= 500) {
-        return {
-          retryable: true,
-          code: 'SERVER_ERROR',
-          message: `Server error (${status}): ${message}`,
-        };
-      }
-
-      // Auth errors - not retryable
-      if (status === 401 || status === 403) {
-        return {
-          retryable: false,
-          code: 'AUTH_ERROR',
-          message: `Authentication error (${status}): ${message}`,
-        };
-      }
-
-      // Bad request - not retryable (content issue)
-      if (status === 400) {
-        return {
-          retryable: false,
-          code: 'BAD_REQUEST',
-          message: `Bad request: ${message}`,
-        };
-      }
-
-      // Not found - not retryable
-      if (status === 404) {
-        return {
-          retryable: false,
-          code: 'NOT_FOUND',
-          message: `Resource not found: ${message}`,
-        };
-      }
-
-      // Other client errors (4xx) - generally not retryable
-      if (status && status >= 400 && status < 500) {
-        return {
-          retryable: false,
-          code: 'CLIENT_ERROR',
-          message: `Client error (${status}): ${message}`,
-        };
-      }
+      return this.classifyHttpError(error);
     }
 
     // Network errors - retryable
@@ -119,6 +63,79 @@ export class RetryHandler {
       retryable: true,
       code: 'UNKNOWN',
       message: this.getErrorMessage(error),
+    };
+  }
+
+  /**
+   * Classify HTTP errors by status code
+   */
+  private classifyHttpError(error: {
+    response?: { status?: number; data?: { message?: string } };
+    message?: string;
+  }): ErrorClassification {
+    const status = error.response?.status;
+    const message = error.response?.data?.message || error.message || 'Unknown error';
+
+    // Rate limit errors - retryable with longer backoff
+    if (status === 429) {
+      return {
+        retryable: true,
+        code: 'RATE_LIMITED',
+        message: `Rate limited: ${message}`,
+        backoffMultiplier: 2,
+      };
+    }
+
+    // Server errors - retryable
+    if (status && status >= 500) {
+      return {
+        retryable: true,
+        code: 'SERVER_ERROR',
+        message: `Server error (${status}): ${message}`,
+      };
+    }
+
+    // Auth errors - not retryable
+    if (status === 401 || status === 403) {
+      return {
+        retryable: false,
+        code: 'AUTH_ERROR',
+        message: `Authentication error (${status}): ${message}`,
+      };
+    }
+
+    // Bad request - not retryable (content issue)
+    if (status === 400) {
+      return {
+        retryable: false,
+        code: 'BAD_REQUEST',
+        message: `Bad request: ${message}`,
+      };
+    }
+
+    // Not found - not retryable
+    if (status === 404) {
+      return {
+        retryable: false,
+        code: 'NOT_FOUND',
+        message: `Resource not found: ${message}`,
+      };
+    }
+
+    // Other client errors (4xx) - generally not retryable
+    if (status && status >= 400 && status < 500) {
+      return {
+        retryable: false,
+        code: 'CLIENT_ERROR',
+        message: `Client error (${status}): ${message}`,
+      };
+    }
+
+    // Unknown HTTP error
+    return {
+      retryable: true,
+      code: 'UNKNOWN',
+      message: `Unknown HTTP error: ${message}`,
     };
   }
 

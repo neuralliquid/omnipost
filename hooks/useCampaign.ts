@@ -49,6 +49,57 @@ function saveCampaigns(campaigns: Campaign[]): void {
 }
 
 /**
+ * Helper: Update campaign if ID matches
+ */
+type CampaignUpdater = (campaign: Campaign) => Campaign;
+
+function updateCampaignById(
+  campaignId: string,
+  updater: CampaignUpdater
+): (campaign: Campaign) => Campaign {
+  return (c: Campaign) => {
+    if (c.id === campaignId) {
+      return updater(c);
+    }
+    return c;
+  };
+}
+
+/**
+ * Helper: Calculate platform metrics for a campaign
+ */
+function calculatePlatformMetrics(
+  platformMetrics: Campaign['metrics']['platformMetrics'],
+  platformId: string,
+  metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
+): Campaign['metrics']['platformMetrics'] {
+  const defaultMetrics = {
+    impressions: 0,
+    engagements: 0,
+    clicks: 0,
+    shares: 0,
+    comments: 0,
+  };
+
+  return {
+    ...platformMetrics,
+    [platformId]: {
+      ...(platformMetrics[platformId] || defaultMetrics),
+      ...metrics,
+    },
+  };
+}
+
+/**
+ * Helper: Calculate total engagement from platform metrics
+ */
+function calculateTotalEngagement(
+  platformMetrics: Campaign['metrics']['platformMetrics']
+): number {
+  return Object.values(platformMetrics).reduce((sum, m) => sum + (m.engagements || 0), 0);
+}
+
+/**
  * Helper to update a content item's adaptations
  */
 function updateContentItemAdaptations(
@@ -686,24 +737,26 @@ export function useCampaign(): UseCampaignReturn {
   const reschedulePost = useCallback(
     (campaignId: string, postId: string, newTime: string): Campaign | null => {
       let updated: Campaign | null = null;
-      setCampaigns(prev =>
-        prev.map(c => {
-          if (c.id === campaignId) {
-            updated = {
-              ...c,
-              schedule: {
-                ...c.schedule,
-                posts: c.schedule.posts.map(p =>
-                  p.id === postId ? { ...p, scheduledTime: newTime } : p
-                ),
-              },
-              updatedAt: new Date().toISOString(),
-            };
-            return updated;
-          }
-          return c;
-        })
-      );
+      
+      const updater = (c: Campaign): Campaign => {
+        const posts = c.schedule.posts.map(p =>
+          p.id === postId ? { ...p, scheduledTime: newTime } : p
+        );
+        
+        const updatedCampaign = {
+          ...c,
+          schedule: {
+            ...c.schedule,
+            posts,
+          },
+          updatedAt: new Date().toISOString(),
+        };
+        
+        updated = updatedCampaign;
+        return updatedCampaign;
+      };
+      
+      setCampaigns(prev => prev.map(updateCampaignById(campaignId, updater)));
       return updated;
     },
     []
@@ -774,43 +827,26 @@ export function useCampaign(): UseCampaignReturn {
       metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
     ): Campaign | null => {
       let updated: Campaign | null = null;
-      setCampaigns(prev =>
-        prev.map(c => {
-          if (c.id === campaignId) {
-            const platformMetrics = {
-              ...c.metrics.platformMetrics,
-              [platformId]: {
-                ...(c.metrics.platformMetrics[platformId] || {
-                  impressions: 0,
-                  engagements: 0,
-                  clicks: 0,
-                  shares: 0,
-                  comments: 0,
-                }),
-                ...metrics,
-              },
-            };
-
-            // Calculate totals
-            const totalEngagement = Object.values(platformMetrics).reduce(
-              (sum, m) => sum + (m.engagements || 0),
-              0
-            );
-
-            updated = {
-              ...c,
-              metrics: {
-                ...c.metrics,
-                platformMetrics,
-                totalEngagement,
-              },
-              updatedAt: new Date().toISOString(),
-            };
-            return updated;
-          }
-          return c;
-        })
-      );
+      
+      const updater = (c: Campaign): Campaign => {
+        const platformMetrics = calculatePlatformMetrics(c.metrics.platformMetrics, platformId, metrics);
+        const totalEngagement = calculateTotalEngagement(platformMetrics);
+        
+        const updatedCampaign = {
+          ...c,
+          metrics: {
+            ...c.metrics,
+            platformMetrics,
+            totalEngagement,
+          },
+          updatedAt: new Date().toISOString(),
+        };
+        
+        updated = updatedCampaign;
+        return updatedCampaign;
+      };
+      
+      setCampaigns(prev => prev.map(updateCampaignById(campaignId, updater)));
       return updated;
     },
     []

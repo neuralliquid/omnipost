@@ -22,92 +22,136 @@ const authenticatedPaths = [
   '/api/content',
   '/api/feedback',
   '/api/notifications',
+  '/api/scheduler',
 ];
 
 // Define paths that require admin authentication
 const adminPaths = ['/api/feature-flags', '/api/audit'];
 
+/**
+ * Extract token from request
+ */
+function getToken(request: NextRequest): string | null {
+  // Try cookie first
+  const cookieToken = request.cookies.get('auth-token')?.value;
+  if (cookieToken) {
+    return cookieToken;
+  }
+
+  // Try authorization header
+  const authHeader = request.headers.get('authorization');
+  if (authHeader?.startsWith('Bearer ')) {
+    return authHeader.substring(7);
+  }
+
+  return null;
+}
+
+/**
+ * Create unauthorized response
+ */
+function createUnauthorizedResponse(message: string): NextResponse {
+  return new NextResponse(JSON.stringify({ message }), {
+    status: 401,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+/**
+ * Create forbidden response
+ */
+function createForbiddenResponse(message: string): NextResponse {
+  return new NextResponse(JSON.stringify({ message }), {
+    status: 403,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+/**
+ * Verify and decode JWT token
+ */
+function verifyToken(token: string): jwt.JwtPayload | null {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+    
+    // Check expiration
+    const now = Math.floor(Date.now() / 1000);
+    if (decoded.exp && decoded.exp < now) {
+      return null;
+    }
+    
+    return decoded;
+  } catch (error) {
+    console.error('Token verification error:', error);
+    return null;
+  }
+}
+
+/**
+ * Check if path requires authentication
+ */
+function requiresAuthentication(pathname: string): { auth: boolean; admin: boolean } {
+  const requiresAdmin = adminPaths.some(path => pathname.startsWith(path));
+  const requiresAuth = authenticatedPaths.some(path => pathname.startsWith(path)) || requiresAdmin;
+  
+  return { auth: requiresAuth, admin: requiresAdmin };
+}
+
+/**
+ * Handle authenticated request
+ */
+function handleAuthenticatedRequest(
+  request: NextRequest,
+  decoded: jwt.JwtPayload,
+  requiresAdmin: boolean
+): NextResponse {
+  // Check admin privileges if needed
+  if (requiresAdmin && decoded.role !== 'admin') {
+    return createForbiddenResponse('Admin privileges required');
+  }
+
+  // Add user info to request headers
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-user-id', decoded.id as string);
+  requestHeaders.set('x-user-role', decoded.role as string);
+  requestHeaders.set('x-user-name', decoded.username as string);
+
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
+
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Skip middleware for non-API routes
+  // Skip proxy for non-API routes
   if (!pathname.startsWith('/api')) {
     return NextResponse.next();
   }
 
   // Check if the path requires authentication
-  const requiresAuth = authenticatedPaths.some(path => pathname.startsWith(path));
-  const requiresAdmin = adminPaths.some(path => pathname.startsWith(path));
+  const { auth: requiresAuth, admin: requiresAdmin } = requiresAuthentication(pathname);
 
-  if (requiresAuth || requiresAdmin) {
-    // Get the authentication token from cookies first
-    let token = request.cookies.get('auth-token')?.value;
-
-    // If no cookie, try the authorization header
-    if (!token) {
-      const authHeader = request.headers.get('authorization');
-      if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-      }
-    }
-
-    // If no token is present, return 401 Unauthorized
-    if (!token) {
-      return new NextResponse(JSON.stringify({ message: 'Authentication required' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
-
-    try {
-      // Verify the token using the validated JWT_SECRET
-      const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-
-      // Check if token has expired
-      const now = Math.floor(Date.now() / 1000);
-      if (decoded.exp && decoded.exp < now) {
-        return new NextResponse(JSON.stringify({ message: 'Token has expired' }), {
-          status: 401,
-          headers: { 'Content-Type': 'application/json' },
-        });
-      }
-
-      // For admin paths, perform additional admin verification
-      if (requiresAdmin) {
-        const isAdmin = decoded.role === 'admin';
-
-        if (!isAdmin) {
-          return new NextResponse(JSON.stringify({ message: 'Admin privileges required' }), {
-            status: 403,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        }
-      }
-
-      // Add user info to request headers for use in API routes
-      const requestHeaders = new Headers(request.headers);
-      requestHeaders.set('x-user-id', decoded.id as string);
-      requestHeaders.set('x-user-role', decoded.role as string);
-      requestHeaders.set('x-user-name', decoded.username as string);
-
-      // Continue with the modified request
-      return NextResponse.next({
-        request: {
-          headers: requestHeaders,
-        },
-      });
-    } catch (error) {
-      console.error('Token verification error:', error);
-
-      return new NextResponse(JSON.stringify({ message: 'Invalid authentication token' }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' },
-      });
-    }
+  if (!requiresAuth) {
+    return NextResponse.next();
   }
 
-  // For non-protected routes, continue normally
-  return NextResponse.next();
+  // Get authentication token
+  const token = getToken(request);
+  if (!token) {
+    return createUnauthorizedResponse('Authentication required');
+  }
+
+  // Verify token
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return createUnauthorizedResponse('Invalid or expired authentication token');
+  }
+
+  // Handle authenticated request
+  return handleAuthenticatedRequest(request, decoded, requiresAdmin);
 }
 
 // Configure the proxy to run only on API routes

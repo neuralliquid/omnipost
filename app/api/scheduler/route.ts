@@ -6,13 +6,24 @@
 
 import { NextResponse } from 'next/server';
 import { getScheduler, CreateJobInput, JobStatus } from '@/lib/scheduler';
+import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 
 /**
  * GET /api/scheduler
- * List scheduled jobs with optional filters
+ * List scheduled jobs with optional filters (user-scoped)
  */
 export async function GET(request: Request) {
   try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') as JobStatus | null;
     const campaignId = searchParams.get('campaignId');
@@ -30,9 +41,12 @@ export async function GET(request: Request) {
       jobs = jobs.slice(0, limit);
     }
 
+    // Filter jobs by current user
+    const userJobs = jobs.filter(job => job.createdBy === currentUserId);
+
     return NextResponse.json({
-      jobs,
-      count: jobs.length,
+      jobs: userJobs,
+      count: userJobs.length,
     });
   } catch (error) {
     console.error('Error fetching jobs:', error);
@@ -42,10 +56,20 @@ export async function GET(request: Request) {
 
 /**
  * POST /api/scheduler
- * Create a new scheduled job
+ * Create a new scheduled job (user-scoped)
  */
 export async function POST(request: Request) {
   try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    const currentUserId = await getCurrentUserId();
+    if (!currentUserId) {
+      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     // Validate required fields
@@ -76,7 +100,7 @@ export async function POST(request: Request) {
       scheduledTime: body.scheduledTime,
       timezone: body.timezone,
       maxAttempts: body.maxAttempts,
-      createdBy: body.createdBy,
+      createdBy: currentUserId, // Use authenticated user ID
     };
 
     const scheduler = getScheduler();
