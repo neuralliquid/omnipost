@@ -5,6 +5,7 @@
 
 import type { Metadata, Viewport } from 'next';
 import '../styles/globals.css';
+import { SeedDataProvider } from '@/components/providers/SeedDataProvider';
 
 // Font configuration using CSS custom properties
 // Note: Google Fonts (Inter) can be enabled when network access is available
@@ -67,10 +68,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to main content
         </a>
 
-        {/* Main content area */}
-        <div id="main-content" className="relative flex min-h-screen flex-col">
-          {children}
-        </div>
+        {/* Main content area with providers */}
+        <SeedDataProvider>
+          <div id="main-content" className="relative flex min-h-screen flex-col">
+            {children}
+          </div>
+        </SeedDataProvider>
 
         {/* Toast container for notifications */}
         <div id="toast-container" aria-live="polite" aria-atomic="true" />
