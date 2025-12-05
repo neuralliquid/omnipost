@@ -714,12 +714,20 @@ export function useCampaign(): UseCampaignReturn {
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
+          // Compute filtered posts first
+          const filteredPosts = c.schedule.posts.filter(p => p.id !== postId);
+          
+          // Derive new status based on remaining scheduled posts
+          const hasScheduledPosts = filteredPosts.some(p => p.status === 'scheduled');
+          const newStatus = hasScheduledPosts ? 'scheduled' : 'draft';
+          
           updated = {
             ...c,
             schedule: {
               ...c.schedule,
-              posts: c.schedule.posts.filter(p => p.id !== postId),
+              posts: filteredPosts,
             },
+            status: newStatus,
             updatedAt: new Date().toISOString(),
           };
           return updated;
