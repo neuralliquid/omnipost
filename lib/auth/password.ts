@@ -215,6 +215,14 @@ export function needsRehash(hash: string): boolean {
  * @param length Length of the password (default: 16)
  * @returns A randomly generated password meeting all requirements
  */
+import { randomBytes } from 'crypto';
+
+function secureRandomIndex(max: number): number {
+  const randomBuffer = randomBytes(4);
+  const randomValue = randomBuffer.readUInt32BE(0);
+  return randomValue % max;
+}
+
 export function generateSecurePassword(length: number = 16): string {
   const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   const lowercase = 'abcdefghijklmnopqrstuvwxyz';
@@ -242,12 +250,12 @@ export function generateSecurePassword(length: number = 16): string {
   // Fill remaining with random characters from all allowed sets
   const allChars = uppercase + lowercase + numbers + (currentConfig.requireSpecial ? special : '');
   while (chars.length < minLength) {
-    chars.push(allChars[randomInt(allChars.length)]);
+    chars.push(allChars[secureRandomIndex(allChars.length)]);
   }
 
   // Shuffle the array using cryptographically secure random
   for (let i = chars.length - 1; i > 0; i--) {
-    const j = randomInt(i + 1);
+    const j = secureRandomIndex(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
 

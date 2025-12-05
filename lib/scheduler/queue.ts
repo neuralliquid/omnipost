@@ -227,7 +227,9 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered;
+    return filtered.sort((a, b) =>
+      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    );
   }
 
   async getByCampaign(campaignId: string): Promise<ScheduledJob[]> {
@@ -239,7 +241,9 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered;
+    return filtered.sort((a, b) =>
+      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    );
   }
 
   async getAll(): Promise<ScheduledJob[]> {
