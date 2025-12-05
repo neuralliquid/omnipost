@@ -109,7 +109,7 @@ export function validatePassword(password: string): PasswordValidationResult {
     errors.push('Password must contain at least one number');
   }
 
-  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (currentConfig.requireSpecial && !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) {
     errors.push('Password must contain at least one special character');
   }
 

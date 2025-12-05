@@ -9,6 +9,7 @@ export default function Loading() {
       className="flex min-h-screen items-center justify-center"
       role="status"
       aria-label="Loading"
+      aria-live="polite"
     >
       <div className="flex flex-col items-center gap-4">
         {/* Spinner */}
