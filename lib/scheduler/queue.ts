@@ -227,8 +227,8 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -241,8 +241,8 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 

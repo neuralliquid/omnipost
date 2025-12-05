@@ -165,41 +165,70 @@ export class AzureAIFoundryClient {
   }
 
   /**
-   * Make API request to Azure AI Foundry
+   * Make API request to Azure AI Foundry with timeout handling
+   * @param path - API path
+   * @param body - Request body
+   * @param operationName - Name of the operation for logging
+   * @param timeoutMs - Timeout in milliseconds (default: 30000)
    */
-  private async makeRequest<T>(path: string, body: object, operationName: string): Promise<T> {
+  private async makeRequest<T>(
+    path: string,
+    body: object,
+    operationName: string,
+    timeoutMs: number = 30000
+  ): Promise<T> {
     if (!this.isConfigured()) {
       throw new AzureAIError('Azure AI Foundry is not configured', 500, 'NOT_CONFIGURED');
     }
 
     const url = `${this.config.endpoint}/openai/deployments/${this.config.deploymentName}${path}?api-version=${this.config.apiVersion}`;
 
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': this.config.apiKey,
-      },
-      body: JSON.stringify(body),
-    });
+    // Create AbortController for timeout handling
+    // AbortController is a global in Node.js 16+ and all modern browsers
+    const controller = new globalThis.AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
-    if (!response.ok) {
-      const errorBody = await response.text();
-      throw new AzureAIError(
-        `Azure AI request failed: ${response.statusText}`,
-        response.status,
-        errorBody
-      );
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'api-key': this.config.apiKey,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        throw new AzureAIError(
+          `Azure AI request failed: ${response.statusText}`,
+          response.status,
+          errorBody
+        );
+      }
+
+      const result = await response.json();
+
+      // Track usage for cost monitoring
+      if (result.usage) {
+        this.trackUsage(result.usage, operationName);
+      }
+
+      return result as T;
+    } catch (error) {
+      // Convert AbortError to a timeout-specific error
+      if (error instanceof Error && error.name === 'AbortError') {
+        throw new AzureAIError(
+          `Azure AI request timed out after ${timeoutMs}ms`,
+          408,
+          `Operation '${operationName}' exceeded timeout of ${timeoutMs}ms`
+        );
+      }
+      throw error;
+    } finally {
+      clearTimeout(timeoutId);
     }
-
-    const result = await response.json();
-
-    // Track usage for cost monitoring
-    if (result.usage) {
-      this.trackUsage(result.usage, operationName);
-    }
-
-    return result as T;
   }
 
   /**
