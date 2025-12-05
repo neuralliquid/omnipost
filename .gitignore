@@ -52,3 +52,4 @@ tmp/
 # Build artifacts
 *.zip
 *.tar.gz
+package-lock.json
