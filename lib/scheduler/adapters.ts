@@ -8,6 +8,23 @@ import { getPlatformConfig } from '@/lib/config/platforms';
 import { generatePlatformPostId } from '@/lib/utils/id';
 
 /**
+ * Error class for partial thread publish failures
+ * Thrown when some tweets in a thread are published but later ones fail
+ */
+export class PartialPublishError extends Error {
+  constructor(
+    message: string,
+    public readonly partialResult: {
+      tweetIds: string[];
+      error: Error;
+    }
+  ) {
+    super(message);
+    this.name = 'PartialPublishError';
+  }
+}
+
+/**
  * Base adapter with common functionality
  */
 abstract class BasePlatformAdapter implements PlatformAdapter {
@@ -134,34 +151,59 @@ export class TwitterAdapter extends BasePlatformAdapter {
     const tweetIds: string[] = [];
     let replyToId: string | undefined;
 
-    for (const part of content.threadParts!) {
-      const response = await fetch(config.apiUrl, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${config.apiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: part.text,
-          reply: replyToId ? { in_reply_to_tweet_id: replyToId } : undefined,
-        }),
-      });
+    try {
+      for (const part of content.threadParts!) {
+        const response = await fetch(config.apiUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${config.apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            text: part.text,
+            reply: replyToId ? { in_reply_to_tweet_id: replyToId } : undefined,
+          }),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Twitter API error: ${response.status}`);
+        if (!response.ok) {
+          const error = new Error(`Twitter API error: ${response.status}`);
+          // If we have already posted some tweets, throw a partial publish error
+          if (tweetIds.length > 0) {
+            throw new PartialPublishError(
+              `Thread partially published: ${tweetIds.length} tweets posted before failure`,
+              { tweetIds, error }
+            );
+          }
+          throw error;
+        }
+
+        const data = await response.json();
+        const tweetId = data.data?.id || data.id;
+        tweetIds.push(tweetId);
+        replyToId = tweetId;
       }
 
-      const data = await response.json();
-      const tweetId = data.data?.id || data.id;
-      tweetIds.push(tweetId);
-      replyToId = tweetId;
-    }
+      return {
+        id: tweetIds[0],
+        url: `https://twitter.com/i/web/status/${tweetIds[0]}`,
+        platformData: { tweetIds, isThread: true },
+      };
+    } catch (error) {
+      // Re-throw PartialPublishError as-is
+      if (error instanceof PartialPublishError) {
+        throw error;
+      }
 
-    return {
-      id: tweetIds[0],
-      url: `https://twitter.com/i/web/status/${tweetIds[0]}`,
-      platformData: { tweetIds, isThread: true },
-    };
+      // If we have posted some tweets but caught a different error, wrap it
+      if (tweetIds.length > 0) {
+        throw new PartialPublishError(
+          `Thread partially published: ${tweetIds.length} tweets posted before failure`,
+          { tweetIds, error: error as Error }
+        );
+      }
+
+      throw error;
+    }
   }
 
   private formatContent(content: ScheduledJob['content']): string {

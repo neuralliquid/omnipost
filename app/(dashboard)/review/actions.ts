@@ -6,6 +6,9 @@
  */
 
 import { z } from 'zod';
+import { parseText } from '@/lib/services/parse-service';
+import { summarizeText } from '@/lib/services/summarize-service';
+import { generateImage as generateImageService } from '@/lib/services/image-service';
 
 // Validation schemas
 const ParseSchema = z.object({
@@ -47,6 +50,7 @@ export interface ApproveResult {
 
 /**
  * Parse raw content using AI
+ * Calls the parse service directly instead of making an HTTP request
  */
 export async function parseContent(
   _prevState: ParseResult | null,
@@ -63,26 +67,17 @@ export async function parseContent(
       };
     }
 
-    // Call the internal API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/parse`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawInput: validated.data.rawInput }),
-      }
-    );
+    // Call the parse service directly
+    const result = await parseText(validated.data.rawInput);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+    if (!result.success) {
       return {
         success: false,
-        error: errorData.message || `Parse failed: ${response.statusText}`,
+        error: result.error || 'Parse failed',
       };
     }
 
-    const data = await response.json();
-    return { success: true, data };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error('Parse action error:', error);
     return {
@@ -94,6 +89,7 @@ export async function parseContent(
 
 /**
  * Generate summary using AI
+ * Calls the summarize service directly instead of making an HTTP request
  */
 export async function summarizeContent(
   _prevState: SummarizeResult | null,
@@ -110,25 +106,17 @@ export async function summarizeContent(
       };
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/summarize`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rawText: validated.data.content }),
-      }
-    );
+    // Call the summarize service directly
+    const result = await summarizeText(validated.data.content);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+    if (!result.success) {
       return {
         success: false,
-        error: errorData.message || `Summarization failed: ${response.statusText}`,
+        error: result.error || 'Summarization failed',
       };
     }
 
-    const data = await response.json();
-    return { success: true, data };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error('Summarize action error:', error);
     return {
@@ -140,6 +128,7 @@ export async function summarizeContent(
 
 /**
  * Generate image using AI
+ * Calls the image service directly instead of making an HTTP request
  */
 export async function generateImage(
   _prevState: ImageResult | null,
@@ -156,25 +145,17 @@ export async function generateImage(
       };
     }
 
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}/api/images`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: validated.data.prompt }),
-      }
-    );
+    // Call the image service directly
+    const result = await generateImageService(validated.data.prompt);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+    if (!result.success) {
       return {
         success: false,
-        error: errorData.message || `Image generation failed: ${response.statusText}`,
+        error: result.error || 'Image generation failed',
       };
     }
 
-    const data = await response.json();
-    return { success: true, data };
+    return { success: true, data: result.data };
   } catch (error) {
     console.error('Generate image action error:', error);
     return {

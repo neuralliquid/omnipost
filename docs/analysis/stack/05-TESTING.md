@@ -14,7 +14,7 @@ The Content Creation Platform uses Jest as the primary test framework with React
 
 ## Test Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                      TEST PYRAMID                                │
 ├─────────────────────────────────────────────────────────────────┤
@@ -179,7 +179,7 @@ jest.mock('next/headers', () => ({
 
 ### Directory Structure
 
-```
+```text
 __tests__/
 ├── api/                    # API route tests
 │   ├── auth.test.ts        # Authentication tests
@@ -313,9 +313,14 @@ jest.mock('next/headers', () => ({
 ```typescript
 jest.mock('@/lib/featureFlags', () => ({
   default: {
-    imageGeneration: true,
+    imageGeneration: { enabled: true, implementation: 'huggingface' },
     textParser: { enabled: true, implementation: 'openai' },
-    // ... other flags
+    summarization: { enabled: true, implementation: 'huggingface' },
+    platformConnectors: true,
+    multiPlatformPublishing: true,
+    notificationSystem: true,
+    feedbackMechanism: true,
+    airtableIntegration: true,
   },
   loadFeatureFlags: jest.fn(),
   saveFeatureFlags: jest.fn(),

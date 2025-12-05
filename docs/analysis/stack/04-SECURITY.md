@@ -357,13 +357,13 @@ export function sanitizeUrl(url: string, allowedDomains?: string[]): string | nu
       if (!isAllowed) return null;
     }
 
-    // Block private IPs
+    // Block private IPs (comprehensive check)
     if (
       parsed.hostname === 'localhost' ||
       parsed.hostname.startsWith('127.') ||
       parsed.hostname.startsWith('192.168.') ||
       parsed.hostname.startsWith('10.') ||
-      parsed.hostname.startsWith('172.16.')
+      /^172\.(1[6-9]|2[0-9]|3[0-1])\./.test(parsed.hostname)
     ) {
       return null;
     }
