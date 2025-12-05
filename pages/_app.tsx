@@ -5,7 +5,6 @@ import Header from '../components/ui/Header';
 import Footer from '../components/ui/Footer';
 import ErrorBoundary from '../components/ErrorBoundary';
 import type { AppProps } from 'next/app';
-import { Inter } from 'next/font/google';
 import Image from 'next/image'; // Practice #2: Image optimization
 import dynamic from 'next/dynamic'; // Practice #5: Code splitting
 import { useEffect, useState } from 'react';
@@ -18,12 +17,11 @@ const Analytics = dynamic(() => import('../components/dashboard/Analytics'), {
   loading: () => <div className={styles.analyticsPlaceholder}>Loading analytics...</div>,
 });
 
-// Font optimization using Next.js font system
-const inter = Inter({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-inter',
-});
+// Font variable for system font fallback
+// Note: Google Fonts (Inter) can be re-enabled when network connectivity allows
+// by uncommenting: import { Inter } from 'next/font/google';
+// and using: const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--font-inter' });
+const inter = { variable: '--font-inter' };
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
