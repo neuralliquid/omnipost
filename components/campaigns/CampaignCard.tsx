@@ -34,7 +34,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onDelete && confirm('Are you sure you want to delete this campaign?')) {
+    if (onDelete && window.confirm('Are you sure you want to delete this campaign?')) {
       onDelete(campaign.id);
     }
   };

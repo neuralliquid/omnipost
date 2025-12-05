@@ -29,8 +29,25 @@ interface ReviewConfigStep {
   label: string;
 }
 
+/**
+ * Safely stringify data - handles both string and object data
+ */
+function stringifyData(data: unknown): string {
+  return typeof data === 'string' ? data : JSON.stringify(data);
+}
+
+/**
+ * Check if image data has an imageUrl property
+ */
+function hasImageUrl(data: unknown): data is { imageUrl: string } {
+  return typeof data === 'object' && data !== null && 'imageUrl' in data;
+}
+
 // Submit button with pending state
-function SubmitButton({ children, className }: { children: React.ReactNode; className?: string }) {
+function SubmitButton({
+  children,
+  className,
+}: Readonly<{ children: React.ReactNode; className?: string }>) {
   const { pending } = useFormStatus();
   return (
     <button type="submit" disabled={pending} className={className || styles.submitButton}>
@@ -74,6 +91,135 @@ function ProgressBar({
         );
       })}
     </div>
+  );
+}
+
+// Input step component
+function InputStep({
+  rawInput,
+  setRawInput,
+  parseAction,
+}: Readonly<{
+  rawInput: string;
+  setRawInput: (value: string) => void;
+  parseAction: (payload: FormData) => void;
+}>) {
+  return (
+    <form action={parseAction} className={styles.reviewStage}>
+      <h2>Step 1: Enter Content</h2>
+      <label htmlFor="rawInput" className={styles.inputLabel}>
+        Paste your raw content below:
+      </label>
+      <textarea
+        id="rawInput"
+        name="rawInput"
+        value={rawInput}
+        onChange={e => setRawInput(e.target.value)}
+        rows={10}
+        className={styles.textArea}
+        placeholder="Enter your content here..."
+        required
+      />
+      <div className={styles.buttonGroup}>
+        <SubmitButton>Parse Content</SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+// Summarizing step component
+function SummarizingStep({
+  parseResult,
+  summaryAction,
+  onReset,
+}: Readonly<{
+  parseResult: ParseResult;
+  summaryAction: (payload: FormData) => void;
+  onReset: () => void;
+}>) {
+  return (
+    <form action={summaryAction} className={styles.reviewStage}>
+      <h2>Step 2: Review & Summarize</h2>
+      <div className={styles.parsedContent}>
+        <h3>Parsed Content:</h3>
+        <pre className={styles.preformatted}>{JSON.stringify(parseResult.data, null, 2)}</pre>
+      </div>
+      <input type="hidden" name="content" value={stringifyData(parseResult.data)} />
+      <div className={styles.buttonGroup}>
+        <button type="button" onClick={onReset} className={styles.secondaryButton}>
+          Start Over
+        </button>
+        <SubmitButton>Generate Summary</SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+// Generating step component
+function GeneratingStep({
+  summaryResult,
+  imageAction,
+  onBack,
+}: Readonly<{
+  summaryResult: SummarizeResult;
+  imageAction: (payload: FormData) => void;
+  onBack: () => void;
+}>) {
+  const summaryText = stringifyData(summaryResult.data);
+  return (
+    <form action={imageAction} className={styles.reviewStage}>
+      <h2>Step 3: Generate Image</h2>
+      <div className={styles.summaryContent}>
+        <h3>Generated Summary:</h3>
+        <p className={styles.summaryText}>{summaryText}</p>
+      </div>
+      <input type="hidden" name="prompt" value={`Generate an image for: ${summaryText}`} />
+      <div className={styles.buttonGroup}>
+        <button type="button" onClick={onBack} className={styles.secondaryButton}>
+          Back
+        </button>
+        <SubmitButton>Generate Image</SubmitButton>
+      </div>
+    </form>
+  );
+}
+
+// Approving step component
+function ApprovingStep({
+  imageResult,
+  summaryResult,
+  approveAction,
+  onBack,
+}: Readonly<{
+  imageResult: ImageResult;
+  summaryResult: SummarizeResult | null;
+  approveAction: (payload: FormData) => void;
+  onBack: () => void;
+}>) {
+  return (
+    <form action={approveAction} className={styles.reviewStage}>
+      <h2>Step 4: Final Review & Approve</h2>
+      <div className={styles.imagePreview}>
+        <h3>Generated Image:</h3>
+        {hasImageUrl(imageResult.data) ? (
+          <img
+            src={imageResult.data.imageUrl}
+            alt="Generated content"
+            className={styles.generatedImage}
+          />
+        ) : (
+          <p className={styles.imagePlaceholder}>Image data: {JSON.stringify(imageResult.data)}</p>
+        )}
+      </div>
+      <input type="hidden" name="summary" value={stringifyData(summaryResult?.data)} />
+      <input type="hidden" name="image" value={JSON.stringify(imageResult.data)} />
+      <div className={styles.buttonGroup}>
+        <button type="button" onClick={onBack} className={styles.secondaryButton}>
+          Back
+        </button>
+        <SubmitButton className={styles.approveButton}>Approve & Publish</SubmitButton>
+      </div>
+    </form>
   );
 }
 
@@ -145,6 +291,46 @@ export function ReviewWorkflow() {
     setCurrentStep(step);
   };
 
+  // Render step content based on current step
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 'input':
+        return (
+          <InputStep rawInput={rawInput} setRawInput={setRawInput} parseAction={parseAction} />
+        );
+      case 'summarizing':
+        if (!parseResult?.data) return null;
+        return (
+          <SummarizingStep
+            parseResult={parseResult}
+            summaryAction={summaryAction}
+            onReset={handleReset}
+          />
+        );
+      case 'generating':
+        if (!summaryResult?.data) return null;
+        return (
+          <GeneratingStep
+            summaryResult={summaryResult}
+            imageAction={imageAction}
+            onBack={() => goBack('summarizing')}
+          />
+        );
+      case 'approving':
+        if (!imageResult?.data) return null;
+        return (
+          <ApprovingStep
+            imageResult={imageResult}
+            summaryResult={summaryResult}
+            approveAction={approveAction}
+            onBack={() => goBack('generating')}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
   return (
     <div className={styles.workflowContainer}>
       {error ? (
@@ -164,123 +350,7 @@ export function ReviewWorkflow() {
 
       <ProgressBar steps={reviewConfig.steps as ReviewConfigStep[]} currentStep={currentStep} />
 
-      {currentStep === 'input' ? (
-        <form action={parseAction} className={styles.reviewStage}>
-          <h2>Step 1: Enter Content</h2>
-          <label htmlFor="rawInput" className={styles.inputLabel}>
-            Paste your raw content below:
-          </label>
-          <textarea
-            id="rawInput"
-            name="rawInput"
-            value={rawInput}
-            onChange={e => setRawInput(e.target.value)}
-            rows={10}
-            className={styles.textArea}
-            placeholder="Enter your content here..."
-            required
-          />
-          <div className={styles.buttonGroup}>
-            <SubmitButton>Parse Content</SubmitButton>
-          </div>
-        </form>
-      ) : null}
-
-      {currentStep === 'summarizing' && parseResult?.data ? (
-        <form action={summaryAction} className={styles.reviewStage}>
-          <h2>Step 2: Review & Summarize</h2>
-          <div className={styles.parsedContent}>
-            <h3>Parsed Content:</h3>
-            <pre className={styles.preformatted}>{JSON.stringify(parseResult.data, null, 2)}</pre>
-          </div>
-          <input
-            type="hidden"
-            name="content"
-            value={
-              typeof parseResult.data === 'string'
-                ? parseResult.data
-                : JSON.stringify(parseResult.data)
-            }
-          />
-          <div className={styles.buttonGroup}>
-            <button type="button" onClick={handleReset} className={styles.secondaryButton}>
-              Start Over
-            </button>
-            <SubmitButton>Generate Summary</SubmitButton>
-          </div>
-        </form>
-      ) : null}
-
-      {currentStep === 'generating' && summaryResult?.data ? (
-        <form action={imageAction} className={styles.reviewStage}>
-          <h2>Step 3: Generate Image</h2>
-          <div className={styles.summaryContent}>
-            <h3>Generated Summary:</h3>
-            <p className={styles.summaryText}>
-              {typeof summaryResult.data === 'string'
-                ? summaryResult.data
-                : JSON.stringify(summaryResult.data)}
-            </p>
-          </div>
-          <input
-            type="hidden"
-            name="prompt"
-            value={`Generate an image for: ${typeof summaryResult.data === 'string' ? summaryResult.data : JSON.stringify(summaryResult.data)}`}
-          />
-          <div className={styles.buttonGroup}>
-            <button
-              type="button"
-              onClick={() => goBack('summarizing')}
-              className={styles.secondaryButton}
-            >
-              Back
-            </button>
-            <SubmitButton>Generate Image</SubmitButton>
-          </div>
-        </form>
-      ) : null}
-
-      {currentStep === 'approving' && imageResult?.data ? (
-        <form action={approveAction} className={styles.reviewStage}>
-          <h2>Step 4: Final Review & Approve</h2>
-          <div className={styles.imagePreview}>
-            <h3>Generated Image:</h3>
-            {typeof imageResult.data === 'object' &&
-            imageResult.data !== null &&
-            'imageUrl' in imageResult.data ? (
-              <img
-                src={(imageResult.data as { imageUrl: string }).imageUrl}
-                alt="Generated content"
-                className={styles.generatedImage}
-              />
-            ) : (
-              <p className={styles.imagePlaceholder}>
-                Image data: {JSON.stringify(imageResult.data)}
-              </p>
-            )}
-          </div>
-          <input
-            type="hidden"
-            name="summary"
-            value={
-              typeof summaryResult?.data === 'string'
-                ? summaryResult.data
-                : JSON.stringify(summaryResult?.data)
-            }
-          />
-          <input type="hidden" name="image" value={JSON.stringify(imageResult.data)} />
-          <div className={styles.buttonGroup}>
-            <button
-              type="button"
-              onClick={() => goBack('generating')}
-              className={styles.secondaryButton}
-            >
-              Back
-            </button>
-            <SubmitButton className={styles.approveButton}>Approve & Publish</SubmitButton>
-          </div>
-        </form>
-      ) : null}
+      {renderStepContent()}
     </div>
   );
 }

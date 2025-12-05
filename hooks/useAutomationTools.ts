@@ -18,8 +18,10 @@ export function useAutomationTools(
   // Fetch automation tools if not provided initially and no error from server
   useEffect(() => {
     const fetchAutomationTools = async () => {
-      // If we have an initial error from the server, don't fetch
+      // Sync error state from props when initialError changes
+      // This handles cases where props update after a retry or revalidation
       if (initialError) {
+        setError(initialError);
         setIsLoading(false);
         return;
       }
@@ -27,9 +29,13 @@ export function useAutomationTools(
       // If we already have tools from props, don't fetch
       if (initialTools.length > 0) {
         setTools(initialTools);
+        setError(null); // Clear any previous error when valid tools arrive
         setIsLoading(false);
         return;
       }
+
+      // Clear error when starting a fresh fetch (no initialError and no initialTools)
+      setError(null);
 
       try {
         setIsLoading(true);
