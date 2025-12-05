@@ -10,7 +10,17 @@ import os from 'node:os';
 // Define specific feature flag types
 export interface TextParserFeatureFlag {
   enabled: boolean;
-  implementation: 'deepseek' | 'openai' | 'azure';
+  implementation: 'deepseek' | 'openai' | 'azure' | 'azure-foundry';
+}
+
+export interface ImageGenerationFeatureFlag {
+  enabled: boolean;
+  implementation: 'huggingface' | 'azure-foundry' | 'dall-e';
+}
+
+export interface SummarizationFeatureFlag {
+  enabled: boolean;
+  implementation: 'huggingface' | 'azure-foundry' | 'openai';
 }
 
 export interface FeatureFlag {
@@ -21,8 +31,8 @@ export interface FeatureFlag {
 // Define the base feature flags interface without index signature
 interface BaseFeatureFlags {
   textParser: TextParserFeatureFlag;
-  imageGeneration: boolean;
-  summarization: boolean;
+  imageGeneration: ImageGenerationFeatureFlag;
+  summarization: SummarizationFeatureFlag;
   platformConnectors: boolean;
   multiPlatformPublishing: boolean;
   notificationSystem: boolean;
@@ -78,8 +88,14 @@ const featureFlags: FeatureFlags = {
     enabled: true,
     implementation: 'openai',
   },
-  imageGeneration: true,
-  summarization: true,
+  imageGeneration: {
+    enabled: true,
+    implementation: 'huggingface',
+  },
+  summarization: {
+    enabled: true,
+    implementation: 'huggingface',
+  },
   platformConnectors: true,
   multiPlatformPublishing: true,
   notificationSystem: true,
