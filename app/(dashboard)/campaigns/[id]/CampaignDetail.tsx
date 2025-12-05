@@ -31,6 +31,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     updateStatus,
     pauseCampaign,
     resumeCampaign,
+    isLoading,
   } = useCampaign();
 
   const { series } = useSeries();
@@ -47,6 +48,19 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     const found = getCampaign(campaignId);
     setCampaign(found);
   }, [campaignId, getCampaign]);
+
+  // Show loading state while data is being loaded from localStorage
+  if (isLoading) {
+    return (
+      <Layout title="Loading Campaign" description="">
+        <div className={styles.container}>
+          <div className={styles.emptyState}>
+            <p>Loading campaign...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   if (!campaign) {
     return (

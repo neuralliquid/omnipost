@@ -22,8 +22,10 @@ interface AutomationContentProps {
 }
 
 export default function AutomationContent({ initialTools, initialError }: AutomationContentProps) {
-  const { tools, selectedTool, isLoading, error, selectTool, closeTool } =
-    useAutomationTools(initialTools);
+  const { tools, selectedTool, isLoading, error, selectTool, closeTool } = useAutomationTools(
+    initialTools,
+    initialError
+  );
 
   const navigationLinks = [
     {
@@ -37,8 +39,6 @@ export default function AutomationContent({ initialTools, initialError }: Automa
       direction: 'next' as const,
     },
   ];
-
-  const displayError = initialError || error;
 
   return (
     <Layout
@@ -54,7 +54,7 @@ export default function AutomationContent({ initialTools, initialError }: Automa
               content workflow, improving efficiency and consistency.
             </p>
 
-            {displayError ? <ErrorMessage message={displayError} /> : null}
+            {error ? <ErrorMessage message={error} /> : null}
 
             {isLoading ? <LoadingState /> : <ToolGrid tools={tools} onSelectTool={selectTool} />}
 
