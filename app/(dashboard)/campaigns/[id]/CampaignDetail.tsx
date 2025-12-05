@@ -225,20 +225,13 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               <h3 style={{ marginBottom: '1rem' }}>Target Platforms</h3>
               <div className={styles.platformSelection}>
                 {campaign.platforms.map(platform => (
-                  <label
+                  <button
                     key={platform.platformId}
+                    type="button"
                     className={`${styles.platformOption} ${
                       platform.enabled ? styles.selected : ''
                     }`}
                     onClick={() => handleTogglePlatform(platform.platformId)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        handleTogglePlatform(platform.platformId);
-                      }
-                    }}
-                    tabIndex={0}
-                    role="button"
                     aria-pressed={platform.enabled}
                     style={{ cursor: 'pointer' }}
                   >
@@ -256,7 +249,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       {platform.platformName.charAt(0)}
                     </span>
                     <span className={styles.platformName}>{platform.platformName}</span>
-                  </label>
+                  </button>
                 ))}
               </div>
             </div>
