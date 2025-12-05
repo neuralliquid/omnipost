@@ -397,7 +397,8 @@ export class InstagramAdapter extends BasePlatformAdapter {
     // Instagram requires media (in production)
     if (process.env.NODE_ENV === 'production') {
       if (!content.mediaUrls || content.mediaUrls.length === 0) {
-        result.warnings.push('Instagram posts typically require an image');
+        result.errors.push('Instagram posts require at least one image');
+        result.valid = false;
       }
     }
 
