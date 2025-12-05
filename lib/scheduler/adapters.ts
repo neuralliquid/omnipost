@@ -5,6 +5,7 @@
 
 import { PlatformAdapter, PlatformPublishResult, ValidationResult, ScheduledJob } from './types';
 import { getPlatformConfig } from '@/lib/config/platforms';
+import { generatePlatformPostId } from '@/lib/utils/id';
 
 /**
  * Base adapter with common functionality
@@ -50,11 +51,11 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
     content: ScheduledJob['content'],
     platformName: string
   ): Promise<PlatformPublishResult> {
-    // Simulate network delay (not security-sensitive)
+    // Simulate network delay (random delay is acceptable for simulation purposes)
     await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
 
-    // Generate mock response ID (development only, not security-sensitive)
-    const postId = `${this.platformId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Generate mock response using secure ID generation
+    const postId = generatePlatformPostId(this.platformId);
 
     return {
       id: postId,

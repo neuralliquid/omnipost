@@ -4,6 +4,7 @@
  */
 
 import { JobQueue, ScheduledJob, JobStatus } from './types';
+import { generateJobId as generateSecureJobId } from '@/lib/utils/id';
 
 const STORAGE_KEY = 'scheduler-jobs';
 
@@ -227,8 +228,8 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -241,8 +242,8 @@ class ServerMemoryQueue implements JobQueue {
       }
     }
 
-    return filtered.sort((a, b) =>
-      new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
+    return filtered.sort(
+      (a, b) => new Date(a.scheduledTime).getTime() - new Date(b.scheduledTime).getTime()
     );
   }
 
@@ -289,5 +290,5 @@ export function getQueue(): JobQueue {
  * prefix ensures uniqueness for practical purposes.
  */
 export function generateJobId(): string {
-  return `job_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  return generateSecureJobId();
 }

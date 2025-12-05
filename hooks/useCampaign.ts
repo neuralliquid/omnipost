@@ -18,6 +18,7 @@ import {
   CampaignStatus,
 } from '@/types/campaign';
 import { platforms as availablePlatforms } from '@/lib/config/platforms';
+import { generateCampaignId, generateContentId, generatePostId } from '@/lib/utils/id';
 
 const STORAGE_KEY = 'content-campaigns';
 
@@ -219,7 +220,7 @@ export function useCampaign(): UseCampaignReturn {
     }));
 
     const newCampaign: Campaign = {
-      id: generateId(),
+      id: generateCampaignId(),
       name: input.name,
       description: input.description || '',
       status: 'draft',
@@ -285,7 +286,7 @@ export function useCampaign(): UseCampaignReturn {
       const now = new Date().toISOString();
       const duplicated: Campaign = {
         ...JSON.parse(JSON.stringify(source)),
-        id: generateId(),
+        id: generateCampaignId(),
         name: `${source.name} (Copy)`,
         status: 'draft',
         createdAt: now,
@@ -595,7 +596,7 @@ export function useCampaign(): UseCampaignReturn {
           if (c.id === campaignId) {
             const newPost: ScheduledPost = {
               ...post,
-              id: `post_${Date.now()}`,
+              id: generatePostId(),
               status: 'scheduled',
             };
             updated = {
