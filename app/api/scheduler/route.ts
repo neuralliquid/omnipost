@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status') as JobStatus | null;
     const campaignId = searchParams.get('campaignId');
-    const limit = parseInt(searchParams.get('limit') || '100', 10);
+    const limit = Number.parseInt(searchParams.get('limit') || '100', 10);
 
     const scheduler = getScheduler();
 
@@ -63,7 +63,7 @@ export async function POST(request: Request) {
 
     // Validate scheduled time is in the future
     const scheduledTime = new Date(body.scheduledTime);
-    if (isNaN(scheduledTime.getTime())) {
+    if (Number.isNaN(scheduledTime.getTime())) {
       return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
     }
 

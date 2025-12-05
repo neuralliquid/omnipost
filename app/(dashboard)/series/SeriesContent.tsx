@@ -63,9 +63,13 @@ export default function SeriesContent() {
 
         {isLoading ? (
           <div className={styles.loadingState}>Loading your content series...</div>
-        ) : series.length === 0 ? (
+        ) : null}
+
+        {!isLoading && series.length === 0 ? (
           <EmptyState onCreateClick={() => setShowForm(true)} />
-        ) : (
+        ) : null}
+
+        {!isLoading && series.length > 0 ? (
           <div className={styles.seriesGrid}>
             {series.map((s: Series, index: number) => (
               <SeriesCard
@@ -77,7 +81,7 @@ export default function SeriesContent() {
               />
             ))}
           </div>
-        )}
+        ) : null}
 
         <div className={styles.navigationLinks}>
           <Link href="/workflow" className={styles.navLink}>

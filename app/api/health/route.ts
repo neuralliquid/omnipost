@@ -207,7 +207,14 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
   const { total: totalFlags, enabled: enabledFlags } = getFeatureFlagStats();
 
   const overallStatus = calculateOverallStatus(components);
-  const statusCode = overallStatus === 'healthy' ? 200 : overallStatus === 'degraded' ? 200 : 503;
+
+  // Determine HTTP status code based on health status
+  let statusCode: number;
+  if (overallStatus === 'healthy' || overallStatus === 'degraded') {
+    statusCode = 200;
+  } else {
+    statusCode = 503;
+  }
 
   return NextResponse.json(
     {

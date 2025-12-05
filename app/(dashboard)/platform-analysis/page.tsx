@@ -118,9 +118,9 @@ export default function PlatformAnalysisPage() {
         </p>
 
         <div className={styles.grid}>
-          {platforms.map((platform, index) => (
+          {platforms.map(platform => (
             <PlatformCard
-              key={index}
+              key={platform.name}
               icon={platform.icon}
               name={platform.name}
               type={platform.type}
