@@ -122,9 +122,19 @@ function updateAdaptationByPlatformId(
 }
 
 /**
+ * Metrics result type for calculateCampaignMetrics
+ */
+interface CampaignMetricsResult {
+  totalPosts: number;
+  publishedPosts: number;
+  scheduledPosts: number;
+  failedPosts: number;
+}
+
+/**
  * Helper to calculate campaign metrics from content items
  */
-function calculateCampaignMetrics(contentItems: CampaignContent[]) {
+function calculateCampaignMetrics(contentItems: CampaignContent[]): CampaignMetricsResult {
   let totalPosts = 0;
   let publishedPosts = 0;
   let scheduledPosts = 0;
@@ -587,10 +597,9 @@ export function useCampaign(): UseCampaignReturn {
       adaptation: Omit<PlatformAdaptation, 'status'>
     ): Campaign | null => {
       let updated: Campaign | null = null;
-      const newAdaptation = { ...adaptation, status: 'pending' as const };
       const addToAdaptations = (adaptations: PlatformAdaptation[]) => [
         ...adaptations,
-        newAdaptation,
+        { ...adaptation, status: 'pending' as const },
       ];
       const mapItem = (item: CampaignContent) =>
         updateContentItemAdaptations(item, contentId, addToAdaptations);
