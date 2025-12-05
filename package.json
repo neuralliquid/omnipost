@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "A comprehensive content creation and management platform built with React and Next.js, featuring AI-powered text processing, image generation, and multi-platform publishing capabilities.",
   "main": "index.js",
+  "packageManager": "pnpm@9.0.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "export": "next export",
-    "deploy": "npm run build && npm run export",
+    "deploy": "pnpm run build && pnpm run export",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -17,7 +18,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "check-all": "npm run type-check && npm run lint && npm run format:check && npm run test"
+    "check-all": "pnpm run type-check && pnpm run lint && pnpm run format:check && pnpm run test"
   },
   "dependencies": {
     "@slack/web-api": "^7.9.1",
