@@ -128,7 +128,7 @@ function calculateDelay(attempt: number, options: Required<RetryOptions>): numbe
   // does not require cryptographic security, just some variation
   if (options.jitter) {
     const jitterRange = delay * 0.25;
-    delay = delay + (Math.random() * jitterRange * 2 - jitterRange);
+    delay = delay + (Math.random() * jitterRange * 2 - jitterRange); // NOSONAR
   }
 
   return Math.round(delay);
