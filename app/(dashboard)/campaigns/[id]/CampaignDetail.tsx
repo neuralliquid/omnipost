@@ -101,11 +101,13 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
 
   const handleAddContent = (e: React.FormEvent) => {
     e.preventDefault();
-    if (newContent.title && newContent.body) {
+    const trimmedTitle = newContent.title.trim();
+    const trimmedBody = newContent.body.trim();
+    if (trimmedTitle && trimmedBody) {
       const updated = addContent(campaignId, {
         type: newContent.type,
-        title: newContent.title,
-        body: newContent.body,
+        title: trimmedTitle,
+        body: trimmedBody,
         adaptations: [],
       });
       if (updated) {
@@ -369,6 +371,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       className={styles.formSelect}
                     >
                       <option value="standalone">Standalone Post</option>
+                      <option value="series-article">Series Article</option>
                       <option value="thread">Thread</option>
                       <option value="announcement">Announcement</option>
                     </select>
