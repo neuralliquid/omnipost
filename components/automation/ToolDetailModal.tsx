@@ -19,7 +19,7 @@ interface ToolDetailModalProps {
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
   // Handle escape key to close modal
   React.useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
+    const handleEscape = (event: globalThis.KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
       }
@@ -32,24 +32,14 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
     <div
       className={styles.toolDetailModal}
       onClick={onClose}
-      role="button"
-      tabIndex={0}
       onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
+        if (e.key === 'Escape') {
           onClose();
         }
       }}
-      aria-label="Close modal"
+      aria-label="Modal backdrop"
     >
-      <div
-        className={styles.toolDetailContent}
-        onClick={e => e.stopPropagation()}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.stopPropagation();
-          }
-        }}
-      >
+      <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
     </div>

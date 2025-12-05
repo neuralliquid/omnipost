@@ -8,6 +8,60 @@ import { getPlatformConfig } from '@/lib/config/platforms';
 import { generatePlatformPostId } from '@/lib/utils/id';
 
 /**
+ * Default timeout values for platform API requests (in milliseconds)
+ * LinkedIn/Facebook use longer timeouts for text-heavy API calls
+ * Instagram uses shorter timeout as media upload endpoints typically respond faster
+ */
+const DEFAULT_TIMEOUT_MS = 30000; // 30 seconds
+const INSTAGRAM_TIMEOUT_MS = 10000; // 10 seconds for media-focused API
+
+/**
+ * Configuration for fetch requests with timeout
+ */
+interface FetchWithTimeoutOptions {
+  url: string;
+  method: 'POST' | 'GET' | 'PUT' | 'DELETE';
+  headers: Record<string, string>;
+  body: unknown;
+  timeoutMs: number;
+  platformName: string;
+}
+
+/**
+ * Execute a fetch request with timeout handling
+ * Centralizes AbortController logic to reduce code duplication
+ */
+async function fetchWithTimeout<T>(options: FetchWithTimeoutOptions): Promise<T> {
+  const { url, method, headers, body, timeoutMs, platformName } = options;
+
+  // AbortController is a global in Node.js 16+ and all modern browsers
+  const controller = new globalThis.AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(url, {
+      method,
+      headers,
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`${platformName} API error: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error(`${platformName} API request timed out after ${timeoutMs}ms`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+/**
  * Error class for partial thread publish failures
  * Thrown when some tweets in a thread are published but later ones fail
  */
@@ -264,25 +318,22 @@ export class LinkedInAdapter extends BasePlatformAdapter {
 
   private async publishToLinkedIn(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
-    const response = await fetch(config.apiUrl, {
+    const data = await fetchWithTimeout<{ id: string }>({
+      url: config.apiUrl,
       method: 'POST',
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: {
         text: this.formatContent(content),
         visibility: 'PUBLIC',
-      }),
+      },
+      timeoutMs: config.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      platformName: 'LinkedIn',
     });
-
-    if (!response.ok) {
-      throw new Error(`LinkedIn API error: ${response.status}`);
-    }
-
-    const data = await response.json();
 
     return {
       id: data.id,
@@ -333,24 +384,21 @@ export class FacebookAdapter extends BasePlatformAdapter {
 
   private async publishToFacebook(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
-    const response = await fetch(config.apiUrl, {
+    const data = await fetchWithTimeout<{ id: string }>({
+      url: config.apiUrl,
       method: 'POST',
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: {
         message: content.text,
-      }),
+      },
+      timeoutMs: config.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      platformName: 'Facebook',
     });
-
-    if (!response.ok) {
-      throw new Error(`Facebook API error: ${response.status}`);
-    }
-
-    const data = await response.json();
 
     return {
       id: data.id,
@@ -386,30 +434,27 @@ export class InstagramAdapter extends BasePlatformAdapter {
 
   private async publishToInstagram(
     content: ScheduledJob['content'],
-    config: { apiUrl: string; apiKey: string }
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
   ): Promise<PlatformPublishResult> {
     // Instagram requires media for posts
     if (!content.mediaUrls || content.mediaUrls.length === 0) {
       throw new Error('Instagram posts require at least one image');
     }
 
-    const response = await fetch(config.apiUrl, {
+    const data = await fetchWithTimeout<{ id: string }>({
+      url: config.apiUrl,
       method: 'POST',
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
+      body: {
         caption: this.formatContent(content),
         media_url: content.mediaUrls[0],
-      }),
+      },
+      timeoutMs: config.timeoutMs ?? INSTAGRAM_TIMEOUT_MS,
+      platformName: 'Instagram',
     });
-
-    if (!response.ok) {
-      throw new Error(`Instagram API error: ${response.status}`);
-    }
-
-    const data = await response.json();
 
     return {
       id: data.id,
