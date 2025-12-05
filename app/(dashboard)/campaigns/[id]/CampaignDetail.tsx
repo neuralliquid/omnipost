@@ -70,7 +70,6 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
   }
 
   const linkedSeries = series.filter(s => campaign.seriesIds.includes(s.id));
-  const enabledPlatforms = campaign.platforms.filter(p => p.enabled);
 
   const handleUpdateCampaign = (data: UpdateCampaignInput) => {
     const updated = updateCampaign(campaignId, data);
