@@ -231,6 +231,15 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       platform.enabled ? styles.selected : ''
                     }`}
                     onClick={() => handleTogglePlatform(platform.platformId)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleTogglePlatform(platform.platformId);
+                      }
+                    }}
+                    tabIndex={0}
+                    role="button"
+                    aria-pressed={platform.enabled}
                     style={{ cursor: 'pointer' }}
                   >
                     <span
