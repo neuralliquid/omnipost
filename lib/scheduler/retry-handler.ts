@@ -209,7 +209,7 @@ export class RetryHandler {
     // Add jitter (±10%) to prevent thundering herd
     // NOTE: Using Math.random() is intentional - jitter does not require
     // cryptographic security, just some variation to avoid synchronized retries
-    const jitter = delay * 0.1 * (Math.random() * 2 - 1);
+    const jitter = delay * 0.1 * (Math.random() * 2 - 1); // NOSONAR
     delay += jitter;
 
     return new Date(Date.now() + delay * 1000);

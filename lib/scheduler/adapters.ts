@@ -123,7 +123,8 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
     platformName: string
   ): Promise<PlatformPublishResult> {
     // Simulate network delay (random delay is acceptable for simulation purposes)
-    await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+    // NOSONAR: Math.random() is safe here - used only for dev simulation timing, not security
+    await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000)); // NOSONAR
 
     // Generate mock response using secure ID generation
     const postId = generatePlatformPostId(this.platformId);

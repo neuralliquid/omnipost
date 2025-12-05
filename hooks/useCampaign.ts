@@ -49,6 +49,99 @@ function saveCampaigns(campaigns: Campaign[]): void {
 }
 
 /**
+ * Helper to update a content item's adaptations
+ */
+function updateContentItemAdaptations(
+  item: CampaignContent,
+  contentId: string,
+  updater: (adaptations: PlatformAdaptation[]) => PlatformAdaptation[]
+): CampaignContent {
+  if (item.id !== contentId) return item;
+  return {
+    ...item,
+    adaptations: updater(item.adaptations),
+    updatedAt: new Date().toISOString(),
+  };
+}
+
+/**
+ * Helper to filter content from schedule posts
+ */
+function filterSchedulePosts(
+  schedule: Campaign['schedule'],
+  contentId: string
+): Campaign['schedule'] {
+  return {
+    ...schedule,
+    posts: schedule.posts.filter(p => p.contentId !== contentId),
+  };
+}
+
+/**
+ * Helper to update a single content item by ID
+ */
+function updateContentItem(
+  item: CampaignContent,
+  contentId: string,
+  updates: Partial<CampaignContent>
+): CampaignContent {
+  if (item.id !== contentId) return item;
+  return { ...item, ...updates, updatedAt: new Date().toISOString() };
+}
+
+/**
+ * Helper to toggle a platform's enabled state
+ */
+function togglePlatformEnabled(platform: CampaignPlatform, platformId: string): CampaignPlatform {
+  if (platform.platformId !== platformId) return platform;
+  return { ...platform, enabled: !platform.enabled };
+}
+
+/**
+ * Helper to update a platform's config
+ */
+function updatePlatformConfigById(
+  platform: CampaignPlatform,
+  platformId: string,
+  config: Partial<CampaignPlatform['config']>
+): CampaignPlatform {
+  if (platform.platformId !== platformId) return platform;
+  return { ...platform, config: { ...platform.config, ...config } };
+}
+
+/**
+ * Helper to update an adaptation by platform ID
+ */
+function updateAdaptationByPlatformId(
+  adaptation: PlatformAdaptation,
+  platformId: string,
+  updates: Partial<PlatformAdaptation>
+): PlatformAdaptation {
+  if (adaptation.platformId !== platformId) return adaptation;
+  return { ...adaptation, ...updates };
+}
+
+/**
+ * Helper to calculate campaign metrics from content items
+ */
+function calculateCampaignMetrics(contentItems: CampaignContent[]) {
+  let totalPosts = 0;
+  let publishedPosts = 0;
+  let scheduledPosts = 0;
+  let failedPosts = 0;
+
+  const allAdaptations = contentItems.flatMap(item => item.adaptations);
+  for (const adaptation of allAdaptations) {
+    totalPosts++;
+    if (adaptation.status === 'published') publishedPosts++;
+    if (adaptation.status === 'scheduled') scheduledPosts++;
+    if (adaptation.status === 'failed') failedPosts++;
+  }
+
+  return { totalPosts, publishedPosts, scheduledPosts, failedPosts };
+}
+
+/**
  * Campaign hook return type
  */
 export interface UseCampaignReturn {
@@ -347,12 +440,13 @@ export function useCampaign(): UseCampaignReturn {
   const removeSeriesFromCampaign = useCallback(
     (campaignId: string, seriesId: string): Campaign | null => {
       let updated: Campaign | null = null;
+      const filterSeriesId = (id: string) => id !== seriesId;
       setCampaigns(prev =>
         prev.map(c => {
           if (c.id === campaignId) {
             updated = {
               ...c,
-              seriesIds: c.seriesIds.filter(id => id !== seriesId),
+              seriesIds: c.seriesIds.filter(filterSeriesId),
               updatedAt: new Date().toISOString(),
             };
             return updated;
@@ -400,16 +494,13 @@ export function useCampaign(): UseCampaignReturn {
   const updateContent = useCallback(
     (campaignId: string, contentId: string, updates: Partial<CampaignContent>): Campaign | null => {
       let updated: Campaign | null = null;
+      const mapItem = (item: CampaignContent) => updateContentItem(item, contentId, updates);
       setCampaigns(prev =>
         prev.map(c => {
           if (c.id === campaignId) {
             updated = {
               ...c,
-              contentItems: c.contentItems.map(item =>
-                item.id === contentId
-                  ? { ...item, ...updates, updatedAt: new Date().toISOString() }
-                  : item
-              ),
+              contentItems: c.contentItems.map(mapItem),
               updatedAt: new Date().toISOString(),
             };
             return updated;
@@ -424,16 +515,14 @@ export function useCampaign(): UseCampaignReturn {
 
   const removeContent = useCallback((campaignId: string, contentId: string): Campaign | null => {
     let updated: Campaign | null = null;
+    const filterContent = (item: CampaignContent) => item.id !== contentId;
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
           updated = {
             ...c,
-            contentItems: c.contentItems.filter(item => item.id !== contentId),
-            schedule: {
-              ...c.schedule,
-              posts: c.schedule.posts.filter(p => p.contentId !== contentId),
-            },
+            contentItems: c.contentItems.filter(filterContent),
+            schedule: filterSchedulePosts(c.schedule, contentId),
             updatedAt: new Date().toISOString(),
           };
           return updated;
@@ -447,14 +536,13 @@ export function useCampaign(): UseCampaignReturn {
   // Platform management
   const togglePlatform = useCallback((campaignId: string, platformId: string): Campaign | null => {
     let updated: Campaign | null = null;
+    const mapPlatform = (p: CampaignPlatform) => togglePlatformEnabled(p, platformId);
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
           updated = {
             ...c,
-            platforms: c.platforms.map(p =>
-              p.platformId === platformId ? { ...p, enabled: !p.enabled } : p
-            ),
+            platforms: c.platforms.map(mapPlatform),
             updatedAt: new Date().toISOString(),
           };
           return updated;
@@ -472,14 +560,13 @@ export function useCampaign(): UseCampaignReturn {
       config: Partial<CampaignPlatform['config']>
     ): Campaign | null => {
       let updated: Campaign | null = null;
+      const mapPlatform = (p: CampaignPlatform) => updatePlatformConfigById(p, platformId, config);
       setCampaigns(prev =>
         prev.map(c => {
           if (c.id === campaignId) {
             updated = {
               ...c,
-              platforms: c.platforms.map(p =>
-                p.platformId === platformId ? { ...p, config: { ...p.config, ...config } } : p
-              ),
+              platforms: c.platforms.map(mapPlatform),
               updatedAt: new Date().toISOString(),
             };
             return updated;
@@ -500,24 +587,19 @@ export function useCampaign(): UseCampaignReturn {
       adaptation: Omit<PlatformAdaptation, 'status'>
     ): Campaign | null => {
       let updated: Campaign | null = null;
+      const newAdaptation = { ...adaptation, status: 'pending' as const };
+      const addToAdaptations = (adaptations: PlatformAdaptation[]) => [
+        ...adaptations,
+        newAdaptation,
+      ];
+      const mapItem = (item: CampaignContent) =>
+        updateContentItemAdaptations(item, contentId, addToAdaptations);
       setCampaigns(prev =>
         prev.map(c => {
           if (c.id === campaignId) {
             updated = {
               ...c,
-              contentItems: c.contentItems.map(item => {
-                if (item.id === contentId) {
-                  return {
-                    ...item,
-                    adaptations: [
-                      ...item.adaptations,
-                      { ...adaptation, status: 'pending' as const },
-                    ],
-                    updatedAt: new Date().toISOString(),
-                  };
-                }
-                return item;
-              }),
+              contentItems: c.contentItems.map(mapItem),
               updatedAt: new Date().toISOString(),
             };
             return updated;
@@ -538,23 +620,17 @@ export function useCampaign(): UseCampaignReturn {
       updates: Partial<PlatformAdaptation>
     ): Campaign | null => {
       let updated: Campaign | null = null;
+      const updateAdapt = (a: PlatformAdaptation) =>
+        updateAdaptationByPlatformId(a, platformId, updates);
+      const updateAdaptations = (adaptations: PlatformAdaptation[]) => adaptations.map(updateAdapt);
+      const mapItem = (item: CampaignContent) =>
+        updateContentItemAdaptations(item, contentId, updateAdaptations);
       setCampaigns(prev =>
         prev.map(c => {
           if (c.id === campaignId) {
             updated = {
               ...c,
-              contentItems: c.contentItems.map(item => {
-                if (item.id === contentId) {
-                  return {
-                    ...item,
-                    adaptations: item.adaptations.map(a =>
-                      a.platformId === platformId ? { ...a, ...updates } : a
-                    ),
-                    updatedAt: new Date().toISOString(),
-                  };
-                }
-                return item;
-              }),
+              contentItems: c.contentItems.map(mapItem),
               updatedAt: new Date().toISOString(),
             };
             return updated;
@@ -728,28 +804,12 @@ export function useCampaign(): UseCampaignReturn {
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
-          let totalPosts = 0;
-          let publishedPosts = 0;
-          let scheduledPosts = 0;
-          let failedPosts = 0;
-
-          c.contentItems.forEach(item => {
-            item.adaptations.forEach(a => {
-              totalPosts++;
-              if (a.status === 'published') publishedPosts++;
-              if (a.status === 'scheduled') scheduledPosts++;
-              if (a.status === 'failed') failedPosts++;
-            });
-          });
-
+          const metricsData = calculateCampaignMetrics(c.contentItems);
           updated = {
             ...c,
             metrics: {
               ...c.metrics,
-              totalPosts,
-              publishedPosts,
-              scheduledPosts,
-              failedPosts,
+              ...metricsData,
             },
             updatedAt: new Date().toISOString(),
           };
