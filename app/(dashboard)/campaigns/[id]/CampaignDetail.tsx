@@ -12,16 +12,11 @@ import Layout from '@/components/layouts/Layout';
 import { CampaignStatusBadge, CampaignForm } from '@/components/campaigns';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useSeries } from '@/hooks/useSeries';
-import {
-  Campaign,
-  CampaignContent,
-  CampaignContentType,
-  UpdateCampaignInput,
-} from '@/types/campaign';
+import { Campaign, CampaignContentType, UpdateCampaignInput } from '@/types/campaign';
 import styles from '@/styles/Campaign.module.css';
 
 interface CampaignDetailProps {
-  campaignId: string;
+  readonly campaignId: string;
 }
 
 export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
@@ -133,6 +128,24 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     }
   };
 
+  /**
+   * Get the action button label based on campaign status
+   */
+  const getStatusActionLabel = (): string => {
+    if (campaign.status === 'paused') return 'Resume';
+    if (campaign.status === 'draft') return 'Activate';
+    return 'Pause';
+  };
+
+  /**
+   * Check if the status action button should be shown
+   */
+  const showStatusActionButton =
+    campaign.status === 'draft' ||
+    campaign.status === 'active' ||
+    campaign.status === 'scheduled' ||
+    campaign.status === 'paused';
+
   return (
     <Layout title={campaign.name} description={campaign.description}>
       <div className={styles.container}>
@@ -160,13 +173,9 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {campaign.status !== 'completed' ? (
+            {showStatusActionButton ? (
               <button onClick={handleStatusAction} className={styles.secondaryButton}>
-                {campaign.status === 'paused'
-                  ? 'Resume'
-                  : campaign.status === 'draft'
-                    ? 'Activate'
-                    : 'Pause'}
+                {getStatusActionLabel()}
               </button>
             ) : null}
             <button onClick={() => setIsEditing(true)} className={styles.secondaryButton}>
@@ -314,8 +323,11 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                   }}
                 >
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Title</label>
+                    <label htmlFor="content-title" className={styles.formLabel}>
+                      Title
+                    </label>
                     <input
+                      id="content-title"
                       type="text"
                       value={newContent.title}
                       onChange={e => setNewContent(prev => ({ ...prev, title: e.target.value }))}
@@ -324,8 +336,11 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                     />
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Content Type</label>
+                    <label htmlFor="content-type" className={styles.formLabel}>
+                      Content Type
+                    </label>
                     <select
+                      id="content-type"
                       value={newContent.type}
                       onChange={e =>
                         setNewContent(prev => ({
@@ -341,8 +356,11 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                     </select>
                   </div>
                   <div className={styles.formGroup}>
-                    <label className={styles.formLabel}>Body</label>
+                    <label htmlFor="content-body" className={styles.formLabel}>
+                      Body
+                    </label>
                     <textarea
+                      id="content-body"
                       value={newContent.body}
                       onChange={e => setNewContent(prev => ({ ...prev, body: e.target.value }))}
                       className={styles.formTextarea}
