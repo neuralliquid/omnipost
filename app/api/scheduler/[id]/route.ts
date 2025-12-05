@@ -89,7 +89,14 @@ export async function PATCH(request: Request, { params }: RouteParams) {
         return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
       }
 
-      const job = await scheduler.reschedule(id, body.scheduledTime);
+      if (scheduledTime.getTime() <= Date.now()) {
+        return NextResponse.json(
+          { error: 'scheduledTime must be in the future' },
+          { status: 400 },
+        );
+      }
+
+      const job = await scheduler.reschedule(id, scheduledTime.toISOString());
 
       if (!job) {
         return NextResponse.json({ error: 'Job not found' }, { status: 404 });
