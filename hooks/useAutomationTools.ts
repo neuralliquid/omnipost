@@ -46,7 +46,6 @@ export function useAutomationTools(
         // Import tools from JSON
         const automationTools = await import('../data/automationTools.json');
         setTools(automationTools.tools);
-        setError(null); // Clear error on successful fetch
       } catch (err) {
         console.error('Error fetching automation tools:', err);
         setError('Failed to load automation tools. Please try again later.');
