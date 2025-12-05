@@ -28,7 +28,7 @@ export interface SummarizeServiceResult {
  */
 export async function summarizeText(rawText: string): Promise<SummarizeServiceResult> {
   // Check if summarization feature is enabled
-  if (!featureFlags.summarization) {
+  if (!featureFlags.summarization?.enabled) {
     return {
       success: false,
       error: 'Summarization feature is disabled',
@@ -36,13 +36,22 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
     };
   }
 
-  const apiConfig = getApiConfig();
-  const response = await axios.post(apiConfig.summarizationUrl, { text: rawText });
+  try {
+    const apiConfig = getApiConfig();
+    const response = await axios.post(apiConfig.summarizationUrl, { text: rawText });
 
-  return {
-    success: true,
-    data: response.data,
-  };
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to summarize text';
+    return {
+      success: false,
+      error: message,
+      statusCode: 500,
+    };
+  }
 }
 
 /**
@@ -51,11 +60,20 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
  * @returns SummarizeServiceResult with the approval result or error
  */
 export async function approveSummary(summary: string): Promise<SummarizeServiceResult> {
-  const apiConfig = getApiConfig();
-  const response = await axios.post(apiConfig.approvalUrl, { summary });
+  try {
+    const apiConfig = getApiConfig();
+    const response = await axios.post(apiConfig.approvalUrl, { summary });
 
-  return {
-    success: true,
-    data: response.data,
-  };
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to approve summary';
+    return {
+      success: false,
+      error: message,
+      statusCode: 500,
+    };
+  }
 }

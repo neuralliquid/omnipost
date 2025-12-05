@@ -111,7 +111,16 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
   const apiEndpoints = getApiEndpoints();
 
   // Determine which implementation to use based on feature flags
-  const implementation = featureFlags.textParser.implementation;
+  // Safe access since validateFeatureFlags already confirmed textParser is enabled
+  const implementation = featureFlags.textParser?.implementation;
+  if (!implementation) {
+    return {
+      success: false,
+      error: 'Text parser implementation not configured',
+      statusCode: 500,
+    };
+  }
+
   const endpointMap: Record<'deepseek' | 'openai' | 'azure', string | undefined> = {
     deepseek: apiEndpoints.deepseek,
     openai: apiEndpoints.openai,
@@ -127,10 +136,19 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
     };
   }
 
-  const response = await axios.post(endpoint, { data: parsedData });
+  try {
+    const response = await axios.post(endpoint, { data: parsedData });
 
-  return {
-    success: true,
-    data: response.data,
-  };
+    return {
+      success: true,
+      data: response.data,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to parse text';
+    return {
+      success: false,
+      error: message,
+      statusCode: 500,
+    };
+  }
 }
