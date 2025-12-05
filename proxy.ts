@@ -27,7 +27,7 @@ const authenticatedPaths = [
 // Define paths that require admin authentication
 const adminPaths = ['/api/feature-flags', '/api/audit'];
 
-export function middleware(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Skip middleware for non-API routes
@@ -110,7 +110,7 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// Configure the middleware to run only on API routes
+// Configure the proxy to run only on API routes
 export const config = {
   matcher: '/api/:path*',
 };
