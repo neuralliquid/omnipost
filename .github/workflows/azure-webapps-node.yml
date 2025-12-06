@@ -43,6 +43,8 @@ jobs:
       - name: Install, build, and test
         run: |
           pnpm install --frozen-lockfile
+          pnpm run type-check
+          pnpm run lint
           pnpm run build
           pnpm test
 
@@ -51,7 +53,6 @@ jobs:
           # Create deployment directory
           mkdir -p deploy
           
-          # Install production dependencies with resolved modules (not symlinks)
           # Copy standalone server (includes minimal dependencies)
           cp -r .next/standalone/. deploy/
           

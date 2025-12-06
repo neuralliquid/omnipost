@@ -16,13 +16,6 @@ if [ ! -f "server.js" ]; then
     echo "ERROR: server.js not found in /home/site/wwwroot"
     echo "This suggests the standalone build was not properly deployed"
     exit 1
-fi
-
-# Verify package.json exists
-if [ ! -f "package.json" ]; then
-    if [ ! -f "package.json" ]; then
-        echo "ERROR: package.json not found in /home/site/wwwroot" >&2
-        exit 1
     fi
     exit 1
 fi
