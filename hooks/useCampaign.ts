@@ -26,7 +26,7 @@ const STORAGE_KEY = 'content-campaigns';
  * Load campaigns from localStorage
  */
 function loadCampaigns(): Campaign[] {
-  if (typeof globalThis.window === 'undefined') return [];
+  if (globalThis.window === undefined) return [];
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -40,7 +40,7 @@ function loadCampaigns(): Campaign[] {
  * Save campaigns to localStorage
  */
 function saveCampaigns(campaigns: Campaign[]): void {
-  if (typeof globalThis.window === 'undefined') return;
+  if (globalThis.window === undefined) return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
   } catch (error) {
@@ -307,7 +307,9 @@ export function useCampaign(): UseCampaignReturn {
       setCampaigns(loaded);
       setError(null);
     } catch (err) {
-      setError('Failed to load campaigns');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load campaigns';
+      setError(errorMessage);
+      console.error('Error loading campaigns:', err);
     } finally {
       setIsLoading(false);
     }

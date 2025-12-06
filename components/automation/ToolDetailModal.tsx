@@ -33,7 +33,7 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
       className={styles.toolDetailModal}
       onClick={onClose}
       onKeyDown={e => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
           onClose();
         }
       }}

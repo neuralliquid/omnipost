@@ -12,7 +12,7 @@ const STORAGE_KEY = 'scheduler-jobs';
  * Load jobs from localStorage
  */
 function loadFromStorage(): Map<string, ScheduledJob> {
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return new Map();
   }
   try {
@@ -31,7 +31,7 @@ function loadFromStorage(): Map<string, ScheduledJob> {
  * Save jobs to localStorage
  */
 function saveToStorage(jobs: Map<string, ScheduledJob>): void {
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return;
   }
   try {
@@ -55,7 +55,7 @@ export class InMemoryQueue implements JobQueue {
   }
 
   private ensureInitialized(): void {
-    if (!this.initialized && typeof globalThis.window !== 'undefined') {
+    if (!this.initialized && globalThis.window !== undefined) {
       this.jobs = loadFromStorage();
       this.initialized = true;
     }
@@ -268,7 +268,7 @@ let serverQueue: ServerMemoryQueue | null = null;
  * Get the appropriate queue instance
  */
 export function getQueue(): JobQueue {
-  if (typeof globalThis.window !== 'undefined') {
+  if (globalThis.window !== undefined) {
     // Client-side: use localStorage-backed queue
     clientQueue ??= new InMemoryQueue();
     return clientQueue;

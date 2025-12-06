@@ -13,11 +13,9 @@ interface SeedDataProviderProps {
 }
 
 export function SeedDataProvider({ children }: SeedDataProviderProps) {
-  const [isReady, setIsReady] = useState(false);
-
   useEffect(() => {
     // Only run in browser
-    if (typeof globalThis.window === 'undefined') {
+    if (globalThis.window === undefined) {
       return;
     }
 
@@ -31,8 +29,6 @@ export function SeedDataProvider({ children }: SeedDataProviderProps) {
         totalPosts: stats.campaigns.totalPosts,
       });
     }
-
-    setIsReady(true);
   }, []);
 
   // Render children immediately - seed data loading is non-blocking

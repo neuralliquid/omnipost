@@ -11,7 +11,7 @@ const STORAGE_KEY = 'scheduler-rate-limits';
  * Load rate limits from storage
  */
 function loadFromStorage(): Map<string, PlatformRateLimit> {
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return new Map();
   }
   try {
@@ -30,7 +30,7 @@ function loadFromStorage(): Map<string, PlatformRateLimit> {
  * Save rate limits to storage
  */
 function saveToStorage(limits: Map<string, PlatformRateLimit>): void {
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return;
   }
   try {

@@ -288,7 +288,10 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           Cancel
         </button>
         <button type="submit" className={styles.primaryButton} disabled={isLoading}>
-          {isLoading ? 'Saving...' : initialData ? 'Update Campaign' : 'Create Campaign'}
+          {(() => {
+            if (isLoading) return 'Saving...';
+            return initialData ? 'Update Campaign' : 'Create Campaign';
+          })()}
         </button>
       </div>
     </form>
