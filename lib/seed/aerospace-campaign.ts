@@ -40,7 +40,7 @@ function createPost(
       {
         platformId: 'linkedin',
         platformName: 'LinkedIn',
-        content: body.replace(/\n/g, '\n\n'), // More spacing for LinkedIn
+        content: body.replaceAll('\n', '\n\n'), // More spacing for LinkedIn
         hashtags: hashtags.slice(0, 3), // Fewer hashtags for LinkedIn
         scheduledTime: `${baseDate.toISOString().split('T')[0]}T${timeSlots[postNum - 1]}:00Z`,
         status: 'pending',

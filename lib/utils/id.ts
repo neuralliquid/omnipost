@@ -31,7 +31,7 @@ function getRandomUUID(): string {
 export function generateSecureId(prefix?: string): string {
   const timestamp = Date.now();
   // Use randomUUID() for secure randomness, take first 9 chars
-  const random = getRandomUUID().replace(/-/g, '').substring(0, 9);
+  const random = getRandomUUID().replaceAll('-', '').substring(0, 9);
 
   if (prefix) {
     return `${prefix}_${timestamp}_${random}`;

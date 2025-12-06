@@ -292,8 +292,6 @@ let retryHandler: RetryHandler | null = null;
  * Get the retry handler instance
  */
 export function getRetryHandler(): RetryHandler {
-  if (!retryHandler) {
-    retryHandler = new RetryHandler();
-  }
+  retryHandler ??= new RetryHandler();
   return retryHandler;
 }

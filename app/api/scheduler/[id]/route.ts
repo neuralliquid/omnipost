@@ -95,6 +95,93 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 }
 
 /**
+ * Verify job ownership
+ */
+async function verifyJobOwnership(
+  scheduler: ReturnType<typeof getScheduler>,
+  jobId: string,
+  userId: string,
+): Promise<{ error?: NextResponse; job?: Awaited<ReturnType<typeof scheduler.getJob>> }> {
+  const job = await scheduler.getJob(jobId);
+  
+  if (!job) {
+    return { error: NextResponse.json({ error: 'Job not found' }, { status: 404 }) };
+  }
+
+  if (job.createdBy !== userId) {
+    return { error: NextResponse.json({ error: 'Access denied' }, { status: 403 }) };
+  }
+
+  return { job };
+}
+
+/**
+ * Handle retry action
+ */
+async function handleRetryAction(
+  scheduler: ReturnType<typeof getScheduler>,
+  jobId: string,
+): Promise<NextResponse> {
+  const job = await scheduler.retry(jobId);
+
+  if (!job) {
+    return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    message: 'Job queued for retry',
+    job,
+  });
+}
+
+/**
+ * Validate and parse scheduled time
+ */
+function validateScheduledTime(scheduledTimeStr: string): { error?: NextResponse; date?: Date } {
+  const scheduledTime = new Date(scheduledTimeStr);
+  
+  if (Number.isNaN(scheduledTime.getTime())) {
+    return { error: NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 }) };
+  }
+
+  if (scheduledTime.getTime() <= Date.now()) {
+    return {
+      error: NextResponse.json(
+        { error: 'scheduledTime must be in the future' },
+        { status: 400 },
+      ),
+    };
+  }
+
+  return { date: scheduledTime };
+}
+
+/**
+ * Handle reschedule action
+ */
+async function handleRescheduleAction(
+  scheduler: ReturnType<typeof getScheduler>,
+  jobId: string,
+  scheduledTimeStr: string,
+): Promise<NextResponse> {
+  const validation = validateScheduledTime(scheduledTimeStr);
+  if (validation.error) {
+    return validation.error;
+  }
+
+  const job = await scheduler.reschedule(jobId, validation.date!.toISOString());
+
+  if (!job) {
+    return NextResponse.json({ error: 'Job not found' }, { status: 404 });
+  }
+
+  return NextResponse.json({
+    message: 'Job rescheduled successfully',
+    job,
+  });
+}
+
+/**
  * PATCH /api/scheduler/[id]
  * Update job (reschedule or retry) - user-scoped
  */
@@ -115,53 +202,19 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const scheduler = getScheduler();
 
     // Verify job exists and user owns it
-    const existingJob = await scheduler.getJob(id);
-    if (!existingJob) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    if (existingJob.createdBy !== currentUserId) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    const ownership = await verifyJobOwnership(scheduler, id, currentUserId);
+    if (ownership.error) {
+      return ownership.error;
     }
 
     // Handle retry action
     if (body.action === 'retry') {
-      const job = await scheduler.retry(id);
-
-      if (!job) {
-        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-      }
-
-      return NextResponse.json({
-        message: 'Job queued for retry',
-        job,
-      });
+      return handleRetryAction(scheduler, id);
     }
 
     // Handle reschedule
     if (body.scheduledTime) {
-      const scheduledTime = new Date(body.scheduledTime);
-      if (Number.isNaN(scheduledTime.getTime())) {
-        return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
-      }
-
-      if (scheduledTime.getTime() <= Date.now()) {
-        return NextResponse.json(
-          { error: 'scheduledTime must be in the future' },
-          { status: 400 },
-        );
-      }
-
-      const job = await scheduler.reschedule(id, scheduledTime.toISOString());
-
-      if (!job) {
-        return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-      }
-
-      return NextResponse.json({
-        message: 'Job rescheduled successfully',
-        job,
-      });
+      return handleRescheduleAction(scheduler, id, body.scheduledTime);
     }
 
     return NextResponse.json({ error: 'No valid update provided' }, { status: 400 });

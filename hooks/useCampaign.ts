@@ -26,7 +26,7 @@ const STORAGE_KEY = 'content-campaigns';
  * Load campaigns from localStorage
  */
 function loadCampaigns(): Campaign[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof globalThis.window === 'undefined') return [];
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
@@ -40,7 +40,7 @@ function loadCampaigns(): Campaign[] {
  * Save campaigns to localStorage
  */
 function saveCampaigns(campaigns: Campaign[]): void {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis.window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(campaigns));
   } catch (error) {
@@ -419,7 +419,7 @@ export function useCampaign(): UseCampaignReturn {
 
       const now = new Date().toISOString();
       const duplicated: Campaign = {
-        ...JSON.parse(JSON.stringify(source)),
+        ...structuredClone(source),
         id: generateCampaignId(),
         name: `${source.name} (Copy)`,
         status: 'draft',

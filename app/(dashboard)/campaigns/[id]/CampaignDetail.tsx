@@ -89,12 +89,12 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
   };
 
   const handleDelete = () => {
-    if (window.confirm('Are you sure you want to delete this campaign?')) {
+    if (globalThis.confirm('Are you sure you want to delete this campaign?')) {
       const success = deleteCampaign(campaignId);
       if (success) {
         router.push('/campaigns');
       } else {
-        window.alert('Failed to delete campaign. Please try again.');
+        globalThis.alert('Failed to delete campaign. Please try again.');
       }
     }
   };
@@ -119,7 +119,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
   };
 
   const handleRemoveContent = (contentId: string) => {
-    if (window.confirm('Remove this content from the campaign?')) {
+    if (globalThis.confirm('Remove this content from the campaign?')) {
       const updated = removeContent(campaignId, contentId);
       if (updated) {
         setCampaign(updated);
@@ -472,7 +472,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                           }}
                         >
                           {item.adaptations.length} platform adaptation
-                          {item.adaptations.length !== 1 ? 's' : ''}
+                          {item.adaptations.length === 1 ? '' : 's'}
                         </div>
                       ) : null}
                     </div>

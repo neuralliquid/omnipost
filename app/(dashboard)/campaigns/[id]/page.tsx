@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 interface PageProps {
-  params: Promise<{ id: string }>;
+  readonly params: Promise<{ id: string }>;
 }
 
 export default async function CampaignDetailPage({ params }: PageProps) {

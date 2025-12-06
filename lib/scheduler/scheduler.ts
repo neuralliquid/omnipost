@@ -438,8 +438,6 @@ let scheduler: Scheduler | null = null;
  * Get the scheduler instance
  */
 export function getScheduler(config?: Partial<SchedulerConfig>): Scheduler {
-  if (!scheduler) {
-    scheduler = new Scheduler(config);
-  }
+  scheduler ??= new Scheduler(config);
   return scheduler;
 }

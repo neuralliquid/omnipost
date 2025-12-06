@@ -24,7 +24,6 @@ export async function GET() {
     }
 
     const scheduler = getScheduler();
-    const allStats = await scheduler.getStats();
     
     // Get all jobs and filter by user
     const allJobs = await scheduler.getAllJobs();

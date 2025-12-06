@@ -111,7 +111,7 @@
 
 .statusActive {
   background-color: #d1fae5;
-  color: #059669;
+  color: #047857 /* Darker green for better contrast (WCAG AAA) */;
 }
 
 .statusPaused {

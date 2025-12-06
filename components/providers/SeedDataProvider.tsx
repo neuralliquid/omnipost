@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { loadAllSeedData, isSeedLoaded, getSeedStats } from '@/lib/seed';
 
 interface SeedDataProviderProps {
-  children: React.ReactNode;
+  readonly children: React.ReactNode;
 }
 
 export function SeedDataProvider({ children }: SeedDataProviderProps) {
@@ -17,7 +17,7 @@ export function SeedDataProvider({ children }: SeedDataProviderProps) {
 
   useEffect(() => {
     // Only run in browser
-    if (typeof window === 'undefined') {
+    if (typeof globalThis.window === 'undefined') {
       return;
     }
 

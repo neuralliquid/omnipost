@@ -23,7 +23,7 @@ class BrowserTokenStorage implements ITokenStorage {
    * Check if we're in a browser environment
    */
   private isBrowser(): boolean {
-    return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+    return typeof globalThis.window !== 'undefined' && typeof globalThis.window.localStorage !== 'undefined';
   }
 
   /**
@@ -33,7 +33,7 @@ class BrowserTokenStorage implements ITokenStorage {
     if (!this.isBrowser()) {
       return null;
     }
-    return window.localStorage.getItem(TOKEN_KEY);
+    return globalThis.window.localStorage.getItem(TOKEN_KEY);
   }
 
   /**
@@ -43,7 +43,7 @@ class BrowserTokenStorage implements ITokenStorage {
     if (!this.isBrowser()) {
       return;
     }
-    window.localStorage.setItem(TOKEN_KEY, token);
+    globalThis.window.localStorage.setItem(TOKEN_KEY, token);
   }
 
   /**
@@ -53,7 +53,7 @@ class BrowserTokenStorage implements ITokenStorage {
     if (!this.isBrowser()) {
       return;
     }
-    window.localStorage.removeItem(TOKEN_KEY);
+    globalThis.window.localStorage.removeItem(TOKEN_KEY);
   }
 }
 

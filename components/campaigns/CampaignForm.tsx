@@ -5,7 +5,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { CreateCampaignInput, Campaign } from '@/types/campaign';
 import { platforms as availablePlatforms } from '@/lib/config/platforms';
 import { useSeries } from '@/hooks/useSeries';
@@ -189,7 +189,8 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           <label className={styles.formLabel} htmlFor="platform-selection">
             Target Platforms *
           </label>
-          <div id="platform-selection" className={styles.platformSelection} role="group" aria-label="Target platforms">
+          <fieldset id="platform-selection" className={styles.platformSelection} aria-label="Target platforms">
+            <legend className="sr-only">Select target platforms</legend>
             {availablePlatforms.map(platform => (
               <label
                 key={platform.slug}
@@ -218,7 +219,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                 <span className={styles.platformName}>{platform.name}</span>
               </label>
             ))}
-          </div>
+          </fieldset>
           {errors.platforms ? (
             <span className={styles.errorMessage}>{errors.platforms}</span>
           ) : null}
@@ -230,7 +231,8 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
             <label className={styles.formLabel} htmlFor="series-selection">
               Link to Content Series (optional)
             </label>
-            <div id="series-selection" className={styles.seriesSelection} role="group" aria-label="Content series">
+            <fieldset id="series-selection" className={styles.seriesSelection} aria-label="Content series">
+              <legend className="sr-only">Select content series</legend>
               {series.map(s => (
                 <label
                   key={s.id}
@@ -263,7 +265,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                   </div>
                 </label>
               ))}
-            </div>
+            </fieldset>
           </div>
         ) : null}
       </div>

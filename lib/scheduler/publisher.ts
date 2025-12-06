@@ -181,8 +181,6 @@ let publisher: Publisher | null = null;
  * Get the publisher instance
  */
 export function getPublisher(): Publisher {
-  if (!publisher) {
-    publisher = new Publisher();
-  }
+  publisher ??= new Publisher();
   return publisher;
 }

@@ -6,7 +6,7 @@
 import Header from '@/components/ui/Header';
 import Footer from '@/components/ui/Footer';
 
-export default function MarketingLayout({ children }: { children: React.ReactNode }) {
+export default function MarketingLayout({ children }: { readonly children: React.ReactNode }) {
   return (
     <>
       <Header />

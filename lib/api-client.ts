@@ -64,8 +64,8 @@ class ApiClient {
           if (error.response?.status === 401) {
             // Unauthorized - redirect to login
             tokenStorage.removeToken();
-            if (typeof window !== 'undefined') {
-              window.location.href = '/login';
+            if (typeof globalThis.window !== 'undefined') {
+              globalThis.window.location.href = '/login';
             }
           }
 

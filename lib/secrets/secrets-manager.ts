@@ -146,9 +146,7 @@ class SecretsManager {
     }
 
     // Fall back to environment variable
-    if (!secret) {
-      secret = this.getFromEnv(name);
-    }
+    secret ??= this.getFromEnv(name);
 
     // Cache the secret
     if (secret && this.config.cacheSecrets) {
@@ -207,7 +205,7 @@ class SecretsManager {
       const client = new SecretClient(this.config.keyVaultUrl!, credential);
 
       // Key Vault uses dashes instead of underscores
-      const keyVaultName = name.replace(/_/g, '-').toLowerCase();
+      const keyVaultName = name.replaceAll('_', '-').toLowerCase();
 
       const secret = await client.getSecret(keyVaultName);
 

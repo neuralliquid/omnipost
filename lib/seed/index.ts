@@ -27,7 +27,7 @@ export const seedCampaigns: Campaign[] = [aerospaceCampaignSeed];
  * Check if seed data has been loaded
  */
 export function isSeedLoaded(): boolean {
-  if (typeof window === 'undefined') return false;
+  if (typeof globalThis.window === 'undefined') return false;
   return localStorage.getItem(SEED_LOADED_KEY) === 'true';
 }
 
@@ -35,7 +35,7 @@ export function isSeedLoaded(): boolean {
  * Mark seed data as loaded
  */
 export function markSeedLoaded(): void {
-  if (typeof window === 'undefined') return;
+  if (typeof globalThis.window === 'undefined') return;
   localStorage.setItem(SEED_LOADED_KEY, 'true');
 }
 
@@ -43,7 +43,7 @@ export function markSeedLoaded(): void {
  * Load seed series into localStorage
  */
 export function loadSeedSeries(): Series[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof globalThis.window === 'undefined') return [];
 
   try {
     const existingData = localStorage.getItem(SERIES_STORAGE_KEY);
@@ -74,7 +74,7 @@ export function loadSeedSeries(): Series[] {
  * Load seed campaigns into localStorage
  */
 export function loadSeedCampaigns(): Campaign[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof globalThis.window === 'undefined') return [];
 
   try {
     const existingData = localStorage.getItem(CAMPAIGN_STORAGE_KEY);
@@ -117,7 +117,7 @@ export function loadAllSeedData(): { series: Series[]; campaigns: Campaign[] } {
  * Reset all seed data (clears localStorage and reloads seeds)
  */
 export function resetSeedData(): { series: Series[]; campaigns: Campaign[] } {
-  if (typeof window === 'undefined') return { series: [], campaigns: [] };
+  if (typeof globalThis.window === 'undefined') return { series: [], campaigns: [] };
 
   // Clear existing data
   localStorage.removeItem(SERIES_STORAGE_KEY);

@@ -8,8 +8,8 @@
 import { useEffect } from 'react';
 
 interface AppErrorProps {
-  error: Error & { digest?: string };
-  reset: () => void;
+  readonly error: Error & { digest?: string };
+  readonly reset: () => void;
 }
 
 export default function AppError({ error, reset }: AppErrorProps) {
