@@ -18,18 +18,24 @@ interface ToolDetailModalProps {
  */
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
   const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const onCloseRef = React.useRef(onClose);
 
-  // Open dialog on mount
+  // Keep ref updated with latest onClose
+  React.useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  // Open dialog on mount and register cancel listener once
   React.useEffect(() => {
     const dialog = dialogRef.current;
     if (dialog && !dialog.open) {
       dialog.showModal();
     }
 
-    // Handle escape key and backdrop click
+    // Handle escape key - use ref to get latest onClose
     const handleCancel = (e: Event) => {
       e.preventDefault();
-      onClose();
+      onCloseRef.current();
     };
 
     dialog?.addEventListener('cancel', handleCancel);
@@ -39,7 +45,7 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
         dialog.close();
       }
     };
-  }, [onClose]);
+  }, []); // Empty deps - listener registered only once
 
   const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
     // Close only if clicking on the backdrop (dialog itself), not its content
@@ -62,6 +68,7 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
       className={styles.toolDetailModal}
       onClick={handleBackdropClick}
       onKeyDown={handleBackdropKeyDown}
+      aria-label="Tool details"
     >
       <div className={styles.toolDetailContent}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />

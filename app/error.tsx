@@ -48,7 +48,8 @@ export default function AppError({ error, reset }: AppErrorProps) {
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold tracking-tight">Something went wrong</h1>
           <p className="text-sm text-muted-foreground">
-            An unexpected error occurred. Our team has been notified.
+            An unexpected error occurred. Please try again or contact support if the problem
+            persists.
           </p>
         </div>
 
