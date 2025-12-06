@@ -287,7 +287,7 @@ az monitor metrics list \
 
 **Diagnosis:**
 
-```bash
+````bash
 # Check response times
 az monitor metrics list \
   --resource $APP_NAME \
@@ -315,7 +315,7 @@ az webapp config appsettings list \
   --resource-group $RESOURCE_GROUP \
   --name $APP_NAME \
   --query "[?name=='JWT_SECRET']"
-```
+````
 
 **Fix:**
 
