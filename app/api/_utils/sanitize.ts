@@ -14,8 +14,30 @@ import { z } from 'zod';
 
 // Server-side fallback sanitization
 function stripHtmlTags(input: string): string {
-  // Remove HTML tags using regex
-  return input.replace(/<[^>]*>/g, '');
+  // Prevent DoS: limit input size to 1MB
+  const MAX_INPUT_SIZE = 1_000_000;
+  if (input.length > MAX_INPUT_SIZE) {
+    throw new Error('Input too large for sanitization');
+  }
+
+  // Use a safer, non-backtracking approach: split and filter
+  // This avoids catastrophic backtracking from regex patterns
+  let result = '';
+  let inTag = false;
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i];
+
+    if (char === '<') {
+      inTag = true;
+    } else if (char === '>') {
+      inTag = false;
+    } else if (!inTag) {
+      result += char;
+    }
+  }
+
+  return result;
 }
 
 // Lazy load DOMPurify only on client-side
