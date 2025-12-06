@@ -60,6 +60,15 @@ jobs:
           cp next.config.ts deploy/
           cp .deployment deploy/
           
+          # Verify package.json is present
+          if [ ! -f "deploy/package.json" ]; then
+            echo "ERROR: package.json not found in deploy directory!"
+            exit 1
+          fi
+          
+          echo "✓ Deployment package contents:"
+          ls -la deploy/ | head -20
+          
           # Create .npmrc to use pnpm
           echo "node-linker=hoisted" > deploy/.npmrc
           
