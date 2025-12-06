@@ -51,12 +51,15 @@ jobs:
           # Create deployment directory
           mkdir -p deploy
           
-          # Copy production files
+          # Install production dependencies with resolved modules (not symlinks)
+          cd deploy
+          cp ../package.json ../pnpm-lock.yaml .
+          pnpm install --frozen-lockfile --prod --shamefully-hoist
+          cd ..
+          
+          # Copy build output
           cp -r .next deploy/
           cp -r public deploy/ || true
-          cp -r node_modules deploy/
-          cp package.json deploy/
-          cp pnpm-lock.yaml deploy/
           cp next.config.ts deploy/
           cp .deployment deploy/
           cp startup.sh deploy/
@@ -71,8 +74,8 @@ jobs:
           echo "✓ Deployment package contents:"
           ls -la deploy/ | head -20
           
-          # Create .npmrc to use pnpm
-          echo "node-linker=hoisted" > deploy/.npmrc
+          echo "✓ Checking node_modules structure:"
+          ls deploy/node_modules/styled-jsx/ || echo "WARNING: styled-jsx not found"
 
       - name: Zip artifact for deployment
         run: cd deploy && zip -r ../node-app.zip ./*
