@@ -42,7 +42,13 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
       tabIndex={0}
       aria-label="Close modal backdrop"
     >
-      <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
+      <div
+        className={styles.toolDetailContent}
+        onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+      >
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
     </div>
