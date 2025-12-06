@@ -18,6 +18,15 @@ if [ ! -f "server.js" ]; then
     exit 1
 fi
 
+# Verify package.json exists
+if [ ! -f "package.json" ]; then
+    if [ ! -f "package.json" ]; then
+        echo "ERROR: package.json not found in /home/site/wwwroot" >&2
+        exit 1
+    fi
+    exit 1
+fi
+
 echo "✓ Standalone server.js found"
 echo "Starting Next.js standalone server..."
 exec node server.js
