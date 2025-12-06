@@ -35,8 +35,13 @@ export function sanitizeRequestBody(body: Record<string, unknown>): Record<strin
       continue;
     }
 
-    // Process nested objects
-    if (typeof value === 'object' && value !== null) {
+    // Process nested objects (plain objects only, not arrays)
+    if (
+      typeof value === 'object' &&
+      value !== null &&
+      !Array.isArray(value) &&
+      value.constructor === Object
+    ) {
       sanitized[key] = sanitizeRequestBody(value as Record<string, unknown>);
     }
   }
