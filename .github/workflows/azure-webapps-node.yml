@@ -59,6 +59,8 @@ jobs:
           cp pnpm-lock.yaml deploy/
           cp next.config.ts deploy/
           cp .deployment deploy/
+          cp startup.sh deploy/
+          chmod +x deploy/startup.sh
           
           # Verify package.json is present
           if [ ! -f "deploy/package.json" ]; then
@@ -71,21 +73,6 @@ jobs:
           
           # Create .npmrc to use pnpm
           echo "node-linker=hoisted" > deploy/.npmrc
-          
-          # Create startup script
-          cat > deploy/ecosystem.config.js << 'EOF'
-          module.exports = {
-            apps: [{
-              name: 'next-app',
-              script: 'node_modules/.bin/next',
-              args: 'start',
-              env: {
-                NODE_ENV: 'production',
-                PORT: process.env.PORT || 8080
-              }
-            }]
-          }
-          EOF
 
       - name: Zip artifact for deployment
         run: cd deploy && zip -r ../node-app.zip ./*
