@@ -48,8 +48,21 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
     }
   };
 
+  const handleBackdropKeyDown = (e: React.KeyboardEvent<HTMLDialogElement>) => {
+    // Close if pressing Enter or Space on the backdrop
+    if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
   return (
-    <dialog ref={dialogRef} className={styles.toolDetailModal} onClick={handleBackdropClick}>
+    <dialog
+      ref={dialogRef}
+      className={styles.toolDetailModal}
+      onClick={handleBackdropClick}
+      onKeyDown={handleBackdropKeyDown}
+    >
       <div className={styles.toolDetailContent}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>

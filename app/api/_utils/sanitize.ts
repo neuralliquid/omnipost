@@ -42,11 +42,11 @@ function stripHtmlTags(input: string): string {
 
 // Lazy load DOMPurify only on client-side
 let DOMPurify: any = null;
-if (typeof window !== 'undefined') {
-  // Client-side only
-  import('dompurify').then(module => {
-    DOMPurify = module.default;
-  });
+if (typeof globalThis.window !== 'undefined') {
+  // Client-side only - use IIFE for async initialization
+  (async () => {
+    DOMPurify = await import('dompurify').then(module => module.default);
+  })();
 }
 
 // Type definition for DOMPurify config
@@ -70,7 +70,7 @@ export function sanitizeHtml(
   }
 ): string {
   // Server-side: strip all HTML tags for safety
-  if (typeof window === 'undefined' || !DOMPurify) {
+  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
     return stripHtmlTags(input);
   }
 
@@ -91,7 +91,7 @@ export function sanitizeHtml(
  */
 export function sanitizeText(input: string): string {
   // Server-side: use simple regex stripping
-  if (typeof window === 'undefined' || !DOMPurify) {
+  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
     return stripHtmlTags(input);
   }
 
