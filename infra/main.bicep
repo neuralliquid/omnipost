@@ -23,7 +23,7 @@ param sku string = 'B1'
 @description('The runtime stack of the web app')
 param linuxFxVersion string = 'NODE|20-lts'
 
-// Generate names following [org]-[env]-[project]-[type]-[region] convention
+// Generate names directly (required for resource names - must be available at deployment start)
 var base = '${org}-${env}-${project}'
 var appName = '${base}-app-${region}'
 var appServicePlanName = '${base}-asp-${region}'
@@ -35,6 +35,18 @@ var tags = {
   project: project
   region: region
   managedBy: 'bicep'
+}
+
+// Deploy naming module for validation and reference
+// Note: Module outputs cannot be used in resource names (BCP120), but can be used in outputs
+module naming 'naming.bicep' = {
+  name: 'naming-validation'
+  params: {
+    org: org
+    env: env
+    project: project
+    region: region
+  }
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
@@ -90,3 +102,12 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
 output webAppName string = webApp.name
 output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 output appServicePlanName string = appServicePlan.name
+
+// Validation outputs from naming module
+output namingValidation object = {
+  expectedAppName: naming.outputs.name_app
+  actualAppName: appName
+  expectedAspName: naming.outputs.name_asp
+  actualAspName: appServicePlanName
+  matches: naming.outputs.name_app == appName && naming.outputs.name_asp == appServicePlanName
+}
