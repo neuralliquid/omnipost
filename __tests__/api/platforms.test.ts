@@ -141,7 +141,7 @@ describe('Platforms API', () => {
     test('should return capabilities for a valid platform', async () => {
       // Create mock request and params
       const request = createMockRequest();
-      const params = { params: { id: '1' } };
+      const params = { params: Promise.resolve({ id: '1' }) };
 
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
@@ -164,7 +164,7 @@ describe('Platforms API', () => {
     test('should handle invalid platform ID', async () => {
       // Create mock request and params
       const request = createMockRequest();
-      const params = { params: { id: 'invalid' } };
+      const params = { params: Promise.resolve({ id: 'invalid' }) };
 
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
@@ -180,7 +180,7 @@ describe('Platforms API', () => {
     test('should handle non-existent platform', async () => {
       // Create mock request and params
       const request = createMockRequest();
-      const params = { params: { id: '99' } };
+      const params = { params: Promise.resolve({ id: '99' }) };
 
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
@@ -199,7 +199,7 @@ describe('Platforms API', () => {
 
       // Create mock request and params
       const request = createMockRequest();
-      const params = { params: { id: '1' } };
+      const params = { params: Promise.resolve({ id: '1' }) };
 
       // Execute the handler
       const response = await getPlatformCapabilities(request, params);
