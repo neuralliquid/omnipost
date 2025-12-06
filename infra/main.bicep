@@ -73,7 +73,9 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: 'npm start'
+      appCommandLine: 'cd /home/site/wwwroot && npm start'
+      httpLoggingEnabled: true
+      detailedErrorLoggingEnabled: true
       appSettings: [
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
@@ -93,11 +95,15 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: '1'
+          value: '0'
         }
         {
           name: 'ENABLE_ORYX_BUILD'
           value: 'false'
+        }
+        {
+          name: 'WEBSITE_HTTPLOGGING_RETENTION_DAYS'
+          value: '7'
         }
         {
           name: 'ENVIRONMENT'
