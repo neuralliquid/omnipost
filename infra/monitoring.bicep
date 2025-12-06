@@ -124,7 +124,7 @@ resource alertMemory 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   location: 'global'
   tags: tags
   properties: {
-    description: 'Alert when memory usage exceeds 80%'
+    description: 'Alert when memory working set exceeds 1GB'
     severity: 3
     enabled: true
     scopes: [
@@ -138,9 +138,9 @@ resource alertMemory 'Microsoft.Insights/metricAlerts@2018-03-01' = {
         {
           criterionType: 'StaticThresholdCriterion'
           name: 'HighMemoryUsage'
-          metricName: 'MemoryPercentage'
+          metricName: 'MemoryWorkingSet'
           operator: 'GreaterThan'
-          threshold: 80
+          threshold: 1073741824
           timeAggregation: 'Average'
         }
       ]

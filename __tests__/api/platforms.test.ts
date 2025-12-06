@@ -61,7 +61,7 @@ function createMockRequest(method: string = 'GET'): NextRequest {
   const mockRequest: Partial<NextRequest> = {
     method,
     headers: {
-      get: jest.fn((name: string) => 'mock-value'),
+      get: jest.fn((_name: string) => 'mock-value'),
       append: jest.fn(),
       delete: jest.fn(),
       has: jest.fn(() => false),

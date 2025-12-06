@@ -19,7 +19,7 @@ export interface LogEntry {
  * @param body The request body to sanitize
  * @returns Sanitized body object
  */
-export function sanitizeRequestBody(body: any): any {
+export function sanitizeRequestBody(body: Record<string, unknown>): Record<string, unknown> {
   if (!body) return body;
 
   const sensitiveFields = ['password', 'token', 'apiKey', 'secret', 'authorization'];
@@ -37,7 +37,7 @@ export function sanitizeRequestBody(body: any): any {
 
     // Process nested objects
     if (typeof value === 'object' && value !== null) {
-      sanitized[key] = sanitizeRequestBody(value);
+      sanitized[key] = sanitizeRequestBody(value as Record<string, unknown>);
     }
   }
 
@@ -54,7 +54,7 @@ export function sanitizeRequestBody(body: any): any {
  */
 export async function createLogEntry(
   action: string,
-  body?: any,
+  body?: Record<string, unknown>,
   result?: string,
   statusCode?: number
 ): Promise<LogEntry> {
@@ -99,11 +99,11 @@ export async function logToAuditTrail(entry: LogEntry): Promise<void> {
     } catch (error) {
       // Fallback to console in case of service failure
       console.error('[AUDIT SERVICE ERROR]', error);
-      console.log('[AUDIT FALLBACK]', JSON.stringify(entry));
+      console.error('[AUDIT FALLBACK]', JSON.stringify(entry));
     }
   } else {
     // In development/test, just log to console
-    console.log('[AUDIT]', JSON.stringify(entry));
+    console.error('[AUDIT]', JSON.stringify(entry));
   }
 }
 
@@ -119,9 +119,9 @@ interface ResultWithStatus {
  */
 export function withAuditLogging<T>(
   action: string,
-  handler: (body?: any) => Promise<T>
-): (body?: any) => Promise<T> {
-  return async (body?: any) => {
+  handler: (body?: Record<string, unknown>) => Promise<T>
+): (body?: Record<string, unknown>) => Promise<T> {
+  return async (body?: Record<string, unknown>) => {
     // Log the start of the action
     const entry = await createLogEntry(action, body);
     await logToAuditTrail(entry);

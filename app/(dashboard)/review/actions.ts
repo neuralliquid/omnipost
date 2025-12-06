@@ -177,7 +177,7 @@ export async function approveContent(
     const image = formData.get('image') as string;
 
     // In a real implementation, this would save to a database and trigger publishing
-    console.log('Content approved:', { summary: summary?.substring(0, 100), hasImage: !!image });
+    console.error('Content approved:', { summary: summary?.substring(0, 100), hasImage: !!image });
 
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
