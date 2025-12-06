@@ -79,19 +79,26 @@ export function withErrorHandling<TContext = unknown>(
       });
 
       // Handle specific known errors
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'ValidationError') {
+      if (
+        error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        error.name === 'ValidationError'
+      ) {
         const validationError = error as { name: string; details?: unknown };
         return Errors.badRequest('Validation error', validationError.details);
       }
 
       // Default to internal server error
-      const errorMessage = error && typeof error === 'object' && 'message' in error 
-        ? String((error as { message: unknown }).message)
-        : 'An unexpected error occurred';
-      const errorCause = error && typeof error === 'object' && 'cause' in error
-        ? (error as { cause: unknown }).cause
-        : undefined;
-        
+      const errorMessage =
+        error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: unknown }).message)
+          : 'An unexpected error occurred';
+      const errorCause =
+        error && typeof error === 'object' && 'cause' in error
+          ? (error as { cause: unknown }).cause
+          : undefined;
+
       return Errors.internalServerError(errorMessage, errorCause);
     }
   };

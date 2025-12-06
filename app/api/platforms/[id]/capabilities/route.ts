@@ -17,7 +17,7 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     // Await params and get the id
     const { id } = await params;
-    
+
     if (!id) {
       return Errors.badRequest('Platform ID is required');
     }
@@ -58,10 +58,11 @@ export async function GET(request: Request, { params }: RouteParams) {
       method: request?.method || 'unknown',
     });
 
-    const errorMessage = error && typeof error === 'object' && 'message' in error 
-      ? String((error as { message: unknown }).message)
-      : 'An unexpected error occurred';
-      
+    const errorMessage =
+      error && typeof error === 'object' && 'message' in error
+        ? String((error as { message: unknown }).message)
+        : 'An unexpected error occurred';
+
     return Errors.internalServerError(errorMessage);
   }
 }
