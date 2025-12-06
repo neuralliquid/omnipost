@@ -1,10 +1,9 @@
 #!/bin/sh
 set -e
 
-echo "=== Azure App Service Startup Script ==="
+echo "=== Azure App Service Startup Script (Standalone) ==="
 echo "Working directory: $(pwd)"
 echo "Node version: $(node --version)"
-echo "NPM version: $(npm --version)"
 
 # Change to the app directory
 cd /home/site/wwwroot
@@ -12,11 +11,13 @@ cd /home/site/wwwroot
 echo "App directory contents:"
 ls -la
 
-# Verify package.json exists
-if [ ! -f "package.json" ]; then
-    echo "ERROR: package.json not found in /home/site/wwwroot"
+# Verify server.js exists (standalone build)
+if [ ! -f "server.js" ]; then
+    echo "ERROR: server.js not found in /home/site/wwwroot"
+    echo "This suggests the standalone build was not properly deployed"
     exit 1
 fi
 
-echo "Starting application..."
-exec npm start
+echo "✓ Standalone server.js found"
+echo "Starting Next.js standalone server..."
+exec node server.js

@@ -52,30 +52,24 @@ jobs:
           mkdir -p deploy
           
           # Install production dependencies with resolved modules (not symlinks)
-          cd deploy
-          cp ../package.json ../pnpm-lock.yaml .
-          pnpm install --frozen-lockfile --prod --shamefully-hoist
-          cd ..
+          # Copy standalone server (includes minimal dependencies)
+          cp -r .next/standalone/. deploy/
           
-          # Copy build output
-          cp -r .next deploy/
-          cp -r public deploy/ || true
-          cp next.config.ts deploy/
-          cp .deployment deploy/
+          # Copy static assets
+          mkdir -p deploy/.next/static
+          cp -r .next/static/. deploy/.next/static/
+          
+          # Copy public directory
+          cp -r public deploy/public || true
+          
+          # Copy startup script
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
           
-          # Verify package.json is present
-          if [ ! -f "deploy/package.json" ]; then
-            echo "ERROR: package.json not found in deploy directory!"
-            exit 1
-          fi
-          
-          echo "✓ Deployment package contents:"
+          echo "✓ Standalone deployment package contents:"
           ls -la deploy/ | head -20
-          
-          echo "✓ Checking node_modules structure:"
-          ls deploy/node_modules/styled-jsx/ || echo "WARNING: styled-jsx not found"
+          echo "✓ Package size:"
+          du -sh deploy/
 
       - name: Zip artifact for deployment
         run: cd deploy && zip -r ../node-app.zip ./*
