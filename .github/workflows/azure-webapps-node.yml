@@ -42,8 +42,8 @@ jobs:
       - name: Install, build, and test
         run: |
           pnpm install --frozen-lockfile
-          pnpm run build --if-present
-          pnpm run test --if-present
+          pnpm run build
+          pnpm test
 
       - name: Zip artifact for deployment
         run: zip -r node-app.zip ./*
