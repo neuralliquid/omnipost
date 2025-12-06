@@ -17,41 +17,43 @@ interface ToolDetailModalProps {
  * Component for displaying a modal with detailed information about a tool
  */
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
-  // Handle escape key to close modal
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+
+  // Open dialog on mount
   React.useEffect(() => {
-    const handleEscape = (event: globalThis.KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    // Handle escape key and backdrop click
+    const handleCancel = (e: Event) => {
+      e.preventDefault();
+      onClose();
+    };
+
+    dialog?.addEventListener('cancel', handleCancel);
+    return () => {
+      dialog?.removeEventListener('cancel', handleCancel);
+      if (dialog?.open) {
+        dialog.close();
       }
     };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    // Close only if clicking on the backdrop (dialog itself), not its content
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
   return (
-    <div
-      className={styles.toolDetailModal}
-      onClick={onClose}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          onClose();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label="Close modal backdrop"
-    >
-      <div
-        className={styles.toolDetailContent}
-        onClick={e => e.stopPropagation()}
-        onKeyDown={e => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
+    <dialog ref={dialogRef} className={styles.toolDetailModal} onClick={handleBackdropClick}>
+      <div className={styles.toolDetailContent}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
-    </div>
+    </dialog>
   );
 };
 

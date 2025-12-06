@@ -5,15 +5,27 @@
  * to prevent XSS, injection attacks, and other security vulnerabilities.
  *
  * Uses:
- * - DOMPurify for HTML sanitization
+ * - DOMPurify for HTML sanitization (client-side only)
  * - Zod for runtime type validation
+ * - Server-side: simple HTML stripping for safety
  */
 
 import { z } from 'zod';
-import * as DOMPurifyModule from 'isomorphic-dompurify';
 
-// Handle both CommonJS and ES module exports
-const DOMPurify = (DOMPurifyModule as any).default || DOMPurifyModule;
+// Server-side fallback sanitization
+function stripHtmlTags(input: string): string {
+  // Remove HTML tags using regex
+  return input.replace(/<[^>]*>/g, '');
+}
+
+// Lazy load DOMPurify only on client-side
+let DOMPurify: any = null;
+if (typeof window !== 'undefined') {
+  // Client-side only
+  import('dompurify').then(module => {
+    DOMPurify = module.default;
+  });
+}
 
 // Type definition for DOMPurify config
 interface DOMPurifyConfig {
@@ -35,6 +47,12 @@ export function sanitizeHtml(
     allowedAttributes?: string[];
   }
 ): string {
+  // Server-side: strip all HTML tags for safety
+  if (typeof window === 'undefined' || !DOMPurify) {
+    return stripHtmlTags(input);
+  }
+
+  // Client-side: use DOMPurify
   const config: DOMPurifyConfig = {
     ALLOWED_TAGS: options?.allowedTags || [],
     ALLOWED_ATTR: options?.allowedAttributes || [],
@@ -50,6 +68,12 @@ export function sanitizeHtml(
  * @returns Plain text with HTML removed
  */
 export function sanitizeText(input: string): string {
+  // Server-side: use simple regex stripping
+  if (typeof window === 'undefined' || !DOMPurify) {
+    return stripHtmlTags(input);
+  }
+
+  // Client-side: use DOMPurify
   return DOMPurify.sanitize(input, {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
