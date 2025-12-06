@@ -23,21 +23,19 @@ param sku string = 'B1'
 @description('The runtime stack of the web app')
 param linuxFxVersion string = 'NODE|20-lts'
 
-// Use naming module to generate standardized names
-module naming 'naming.bicep' = {
-  name: 'naming'
-  params: {
-    org: org
-    env: env
-    project: project
-    region: region
-  }
-}
+// Generate names following [org]-[env]-[project]-[type]-[region] convention
+var base = '${org}-${env}-${project}'
+var appName = '${base}-app-${region}'
+var appServicePlanName = '${base}-asp-${region}'
 
-// Get standardized names from naming module
-var appName = naming.outputs.name_app
-var appServicePlanName = naming.outputs.name_asp
-var tags = naming.outputs.tags
+// Generate tags
+var tags = {
+  org: org
+  environment: env
+  project: project
+  region: region
+  managedBy: 'bicep'
+}
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
   name: appServicePlanName
