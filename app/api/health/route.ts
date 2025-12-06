@@ -2,8 +2,18 @@
  * Health Check API Endpoint
  * Provides system health status for monitoring and load balancers
  *
- * GET /api/health - Quick health check
+ * GET /api/health - Quick health check (always returns 200 if app is running)
  * GET /api/health?detailed=true - Detailed health check with component status
+ * 
+ * The quick health check is designed for:
+ * - Load balancer health probes
+ * - Deployment verification
+ * - Basic uptime monitoring
+ * 
+ * The detailed health check is designed for:
+ * - Application monitoring systems
+ * - Alerting on degraded performance
+ * - Configuration validation
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -136,16 +146,32 @@ function checkMemory(): ComponentHealth {
 
 /**
  * Check environment configuration
+ * @param strict - If true, checks for optional configuration variables
  */
-function checkEnvironment(): ComponentHealth {
-  const requiredVars = ['JWT_SECRET', 'NEXT_PUBLIC_API_URL'];
-  const missingVars = requiredVars.filter(v => !process.env[v]);
+function checkEnvironment(strict: boolean = false): ComponentHealth {
+  // No truly required variables for basic health check
+  // The app can start and serve requests without JWT_SECRET
+  const optionalVars = ['JWT_SECRET', 'NEXT_PUBLIC_API_URL'];
+  const missingVars = optionalVars.filter(v => !process.env[v]);
 
+  // In non-strict mode (quick health check), app is healthy if it's running
+  if (!strict) {
+    return {
+      name: 'environment',
+      status: 'healthy',
+      message: missingVars.length > 0 
+        ? `Running (optional config missing: ${missingVars.join(', ')})`
+        : 'All configuration present',
+      lastChecked: new Date().toISOString(),
+    };
+  }
+
+  // In strict mode (detailed health check), report on missing optional config
   if (missingVars.length > 0) {
     return {
       name: 'environment',
       status: 'degraded',
-      message: `Missing: ${missingVars.join(', ')}`,
+      message: `Optional configuration missing: ${missingVars.join(', ')}`,
       lastChecked: new Date().toISOString(),
     };
   }
@@ -153,7 +179,7 @@ function checkEnvironment(): ComponentHealth {
   return {
     name: 'environment',
     status: 'healthy',
-    message: 'All required variables present',
+    message: 'All configuration present',
     lastChecked: new Date().toISOString(),
   };
 }
@@ -179,20 +205,19 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
   const { searchParams } = new URL(request.url);
   const detailed = searchParams.get('detailed') === 'true';
 
-  // Quick health check response
+  // Quick health check response - lenient, just checks if app is alive
+  // This is suitable for load balancers and deployment health checks
   if (!detailed) {
-    const envCheck = checkEnvironment();
-    const quickStatus = envCheck.status === 'unhealthy' ? 'unhealthy' : 'healthy';
     return NextResponse.json(
       {
-        status: quickStatus,
+        status: 'healthy',
         timestamp: new Date().toISOString(),
         version: getVersion(),
         uptime: getUptime(),
         environment: process.env.NODE_ENV || 'development',
       },
       {
-        status: quickStatus === 'unhealthy' ? 503 : 200,
+        status: 200,
         headers: {
           'Cache-Control': 'no-store, max-age=0',
         },
@@ -200,8 +225,13 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
     );
   }
 
-  // Detailed health check
-  const components: ComponentHealth[] = [checkFeatureFlags(), checkMemory(), checkEnvironment()];
+  // Detailed health check - strict, checks all components and configuration
+  // This is suitable for monitoring and alerting systems
+  const components: ComponentHealth[] = [
+    checkFeatureFlags(), 
+    checkMemory(), 
+    checkEnvironment(true) // strict mode for detailed check
+  ];
 
   const memoryUsage = process.memoryUsage();
   const { total: totalFlags, enabled: enabledFlags } = getFeatureFlagStats();
