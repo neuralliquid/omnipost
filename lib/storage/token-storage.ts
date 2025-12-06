@@ -23,7 +23,10 @@ class BrowserTokenStorage implements ITokenStorage {
    * Check if we're in a browser environment
    */
   private isBrowser(): boolean {
-    return typeof globalThis.window !== 'undefined' && typeof globalThis.window.localStorage !== 'undefined';
+    return (
+      typeof globalThis.window !== 'undefined' &&
+      typeof globalThis.window.localStorage !== 'undefined'
+    );
   }
 
   /**

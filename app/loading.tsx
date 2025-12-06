@@ -6,11 +6,7 @@
 export default function Loading() {
   return (
     <main className="flex min-h-screen items-center justify-center">
-      <output
-        className="flex flex-col items-center gap-4"
-        aria-label="Loading"
-        aria-live="polite"
-      >
+      <output className="flex flex-col items-center gap-4" aria-label="Loading" aria-live="polite">
         {/* Spinner */}
         <div className="relative">
           <div className="h-12 w-12 rounded-full border-4 border-muted" />

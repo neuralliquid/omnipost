@@ -24,11 +24,11 @@ export async function GET() {
     }
 
     const scheduler = getScheduler();
-    
+
     // Get all jobs and filter by user
     const allJobs = await scheduler.getAllJobs();
     const userJobs = allJobs.filter(job => job.createdBy === currentUserId);
-    
+
     // Calculate user-specific stats
     const userStats = {
       total: userJobs.length,

@@ -73,13 +73,13 @@ function createForbiddenResponse(message: string): NextResponse {
 function verifyToken(token: string): jwt.JwtPayload | null {
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
-    
+
     // Check expiration
     const now = Math.floor(Date.now() / 1000);
     if (decoded.exp && decoded.exp < now) {
       return null;
     }
-    
+
     return decoded;
   } catch (error) {
     console.error('Token verification error:', error);
@@ -93,7 +93,7 @@ function verifyToken(token: string): jwt.JwtPayload | null {
 function requiresAuthentication(pathname: string): { auth: boolean; admin: boolean } {
   const requiresAdmin = adminPaths.some(path => pathname.startsWith(path));
   const requiresAuth = authenticatedPaths.some(path => pathname.startsWith(path)) || requiresAdmin;
-  
+
   return { auth: requiresAuth, admin: requiresAdmin };
 }
 

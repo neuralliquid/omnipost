@@ -100,10 +100,10 @@ export async function DELETE(request: Request, { params }: RouteParams) {
 async function verifyJobOwnership(
   scheduler: ReturnType<typeof getScheduler>,
   jobId: string,
-  userId: string,
+  userId: string
 ): Promise<{ error?: NextResponse; job?: Awaited<ReturnType<typeof scheduler.getJob>> }> {
   const job = await scheduler.getJob(jobId);
-  
+
   if (!job) {
     return { error: NextResponse.json({ error: 'Job not found' }, { status: 404 }) };
   }
@@ -120,7 +120,7 @@ async function verifyJobOwnership(
  */
 async function handleRetryAction(
   scheduler: ReturnType<typeof getScheduler>,
-  jobId: string,
+  jobId: string
 ): Promise<NextResponse> {
   const job = await scheduler.retry(jobId);
 
@@ -139,17 +139,14 @@ async function handleRetryAction(
  */
 function validateScheduledTime(scheduledTimeStr: string): { error?: NextResponse; date?: Date } {
   const scheduledTime = new Date(scheduledTimeStr);
-  
+
   if (Number.isNaN(scheduledTime.getTime())) {
     return { error: NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 }) };
   }
 
   if (scheduledTime.getTime() <= Date.now()) {
     return {
-      error: NextResponse.json(
-        { error: 'scheduledTime must be in the future' },
-        { status: 400 },
-      ),
+      error: NextResponse.json({ error: 'scheduledTime must be in the future' }, { status: 400 }),
     };
   }
 
@@ -162,7 +159,7 @@ function validateScheduledTime(scheduledTimeStr: string): { error?: NextResponse
 async function handleRescheduleAction(
   scheduler: ReturnType<typeof getScheduler>,
   jobId: string,
-  scheduledTimeStr: string,
+  scheduledTimeStr: string
 ): Promise<NextResponse> {
   const validation = validateScheduledTime(scheduledTimeStr);
   if (validation.error) {

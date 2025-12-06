@@ -93,9 +93,7 @@ function calculatePlatformMetrics(
 /**
  * Helper: Calculate total engagement from platform metrics
  */
-function calculateTotalEngagement(
-  platformMetrics: Campaign['metrics']['platformMetrics']
-): number {
+function calculateTotalEngagement(platformMetrics: Campaign['metrics']['platformMetrics']): number {
   return Object.values(platformMetrics).reduce((sum, m) => sum + (m.engagements || 0), 0);
 }
 
@@ -737,12 +735,12 @@ export function useCampaign(): UseCampaignReturn {
   const reschedulePost = useCallback(
     (campaignId: string, postId: string, newTime: string): Campaign | null => {
       let updated: Campaign | null = null;
-      
+
       const updater = (c: Campaign): Campaign => {
         const posts = c.schedule.posts.map(p =>
           p.id === postId ? { ...p, scheduledTime: newTime } : p
         );
-        
+
         const updatedCampaign = {
           ...c,
           schedule: {
@@ -751,11 +749,11 @@ export function useCampaign(): UseCampaignReturn {
           },
           updatedAt: new Date().toISOString(),
         };
-        
+
         updated = updatedCampaign;
         return updatedCampaign;
       };
-      
+
       setCampaigns(prev => prev.map(updateCampaignById(campaignId, updater)));
       return updated;
     },
@@ -769,7 +767,7 @@ export function useCampaign(): UseCampaignReturn {
         if (c.id === campaignId) {
           // Compute filtered posts first
           const filteredPosts = c.schedule.posts.filter(p => p.id !== postId);
-          
+
           // Derive new status based on remaining scheduled posts
           const hasScheduledPosts = filteredPosts.some(p => p.status === 'scheduled');
           // Only revert 'scheduled' campaigns to 'draft'; preserve 'active'/'paused'
@@ -777,7 +775,7 @@ export function useCampaign(): UseCampaignReturn {
           if (c.status === 'scheduled' && !hasScheduledPosts) {
             newStatus = 'draft';
           }
-          
+
           updated = {
             ...c,
             schedule: {
@@ -831,11 +829,15 @@ export function useCampaign(): UseCampaignReturn {
       metrics: Partial<Campaign['metrics']['platformMetrics'][string]>
     ): Campaign | null => {
       let updated: Campaign | null = null;
-      
+
       const updater = (c: Campaign): Campaign => {
-        const platformMetrics = calculatePlatformMetrics(c.metrics.platformMetrics, platformId, metrics);
+        const platformMetrics = calculatePlatformMetrics(
+          c.metrics.platformMetrics,
+          platformId,
+          metrics
+        );
         const totalEngagement = calculateTotalEngagement(platformMetrics);
-        
+
         const updatedCampaign = {
           ...c,
           metrics: {
@@ -845,11 +847,11 @@ export function useCampaign(): UseCampaignReturn {
           },
           updatedAt: new Date().toISOString(),
         };
-        
+
         updated = updatedCampaign;
         return updatedCampaign;
       };
-      
+
       setCampaigns(prev => prev.map(updateCampaignById(campaignId, updater)));
       return updated;
     },

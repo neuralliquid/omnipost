@@ -220,19 +220,19 @@ function secureRandomIndex(max: number): number {
   if (max <= 0) {
     throw new Error('max must be greater than 0');
   }
-  if (max > 0xFFFFFFFF) {
+  if (max > 0xffffffff) {
     throw new Error('max must not exceed 2^32');
   }
-  
+
   // Use rejection sampling to eliminate modulo bias
   const threshold = 0x100000000 - (0x100000000 % max);
   let randomValue: number;
-  
+
   do {
     const randomBuffer = randomBytes(4);
     randomValue = randomBuffer.readUInt32BE(0);
   } while (randomValue >= threshold);
-  
+
   return randomValue % max;
 }
 

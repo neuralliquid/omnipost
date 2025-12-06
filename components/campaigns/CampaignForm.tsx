@@ -189,7 +189,11 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           <label className={styles.formLabel} htmlFor="platform-selection">
             Target Platforms *
           </label>
-          <fieldset id="platform-selection" className={styles.platformSelection} aria-label="Target platforms">
+          <fieldset
+            id="platform-selection"
+            className={styles.platformSelection}
+            aria-label="Target platforms"
+          >
             <legend className="sr-only">Select target platforms</legend>
             {availablePlatforms.map(platform => (
               <label
@@ -231,7 +235,11 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
             <label className={styles.formLabel} htmlFor="series-selection">
               Link to Content Series (optional)
             </label>
-            <fieldset id="series-selection" className={styles.seriesSelection} aria-label="Content series">
+            <fieldset
+              id="series-selection"
+              className={styles.seriesSelection}
+              aria-label="Content series"
+            >
               <legend className="sr-only">Select content series</legend>
               {series.map(s => (
                 <label
@@ -280,7 +288,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           Cancel
         </button>
         <button type="submit" className={styles.primaryButton} disabled={isLoading}>
-          {isLoading ? 'Saving...' : (initialData ? 'Update Campaign' : 'Create Campaign')}
+          {isLoading ? 'Saving...' : initialData ? 'Update Campaign' : 'Create Campaign'}
         </button>
       </div>
     </form>
