@@ -10,15 +10,60 @@
  * @see https://learn.microsoft.com/en-us/azure/ai-studio/
  */
 
-// Audit logging helper - logs operations for monitoring and debugging
-function logOperation(operation: string, userId?: string, details?: Record<string, unknown>): void {
-  const entry = {
+import { createHash } from 'node:crypto';
+import { logToAuditTrail } from '@/app/api/_utils/audit';
+
+/**
+ * Hash user ID for privacy in logs
+ */
+function hashUserId(userId: string): string {
+  return createHash('sha256').update(userId).digest('hex').substring(0, 16);
+}
+
+/**
+ * Secure audit logging helper - logs operations without exposing sensitive data
+ */
+function logOperation(
+  operation: string,
+  userId?: string,
+  metadata?: { category?: string; [key: string]: unknown }
+): void {
+  // Only log in development or if explicitly enabled
+  if (process.env.NODE_ENV === 'production' && process.env.ENABLE_AI_AUDIT_LOGS !== 'true') {
+    return;
+  }
+
+  const sanitizedMetadata: Record<string, unknown> = {
     operation,
-    userId: userId || 'system',
+    category: metadata?.category || 'ai_operation',
     timestamp: new Date().toISOString(),
-    details,
   };
-  console.log('[AZURE_AI_AUDIT]', JSON.stringify(entry));
+
+  // Hash user ID for privacy
+  if (userId) {
+    sanitizedMetadata.userIdHash = hashUserId(userId);
+  }
+
+  // Include safe metadata (no prompts/text content)
+  if (metadata) {
+    const { category, ...rest } = metadata;
+    // Only include numeric/safe fields, exclude any text content
+    for (const [key, value] of Object.entries(rest)) {
+      if (typeof value === 'number' || typeof value === 'boolean') {
+        sanitizedMetadata[key] = value;
+      }
+    }
+  }
+
+  // Use centralized audit logging
+  void logToAuditTrail({
+    action: operation,
+    user: userId ? hashUserId(userId) : 'system',
+    timestamp: new Date().toISOString(),
+    path: '/ai-foundry',
+    method: 'API',
+    body: sanitizedMetadata,
+  });
 }
 
 // Configuration interface
@@ -318,6 +363,7 @@ export class AzureAIFoundryClient {
         // Audit log
         if (userId) {
           logOperation('AZURE_AI_CHAT_COMPLETION', userId, {
+            category: 'chat_completion',
             tokensUsed: result.usage?.totalTokens,
           });
         }
@@ -427,7 +473,8 @@ export class AzureAIFoundryClient {
 
           if (userId) {
             logOperation('AZURE_AI_IMAGE_GENERATION', userId, {
-              prompt: prompt.substring(0, 100),
+              category: 'image_generation',
+              promptLength: prompt.length,
             });
           }
 
@@ -467,6 +514,7 @@ export class AzureAIFoundryClient {
 
           if (userId) {
             logOperation('AZURE_AI_EMBEDDING', userId, {
+              category: 'embedding_generation',
               textLength: text.length,
             });
           }

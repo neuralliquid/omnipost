@@ -217,8 +217,22 @@ export function needsRehash(hash: string): boolean {
  */
 
 function secureRandomIndex(max: number): number {
-  const randomBuffer = randomBytes(4);
-  const randomValue = randomBuffer.readUInt32BE(0);
+  if (max <= 0) {
+    throw new Error('max must be greater than 0');
+  }
+  if (max > 0xFFFFFFFF) {
+    throw new Error('max must not exceed 2^32');
+  }
+  
+  // Use rejection sampling to eliminate modulo bias
+  const threshold = 0x100000000 - (0x100000000 % max);
+  let randomValue: number;
+  
+  do {
+    const randomBuffer = randomBytes(4);
+    randomValue = randomBuffer.readUInt32BE(0);
+  } while (randomValue >= threshold);
+  
   return randomValue % max;
 }
 
@@ -249,12 +263,12 @@ export function generateSecurePassword(length: number = 16): string {
   // Fill remaining with random characters from all allowed sets
   const allChars = uppercase + lowercase + numbers + (currentConfig.requireSpecial ? special : '');
   while (chars.length < minLength) {
-    chars.push(allChars[secureRandomIndex(allChars.length)]);
+    chars.push(allChars[randomInt(allChars.length)]);
   }
 
   // Shuffle the array using cryptographically secure random
   for (let i = chars.length - 1; i > 0; i--) {
-    const j = secureRandomIndex(i + 1);
+    const j = randomInt(i + 1);
     [chars[i], chars[j]] = [chars[j], chars[i]];
   }
 
