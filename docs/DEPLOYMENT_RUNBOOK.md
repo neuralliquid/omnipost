@@ -294,9 +294,8 @@ az monitor metrics list \
   --resource-group $RESOURCE_GROUP \
   --resource-type "Microsoft.Web/sites" \
   --metric AverageResponseTime \
-  --start-time $(date -u -d '1 hour ago' '+%Y-%m--%dT%H:%M:%SZ') \
+  --start-time $(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ') \
   --interval PT1M
-```
 
 **Fix:**
 
