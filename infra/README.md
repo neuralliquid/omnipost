@@ -19,18 +19,22 @@ Resource groups use:
 ## Valid Values
 
 ### Organisation Codes (org)
+
 - `nl` - NeuralLiquid (default for this project)
 - `pvc` - Phoenix VC
 - `tws` - Twines & Straps
 - `mys` - Mystira
 
 ### Environment Codes (env)
+
 - `dev` - Development
 - `staging` - Pre-production / QA
 - `prod` - Production
 
 ### Project Codes
+
 For NeuralLiquid (`nl`):
+
 - `content-creation` - This project
 - `rooivalk` - Counter-UAS platform
 - `autopr` - Autopr automation platform
@@ -38,6 +42,7 @@ For NeuralLiquid (`nl`):
 - `nl-ai` - Shared NL AI services
 
 ### Type Codes
+
 - `app` - App Service / Web frontend
 - `api` - Backend API
 - `func` - Function App
@@ -57,6 +62,7 @@ For NeuralLiquid (`nl`):
 - `rg` - Resource Group (special case)
 
 ### Region Codes
+
 - `euw` - West Europe (default)
 - `eun` - North Europe
 - `wus` - West US
@@ -71,6 +77,7 @@ For NeuralLiquid (`nl`):
 ## Examples
 
 ### Development Environment (West Europe)
+
 ```
 nl-dev-content-creation-rg-euw         # Resource Group
 nl-dev-content-creation-app-euw        # App Service
@@ -80,6 +87,7 @@ nl-dev-content-creation-db-euw         # Database
 ```
 
 ### Production Environment (South Africa North)
+
 ```
 nl-prod-content-creation-rg-san        # Resource Group
 nl-prod-content-creation-app-san       # App Service
@@ -87,6 +95,7 @@ nl-prod-content-creation-asp-san       # App Service Plan
 ```
 
 ### Staging Environment (West Europe)
+
 ```
 nl-staging-content-creation-rg-euw     # Resource Group
 nl-staging-content-creation-app-euw    # App Service
@@ -106,6 +115,7 @@ The `naming.sh` script generates standardized names:
 ```
 
 Output (as environment variables):
+
 ```bash
 RESOURCE_GROUP=nl-dev-content-creation-rg-euw
 APP_NAME=nl-dev-content-creation-app-euw
@@ -187,18 +197,21 @@ The naming script validates all inputs:
 ### From Old Pattern
 
 **Old (incorrect):**
+
 ```
 dev-euw-rg-content-creation
 dev-euw-app-content-creation
 ```
 
 **New (correct):**
+
 ```
 nl-dev-content-creation-rg-euw
 nl-dev-content-creation-app-euw
 ```
 
 **Changes:**
+
 1. Added `nl` org code prefix
 2. Moved type code before region code
 3. Standardized segment order
@@ -208,6 +221,7 @@ nl-dev-content-creation-app-euw
 ⚠️ **Most Azure resources cannot be renamed!**
 
 To "rename" a resource:
+
 1. Create new resource with correct name
 2. Migrate configuration/data
 3. Update DNS/traffic routing
