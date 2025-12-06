@@ -61,8 +61,12 @@ describe('Feature Flags API', () => {
       expect(data).toHaveProperty('textParser');
       expect(data.textParser).toHaveProperty('enabled', true);
       expect(data.textParser).toHaveProperty('implementation', 'openai');
-      expect(data).toHaveProperty('imageGeneration', true);
-      expect(data).toHaveProperty('summarization', true);
+      expect(data).toHaveProperty('imageGeneration');
+      expect(data.imageGeneration).toHaveProperty('enabled', true);
+      expect(data.imageGeneration).toHaveProperty('implementation', 'huggingface');
+      expect(data).toHaveProperty('summarization');
+      expect(data.summarization).toHaveProperty('enabled', true);
+      expect(data.summarization).toHaveProperty('implementation', 'huggingface');
     });
   });
 

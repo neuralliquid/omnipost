@@ -7,14 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Azure AI Foundry Integration** - New AI client supporting chat completions, summarization, image generation, and embeddings (`lib/clients/azure-ai-foundry.ts`)
+- **Health Check Endpoint** - `/api/health` endpoint with detailed system status and component checks
+- **Password Handling** - Secure password hashing with bcryptjs, validation, and secure password generation (`lib/auth/password.ts`)
+- **Secrets Manager** - Unified secrets management with Azure Key Vault support and caching (`lib/secrets/secrets-manager.ts`)
+- **Retry Utility** - Generic retry logic with exponential backoff, jitter, and preset configurations (`lib/utils/retry.ts`)
+- **Feature Flag Enhancements** - Added Azure AI Foundry as implementation option for AI services
+- Comprehensive technology stack documentation (`docs/analysis/stack/`)
+- Implementation assessment scores (`docs/analysis/scores/`)
+- Best practices benchmark documentation
+- ADR (Architecture Decision Records) documentation
+
 ### Changed
 
+- Updated feature flag interfaces to support structured configurations for AI services
+- Enhanced `ImageGenerationFeatureFlag` with provider selection (`huggingface`, `azure-foundry`, `dall-e`)
+- Enhanced `SummarizationFeatureFlag` with provider selection (`huggingface`, `azure-foundry`, `openai`)
+- Enhanced `TextParserFeatureFlag` with Azure Foundry option
 - Consolidated `components/common/` and `components/shared/` into a single `components/ui/` directory for better organization
 - Updated package.json metadata with proper project name, description, and repository information
 - Enhanced TypeScript configuration with better path aliases for cleaner imports
 - Improved Jest configuration to properly handle ES modules
 
-### Added
+### Security
+
+- Fixed 4 npm vulnerabilities (1 critical, 1 high, 2 moderate)
+  - Critical: Next.js RCE vulnerability (GHSA-9qr9-h5gf-34mp)
+  - High: jws HMAC signature verification bypass (GHSA-869p-cjfg-cm3x)
+  - Moderate: mdast-util-to-hast XSS (GHSA-4fh9-h7wg-q85m)
+  - Moderate: Nodemailer DoS (GHSA-rcmh-qjqh-p98v)
+- Added bcryptjs for secure password hashing (12 salt rounds)
+- Added secrets management infrastructure with Key Vault support
+
+### Documentation
 
 - Added `.editorconfig` for consistent coding style across different editors
 - Added `.nvmrc` to specify Node.js version (18.20.0)

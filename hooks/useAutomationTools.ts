@@ -3,22 +3,39 @@ import { AutomationTool } from '../types/automation';
 
 /**
  * Custom hook for managing automation tools data with loading and error states
+ * @param initialTools - Pre-loaded tools from server-side rendering
+ * @param initialError - Error from server-side rendering, if any
  */
-export function useAutomationTools(initialTools: AutomationTool[] = []) {
+export function useAutomationTools(
+  initialTools: AutomationTool[] = [],
+  initialError: string | null = null
+) {
   const [tools, setTools] = useState<AutomationTool[]>(initialTools);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(initialTools.length === 0);
-  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(initialTools.length === 0 && !initialError);
+  const [error, setError] = useState<string | null>(initialError);
 
-  // Fetch automation tools if not provided initially
+  // Fetch automation tools if not provided initially and no error from server
   useEffect(() => {
     const fetchAutomationTools = async () => {
-      // If we already have tools from props, don't fetch
-      if (initialTools.length > 0) {
-        setTools(initialTools);
+      // Sync error state from props when initialError changes
+      // This handles cases where props update after a retry or revalidation
+      if (initialError) {
+        setError(initialError);
         setIsLoading(false);
         return;
       }
+
+      // If we already have tools from props, don't fetch
+      if (initialTools.length > 0) {
+        setTools(initialTools);
+        setError(null); // Clear any previous error when valid tools arrive
+        setIsLoading(false);
+        return;
+      }
+
+      // Clear error when starting a fresh fetch (no initialError and no initialTools)
+      setError(null);
 
       try {
         setIsLoading(true);
@@ -38,7 +55,7 @@ export function useAutomationTools(initialTools: AutomationTool[] = []) {
     };
 
     fetchAutomationTools();
-  }, [initialTools]);
+  }, [initialTools, initialError]);
 
   // Handle tool selection
   const selectTool = (toolId: string) => {

@@ -17,42 +17,63 @@ interface ToolDetailModalProps {
  * Component for displaying a modal with detailed information about a tool
  */
 const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) => {
-  // Handle escape key to close modal
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const onCloseRef = React.useRef(onClose);
+
+  // Keep ref updated with latest onClose
   React.useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-    document.addEventListener('keydown', handleEscape);
-    return () => document.removeEventListener('keydown', handleEscape);
+    onCloseRef.current = onClose;
   }, [onClose]);
 
+  // Open dialog on mount and register cancel listener once
+  React.useEffect(() => {
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    // Handle escape key - use ref to get latest onClose
+    const handleCancel = (e: Event) => {
+      e.preventDefault();
+      onCloseRef.current();
+    };
+
+    dialog?.addEventListener('cancel', handleCancel);
+    return () => {
+      dialog?.removeEventListener('cancel', handleCancel);
+      if (dialog?.open) {
+        dialog.close();
+      }
+    };
+  }, []); // Empty deps - listener registered only once
+
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    // Close only if clicking on the backdrop (dialog itself), not its content
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleBackdropKeyDown = (e: React.KeyboardEvent<HTMLDialogElement>) => {
+    // Close if pressing Enter or Space on the backdrop
+    if ((e.key === 'Enter' || e.key === ' ') && e.target === e.currentTarget) {
+      e.preventDefault();
+      onClose();
+    }
+  };
+
   return (
-    <div
+    <dialog
+      ref={dialogRef}
       className={styles.toolDetailModal}
-      onClick={onClose}
-      role="button"
-      tabIndex={0}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          onClose();
-        }
-      }}
-      aria-label="Close modal"
+      onClick={handleBackdropClick}
+      onKeyDown={handleBackdropKeyDown}
+      aria-label="Tool details"
     >
-      <div
-        className={styles.toolDetailContent}
-        onClick={e => e.stopPropagation()}
-        onKeyDown={e => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.stopPropagation();
-          }
-        }}
-      >
+      <div className={styles.toolDetailContent}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
-    </div>
+    </dialog>
   );
 };
 
