@@ -580,10 +580,20 @@ export function useCampaign(): UseCampaignReturn {
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
+          const filteredSchedule = filterSchedulePosts(c.schedule, contentId);
+          const hasScheduledPosts = filteredSchedule.posts.some(
+            post => post.scheduledTime !== undefined && post.scheduledTime !== null
+          );
+
+          // If campaign was scheduled but no scheduled posts remain, revert to draft
+          const newStatus: CampaignStatus =
+            c.status === 'scheduled' && !hasScheduledPosts ? 'draft' : c.status;
+
           updated = {
             ...c,
             contentItems: c.contentItems.filter(filterContent),
-            schedule: filterSchedulePosts(c.schedule, contentId),
+            schedule: filteredSchedule,
+            status: newStatus,
             updatedAt: new Date().toISOString(),
           };
           return updated;

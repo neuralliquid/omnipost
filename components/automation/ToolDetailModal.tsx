@@ -29,18 +29,7 @@ const ToolDetailModal: React.FC<ToolDetailModalProps> = ({ toolId, onClose }) =>
   }, [onClose]);
 
   return (
-    <div
-      className={styles.toolDetailModal}
-      onClick={onClose}
-      onKeyDown={e => {
-        if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') {
-          onClose();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-      aria-label="Close modal"
-    >
+    <div className={styles.toolDetailModal} onClick={onClose}>
       <div className={styles.toolDetailContent} onClick={e => e.stopPropagation()}>
         <AutomationToolDetail toolId={toolId} onClose={onClose} />
       </div>
