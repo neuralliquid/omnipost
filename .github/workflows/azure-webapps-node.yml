@@ -46,8 +46,40 @@ jobs:
           pnpm run build
           pnpm test
 
+      - name: Prepare deployment package
+        run: |
+          # Create deployment directory
+          mkdir -p deploy
+          
+          # Copy production files
+          cp -r .next deploy/
+          cp -r public deploy/ || true
+          cp -r node_modules deploy/
+          cp package.json deploy/
+          cp pnpm-lock.yaml deploy/
+          cp next.config.ts deploy/
+          cp .deployment deploy/
+          
+          # Create .npmrc to use pnpm
+          echo "node-linker=hoisted" > deploy/.npmrc
+          
+          # Create startup script
+          cat > deploy/ecosystem.config.js << 'EOF'
+          module.exports = {
+            apps: [{
+              name: 'next-app',
+              script: 'node_modules/.bin/next',
+              args: 'start',
+              env: {
+                NODE_ENV: 'production',
+                PORT: process.env.PORT || 8080
+              }
+            }]
+          }
+          EOF
+
       - name: Zip artifact for deployment
-        run: zip -r node-app.zip ./*
+        run: cd deploy && zip -r ../node-app.zip ./*
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
