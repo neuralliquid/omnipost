@@ -7,6 +7,9 @@ out
 dist
 build
 
+# Auto-generated files
+next-env.d.ts
+
 # Misc
 .git
 .DS_Store

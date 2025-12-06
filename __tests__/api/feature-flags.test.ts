@@ -18,13 +18,13 @@ jest.mock('../../app/api/_utils/audit', () => ({
 }));
 
 // Helper function to create a mock request
-function createMockRequest(method: string, body: Record<string, any>): NextRequest {
+function createMockRequest(method: string, body: Record<string, unknown>): NextRequest {
   const mockRequest: Partial<NextRequest> = {
     method,
     // Explicitly type the json method to return a Promise
-    json: jest.fn<() => Promise<Record<string, any>>>().mockResolvedValue(body),
+    json: jest.fn<() => Promise<Record<string, unknown>>>().mockResolvedValue(body),
     headers: {
-      get: jest.fn((name: string) => 'mock-value'),
+      get: jest.fn((_name: string) => 'mock-value'),
       append: jest.fn(),
       delete: jest.fn(),
       has: jest.fn(() => false),

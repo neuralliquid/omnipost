@@ -66,6 +66,8 @@ export default [
         HTMLInputElement: 'readonly',
         HTMLTextAreaElement: 'readonly',
         HTMLFormElement: 'readonly',
+        HTMLDialogElement: 'readonly',
+        Event: 'readonly',
         File: 'readonly',
         FileReader: 'readonly',
         // Jest/Testing
