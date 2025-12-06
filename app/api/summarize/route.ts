@@ -65,24 +65,16 @@ async function handleError(error: unknown, action: string, message: string) {
  * Calls the summarization API
  */
 async function callSummarizationApi(rawText: string) {
-  try {
-    const apiConfig = getApiConfig();
-    return await axios.post(apiConfig.summarizationUrl, { text: rawText });
-  } catch (error) {
-    throw error; // Re-throw to be handled by the caller
-  }
+  const apiConfig = getApiConfig();
+  return await axios.post(apiConfig.summarizationUrl, { text: rawText });
 }
 
 /**
  * Calls the approval API
  */
 async function callApprovalApi(summary: string) {
-  try {
-    const apiConfig = getApiConfig();
-    return await axios.post(apiConfig.approvalUrl, { summary });
-  } catch (error) {
-    throw error; // Re-throw to be handled by the caller
-  }
+  const apiConfig = getApiConfig();
+  return await axios.post(apiConfig.approvalUrl, { summary });
 }
 
 // Summarize text endpoint with rate limiting

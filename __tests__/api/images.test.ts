@@ -10,22 +10,22 @@ jest.mock('../../app/api/images/route', () => {
   };
 });
 
-// Create simple mock functions with explicit any types
-const mockGenerateImage = jest.fn(async (params: any) => ({
+// Create simple mock functions with explicit types
+const mockGenerateImage = jest.fn(async (_params: unknown) => ({
   data: { url: 'https://example.com/generated-image.jpg' },
 }));
 
-const mockApproveImage = jest.fn(async (params: any) => ({
+const mockApproveImage = jest.fn(async (_params: unknown) => ({
   success: true,
   message: 'Image approved successfully',
 }));
 
-const mockRejectImage = jest.fn(async (params: any) => ({
+const mockRejectImage = jest.fn(async (_params: unknown) => ({
   success: true,
   message: 'Image rejected successfully',
 }));
 
-const mockRegenerateImage = jest.fn(async (params: any) => ({
+const mockRegenerateImage = jest.fn(async (_params: unknown) => ({
   data: { url: 'https://example.com/regenerated-image.jpg' },
 }));
 

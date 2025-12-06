@@ -419,7 +419,7 @@ export function useCampaign(): UseCampaignReturn {
 
       const now = new Date().toISOString();
       const duplicated: Campaign = {
-        ...structuredClone(source),
+        ...JSON.parse(JSON.stringify(source)),
         id: generateCampaignId(),
         name: `${source.name} (Copy)`,
         status: 'draft',

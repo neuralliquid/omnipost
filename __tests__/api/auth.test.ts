@@ -47,12 +47,12 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
   // Create a mock RequestCookies object with the correct method signatures
   const cookiesObj = {
     get: jest.fn(
-      (name: string) => ({ name, value: 'mock-value' }) as unknown as RequestCookie | undefined
+      (_name: string) => ({ name: _name, value: 'mock-value' }) as unknown as RequestCookie | undefined
     ),
     getAll: jest.fn(() => []),
     has: jest.fn(() => false),
     // For delete, handle single string or array of strings correctly
-    delete: jest.fn((names: string | string[]): boolean => {
+    delete: jest.fn((_names: string | string[]): boolean => {
       return true; // Always return boolean, not an array
     }),
     // For clear and set, return the cookies object for chaining
@@ -76,7 +76,7 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
     json: jest.fn<() => Promise<Record<string, unknown>>>().mockResolvedValue(body),
     cookies: cookiesObj as unknown as RequestCookies,
     headers: {
-      get: jest.fn((name: string) => 'mock-value'),
+      get: jest.fn((_name: string) => 'mock-value'),
       append: jest.fn(),
       delete: jest.fn(),
       has: jest.fn(() => false),

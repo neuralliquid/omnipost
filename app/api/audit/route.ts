@@ -47,7 +47,7 @@ function sanitizeErrorMessage(errorMsg: string): string {
     // Redact potential stack traces
     /at\s+.*\(.*\)/gi,
     // Redact file paths
-    /\/[\w\/\.-]+/gi,
+    /\/[\w/.-]+/gi,
   ];
 
   let sanitized = errorMsg;
