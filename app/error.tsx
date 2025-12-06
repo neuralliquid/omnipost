@@ -84,7 +84,7 @@ export default function AppError({ error, reset }: AppErrorProps) {
           If this problem persists, please{' '}
           <a href="mailto:support@example.com" className="text-primary hover:underline">
             contact support
-          </a>
+          </a>{' '}
           .
         </p>
       </div>

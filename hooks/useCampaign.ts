@@ -577,25 +577,30 @@ export function useCampaign(): UseCampaignReturn {
   const removeContent = useCallback((campaignId: string, contentId: string): Campaign | null => {
     let updated: Campaign | null = null;
     const filterContent = (item: CampaignContent) => item.id !== contentId;
+
+    const updateCampaignContent = (c: Campaign): Campaign => {
+      const filteredSchedule = filterSchedulePosts(c.schedule, contentId);
+      const hasScheduledPosts = filteredSchedule.posts.some(
+        post => post.scheduledTime !== undefined && post.scheduledTime !== null
+      );
+
+      // If campaign was scheduled but no scheduled posts remain, revert to draft
+      const newStatus: CampaignStatus =
+        c.status === 'scheduled' && !hasScheduledPosts ? 'draft' : c.status;
+
+      return {
+        ...c,
+        contentItems: c.contentItems.filter(filterContent),
+        schedule: filteredSchedule,
+        status: newStatus,
+        updatedAt: new Date().toISOString(),
+      };
+    };
+
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
-          const filteredSchedule = filterSchedulePosts(c.schedule, contentId);
-          const hasScheduledPosts = filteredSchedule.posts.some(
-            post => post.scheduledTime !== undefined && post.scheduledTime !== null
-          );
-
-          // If campaign was scheduled but no scheduled posts remain, revert to draft
-          const newStatus: CampaignStatus =
-            c.status === 'scheduled' && !hasScheduledPosts ? 'draft' : c.status;
-
-          updated = {
-            ...c,
-            contentItems: c.contentItems.filter(filterContent),
-            schedule: filteredSchedule,
-            status: newStatus,
-            updatedAt: new Date().toISOString(),
-          };
+          updated = updateCampaignContent(c);
           return updated;
         }
         return c;
@@ -774,29 +779,38 @@ export function useCampaign(): UseCampaignReturn {
 
   const cancelScheduledPost = useCallback((campaignId: string, postId: string): Campaign | null => {
     let updated: Campaign | null = null;
+
+    const computeStatusAfterCancel = (
+      c: Campaign,
+      filteredPosts: ScheduledPost[]
+    ): CampaignStatus => {
+      const hasScheduledPosts = filteredPosts.some(p => p.status === 'scheduled');
+      // Only revert 'scheduled' campaigns to 'draft'; preserve 'active'/'paused'
+      if (c.status === 'scheduled' && !hasScheduledPosts) {
+        return 'draft';
+      }
+      return c.status;
+    };
+
+    const updateCampaignSchedule = (c: Campaign): Campaign => {
+      const filteredPosts = c.schedule.posts.filter(p => p.id !== postId);
+      const newStatus = computeStatusAfterCancel(c, filteredPosts);
+
+      return {
+        ...c,
+        schedule: {
+          ...c.schedule,
+          posts: filteredPosts,
+        },
+        status: newStatus,
+        updatedAt: new Date().toISOString(),
+      };
+    };
+
     setCampaigns(prev =>
       prev.map(c => {
         if (c.id === campaignId) {
-          // Compute filtered posts first
-          const filteredPosts = c.schedule.posts.filter(p => p.id !== postId);
-
-          // Derive new status based on remaining scheduled posts
-          const hasScheduledPosts = filteredPosts.some(p => p.status === 'scheduled');
-          // Only revert 'scheduled' campaigns to 'draft'; preserve 'active'/'paused'
-          let newStatus = c.status;
-          if (c.status === 'scheduled' && !hasScheduledPosts) {
-            newStatus = 'draft';
-          }
-
-          updated = {
-            ...c,
-            schedule: {
-              ...c.schedule,
-              posts: filteredPosts,
-            },
-            status: newStatus,
-            updatedAt: new Date().toISOString(),
-          };
+          updated = updateCampaignSchedule(c);
           return updated;
         }
         return c;
