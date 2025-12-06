@@ -296,6 +296,7 @@ az monitor metrics list \
   --metric AverageResponseTime \
   --start-time $(date -u -d '1 hour ago' '+%Y-%m-%dT%H:%M:%SZ') \
   --interval PT1M
+```
 
 **Fix:**
 
