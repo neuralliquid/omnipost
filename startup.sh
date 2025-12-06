@@ -16,8 +16,6 @@ if [ ! -f "server.js" ]; then
     echo "ERROR: server.js not found in /home/site/wwwroot"
     echo "This suggests the standalone build was not properly deployed"
     exit 1
-    fi
-    exit 1
 fi
 
 echo "✓ Standalone server.js found"

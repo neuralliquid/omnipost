@@ -77,7 +77,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
-        {
+        {  
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'false'
         }
@@ -93,6 +93,9 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'NODE_ENV'
           value: 'production'
         }
+        // IMPORTANT: Application secrets (JWT_SECRET, API keys) must be configured separately
+        // See docs/AZURE_SECRETS.md for configuration instructions
+        // Use Azure Portal or: az webapp config appsettings set --settings JWT_SECRET="..."
         {
           name: 'PORT'
           value: '8080'
