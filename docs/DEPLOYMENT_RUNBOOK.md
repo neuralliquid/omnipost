@@ -203,7 +203,26 @@ az webapp ssh \
 # In SSH session:
 ls -la /home/site/wwwroot/
 cat /home/site/wwwroot/startup.sh
+
+# Test health endpoint
+curl https://$APP_NAME.azurewebsites.net/api/health
+curl https://$APP_NAME.azurewebsites.net/api/health?detailed=true
 ```
+
+**Health Check Behavior:**
+
+The health endpoint has two modes:
+
+1. **Quick Check** (`/api/health`) - For deployment verification and load balancers
+   - Always returns HTTP 200 if app is running
+   - Does not require environment variables to be configured
+   - Returns: status, timestamp, version, uptime, environment
+
+2. **Detailed Check** (`/api/health?detailed=true`) - For monitoring systems
+   - Returns HTTP 200 for "healthy" or "degraded" status
+   - Returns HTTP 503 only for "unhealthy" status (e.g., critical memory issues)
+   - Reports missing optional configuration as "degraded" with details
+   - Includes component health: feature-flags, memory, environment
 
 **Common Causes:**
 
@@ -211,8 +230,10 @@ cat /home/site/wwwroot/startup.sh
    - **Fix:** Ensure `output: 'standalone'` is in `next.config.ts`
 2. Wrong startup command
    - **Fix:** Verify `WEBSITE_STARTUP_FILE=startup.sh` is set
-3. Missing environment variables
-   - **Fix:** Configure secrets per [AZURE_SECRETS.md](./AZURE_SECRETS.md)
+3. Critical resource issues (memory exhaustion)
+   - **Fix:** Scale up App Service Plan or investigate memory leaks
+4. Optional configuration missing (shows as "degraded" in detailed check, but app still runs)
+   - **Note:** This is informational only - configure per [AZURE_SECRETS.md](./AZURE_SECRETS.md) when needed
 
 ### Issue: Build Failures
 
