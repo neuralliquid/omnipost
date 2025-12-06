@@ -1,25 +1,66 @@
 #!/bin/bash
 
 # Input parameters
-environment=$1    # dev, test, prod
-location=$2       # euw (West Europe), eus (East US), etc.
-projectName=$3    # content-creation, etc.
+org=$1            # nl, pvc, tws, mys
+environment=$2    # dev, staging, prod
+project=$3        # content-creation, autopr, rooivalk, etc.
+region=$4         # euw, san, saf, swe, etc.
 
-# Function to generate resource names
+# Validate org code
+case "$org" in
+  nl|pvc|tws|mys)
+    ;;
+  *)
+    echo "Error: Invalid org code '$org'. Must be: nl, pvc, tws, or mys" >&2
+    exit 1
+    ;;
+esac
+
+# Validate environment
+case "$environment" in
+  dev|staging|prod)
+    ;;
+  *)
+    echo "Error: Invalid environment '$environment'. Must be: dev, staging, or prod" >&2
+    exit 1
+    ;;
+esac
+
+# Validate region
+case "$region" in
+  euw|eun|wus|eus|san|saf|swe|uks|usw|glob)
+    ;;
+  *)
+    echo "Error: Invalid region code '$region'" >&2
+    exit 1
+    ;;
+esac
+
+# Function to generate resource names following [org]-[env]-[project]-[type]-[region]
 generate_names() {
-  local env=$1
-  local loc=$2
-  local proj=$3
+  local o=$1
+  local e=$2
+  local p=$3
+  local r=$4
   
-  # Resource Group
-  echo "RESOURCE_GROUP=${env}-${loc}-rg-${proj}"
+  local base="${o}-${e}-${p}"
   
-  # App Service
-  echo "APP_NAME=${env}-${loc}-app-${proj}"
+  # Resource Group: [org]-[env]-[project]-rg-[region]
+  echo "RESOURCE_GROUP=${base}-rg-${r}"
   
-  # App Service Plan
-  echo "ASP_NAME=${env}-${loc}-asp-${proj}"
+  # App Service: [org]-[env]-[project]-app-[region]
+  echo "APP_NAME=${base}-app-${r}"
+  
+  # App Service Plan: [org]-[env]-[project]-asp-[region]
+  echo "ASP_NAME=${base}-asp-${r}"
+  
+  # Additional resource types (for future use)
+  echo "API_NAME=${base}-api-${r}"
+  echo "FUNC_NAME=${base}-func-${r}"
+  echo "STORAGE_NAME=${base}-storage-${r}"
+  echo "KV_NAME=${base}-kv-${r}"
+  echo "DB_NAME=${base}-db-${r}"
 }
 
 # Generate and export names
-generate_names "$environment" "$location" "$projectName"
+generate_names "$org" "$environment" "$project" "$region"

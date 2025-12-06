@@ -18,8 +18,9 @@ on:
 env:
   NODE_VERSION: '20.x'
   AZURE_WEBAPP_PACKAGE_PATH: '.'
+  ORG_CODE: 'nl'
   PROJECT_NAME: 'content-creation'
-  LOCATION_CODE: 'euw'
+  REGION_CODE: 'euw'
   LOCATION: 'westeurope'
 
 jobs:
@@ -91,7 +92,10 @@ jobs:
           resourceGroupName: ${{ env.RESOURCE_GROUP }}
           template: ./infra/main.bicep
           parameters: >
-            appName=${{ env.APP_NAME }}
+            org=${{ env.ORG_CODE }}
+            env=${{ github.event.inputs.environment || 'dev' }}
+            project=${{ env.PROJECT_NAME }}
+            region=${{ env.REGION_CODE }}
             location=${{ env.LOCATION }}
 
   deploy:
@@ -125,7 +129,7 @@ jobs:
           chmod +x ./infra/naming.sh
           while IFS= read -r line; do
             echo "$line" >> $GITHUB_ENV
-          done < <(./infra/naming.sh ${{ github.event.inputs.environment || 'dev' }} ${{ env.LOCATION_CODE }} ${{ env.PROJECT_NAME }})
+          done < <(./infra/naming.sh ${{ env.ORG_CODE }} ${{ github.event.inputs.environment || 'dev' }} ${{ env.PROJECT_NAME }} ${{ env.REGION_CODE }})
 
       - name: 'Deploy to Azure WebApp'
         id: deploy-to-webapp

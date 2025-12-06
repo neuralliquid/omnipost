@@ -2,8 +2,17 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "appName": {
+    "org": {
+      "value": "nl"
+    },
+    "env": {
+      "value": "dev"
+    },
+    "project": {
       "value": "content-creation"
+    },
+    "region": {
+      "value": "euw"
     },
     "location": {
       "value": "westeurope"
