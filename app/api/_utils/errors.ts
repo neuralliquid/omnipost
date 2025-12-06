@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
  */
 export interface ErrorResponse {
   message: string;
-  details?: any;
+  details?: unknown;
   code?: string;
 }
 
@@ -20,7 +20,7 @@ export interface ErrorResponse {
 export function createErrorResponse(
   message: string,
   status: number = 500,
-  details?: any,
+  details?: unknown,
   code?: string
 ): NextResponse {
   const errorBody: ErrorResponse = {
@@ -37,25 +37,25 @@ export function createErrorResponse(
  * Common error responses
  */
 export const Errors = {
-  badRequest: (message: string = 'Bad request', details?: any) =>
+  badRequest: (message: string = 'Bad request', details?: unknown) =>
     createErrorResponse(message, 400, details, 'BAD_REQUEST'),
 
-  unauthorized: (message: string = 'Unauthorized', details?: any) =>
+  unauthorized: (message: string = 'Unauthorized', details?: unknown) =>
     createErrorResponse(message, 401, details, 'UNAUTHORIZED'),
 
-  forbidden: (message: string = 'Forbidden', details?: any) =>
+  forbidden: (message: string = 'Forbidden', details?: unknown) =>
     createErrorResponse(message, 403, details, 'FORBIDDEN'),
 
-  notFound: (message: string = 'Not found', details?: any) =>
+  notFound: (message: string = 'Not found', details?: unknown) =>
     createErrorResponse(message, 404, details, 'NOT_FOUND'),
 
-  methodNotAllowed: (message: string = 'Method not allowed', details?: any) =>
+  methodNotAllowed: (message: string = 'Method not allowed', details?: unknown) =>
     createErrorResponse(message, 405, details, 'METHOD_NOT_ALLOWED'),
 
-  conflict: (message: string = 'Conflict', details?: any) =>
+  conflict: (message: string = 'Conflict', details?: unknown) =>
     createErrorResponse(message, 409, details, 'CONFLICT'),
 
-  internalServerError: (message: string = 'Internal server error', details?: any) =>
+  internalServerError: (message: string = 'Internal server error', details?: unknown) =>
     createErrorResponse(message, 500, details, 'INTERNAL_SERVER_ERROR'),
 };
 
@@ -64,13 +64,13 @@ export const Errors = {
  * @param handler The route handler function
  * @returns A function that handles errors consistently
  */
-export function withErrorHandling(
-  handler: (req: Request, context?: any) => Promise<Response>
-): (req: Request, context?: any) => Promise<Response> {
-  return async (req: Request, context?: any) => {
+export function withErrorHandling<TContext = unknown>(
+  handler: (req: Request, context?: TContext) => Promise<Response>
+): (req: Request, context?: TContext) => Promise<Response> {
+  return async (req: Request, context?: TContext) => {
     try {
       return await handler(req, context);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('API Error:', {
         error,
         timestamp: new Date().toISOString(),
@@ -79,15 +79,27 @@ export function withErrorHandling(
       });
 
       // Handle specific known errors
-      if (error.name === 'ValidationError') {
-        return Errors.badRequest('Validation error', error.details);
+      if (
+        error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        error.name === 'ValidationError'
+      ) {
+        const validationError = error as { name: string; details?: unknown };
+        return Errors.badRequest('Validation error', validationError.details);
       }
 
       // Default to internal server error
-      return Errors.internalServerError(
-        error.message || 'An unexpected error occurred',
-        error.cause
-      );
+      const errorMessage =
+        error && typeof error === 'object' && 'message' in error
+          ? String((error as { message: unknown }).message)
+          : 'An unexpected error occurred';
+      const errorCause =
+        error && typeof error === 'object' && 'cause' in error
+          ? (error as { cause: unknown }).cause
+          : undefined;
+
+      return Errors.internalServerError(errorMessage, errorCause);
     }
   };
 }

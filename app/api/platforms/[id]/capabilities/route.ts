@@ -1,48 +1,37 @@
 import { NextResponse } from 'next/server';
 import { platforms, getPlatformConfig } from '../../../../../lib/config/platforms';
-import { withErrorHandling } from '../../../_utils/errors';
 import { Errors } from '../../../_utils/errors';
 import { isAuthenticated } from '../../../_utils/auth';
 import { createLogEntry, logToAuditTrail } from '../../../_utils/audit';
 
-const validateAuth = async () => {
-  if (!(await isAuthenticated())) {
-    return Errors.unauthorized('Authentication required to access platform capabilities');
-  }
-  return null;
-};
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
 
-const validateAndParsePlatformId = (id: string | undefined) => {
-  if (!id) {
-    return { error: Errors.badRequest('Platform ID is required') };
-  }
+export async function GET(request: Request, { params }: RouteParams) {
+  try {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return Errors.unauthorized('Authentication required to access platform capabilities');
+    }
 
-  const platformId = parseInt(id);
-  if (isNaN(platformId)) {
-    return { error: Errors.badRequest('Invalid platform ID') };
-  }
-  return { platformId, error: null };
-};
+    // Await params and get the id
+    const { id } = await params;
 
-const findPlatform = (platformId: number) => {
-  const platform = platforms.find(p => p.id === platformId);
-  if (!platform) {
-    return { error: Errors.notFound('Platform not found') };
-  }
-  return { platform, error: null };
-};
+    if (!id) {
+      return Errors.badRequest('Platform ID is required');
+    }
 
-export const GET = withErrorHandling(
-  async (request: Request, context?: { params?: Record<string, string> }) => {
-    const authError = await validateAuth();
-    if (authError) return authError;
+    const platformId = parseInt(id);
+    if (isNaN(platformId)) {
+      return Errors.badRequest('Invalid platform ID');
+    }
 
-    const id = context?.params?.id;
-    const { platformId, error: idError } = validateAndParsePlatformId(id);
-    if (idError) return idError;
-
-    const { platform, error: platformError } = findPlatform(platformId);
-    if (platformError) return platformError;
+    // Find platform
+    const platform = platforms.find(p => p.id === platformId);
+    if (!platform) {
+      return Errors.notFound('Platform not found');
+    }
 
     // Log the access to platform capabilities
     const logEntry = await createLogEntry('GET_PLATFORM_CAPABILITIES', {
@@ -61,5 +50,19 @@ export const GET = withErrorHandling(
       platform,
       capabilities: config.capabilities || [],
     });
+  } catch (error) {
+    console.error('API Error:', {
+      error,
+      timestamp: new Date().toISOString(),
+      url: request?.url || 'unknown',
+      method: request?.method || 'unknown',
+    });
+
+    const errorMessage =
+      error && typeof error === 'object' && 'message' in error
+        ? String((error as { message: unknown }).message)
+        : 'An unexpected error occurred';
+
+    return Errors.internalServerError(errorMessage);
   }
-);
+}
