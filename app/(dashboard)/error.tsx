@@ -39,7 +39,9 @@ export default function DashboardError({ error, reset }: ErrorProps) {
           </div>
           <h2 className="text-xl font-semibold">Something went wrong!</h2>
           <p className="text-sm text-muted-foreground">
-            {error.message || 'An unexpected error occurred. Please try again.'}
+            {process.env.NODE_ENV === 'production'
+              ? 'An unexpected error occurred. Please try again.'
+              : error.message || 'An unexpected error occurred. Please try again.'}
           </p>
           {error.digest ? (
             <p className="text-xs text-muted-foreground/60">Error ID: {error.digest}</p>

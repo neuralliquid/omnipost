@@ -6,10 +6,23 @@
 import { NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/scheduler';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import type { JobStatus } from '@/lib/scheduler/types';
+
+// Define all possible job statuses
+const JOB_STATUSES: JobStatus[] = [
+  'pending',
+  'scheduled',
+  'processing',
+  'published',
+  'failed',
+  'dead',
+  'cancelled',
+];
 
 /**
  * GET /api/scheduler/stats
- * Get scheduler statistics and rate limit status (user-scoped)
+ * Get scheduler statistics (user-scoped)
+ * Returns job counts by status and timestamp
  */
 export async function GET() {
   try {
@@ -29,16 +42,15 @@ export async function GET() {
     const allJobs = await scheduler.getAllJobs();
     const userJobs = allJobs.filter(job => job.createdBy === currentUserId);
 
-    // Calculate user-specific stats
-    const userStats = {
+    // Calculate user-specific stats dynamically from JobStatus enum
+    const userStats: Record<string, number> = {
       total: userJobs.length,
-      pending: userJobs.filter(j => j.status === 'pending').length,
-      processing: userJobs.filter(j => j.status === 'processing').length,
-      published: userJobs.filter(j => j.status === 'published').length,
-      failed: userJobs.filter(j => j.status === 'failed').length,
-      dead: userJobs.filter(j => j.status === 'dead').length,
-      cancelled: userJobs.filter(j => j.status === 'cancelled').length,
     };
+
+    // Build status counts from enum to stay in sync with scheduler types
+    for (const status of JOB_STATUSES) {
+      userStats[status] = userJobs.filter(j => j.status === status).length;
+    }
 
     return NextResponse.json({
       stats: userStats,

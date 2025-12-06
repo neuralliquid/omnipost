@@ -268,15 +268,14 @@ let serverQueue: ServerMemoryQueue | null = null;
  * Get the appropriate queue instance
  */
 export function getQueue(): JobQueue {
-  if (globalThis.window !== undefined) {
-    // Client-side: use localStorage-backed queue
-    clientQueue ??= new InMemoryQueue();
-    return clientQueue;
-  } else {
+  if (globalThis.window === undefined) {
     // Server-side: use memory-only queue
     serverQueue ??= new ServerMemoryQueue();
     return serverQueue;
   }
+  // Client-side: use localStorage-backed queue
+  clientQueue ??= new InMemoryQueue();
+  return clientQueue;
 }
 
 /**
