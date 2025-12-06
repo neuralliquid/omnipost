@@ -1,6 +1,14 @@
 // Azure Naming Convention Module
 // Generates standardized resource names following [org]-[env]-[project]-[type]-[region] pattern
-// Based on NeuralLiquid Azure Naming Standards v3
+// Based on NeuralLiquid Azure Naming Standards v2.1
+//
+// IMPORTANT: This module can be used for validation but outputs CANNOT be used directly
+// in resource name properties due to Bicep limitation BCP120 (module outputs not available
+// at deployment start). Use the same variable pattern in your main template instead.
+//
+// Example usage:
+//   var base = '${org}-${env}-${project}'
+//   var appName = '${base}-app-${region}'
 
 @description('Owning organisation code')
 @allowed([

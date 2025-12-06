@@ -129,23 +129,50 @@ DB_NAME=nl-dev-content-creation-db-euw
 
 ### Bicep Module (naming.bicep)
 
-The `naming.bicep` module generates names in Bicep templates:
+⚠️ **Important Limitation**: Bicep module outputs cannot be used directly in resource `name` properties due to [BCP120](https://aka.ms/bicep/core-diagnostics#BCP120) - they aren't available at deployment start.
+
+**✅ Correct Usage - Direct Variable Calculation:**
 
 ```bicep
+@description('Organisation code')
+@allowed(['nl', 'pvc', 'tws', 'mys'])
+param org string = 'nl'
+
+@description('Environment')
+@allowed(['dev', 'staging', 'prod'])
+param env string = 'dev'
+
+@description('Project name')
+param project string = 'content-creation'
+
+@description('Region code')
+@allowed(['euw', 'san', 'saf', 'swe', 'eun', 'wus', 'eus', 'uks', 'usw', 'glob'])
+param region string = 'euw'
+
+// Generate names directly (available at deployment start)
+var base = '${org}-${env}-${project}'
+var appName = '${base}-app-${region}'
+var aspName = '${base}-asp-${region}'
+
+// Optional: Deploy naming module for validation
 module naming 'naming.bicep' = {
-  name: 'naming'
+  name: 'naming-validation'
   params: {
-    org: 'nl'
-    env: 'dev'
-    project: 'content-creation'
-    region: 'euw'
+    org: org
+    env: env
+    project: project
+    region: region
   }
 }
 
-// Use outputs
-var appName = naming.outputs.name_app
-var rgName = naming.outputs.rgName
-var tags = naming.outputs.tags
+resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
+  name: aspName  // ✅ Works - direct variable
+  // name: naming.outputs.name_asp  // ❌ Error BCP120
+  ...
+}
+
+// You CAN use module outputs in deployment outputs
+output validationCheck bool = naming.outputs.name_asp == aspName
 ```
 
 ### GitHub Actions
