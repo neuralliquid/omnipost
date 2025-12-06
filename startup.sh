@@ -14,7 +14,10 @@ ls -la
 
 # Verify package.json exists
 if [ ! -f "package.json" ]; then
-    echo "ERROR: package.json not found in /home/site/wwwroot"
+    if [ ! -f "package.json" ]; then
+        echo "ERROR: package.json not found in /home/site/wwwroot" >&2
+        exit 1
+    fi
     exit 1
 fi
 
