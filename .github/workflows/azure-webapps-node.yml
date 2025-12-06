@@ -40,39 +40,49 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
       - name: Install, build, and test
         run: |
           pnpm install --frozen-lockfile
+          pnpm run type-check
+          pnpm run lint
           pnpm run build
           pnpm test
+        env:
+          JWT_SECRET: test-secret-key-for-deployment-ci
 
       - name: Prepare deployment package
         run: |
           # Create deployment directory
           mkdir -p deploy
           
-          # Copy production files
-          cp -r .next deploy/
-          cp -r public deploy/ || true
-          cp -r node_modules deploy/
-          cp package.json deploy/
-          cp pnpm-lock.yaml deploy/
-          cp next.config.ts deploy/
-          cp .deployment deploy/
+          # Copy standalone server (includes minimal dependencies)
+          cp -r .next/standalone/. deploy/
+          
+          # Copy static assets
+          mkdir -p deploy/.next/static
+          cp -r .next/static/. deploy/.next/static/
+          
+          # Copy public directory
+          cp -r public deploy/public || true
+          
+          # Copy startup script
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
           
-          # Verify package.json is present
-          if [ ! -f "deploy/package.json" ]; then
-            echo "ERROR: package.json not found in deploy directory!"
-            exit 1
-          fi
-          
-          echo "✓ Deployment package contents:"
-          ls -la deploy/ | head -20
-          
-          # Create .npmrc to use pnpm
-          echo "node-linker=hoisted" > deploy/.npmrc
+          echo "✓ Standalone deployment package contents:"
+          find deploy -maxdepth 2 -print | head -20
+          echo "✓ Package size:"
+          du -sh deploy/
 
       - name: Zip artifact for deployment
         run: cd deploy && zip -r ../node-app.zip ./*
@@ -176,3 +186,36 @@ jobs:
         with:
           app-name: ${{ env.APP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Verify deployment health
+        run: |
+          echo "Waiting 30 seconds for app to start..."
+          sleep 30
+          
+          APP_URL="https://${{ env.APP_NAME }}.azurewebsites.net"
+          echo "Testing health endpoint: ${APP_URL}/api/health"
+          
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${APP_URL}/api/health" || echo "000")
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed! App is running."
+              curl -s "${APP_URL}/api/health" | jq .
+              exit 0
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "⚠️  Attempt $RETRY_COUNT/$MAX_RETRIES: Health check returned $HTTP_CODE"
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Retrying in 10 seconds..."
+                sleep 10
+              fi
+            fi
+          done
+          
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          echo "Deployment may have issues. Check Azure logs:"
+          echo "az webapp log tail --name ${{ env.APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}"
+          exit 1

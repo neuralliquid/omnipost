@@ -174,15 +174,84 @@ TWITTER_API_KEY=your-twitter-api-key
 
 ## 🚀 Deployment to Azure
 
-This project is configured for deployment to Azure Web Apps using GitHub Actions.
+This project uses **Next.js standalone output mode** for optimized Azure App Service deployments via GitHub Actions.
+
+### Key Features
+
+- ✅ **90% smaller deployments** (~86MB vs ~800MB)
+- ✅ **Faster cold starts** with run-from-package mode
+- ✅ **Automated quality gates** (type-check, lint, tests)
+- ✅ **Health check verification** post-deployment
+- ✅ **Application Insights monitoring** with automated alerts
+- ✅ **Build caching** for faster subsequent deployments
+
+### Quick Deploy
+
+**Push to main** → Automatically deploys to **dev** environment  
+**Manual deployment:** GitHub Actions → Run workflow → Select environment (dev/test/prod)
 
 ### Prerequisites
 
 - Azure subscription
-- Azure CLI installed
-- GitHub repository secrets configured
+- Azure CLI installed (for manual deployment)
+- GitHub repository secrets configured:
+  - `AZURE_CREDENTIALS` - Service principal for Azure deployment
+  - See [docs/AZURE_SECRETS.md](docs/AZURE_SECRETS.md) for app configuration
 
-### Deployment Steps
+### Automated Deployment (Recommended)
+
+GitHub Actions automatically handles the complete deployment pipeline:
+
+1. **Build Phase** (~5-7 min)
+   - Install dependencies with pnpm
+   - Run TypeScript type-check
+   - Run ESLint
+   - Build Next.js standalone output
+   - Run tests
+   - Create optimized deployment package (~86MB)
+
+2. **Infrastructure Phase** (~2-3 min)
+   - Create/update Azure resources via Bicep
+   - Configure App Service settings
+   - Set up monitoring and alerts (if enabled)
+
+3. **Deploy Phase** (~3-5 min)
+   - Upload package to Azure
+   - Start application
+   - Verify health endpoint with retries
+
+**Total Time:** 10-15 minutes
+
+### Configuration
+
+Edit `.github/workflows/azure-webapps-node.yml`:
+
+```yaml
+env:
+  NODE_VERSION: '20.x'
+  ORG_CODE: 'nl' # Organization code
+  PROJECT_NAME: 'content-creation'
+  REGION_CODE: 'euw' # Region code (euw, eus, etc.)
+  LOCATION: 'westeurope' # Azure location
+```
+
+Edit `infra/parameters.json` for infrastructure settings:
+
+```json
+{
+  "org": { "value": "nl" },
+  "env": { "value": "dev" },
+  "project": { "value": "content-creation" },
+  "region": { "value": "euw" },
+  "sku": { "value": "B1" },
+  "enableMonitoring": { "value": true },
+  "enableDeploymentSlot": { "value": false }
+}
+```
+
+### Manual Deployment
+
+For local deployment or troubleshooting:
 
 1. **Configure GitHub Secrets:**
    Add the following secrets to your GitHub repository:

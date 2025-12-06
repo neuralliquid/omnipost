@@ -23,6 +23,12 @@ param sku string = 'B1'
 @description('The runtime stack of the web app')
 param linuxFxVersion string = 'NODE|20-lts'
 
+@description('Enable Application Insights monitoring')
+param enableMonitoring bool = true
+
+@description('Enable deployment slot for blue-green deployments (staging/prod only)')
+param enableDeploymentSlot bool = false
+
 // Generate names directly (required for resource names - must be available at deployment start)
 var base = '${org}-${env}-${project}'
 var appName = '${base}-app-${region}'
@@ -35,18 +41,6 @@ var tags = {
   project: project
   region: region
   managedBy: 'bicep'
-}
-
-// Deploy naming module for validation and reference
-// Note: Module outputs cannot be used in resource names (BCP120), but can be used in outputs
-module naming 'naming.bicep' = {
-  name: 'naming-validation'
-  params: {
-    org: org
-    env: env
-    project: project
-    region: region
-  }
 }
 
 resource appServicePlan 'Microsoft.Web/serverfarms@2022-09-01' = {
@@ -66,6 +60,9 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
   name: appName
   location: location
   tags: tags
+  identity: {
+    type: 'SystemAssigned' // Enable managed identity for Key Vault access
+  }
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
@@ -73,13 +70,17 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: '/home/site/wwwroot/startup.sh'
+      appCommandLine: ''
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'false'
+        }
+        {
+          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
+          value: 'false' // Stateless deployment - no persistent /home storage needed
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
@@ -89,13 +90,20 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
           name: 'NODE_ENV'
           value: 'production'
         }
+        // IMPORTANT: Application secrets (JWT_SECRET, API keys) must be configured separately
+        // See docs/AZURE_SECRETS.md for configuration instructions
+        // Use Azure Portal or: az webapp config appsettings set --settings JWT_SECRET="..."
         {
           name: 'PORT'
           value: '8080'
         }
         {
+          name: 'WEBSITES_PORT'
+          value: '8080'
+        }
+        {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
-          value: '0'
+          value: '1' // Run from package for faster cold starts
         }
         {
           name: 'ENABLE_ORYX_BUILD'
@@ -104,6 +112,10 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'WEBSITE_HTTPLOGGING_RETENTION_DAYS'
           value: '7'
+        }
+        {
+          name: 'WEBSITE_STARTUP_FILE'
+          value: 'startup.sh'
         }
         {
           name: 'ENVIRONMENT'
@@ -122,15 +134,50 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
   }
 }
 
+// Deploy monitoring module (Application Insights + Log Analytics) after webapp
+module monitoring 'monitoring.bicep' = if (enableMonitoring) {
+  name: 'monitoring-deployment'
+  params: {
+    org: org
+    env: env
+    project: project
+    region: region
+    location: location
+    tags: tags
+    webAppId: webApp.id
+  }
+}
+
+// Deployment slot for staging (blue-green deployment pattern)
+resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeploymentSlot) {
+  parent: webApp
+  name: 'staging'
+  location: location
+  tags: tags
+  identity: {
+    type: 'SystemAssigned' // Enable managed identity
+  }
+  properties: {
+    serverFarmId: appServicePlan.id
+    siteConfig: {
+      linuxFxVersion: linuxFxVersion
+      alwaysOn: true
+      http20Enabled: true
+      minTlsVersion: '1.2'
+      appCommandLine: ''
+      httpLoggingEnabled: true
+      detailedErrorLoggingEnabled: true
+      // Inherit app settings from production slot
+    }
+  }
+}
+
 output webAppName string = webApp.name
 output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 output appServicePlanName string = appServicePlan.name
+output stagingSlotUrl string = enableDeploymentSlot ? 'https://${stagingSlot!.properties.defaultHostName}' : 'N/A'
 
-// Validation outputs from naming module
-output namingValidation object = {
-  expectedAppName: naming.outputs.name_app
-  actualAppName: appName
-  expectedAspName: naming.outputs.name_asp
-  actualAspName: appServicePlanName
-  matches: naming.outputs.name_app == appName && naming.outputs.name_asp == appServicePlanName
-}
+// Monitoring outputs
+output appInsightsConnectionString string = enableMonitoring ? monitoring!.outputs.connectionString : ''
+output appInsightsInstrumentationKey string = enableMonitoring ? monitoring!.outputs.instrumentationKey : ''
+
