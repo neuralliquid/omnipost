@@ -210,7 +210,7 @@ GitHub Actions automatically handles the complete deployment pipeline:
    - Run tests
    - Create optimized deployment package (~86MB)
 
-2. **Infrastructure Phase** (~2-3 min)  
+2. **Infrastructure Phase** (~2-3 min)
    - Create/update Azure resources via Bicep
    - Configure App Service settings
    - Set up monitoring and alerts (if enabled)
@@ -225,16 +225,18 @@ GitHub Actions automatically handles the complete deployment pipeline:
 ### Configuration
 
 Edit `.github/workflows/azure-webapps-node.yml`:
+
 ```yaml
 env:
   NODE_VERSION: '20.x'
-  ORG_CODE: 'nl'              # Organization code
+  ORG_CODE: 'nl' # Organization code
   PROJECT_NAME: 'content-creation'
-  REGION_CODE: 'euw'          # Region code (euw, eus, etc.)
-  LOCATION: 'westeurope'      # Azure location
+  REGION_CODE: 'euw' # Region code (euw, eus, etc.)
+  LOCATION: 'westeurope' # Azure location
 ```
 
 Edit `infra/parameters.json` for infrastructure settings:
+
 ```json
 {
   "org": { "value": "nl" },

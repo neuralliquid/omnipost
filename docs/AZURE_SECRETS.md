@@ -11,6 +11,7 @@ The application requires several environment variables and secrets to function p
 ### 🔐 Critical (Required for Core Functionality)
 
 #### JWT_SECRET
+
 - **Purpose:** Signs and verifies JWT authentication tokens
 - **Type:** Random string (min 32 characters)
 - **How to Generate:**
@@ -31,6 +32,7 @@ The application requires several environment variables and secrets to function p
 Configure these only if you're using the respective integrations:
 
 ### Airtable (Content Storage)
+
 ```bash
 az webapp config appsettings set \
   --name nl-dev-content-creation-app-euw \
@@ -42,6 +44,7 @@ az webapp config appsettings set \
 ```
 
 ### Hugging Face (AI Image Generation)
+
 ```bash
 az webapp config appsettings set \
   --name nl-dev-content-creation-app-euw \
@@ -50,6 +53,7 @@ az webapp config appsettings set \
 ```
 
 ### Email (Gmail SMTP)
+
 ```bash
 az webapp config appsettings set \
   --name nl-dev-content-creation-app-euw \
@@ -62,6 +66,7 @@ az webapp config appsettings set \
 ```
 
 ### Slack Notifications
+
 ```bash
 az webapp config appsettings set \
   --name nl-dev-content-creation-app-euw \
@@ -70,6 +75,7 @@ az webapp config appsettings set \
 ```
 
 ### Twilio (SMS Notifications)
+
 ```bash
 az webapp config appsettings set \
   --name nl-dev-content-creation-app-euw \
@@ -81,6 +87,7 @@ az webapp config appsettings set \
 ```
 
 ### Social Media Platform APIs
+
 ```bash
 # Facebook
 az webapp config appsettings set \
@@ -130,6 +137,7 @@ Alternatively, you can configure these via the Azure Portal:
 For production environments, store secrets in Azure Key Vault and reference them in App Settings:
 
 1. **Create secrets in Key Vault:**
+
    ```bash
    az keyvault secret set \
      --vault-name nl-prod-content-creation-kv-euw \
@@ -138,6 +146,7 @@ For production environments, store secrets in Azure Key Vault and reference them
    ```
 
 2. **Reference in App Settings:**
+
    ```bash
    az webapp config appsettings set \
      --name nl-prod-content-creation-app-euw \
@@ -146,18 +155,19 @@ For production environments, store secrets in Azure Key Vault and reference them
    ```
 
 3. **Grant App Service access to Key Vault:**
+
    ```bash
    # Enable managed identity
    az webapp identity assign \
      --name nl-prod-content-creation-app-euw \
      --resource-group nl-prod-content-creation-rg-euw
-   
+
    # Get the principal ID
    PRINCIPAL_ID=$(az webapp identity show \
      --name nl-prod-content-creation-app-euw \
      --resource-group nl-prod-content-creation-rg-euw \
      --query principalId -o tsv)
-   
+
    # Grant access to Key Vault
    az keyvault set-policy \
      --name nl-prod-content-creation-kv-euw \
@@ -201,15 +211,18 @@ The deployment pipeline needs these secrets configured in GitHub:
 ## Troubleshooting
 
 ### "Unauthorized" errors
+
 - Verify JWT_SECRET is set and matches between environments
 - Check App Service logs: `az webapp log tail --name <app-name> --resource-group <rg-name>`
 
 ### API integration failures
+
 - Verify the specific API key is set (check logs for which integration failed)
 - Test the API key directly using curl or Postman
 - Ensure the API URL is correct for your region
 
 ### Secrets not loading
+
 - Restart the App Service after changing settings
 - Check for typos in secret names (they're case-sensitive in code)
 - Verify managed identity has Key Vault access (if using Key Vault references)

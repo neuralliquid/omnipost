@@ -188,6 +188,7 @@ az webapp deployment slot swap \
 **Symptoms:** Health check fails, HTTP 503 errors
 
 **Diagnosis:**
+
 ```bash
 # Check app logs
 az webapp log tail \
@@ -205,6 +206,7 @@ cat /home/site/wwwroot/startup.sh
 ```
 
 **Common Causes:**
+
 1. Missing `server.js` in standalone build
    - **Fix:** Ensure `output: 'standalone'` is in `next.config.ts`
 2. Wrong startup command
@@ -217,6 +219,7 @@ cat /home/site/wwwroot/startup.sh
 **Symptoms:** CI/CD fails during build step
 
 **Diagnosis:**
+
 ```bash
 # Run locally
 pnpm install --frozen-lockfile
@@ -226,6 +229,7 @@ pnpm test            # Check test failures
 ```
 
 **Common Causes:**
+
 1. TypeScript errors
    - **Fix:** Run `pnpm run type-check` and fix errors
 2. Missing dependencies
@@ -238,6 +242,7 @@ pnpm test            # Check test failures
 **Symptoms:** Upload timeout, slow deployments
 
 **Diagnosis:**
+
 ```bash
 # Check package size
 du -sh .next/standalone/
@@ -248,6 +253,7 @@ find .next/standalone -type f -size +10M
 ```
 
 **Fix:**
+
 - Ensure using standalone build (not full node_modules)
 - Check for accidentally included large assets
 - Expected size: ~80-100MB
@@ -257,6 +263,7 @@ find .next/standalone -type f -size +10M
 **Symptoms:** App crashes, out of memory errors
 
 **Diagnosis:**
+
 ```bash
 # Check App Service metrics
 az monitor metrics list \
@@ -269,6 +276,7 @@ az monitor metrics list \
 ```
 
 **Fix:**
+
 - Scale up to higher SKU: `az webapp update --resource-group $RESOURCE_GROUP --name $APP_NAME --sku B2`
 - Enable Application Insights to identify memory leaks
 - Review Next.js memory usage patterns
@@ -278,6 +286,7 @@ az monitor metrics list \
 **Symptoms:** Health check times out, slow page loads
 
 **Diagnosis:**
+
 ```bash
 # Check response times
 az monitor metrics list \
@@ -290,6 +299,7 @@ az monitor metrics list \
 ```
 
 **Fix:**
+
 - Enable `alwaysOn`: Already enabled in Bicep
 - Check for database/API call bottlenecks in Application Insights
 - Scale out: Add more instances
@@ -299,6 +309,7 @@ az monitor metrics list \
 **Symptoms:** 401 Unauthorized errors
 
 **Diagnosis:**
+
 ```bash
 # Check if JWT_SECRET is set
 az webapp config appsettings list \
@@ -308,6 +319,7 @@ az webapp config appsettings list \
 ```
 
 **Fix:**
+
 ```bash
 # Generate and set JWT_SECRET
 JWT_SECRET=$(openssl rand -base64 32)
@@ -444,6 +456,7 @@ az monitor app-insights query \
 ### Configure Alerts
 
 Alerts are automatically created by the Bicep template:
+
 - **High 5xx Errors:** > 10 errors in 5 minutes
 - **High Response Time:** > 2 seconds average over 15 minutes
 - **High Memory:** > 80% over 15 minutes
