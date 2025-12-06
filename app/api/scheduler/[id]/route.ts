@@ -90,8 +90,7 @@ export async function DELETE(request: Request, { params }: RouteParams) {
     });
   } catch (error) {
     console.error('Error cancelling job:', error);
-    const message = error instanceof Error ? error.message : 'Failed to cancel job';
-    return NextResponse.json({ error: message }, { status: 400 });
+    return NextResponse.json({ error: 'Failed to cancel job' }, { status: 500 });
   }
 }
 
