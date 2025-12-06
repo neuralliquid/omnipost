@@ -73,13 +73,17 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: '/home/site/wwwroot/startup.sh'
+      appCommandLine: ''
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
         {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'false'
+        }
+        {
+          name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
+          value: 'true'
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
@@ -94,6 +98,10 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
           value: '8080'
         }
         {
+          name: 'WEBSITES_PORT'
+          value: '8080'
+        }
+        {
           name: 'WEBSITE_RUN_FROM_PACKAGE'
           value: '0'
         }
@@ -104,6 +112,10 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'WEBSITE_HTTPLOGGING_RETENTION_DAYS'
           value: '7'
+        }
+        {
+          name: 'WEBSITE_STARTUP_FILE'
+          value: 'startup.sh'
         }
         {
           name: 'ENVIRONMENT'
