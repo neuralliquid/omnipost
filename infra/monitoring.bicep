@@ -58,6 +58,9 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
+// Alert threshold: 1GB in bytes
+var memoryThresholdBytes = 1073741824
+
 // Alert: High HTTP 5xx errors
 resource alert5xx 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   name: '${appInsightsName}-high-5xx-errors'
@@ -124,7 +127,7 @@ resource alertMemory 'Microsoft.Insights/metricAlerts@2018-03-01' = {
   location: 'global'
   tags: tags
   properties: {
-    description: 'Alert when memory usage exceeds 80%'
+    description: 'Alert when memory working set exceeds 1GB'
     severity: 3
     enabled: true
     scopes: [
@@ -138,9 +141,9 @@ resource alertMemory 'Microsoft.Insights/metricAlerts@2018-03-01' = {
         {
           criterionType: 'StaticThresholdCriterion'
           name: 'HighMemoryUsage'
-          metricName: 'MemoryPercentage'
+          metricName: 'MemoryWorkingSet'
           operator: 'GreaterThan'
-          threshold: 80
+          threshold: memoryThresholdBytes
           timeAggregation: 'Average'
         }
       ]

@@ -72,7 +72,7 @@ jest.mock('../../lib/featureFlags', () => ({
 import { POST, PUT } from '../../app/api/images/route';
 
 // Helper function to create a mock request
-function createMockRequest(body: any): NextRequest {
+function createMockRequest(body: Record<string, unknown>): NextRequest {
   return {
     json: () => Promise.resolve(body),
     headers: new Headers(),

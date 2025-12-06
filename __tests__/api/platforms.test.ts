@@ -61,7 +61,7 @@ function createMockRequest(method: string = 'GET'): NextRequest {
   const mockRequest: Partial<NextRequest> = {
     method,
     headers: {
-      get: jest.fn((name: string) => 'mock-value'),
+      get: jest.fn((_name: string) => 'mock-value'),
       append: jest.fn(),
       delete: jest.fn(),
       has: jest.fn(() => false),
@@ -75,6 +75,18 @@ function createMockRequest(method: string = 'GET'): NextRequest {
     },
   };
   return mockRequest as NextRequest;
+}
+
+// Helper function to mock unauthenticated headers
+function mockUnauthenticatedHeaders(): void {
+  const { headers } = require('next/headers');
+  const mockHeaderGet = (name: string) => {
+    if (name === 'x-user-id') return null; // No user ID = not authenticated
+    return null;
+  };
+  headers.mockImplementationOnce(() => ({
+    get: jest.fn(mockHeaderGet),
+  }));
 }
 
 describe('Platforms API', () => {
@@ -108,14 +120,7 @@ describe('Platforms API', () => {
 
     test('should require authentication', async () => {
       // Mock headers to return no user ID (unauthenticated)
-      const { headers } = require('next/headers');
-      const mockHeaderGet = (name: string) => {
-        if (name === 'x-user-id') return null; // No user ID = not authenticated
-        return null;
-      };
-      headers.mockImplementationOnce(() => ({
-        get: jest.fn(mockHeaderGet),
-      }));
+      mockUnauthenticatedHeaders();
 
       // Create a mock request
       const request = createMockRequest();
@@ -190,14 +195,7 @@ describe('Platforms API', () => {
 
     test('should require authentication', async () => {
       // Mock headers to return no user ID (unauthenticated)
-      const { headers } = require('next/headers');
-      const mockHeaderGet = (name: string) => {
-        if (name === 'x-user-id') return null; // No user ID = not authenticated
-        return null;
-      };
-      headers.mockImplementationOnce(() => ({
-        get: jest.fn(mockHeaderGet),
-      }));
+      mockUnauthenticatedHeaders();
 
       // Create mock request and params
       const request = createMockRequest();
