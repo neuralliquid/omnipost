@@ -25,6 +25,13 @@ param principalId string
 @description('Tags to apply to resources')
 param tags object = {}
 
+@description('JWT secret value (must be provided at deployment time)')
+@secure()
+param jwtSecretValue string
+
+@description('JWT secret expiration (defaults to 1 year from deployment)')
+param jwtSecretExpirationEpoch int = dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))
+
 // Generate Key Vault name (max 24 chars, alphanumeric + hyphens)
 var base = '${org}-${env}-${project}'
 var kvName = '${base}-kv-${region}'
@@ -44,7 +51,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enabledForTemplateDeployment: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 90
-    enableRbacAuthorization: false
+    enableRbacAuthorization: true // Enable RBAC for enhanced security
     accessPolicies: [
       {
         tenantId: tenantId
@@ -64,12 +71,15 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   }
 }
 
-// Placeholder secrets - these should be set manually or via pipeline
+// JWT secret with 1-year expiration (CKV_AZURE_41 compliance)
 resource jwtSecret 'Microsoft.KeyVault/vaults/secrets@2023-07-01' = {
   parent: keyVault
   name: 'JWT-SECRET'
   properties: {
-    value: 'REPLACE-WITH-ACTUAL-SECRET' // This should be replaced via pipeline or manually
+    value: jwtSecretValue
+    attributes: {
+      exp: jwtSecretExpirationEpoch
+    }
     contentType: 'text/plain'
   }
 }

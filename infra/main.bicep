@@ -60,6 +60,9 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
   name: appName
   location: location
   tags: tags
+  identity: {
+    type: 'SystemAssigned' // Enable managed identity for Key Vault access
+  }
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {
@@ -71,13 +74,13 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
-        {  
+        {
           name: 'SCM_DO_BUILD_DURING_DEPLOYMENT'
           value: 'false'
         }
         {
           name: 'WEBSITES_ENABLE_APP_SERVICE_STORAGE'
-          value: 'true'
+          value: 'false' // Stateless deployment - no persistent /home storage needed
         }
         {
           name: 'WEBSITE_NODE_DEFAULT_VERSION'
@@ -151,6 +154,9 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
   name: 'staging'
   location: location
   tags: tags
+  identity: {
+    type: 'SystemAssigned' // Enable managed identity
+  }
   properties: {
     serverFarmId: appServicePlan.id
     siteConfig: {

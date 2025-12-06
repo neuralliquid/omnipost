@@ -80,7 +80,7 @@ jobs:
           chmod +x deploy/startup.sh
           
           echo "✓ Standalone deployment package contents:"
-          ls -la deploy/ | head -20
+          find deploy -maxdepth 2 -print | head -20
           echo "✓ Package size:"
           du -sh deploy/
 
