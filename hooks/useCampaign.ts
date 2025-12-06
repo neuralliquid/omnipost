@@ -772,7 +772,11 @@ export function useCampaign(): UseCampaignReturn {
           
           // Derive new status based on remaining scheduled posts
           const hasScheduledPosts = filteredPosts.some(p => p.status === 'scheduled');
-          const newStatus = hasScheduledPosts ? 'scheduled' : 'draft';
+          // Only revert 'scheduled' campaigns to 'draft'; preserve 'active'/'paused'
+          let newStatus = c.status;
+          if (c.status === 'scheduled' && !hasScheduledPosts) {
+            newStatus = 'draft';
+          }
           
           updated = {
             ...c,
