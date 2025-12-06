@@ -97,6 +97,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Verify naming script exists
+        run: |
+          if [ ! -f "./infra/naming.sh" ]; then
+            echo "ERROR: naming.sh not found!"
+            ls -la infra/
+            exit 1
+          fi
+          echo "✓ naming.sh found"
+
       - name: Generate Resource Names
         id: generate-names
         run: |
@@ -130,7 +139,7 @@ jobs:
 
   deploy:
     permissions:
-      contents: none
+      contents: read
     runs-on: ubuntu-latest
     needs: infrastructure
     environment:
@@ -138,6 +147,12 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
 
     steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            infra/naming.sh
+          sparse-checkout-cone-mode: false
+
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
