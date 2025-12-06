@@ -40,6 +40,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
       - name: Install, build, and test
         run: |
           pnpm install --frozen-lockfile
@@ -176,3 +186,36 @@ jobs:
         with:
           app-name: ${{ env.APP_NAME }}
           package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Verify deployment health
+        run: |
+          echo "Waiting 30 seconds for app to start..."
+          sleep 30
+          
+          APP_URL="https://${{ env.APP_NAME }}.azurewebsites.net"
+          echo "Testing health endpoint: ${APP_URL}/api/health"
+          
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+          
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${APP_URL}/api/health" || echo "000")
+            
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed! App is running."
+              curl -s "${APP_URL}/api/health" | jq .
+              exit 0
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "⚠️  Attempt $RETRY_COUNT/$MAX_RETRIES: Health check returned $HTTP_CODE"
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                echo "Retrying in 10 seconds..."
+                sleep 10
+              fi
+            fi
+          done
+          
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          echo "Deployment may have issues. Check Azure logs:"
+          echo "az webapp log tail --name ${{ env.APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}"
+          exit 1
