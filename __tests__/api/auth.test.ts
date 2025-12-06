@@ -47,7 +47,8 @@ function createMockRequest(body: Record<string, unknown>): NextRequest {
   // Create a mock RequestCookies object with the correct method signatures
   const cookiesObj = {
     get: jest.fn(
-      (_name: string) => ({ name: _name, value: 'mock-value' }) as unknown as RequestCookie | undefined
+      (_name: string) =>
+        ({ name: _name, value: 'mock-value' }) as unknown as RequestCookie | undefined
     ),
     getAll: jest.fn(() => []),
     has: jest.fn(() => false),
