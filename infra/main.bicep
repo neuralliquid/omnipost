@@ -73,7 +73,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: 'cd /home/site/wwwroot && npm start'
+      appCommandLine: '/home/site/wwwroot/startup.sh'
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
