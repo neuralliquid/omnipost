@@ -55,17 +55,22 @@ All responses follow this structure:
 
 #### `GET /api/health`
 
-Returns system health status.
+Returns system health status. Supports two modes:
+
+1. **Quick Health Check** (default) - For deployment verification and load balancers
+2. **Detailed Health Check** (with `?detailed=true`) - For monitoring systems
 
 **Authentication**: None required
 
 **Query Parameters:**
 
-| Parameter  | Type    | Description                      |
-| ---------- | ------- | -------------------------------- |
-| `detailed` | boolean | Include component health details |
+| Parameter  | Type    | Description                                        |
+| ---------- | ------- | -------------------------------------------------- |
+| `detailed` | boolean | Include component health details and configuration |
 
-**Response (200 OK):**
+**Quick Health Check Response (200 OK):**
+
+Always returns HTTP 200 if the application is running, regardless of configuration status.
 
 ```json
 {
@@ -77,7 +82,9 @@ Returns system health status.
 }
 ```
 
-**Detailed Response:**
+**Detailed Health Check Response (200 OK or 503):**
+
+Returns HTTP 200 for "healthy" or "degraded" status. Returns HTTP 503 only for "unhealthy" status (critical failures like memory exhaustion).
 
 ```json
 {
@@ -98,6 +105,12 @@ Returns system health status.
       "status": "healthy",
       "message": "128MB / 512MB (25%)",
       "lastChecked": "2025-12-05T10:30:00.000Z"
+    },
+    {
+      "name": "environment",
+      "status": "healthy",
+      "message": "All configuration present",
+      "lastChecked": "2025-12-05T10:30:00.000Z"
     }
   ],
   "details": {
@@ -112,6 +125,27 @@ Returns system health status.
     }
   }
 }
+```
+
+**Status Values:**
+
+- `healthy` - All components functioning normally
+- `degraded` - Some non-critical issues (e.g., optional configuration missing, high memory usage)
+- `unhealthy` - Critical failures (e.g., memory exhaustion)
+
+**Component Status:**
+
+The detailed check includes status for:
+- `feature-flags` - Feature flag system health
+- `memory` - Memory usage (degraded >75%, unhealthy >90%)
+- `environment` - Configuration status (optional variables like JWT_SECRET, NEXT_PUBLIC_API_URL)
+
+**Use Cases:**
+
+- **Quick Check**: Use for load balancer health probes, deployment verification, uptime monitoring
+- **Detailed Check**: Use for application monitoring, alerting on degraded performance, configuration validation
+
+---
 ```
 
 ---
