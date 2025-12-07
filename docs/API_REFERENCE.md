@@ -148,10 +148,6 @@ The detailed check includes status for:
 
 ---
 
-````
-
----
-
 ### Authentication
 
 #### `POST /api/auth`
@@ -167,7 +163,7 @@ Authenticate user and receive JWT token.
   "username": "string",
   "password": "string"
 }
-````
+```
 
 **Response (200 OK):**
 
