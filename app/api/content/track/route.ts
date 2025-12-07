@@ -27,7 +27,7 @@ interface AirtableQueryParams {
   offset?: string; // Airtable API actually expects string for offset
   view?: string;
   filterByFormula?: string;
-  sort?: any[];
+  sort?: Array<{ field: string; direction?: 'asc' | 'desc' }>;
   fields?: string[];
 }
 
@@ -75,7 +75,7 @@ async function trackContent(
 
   // Fetch records from Airtable
   // Use type assertion here since we know our params match what Airtable expects
-  let records = await airtableTable.select(queryOptions as any).all();
+  let records = await airtableTable.select(queryOptions as Parameters<typeof airtableTable.select>[0]).all();
 
   // Sanitize filter parameter before use
   const sanitizedFilter = DOMPurify.sanitize(filter);
@@ -134,7 +134,7 @@ function withAuthAndFeature(
     try {
       const table = getAirtableTable();
       return handler(request, table);
-    } catch (error) {
+    } catch {
       return Errors.internalServerError('Airtable integration not available');
     }
   };

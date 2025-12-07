@@ -21,14 +21,12 @@ function isError(error: unknown): error is Error {
 }
 // Mock functions for feedback storage
 // In a real implementation, these would interact with your database
-async function saveFeedback({ reviewId, feedback }: Feedback): Promise<void> {
-  console.log('Saving feedback:', { reviewId, feedback });
+async function saveFeedback({ reviewId: _reviewId, feedback: _feedback }: Feedback): Promise<void> {
   // In a real implementation, you would save to a database
   // For example: await db.collection('feedback').insertOne({ reviewId, feedback, createdAt: new Date() });
 }
 
 async function getFeedback(filter: Partial<Feedback>): Promise<Feedback[]> {
-  console.log('Getting feedback with filter:', filter);
   // In a real implementation, you would query your database
   // For now, return mock data
   return [
@@ -92,7 +90,6 @@ async function processFeedbackSubmission(
     console.error('Error submitting feedback:', error);
 
     // Log feedback submission failure
-    const errorMessage = isError(error) ? error.message : 'Unknown error';
     await logToAuditTrail(
       await createLogEntry('SUBMIT_FEEDBACK_FAILURE', {
         error: error instanceof Error ? error.message : String(error),
