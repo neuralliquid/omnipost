@@ -196,7 +196,7 @@ describe('GET /api/health', () => {
 
       expect(response.status).toBe(200); // Still returns 200, but status is degraded
       expect(data.status).toBe('degraded');
-      
+
       const envComponent = data.components.find((c: ComponentHealth) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('degraded');
@@ -218,7 +218,7 @@ describe('GET /api/health', () => {
       expect(response.status).toBe(200);
       // Note: status might still be degraded due to other components
       // but environment component should be healthy
-      
+
       const envComponent = data.components.find((c: ComponentHealth) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('healthy');
