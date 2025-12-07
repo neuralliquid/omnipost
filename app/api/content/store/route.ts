@@ -76,7 +76,7 @@ function withAuthAndFeature(
     try {
       const table = getAirtableTable();
       return handler(nextRequest, user, table);
-    } catch (error) {
+    } catch {
       return Errors.internalServerError('Airtable integration not available');
     }
   };
