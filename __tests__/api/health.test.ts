@@ -111,7 +111,7 @@ describe('GET /api/health', () => {
       const data = await response.json();
 
       expect(data.environment).toBe('production');
-      
+
       // Restore original value
       (process.env as any).NODE_ENV = originalNodeEnv;
     });
@@ -174,7 +174,7 @@ describe('GET /api/health', () => {
 
       expect(response.status).toBe(200); // Still returns 200, but status is degraded
       expect(data.status).toBe('degraded');
-      
+
       const envComponent = data.components.find((c: any) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('degraded');
@@ -196,7 +196,7 @@ describe('GET /api/health', () => {
       expect(response.status).toBe(200);
       // Note: status might still be degraded due to other components
       // but environment component should be healthy
-      
+
       const envComponent = data.components.find((c: any) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('healthy');

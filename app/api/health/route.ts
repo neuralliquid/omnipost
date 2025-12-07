@@ -4,12 +4,12 @@
  *
  * GET /api/health - Quick health check (always returns 200 if app is running)
  * GET /api/health?detailed=true - Detailed health check with component status
- * 
+ *
  * The quick health check is designed for:
  * - Load balancer health probes
  * - Deployment verification
  * - Basic uptime monitoring
- * 
+ *
  * The detailed health check is designed for:
  * - Application monitoring systems
  * - Alerting on degraded performance
@@ -159,9 +159,10 @@ function checkEnvironment(strict: boolean = false): ComponentHealth {
     return {
       name: 'environment',
       status: 'healthy',
-      message: missingVars.length > 0 
-        ? `Running (optional config missing: ${missingVars.join(', ')})`
-        : 'All configuration present',
+      message:
+        missingVars.length > 0
+          ? `Running (optional config missing: ${missingVars.join(', ')})`
+          : 'All configuration present',
       lastChecked: new Date().toISOString(),
     };
   }
@@ -228,9 +229,9 @@ export async function GET(request: NextRequest): Promise<NextResponse<HealthResp
   // Detailed health check - strict, checks all components and configuration
   // This is suitable for monitoring and alerting systems
   const components: ComponentHealth[] = [
-    checkFeatureFlags(), 
-    checkMemory(), 
-    checkEnvironment(true) // strict mode for detailed check
+    checkFeatureFlags(),
+    checkMemory(),
+    checkEnvironment(true), // strict mode for detailed check
   ];
 
   const memoryUsage = process.memoryUsage();
