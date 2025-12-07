@@ -136,6 +136,7 @@ Returns HTTP 200 for "healthy" or "degraded" status. Returns HTTP 503 only for "
 **Component Status:**
 
 The detailed check includes status for:
+
 - `feature-flags` - Feature flag system health
 - `memory` - Memory usage (degraded >75%, unhealthy >90%)
 - `environment` - Configuration status (optional variables like JWT_SECRET, NEXT_PUBLIC_API_URL)
@@ -144,9 +145,6 @@ The detailed check includes status for:
 
 - **Quick Check**: Use for load balancer health probes, deployment verification, uptime monitoring
 - **Detailed Check**: Use for application monitoring, alerting on degraded performance, configuration validation
-
----
-```
 
 ---
 
