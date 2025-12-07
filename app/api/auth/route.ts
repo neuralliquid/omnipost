@@ -3,11 +3,8 @@ import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
-import { authService } from '../../../lib/auth/auth-service';
+import { authService, User } from '../../../lib/auth/auth-service';
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
-
-// Import Request type from Next.js
-import type { NextRequest } from 'next/server';
 
 /**
  * Validates login input parameters
@@ -40,7 +37,7 @@ async function validateLoginInput(
  * @param password Password to verify
  * @returns User object or error response
  */
-async function authenticateUser(username: string, password: string): Promise<any | NextResponse> {
+async function authenticateUser(username: string, password: string): Promise<User | NextResponse> {
   // Log the login attempt (without the password)
   await logToAuditTrail(await createLogEntry('LOGIN_ATTEMPT', { username }));
 
@@ -70,7 +67,7 @@ async function authenticateUser(username: string, password: string): Promise<any
  * @param user User object
  * @returns JWT token
  */
-function generateToken(user: any): string {
+function generateToken(user: User): string {
   return authService.generateToken(user);
 }
 

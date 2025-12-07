@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
 import { withErrorHandling, Errors } from '../_utils/errors';
 import { isAdmin } from '../_utils/auth';
-import { createLogEntry, logToAuditTrail, sanitizeRequestBody } from '../_utils/audit';
+import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import fs from 'fs';
 import path from 'path';
-import { createReadStream } from 'fs';
-import { createInterface } from 'readline';
 
 // Define the log entry interface
 interface LogEntry {
@@ -14,7 +12,7 @@ interface LogEntry {
   timestamp: string;
   path: string;
   method: string;
-  body?: any;
+  body?: unknown;
   result?: string;
   statusCode?: number;
 }
@@ -104,7 +102,6 @@ export const GET = withErrorHandling(async (request: Request) => {
 
     // Process logs in a streaming manner for large files
     let logs: LogEntry[] = [];
-    let totalLogs = 0;
 
     // For smaller files, we can use the direct approach
     const data = await fs.promises.readFile(logFilePath, 'utf-8');
