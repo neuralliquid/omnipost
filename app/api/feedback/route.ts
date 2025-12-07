@@ -90,9 +90,10 @@ async function processFeedbackSubmission(
     console.error('Error submitting feedback:', error);
 
     // Log feedback submission failure
+    const errorMessage = isError(error) ? error.message : 'Unknown error';
     await logToAuditTrail(
       await createLogEntry('SUBMIT_FEEDBACK_FAILURE', {
-        error: error instanceof Error ? error.message : String(error),
+        error: errorMessage,
       })
     );
 
