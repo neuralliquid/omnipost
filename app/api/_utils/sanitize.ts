@@ -40,8 +40,13 @@ function stripHtmlTags(input: string): string {
   return result;
 }
 
+// Type definition for DOMPurify
+type DOMPurifyType = {
+  sanitize: (input: string, config?: DOMPurifyConfig) => string;
+} | null;
+
 // Lazy load DOMPurify only on client-side
-let DOMPurify: any = null;
+let DOMPurify: DOMPurifyType = null;
 if (typeof globalThis.window !== 'undefined') {
   // Client-side only - use IIFE for async initialization
   (async () => {
