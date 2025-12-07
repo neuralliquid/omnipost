@@ -2,14 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import jwt from 'jsonwebtoken';
 
-// Validate JWT_SECRET at startup - fail fast if missing
-if (!process.env.JWT_SECRET) {
-  throw new Error(
-    'FATAL: JWT_SECRET environment variable is required but not set. ' +
-      'Application cannot start without it. Please set JWT_SECRET in your environment.'
-  );
-}
-
+// JWT_SECRET is optional at startup to allow health checks and deployment verification
+// Authentication will fail gracefully if JWT_SECRET is missing when needed
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // Define paths that require authentication
@@ -71,6 +65,12 @@ function createForbiddenResponse(message: string): NextResponse {
  * Verify and decode JWT token
  */
 function verifyToken(token: string): jwt.JwtPayload | null {
+  // If JWT_SECRET is not configured, authentication cannot be performed
+  if (!JWT_SECRET) {
+    console.warn('JWT_SECRET not configured - authentication unavailable');
+    return null;
+  }
+
   try {
     const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
 
@@ -136,6 +136,16 @@ export default function proxy(request: NextRequest) {
 
   if (!requiresAuth) {
     return NextResponse.next();
+  }
+
+  // If JWT_SECRET is not configured, authentication cannot be performed
+  if (!JWT_SECRET) {
+    console.warn(
+      `JWT_SECRET not configured - authentication required for ${pathname} but unavailable`
+    );
+    return createUnauthorizedResponse(
+      'Authentication service unavailable - JWT_SECRET not configured'
+    );
   }
 
   // Get authentication token
