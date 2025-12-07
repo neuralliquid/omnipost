@@ -116,24 +116,26 @@ describe('GET /api/health', () => {
 
     it('should return current environment', async () => {
       const originalNodeEnv = process.env.NODE_ENV;
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
-        configurable: true,
-        writable: true,
-      });
+      try {
+        Object.defineProperty(process.env, 'NODE_ENV', {
+          value: 'production',
+          configurable: true,
+          writable: true,
+        });
 
-      const request = createMockRequest('http://localhost:3000/api/health');
-      const response = await GET(request);
-      const data = await response.json();
+        const request = createMockRequest('http://localhost:3000/api/health');
+        const response = await GET(request);
+        const data = await response.json();
 
-      expect(data.environment).toBe('production');
-      
-      // Restore original value
-      Object.defineProperty(process.env, 'NODE_ENV', {
-        value: originalNodeEnv,
-        configurable: true,
-        writable: true,
-      });
+        expect(data.environment).toBe('production');
+      } finally {
+        // Ensure original value is restored even if test fails
+        Object.defineProperty(process.env, 'NODE_ENV', {
+          value: originalNodeEnv,
+          configurable: true,
+          writable: true,
+        });
+      }
     });
   });
 

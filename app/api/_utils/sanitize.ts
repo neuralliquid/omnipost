@@ -40,6 +40,13 @@ function stripHtmlTags(input: string): string {
   return result;
 }
 
+// Type definition for DOMPurify config
+interface DOMPurifyConfig {
+  ALLOWED_TAGS?: string[];
+  ALLOWED_ATTR?: string[];
+  KEEP_CONTENT?: boolean;
+}
+
 // Type definition for DOMPurify
 type DOMPurifyType = {
   sanitize: (input: string, config?: DOMPurifyConfig) => string;
@@ -52,13 +59,6 @@ if (typeof globalThis.window !== 'undefined') {
   (async () => {
     DOMPurify = await import('dompurify').then(module => module.default);
   })();
-}
-
-// Type definition for DOMPurify config
-interface DOMPurifyConfig {
-  ALLOWED_TAGS?: string[];
-  ALLOWED_ATTR?: string[];
-  KEEP_CONTENT?: boolean;
 }
 
 /**
