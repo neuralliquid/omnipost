@@ -6,23 +6,35 @@
 import { NextRequest } from 'next/server';
 import { GET } from '@/app/api/health/route';
 
+// Type definitions matching the health route response
+interface ComponentHealth {
+  name: string;
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  latencyMs?: number;
+  message?: string;
+  lastChecked: string;
+}
+
 // Helper function to create a mock request
 function createMockRequest(url: string): NextRequest {
+  // Create a type-safe mock for Headers
+  const mockHeaders = {
+    get: jest.fn((_name: string) => null),
+    append: jest.fn(),
+    delete: jest.fn(),
+    has: jest.fn(() => false),
+    set: jest.fn(),
+    entries: jest.fn(() => [][Symbol.iterator]()),
+    forEach: jest.fn(),
+    keys: jest.fn(() => [][Symbol.iterator]()),
+    values: jest.fn(() => [][Symbol.iterator]()),
+    getSetCookie: jest.fn(() => []),
+    [Symbol.iterator]: jest.fn(() => [][Symbol.iterator]()),
+  } as unknown as Headers;
+
   const mockRequest: Partial<NextRequest> = {
     url,
-    headers: {
-      get: jest.fn((_name: string) => null),
-      append: jest.fn(),
-      delete: jest.fn(),
-      has: jest.fn(() => false),
-      set: jest.fn(),
-      entries: jest.fn(() => [][Symbol.iterator]()),
-      forEach: jest.fn(),
-      keys: jest.fn(() => [][Symbol.iterator]()),
-      values: jest.fn(() => [][Symbol.iterator]()),
-      getSetCookie: jest.fn(() => []),
-      [Symbol.iterator]: jest.fn(() => [][Symbol.iterator]()),
-    } as any,
+    headers: mockHeaders,
   };
   return mockRequest as NextRequest;
 }
@@ -104,16 +116,26 @@ describe('GET /api/health', () => {
 
     it('should return current environment', async () => {
       const originalNodeEnv = process.env.NODE_ENV;
-      (process.env as any).NODE_ENV = 'production';
+      try {
+        Object.defineProperty(process.env, 'NODE_ENV', {
+          value: 'production',
+          configurable: true,
+          writable: true,
+        });
 
-      const request = createMockRequest('http://localhost:3000/api/health');
-      const response = await GET(request);
-      const data = await response.json();
+        const request = createMockRequest('http://localhost:3000/api/health');
+        const response = await GET(request);
+        const data = await response.json();
 
-      expect(data.environment).toBe('production');
-
-      // Restore original value
-      (process.env as any).NODE_ENV = originalNodeEnv;
+        expect(data.environment).toBe('production');
+      } finally {
+        // Ensure original value is restored even if test fails
+        Object.defineProperty(process.env, 'NODE_ENV', {
+          value: originalNodeEnv,
+          configurable: true,
+          writable: true,
+        });
+      }
     });
   });
 
@@ -136,7 +158,7 @@ describe('GET /api/health', () => {
       const response = await GET(request);
       const data = await response.json();
 
-      const componentNames = data.components.map((c: any) => c.name);
+      const componentNames = data.components.map((c: ComponentHealth) => c.name);
       expect(componentNames).toContain('feature-flags');
       expect(componentNames).toContain('memory');
       expect(componentNames).toContain('environment');
@@ -174,8 +196,8 @@ describe('GET /api/health', () => {
 
       expect(response.status).toBe(200); // Still returns 200, but status is degraded
       expect(data.status).toBe('degraded');
-
-      const envComponent = data.components.find((c: any) => c.name === 'environment');
+      
+      const envComponent = data.components.find((c: ComponentHealth) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('degraded');
       expect(envComponent.message).toContain('Optional configuration missing');
@@ -196,8 +218,8 @@ describe('GET /api/health', () => {
       expect(response.status).toBe(200);
       // Note: status might still be degraded due to other components
       // but environment component should be healthy
-
-      const envComponent = data.components.find((c: any) => c.name === 'environment');
+      
+      const envComponent = data.components.find((c: ComponentHealth) => c.name === 'environment');
       expect(envComponent).toBeDefined();
       expect(envComponent.status).toBe('healthy');
       expect(envComponent.message).toBe('All configuration present');
@@ -217,7 +239,7 @@ describe('GET /api/health', () => {
       const response = await GET(request);
       const data = await response.json();
 
-      data.components.forEach((component: any) => {
+      data.components.forEach((component: ComponentHealth) => {
         expect(component).toHaveProperty('name');
         expect(component).toHaveProperty('status');
         expect(component).toHaveProperty('message');
