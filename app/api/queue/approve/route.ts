@@ -25,11 +25,11 @@ function validateQueueItem(item: QueueItem): { valid: boolean; error?: string } 
 /**
  * Validates platform configuration
  */
-function validatePlatformConfig(platformName: string): {
-  valid: boolean;
-  config?: PlatformConfig;
-  error?: string;
-} {
+function validatePlatformConfig(
+  platformName: string
+):
+  | { valid: true; config: PlatformConfig }
+  | { valid: false; error: string } {
   const platformConfig = getPlatformConfig(platformName);
 
   if (!platformConfig) {
