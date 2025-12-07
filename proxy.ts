@@ -67,7 +67,7 @@ function createForbiddenResponse(message: string): NextResponse {
 function verifyToken(token: string): jwt.JwtPayload | null {
   // If JWT_SECRET is not configured, authentication cannot be performed
   if (!JWT_SECRET) {
-    console.error('JWT_SECRET not configured - authentication unavailable');
+    console.warn('JWT_SECRET not configured - authentication unavailable');
     return null;
   }
 
