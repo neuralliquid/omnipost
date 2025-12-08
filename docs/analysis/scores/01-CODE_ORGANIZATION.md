@@ -8,7 +8,7 @@
 
 ## Overview
 
-Code organization refers to how the codebase is structured, how files are named, and how modules are organized. The Content Creation Platform demonstrates excellent code organization practices.
+Code organization refers to how the codebase is structured, how files are named, and how modules are organized. The OmniPost demonstrates excellent code organization practices.
 
 ---
 
@@ -314,4 +314,4 @@ export const POST = withRateLimit(
 
 ---
 
-_This document assesses code organization practices for the Content Creation Platform._
+_This document assesses code organization practices for the OmniPost._

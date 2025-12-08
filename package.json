@@ -1,7 +1,7 @@
 {
-  "name": "content-creation-platform",
+  "name": "omnipost",
   "version": "1.0.0",
-  "description": "A comprehensive content creation and management platform built with React and Next.js, featuring AI-powered text processing, image generation, and multi-platform publishing capabilities.",
+  "description": "AI-powered multi-platform content publishing. Publish everywhere, manage anywhere. Built with React and Next.js.",
   "main": "index.js",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
@@ -72,11 +72,13 @@
     "url": "https://github.com/JustAGhosT/content_creation.git"
   },
   "keywords": [
+    "omnipost",
+    "multi-platform",
+    "publishing",
     "content-creation",
     "nextjs",
     "react",
     "ai",
-    "multi-platform",
-    "publishing"
+    "social-media"
   ]
 }

@@ -1,4 +1,4 @@
-# Content Creation Platform
+# OmniPost
 
 [![CI](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml)
 [![Azure Web App](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml)
@@ -9,7 +9,9 @@
 
 > **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
 
-A comprehensive content creation and management platform built with React and Next.js. This platform streamlines content workflows from creation to publication across multiple platforms, featuring AI-powered text processing, image generation, and multi-platform publishing capabilities.
+## Publish everywhere, manage anywhere
+
+AI-powered multi-platform content publishing platform built with React and Next.js. OmniPost streamlines content workflows from creation to publication across multiple platforms, featuring AI-powered text processing, image generation, and seamless multi-platform publishing capabilities.
 
 ## 🚀 Quick Start
 

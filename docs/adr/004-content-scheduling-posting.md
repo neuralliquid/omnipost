@@ -9,7 +9,7 @@
 
 ## Context
 
-The Content Creation Platform needs a robust system for:
+The OmniPost needs a robust system for:
 
 1. **Scheduling** content for future publication
 2. **Executing** scheduled posts at the correct time

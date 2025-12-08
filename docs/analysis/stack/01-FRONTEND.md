@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform frontend is built on a modern React foundation using Next.js as the full-stack framework. TypeScript with strict mode ensures type safety across the entire codebase.
+The OmniPost frontend is built on a modern React foundation using Next.js as the full-stack framework. TypeScript with strict mode ensures type safety across the entire codebase.
 
 ---
 
@@ -420,4 +420,4 @@ npm run format       # Prettier format
 
 ---
 
-_This document details the frontend technology stack for the Content Creation Platform._
+_This document details the frontend technology stack for the OmniPost._

@@ -8,7 +8,7 @@
 
 ## Overview
 
-Security encompasses authentication, authorization, input validation, data protection, and vulnerability management. The Content Creation Platform implements robust security measures with some areas needing improvement.
+Security encompasses authentication, authorization, input validation, data protection, and vulnerability management. The OmniPost implements robust security measures with some areas needing improvement.
 
 ---
 
@@ -307,4 +307,4 @@ HUGGING_FACE_API_KEY=api-key
 
 ---
 
-_This document assesses security practices for the Content Creation Platform._
+_This document assesses security practices for the OmniPost._

@@ -9,7 +9,7 @@
 
 ## Context
 
-The Content Creation Platform needs a backend data store for managing:
+The OmniPost needs a backend data store for managing:
 
 - Content items and metadata
 - Platform configurations
@@ -27,7 +27,7 @@ The application is currently designed as a content creation and management tool 
 
 ## Decision
 
-We will use **Airtable** as the primary backend data store for the Content Creation Platform, accessible via the Airtable API.
+We will use **Airtable** as the primary backend data store for the OmniPost, accessible via the Airtable API.
 
 ### Rationale
 

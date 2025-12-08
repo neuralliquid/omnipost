@@ -8,7 +8,7 @@
 
 ## Overview
 
-DevOps assessment covers CI/CD pipelines, infrastructure automation, deployment practices, and operational readiness. The Content Creation Platform has solid CI/CD foundations with gaps in monitoring and production hardening.
+DevOps assessment covers CI/CD pipelines, infrastructure automation, deployment practices, and operational readiness. The OmniPost has solid CI/CD foundations with gaps in monitoring and production hardening.
 
 ---
 
@@ -373,4 +373,4 @@ bundle-check:
 
 ---
 
-_This document assesses DevOps practices for the Content Creation Platform._
+_This document assesses DevOps practices for the OmniPost._

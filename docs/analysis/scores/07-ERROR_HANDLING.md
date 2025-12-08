@@ -8,7 +8,7 @@
 
 ## Overview
 
-Error handling assessment covers exception management, logging practices, error recovery, and user feedback mechanisms. The Content Creation Platform has solid error handling foundations with improvements needed in logging infrastructure.
+Error handling assessment covers exception management, logging practices, error recovery, and user feedback mechanisms. The OmniPost has solid error handling foundations with improvements needed in logging infrastructure.
 
 ---
 
@@ -377,4 +377,4 @@ function sanitizeLogBody(body: object): object {
 
 ---
 
-_This document assesses error handling and logging for the Content Creation Platform._
+_This document assesses error handling and logging for the OmniPost._

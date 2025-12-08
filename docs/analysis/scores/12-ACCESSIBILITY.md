@@ -8,7 +8,7 @@
 
 ## Overview
 
-Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology support, and inclusive design practices. The Content Creation Platform has minimal accessibility implementation and requires significant improvement.
+Accessibility assessment evaluates WCAG 2.1 compliance, assistive technology support, and inclusive design practices. The OmniPost has minimal accessibility implementation and requires significant improvement.
 
 ---
 
@@ -443,4 +443,4 @@ it('is accessible', async () => {
 
 ---
 
-_This document assesses accessibility practices for the Content Creation Platform._
+_This document assesses accessibility practices for the OmniPost._

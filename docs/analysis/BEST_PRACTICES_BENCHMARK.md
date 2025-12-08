@@ -8,7 +8,7 @@
 
 ## Purpose
 
-This document establishes the **industry best-practices benchmark** for evaluating the Content Creation Platform. These standards are derived from official framework documentation, OWASP guidelines, and widely-adopted patterns for the identified technology stack.
+This document establishes the **industry best-practices benchmark** for evaluating the OmniPost. These standards are derived from official framework documentation, OWASP guidelines, and widely-adopted patterns for the identified technology stack.
 
 All recommendations in this document will be used as the **reference standard** for subsequent analysis phases.
 
@@ -559,7 +559,7 @@ interface ErrorResponse {
 
 ## Summary: Evaluation Criteria
 
-The following checklist summarizes the key criteria that will be used to evaluate the Content Creation Platform in subsequent analysis phases:
+The following checklist summarizes the key criteria that will be used to evaluate the OmniPost in subsequent analysis phases:
 
 ### High Priority (Must Have)
 
@@ -599,4 +599,4 @@ The following checklist summarizes the key criteria that will be used to evaluat
 
 ---
 
-_This benchmark document serves as the reference standard for evaluating the Content Creation Platform against industry best practices._
+_This benchmark document serves as the reference standard for evaluating the OmniPost against industry best practices._

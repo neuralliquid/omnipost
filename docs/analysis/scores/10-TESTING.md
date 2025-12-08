@@ -8,7 +8,7 @@
 
 ## Overview
 
-Testing assessment evaluates test coverage, test types, testing practices, and quality assurance processes. The Content Creation Platform has a functional test suite but needs expansion in coverage and test types.
+Testing assessment evaluates test coverage, test types, testing practices, and quality assurance processes. The OmniPost has a functional test suite but needs expansion in coverage and test types.
 
 ---
 
@@ -407,4 +407,4 @@ describe('LoginForm accessibility', () => {
 
 ---
 
-_This document assesses testing practices for the Content Creation Platform._
+_This document assesses testing practices for the OmniPost._

@@ -8,7 +8,7 @@
 
 ## Overview
 
-Framework patterns assessment evaluates adherence to Next.js, React, and TypeScript conventions and best practices. The Content Creation Platform shows solid fundamentals with migration work needed for full modern framework adoption.
+Framework patterns assessment evaluates adherence to Next.js, React, and TypeScript conventions and best practices. The OmniPost shows solid fundamentals with migration work needed for full modern framework adoption.
 
 ---
 
@@ -338,4 +338,4 @@ pages/                      app/
 
 ---
 
-_This document assesses framework pattern compliance for the Content Creation Platform._
+_This document assesses framework pattern compliance for the OmniPost._

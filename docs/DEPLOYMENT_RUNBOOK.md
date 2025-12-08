@@ -2,7 +2,7 @@
 
 ## Overview
 
-This runbook provides step-by-step instructions for deploying the Content Creation Platform to Azure App Service, troubleshooting common issues, and performing operational tasks.
+This runbook provides step-by-step instructions for deploying OmniPost to Azure App Service, troubleshooting common issues, and performing operational tasks.
 
 ## Prerequisites
 
