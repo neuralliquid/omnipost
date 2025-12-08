@@ -82,6 +82,26 @@ const featureFlagsPath =
     ? path.join(process.cwd(), 'data', 'feature-flags.json')
     : '';
 
+/**
+ * Validates that the feature flags path is safe and within expected bounds
+ * Prevents path traversal by ensuring the path is within the data directory
+ */
+function isValidFeatureFlagsPath(filePath: string): boolean {
+  if (!filePath) return false;
+  
+  try {
+    const normalizedPath = path.normalize(filePath);
+    const expectedDir = path.join(process.cwd(), 'data');
+    const normalizedExpectedDir = path.normalize(expectedDir);
+    
+    // Ensure the path is within the data directory
+    return normalizedPath.startsWith(normalizedExpectedDir) && 
+           normalizedPath.endsWith('feature-flags.json');
+  } catch {
+    return false;
+  }
+}
+
 // Default feature flags configuration
 const featureFlags: FeatureFlags = {
   textParser: {
@@ -113,8 +133,8 @@ export async function saveFeatureFlags(): Promise<void> {
     if (globalThis.window !== undefined) {
       // Browser environment
       localStorage.setItem('featureFlags', JSON.stringify(featureFlags));
-    } else if (featureFlagsPath) {
-      // Node.js environment - use atomic file operations
+    } else if (featureFlagsPath && isValidFeatureFlagsPath(featureFlagsPath)) {
+      // Node.js environment - validate path and use atomic file operations
       const dirPath = path.dirname(featureFlagsPath);
 
       // Ensure directory exists
@@ -157,8 +177,8 @@ export function loadFeatureFlags(): FeatureFlags {
           console.error('Failed to parse stored feature flags:', e);
         }
       }
-    } else if (featureFlagsPath) {
-      // Node.js environment - check if file exists before reading
+    } else if (featureFlagsPath && isValidFeatureFlagsPath(featureFlagsPath)) {
+      // Node.js environment - validate and check if file exists before reading
       try {
         if (fs.existsSync(featureFlagsPath)) {
           const data = fs.readFileSync(featureFlagsPath, 'utf8');
