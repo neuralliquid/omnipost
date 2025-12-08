@@ -88,15 +88,17 @@ const featureFlagsPath =
  */
 function isValidFeatureFlagsPath(filePath: string): boolean {
   if (!filePath) return false;
-  
+
   try {
     const normalizedPath = path.normalize(filePath);
     const expectedDir = path.join(process.cwd(), 'data');
     const normalizedExpectedDir = path.normalize(expectedDir);
-    
+
     // Ensure the path is within the data directory
-    return normalizedPath.startsWith(normalizedExpectedDir) && 
-           normalizedPath.endsWith('feature-flags.json');
+    return (
+      normalizedPath.startsWith(normalizedExpectedDir) &&
+      normalizedPath.endsWith('feature-flags.json')
+    );
   } catch {
     return false;
   }
@@ -180,6 +182,8 @@ export function loadFeatureFlags(): FeatureFlags {
     } else if (featureFlagsPath && isValidFeatureFlagsPath(featureFlagsPath)) {
       // Node.js environment - validate and check if file exists before reading
       try {
+        // Path has been validated by isValidFeatureFlagsPath() to prevent traversal
+        // codacy-disable-next-line
         if (fs.existsSync(featureFlagsPath)) {
           const data = fs.readFileSync(featureFlagsPath, 'utf8');
           return { ...featureFlags, ...JSON.parse(data) };
