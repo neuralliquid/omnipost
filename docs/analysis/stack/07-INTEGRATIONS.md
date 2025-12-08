@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform integrates with multiple external services for AI capabilities, content storage, and multi-channel notifications. These integrations are managed through dedicated client modules with feature flag controls.
+The OmniPost integrates with multiple external services for AI capabilities, content storage, and multi-channel notifications. These integrations are managed through dedicated client modules with feature flag controls.
 
 ---
 
@@ -583,4 +583,4 @@ console.log(
 
 ---
 
-_This document details the external integrations for the Content Creation Platform._
+_This document details the external integrations for the OmniPost._

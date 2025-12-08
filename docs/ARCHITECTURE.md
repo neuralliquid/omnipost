@@ -1,6 +1,6 @@
 # Architecture Documentation
 
-This document provides a comprehensive overview of the Content Creation Platform's architecture, design decisions, and technical implementation details.
+This document provides a comprehensive overview of OmniPost's architecture, design decisions, and technical implementation details.
 
 ## Table of Contents
 
@@ -17,12 +17,12 @@ This document provides a comprehensive overview of the Content Creation Platform
 
 ## System Overview
 
-The Content Creation Platform is a Next.js-based web application that enables users to create, manage, and publish content across multiple platforms. The system integrates AI-powered features for text processing and image generation.
+OmniPost is a Next.js-based web application that enables users to create, manage, and publish content across multiple platforms. The system integrates AI-powered features for text processing and image generation, with a focus on seamless multi-platform publishing.
 
 ### Key Capabilities
 
-- **Multi-platform Publishing**: Publish content to Facebook, Instagram, LinkedIn, Twitter, and custom platforms
-- **AI-Powered Processing**: Text summarization, parsing, and image generation using Hugging Face models
+- **Multi-platform Publishing**: Publish content to Facebook, Instagram, LinkedIn, Twitter, and custom platforms from one interface
+- **AI-Powered Processing**: Text summarization, parsing, and image generation using Hugging Face and Azure AI models
 - **Content Management**: Draft, review, approval, and scheduling workflows
 - **Platform Integration**: Direct API integration with social media platforms
 - **Analytics**: Engagement tracking and performance metrics

@@ -8,7 +8,7 @@
 
 ## Overview
 
-Documentation assessment evaluates code comments, API documentation, project guides, and developer onboarding materials. The Content Creation Platform has comprehensive project documentation with room for improvement in code-level documentation.
+Documentation assessment evaluates code comments, API documentation, project guides, and developer onboarding materials. The OmniPost has comprehensive project documentation with room for improvement in code-level documentation.
 
 ---
 
@@ -357,4 +357,4 @@ docs/
 
 ---
 
-_This document assesses documentation practices for the Content Creation Platform._
+_This document assesses documentation practices for the OmniPost._

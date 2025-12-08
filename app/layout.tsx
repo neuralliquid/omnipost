@@ -17,14 +17,22 @@ const fontConfig = {
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Content Creation Platform',
-    default: 'Content Creation Platform',
+    template: '%s | OmniPost',
+    default: 'OmniPost',
   },
-  description: 'AI-powered content creation and multi-platform publishing',
-  keywords: ['content creation', 'AI', 'publishing', 'automation'],
-  authors: [{ name: 'Content Creation Team' }],
-  creator: 'Content Creation Platform',
-  publisher: 'Content Creation Platform',
+  description: 'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+  keywords: [
+    'omnipost',
+    'multi-platform',
+    'publishing',
+    'content creation',
+    'AI',
+    'automation',
+    'social media',
+  ],
+  authors: [{ name: 'OmniPost Team' }],
+  creator: 'OmniPost',
+  publisher: 'OmniPost',
   robots: {
     index: true,
     follow: true,
@@ -32,14 +40,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'Content Creation Platform',
-    title: 'Content Creation Platform',
-    description: 'AI-powered content creation and multi-platform publishing',
+    siteName: 'OmniPost',
+    title: 'OmniPost',
+    description:
+      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Content Creation Platform',
-    description: 'AI-powered content creation and multi-platform publishing',
+    title: 'OmniPost',
+    description:
+      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
   },
 };
 

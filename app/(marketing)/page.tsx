@@ -7,13 +7,22 @@ import { Metadata } from 'next';
 import Hero from '@/components/ui/Hero';
 
 export const metadata: Metadata = {
-  title: 'Content Creation Platform',
+  title: 'OmniPost',
   description:
-    'AI-powered content creation and multi-platform publishing. Transform your content workflow with automated parsing, summarization, and image generation.',
-  keywords: ['content creation', 'AI', 'publishing', 'automation', 'multi-platform'],
+    'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere. Transform your content workflow with automated parsing, summarization, and image generation.',
+  keywords: [
+    'omnipost',
+    'multi-platform',
+    'publishing',
+    'content creation',
+    'AI',
+    'automation',
+    'social media',
+  ],
   openGraph: {
-    title: 'Content Creation Platform',
-    description: 'AI-powered content creation and multi-platform publishing',
+    title: 'OmniPost',
+    description:
+      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
     type: 'website',
   },
 };

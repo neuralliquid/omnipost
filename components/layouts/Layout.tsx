@@ -18,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children, title, description, ogImage }
   return (
     <div className={styles.layoutContainer}>
       <Head>
-        <title>{title} | Content Creation Platform</title>
+        <title>{title} | OmniPost</title>
         <meta name="description" content={description || title} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {ogImage && <meta property="og:image" content={ogImage} />}

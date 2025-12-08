@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform is deployed to Azure Web Apps using infrastructure-as-code (Bicep) and automated CI/CD pipelines via GitHub Actions. The deployment supports multiple environments with environment-specific configurations.
+The OmniPost is deployed to Azure Web Apps using infrastructure-as-code (Bicep) and automated CI/CD pipelines via GitHub Actions. The deployment supports multiple environments with environment-specific configurations.
 
 ---
 
@@ -499,4 +499,4 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 
 ---
 
-_This document details the deployment technology stack for the Content Creation Platform._
+_This document details the deployment technology stack for the OmniPost._

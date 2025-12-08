@@ -8,7 +8,7 @@
 
 ## Overview
 
-Architecture assessment evaluates the overall system design, layer separation, design patterns, and scalability considerations. The Content Creation Platform shows solid architectural foundations with room for improvement in some areas.
+Architecture assessment evaluates the overall system design, layer separation, design patterns, and scalability considerations. The OmniPost shows solid architectural foundations with room for improvement in some areas.
 
 ---
 
@@ -366,4 +366,4 @@ Accept: application/vnd.api+json;version=1
 
 ---
 
-_This document assesses architectural practices for the Content Creation Platform._
+_This document assesses architectural practices for the OmniPost._

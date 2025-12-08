@@ -30,6 +30,11 @@ Located in the repository root for easy access:
   - Test results breakdown
   - Known issues and recommended fixes
   - Testing best practices
+- **[PROGRAM_NAME_SUGGESTIONS.md](./PROGRAM_NAME_SUGGESTIONS.md)** - Program naming analysis and recommendations
+  - Comprehensive name suggestions with scoring
+  - Brand identity concepts
+  - Industry positioning analysis
+  - Implementation guidelines
 
 ### API Documentation (`/api`)
 
@@ -74,6 +79,7 @@ Historical documentation from previous development phases:
 - **Report a security issue** → [SECURITY.md](../SECURITY.md)
 - **Check migration status** → [api/api-migration-todo.md](./api/api-migration-todo.md)
 - **View project structure** → [PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md)
+- **Explore program name suggestions** → [PROGRAM_NAME_SUGGESTIONS.md](./PROGRAM_NAME_SUGGESTIONS.md)
 
 ## 📝 Documentation Standards
 

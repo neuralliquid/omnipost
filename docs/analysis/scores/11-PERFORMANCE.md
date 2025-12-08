@@ -8,7 +8,7 @@
 
 ## Overview
 
-Performance assessment covers bundle optimization, rendering efficiency, API response times, and Core Web Vitals compliance. The Content Creation Platform has basic performance considerations but lacks optimization and monitoring.
+Performance assessment covers bundle optimization, rendering efficiency, API response times, and Core Web Vitals compliance. The OmniPost has basic performance considerations but lacks optimization and monitoring.
 
 ---
 
@@ -394,4 +394,4 @@ ANALYZE=true npm run build
 
 ---
 
-_This document assesses performance practices for the Content Creation Platform._
+_This document assesses performance practices for the OmniPost._

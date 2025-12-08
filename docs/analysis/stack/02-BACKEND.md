@@ -496,4 +496,4 @@ GMAIL_CLIENT_SECRET=<secret>
 
 ---
 
-_This document details the backend technology stack for the Content Creation Platform._
+_This document details the backend technology stack for the OmniPost._

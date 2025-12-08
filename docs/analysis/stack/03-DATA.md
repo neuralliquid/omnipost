@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform uses a combination of external services and local storage mechanisms. Airtable serves as the primary content database, while JSON files and in-memory stores handle configuration and runtime data.
+The OmniPost uses a combination of external services and local storage mechanisms. Airtable serves as the primary content database, while JSON files and in-memory stores handle configuration and runtime data.
 
 ---
 
@@ -499,4 +499,4 @@ App → PostgreSQL (primary database)
 
 ---
 
-_This document details the data and storage technology stack for the Content Creation Platform._
+_This document details the data and storage technology stack for the OmniPost._

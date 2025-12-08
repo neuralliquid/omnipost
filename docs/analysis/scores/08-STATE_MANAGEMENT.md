@@ -8,7 +8,7 @@
 
 ## Overview
 
-State management assessment evaluates how application state is organized, updated, and synchronized across components. The Content Creation Platform uses React's built-in state management with custom hooks, adequate for the current scale but with room for improvement.
+State management assessment evaluates how application state is organized, updated, and synchronized across components. The OmniPost uses React's built-in state management with custom hooks, adequate for the current scale but with room for improvement.
 
 ---
 
@@ -406,4 +406,4 @@ function usePlatforms() {
 
 ---
 
-_This document assesses state management practices for the Content Creation Platform._
+_This document assesses state management practices for the OmniPost._

@@ -9,7 +9,7 @@
 
 ## Context
 
-The Content Creation Platform currently uses a hybrid approach with both Next.js Pages Router and App Router. The majority of the application logic resides in the Pages Router (`pages/` directory), while API routes use the App Router (`app/api/` directory).
+The OmniPost currently uses a hybrid approach with both Next.js Pages Router and App Router. The majority of the application logic resides in the Pages Router (`pages/` directory), while API routes use the App Router (`app/api/` directory).
 
 ### Current State
 
@@ -147,7 +147,7 @@ export default function Home() {
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Content Creation Platform',
+  title: 'OmniPost',
   description: 'AI-powered content creation and multi-platform publishing',
 };
 

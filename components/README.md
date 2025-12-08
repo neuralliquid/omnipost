@@ -1,6 +1,6 @@
 # Components Directory Structure
 
-This directory contains all React components for the Content Creation Platform, organized by feature and domain.
+This directory contains all React components for OmniPost, organized by feature and domain.
 
 ## Directory Structure
 

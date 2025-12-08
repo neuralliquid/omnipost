@@ -9,7 +9,7 @@
 
 ## Context
 
-The Content Creation Platform needs to support multi-platform social media campaigns (Twitter, LinkedIn, etc.) that distribute content from the existing Series infrastructure. The question is whether these should be:
+The OmniPost needs to support multi-platform social media campaigns (Twitter, LinkedIn, etc.) that distribute content from the existing Series infrastructure. The question is whether these should be:
 
 1. **One unified feature** - Series includes built-in campaign management
 2. **Separate features that combine** - Series manages content, Campaigns manage distribution

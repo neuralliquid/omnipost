@@ -8,7 +8,7 @@
 
 ## Overview
 
-Dependency management covers version control, security, maintenance, and the overall health of the project's package ecosystem. The Content Creation Platform demonstrates good dependency hygiene with some areas for improvement.
+Dependency management covers version control, security, maintenance, and the overall health of the project's package ecosystem. The OmniPost demonstrates good dependency hygiene with some areas for improvement.
 
 ---
 
@@ -287,4 +287,4 @@ $ npm outdated
 
 ---
 
-_This document assesses dependency management for the Content Creation Platform._
+_This document assesses dependency management for the OmniPost._

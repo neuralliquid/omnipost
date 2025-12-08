@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform implements a comprehensive security stack addressing authentication, authorization, input validation, rate limiting, and protection against common web vulnerabilities aligned with OWASP guidelines.
+The OmniPost implements a comprehensive security stack addressing authentication, authorization, input validation, rate limiting, and protection against common web vulnerabilities aligned with OWASP guidelines.
 
 ---
 
@@ -556,4 +556,4 @@ function sanitizeLogBody(body: object): object {
 
 ---
 
-_This document details the security technology stack for the Content Creation Platform._
+_This document details the security technology stack for the OmniPost._

@@ -8,7 +8,7 @@
 
 ## Overview
 
-The Content Creation Platform uses Jest as the primary test framework with React Testing Library for component testing and ts-jest for TypeScript support. The test suite focuses on API route testing and unit tests.
+The OmniPost uses Jest as the primary test framework with React Testing Library for component testing and ts-jest for TypeScript support. The test suite focuses on API route testing and unit tests.
 
 ---
 
@@ -579,4 +579,4 @@ describe.skip('API Integration Flow', () => { ... });
 
 ---
 
-_This document details the testing technology stack for the Content Creation Platform._
+_This document details the testing technology stack for the OmniPost._

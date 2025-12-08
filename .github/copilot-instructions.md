@@ -1,12 +1,14 @@
-# GitHub Copilot Instructions for Content Creation Platform
+# GitHub Copilot Instructions for OmniPost
 
 ## Project Overview
 
-This is a comprehensive content creation and management platform built with Next.js 14, React 18, and TypeScript. The platform enables multi-platform content publishing with AI-powered text processing and image generation capabilities.
+This is OmniPost - an AI-powered multi-platform content publishing platform built with Next.js 14, React 18, and TypeScript. The platform enables seamless publishing across all major social media platforms with AI-powered text processing and image generation capabilities.
 
-**Project Type:** SaaS Content Management Platform  
-**Target Users:** Content creators, marketing teams, SMBs  
-**Core Value:** "From draft to published across all platforms in minutes"
+**Project Name:** OmniPost  
+**Project Type:** SaaS Multi-Platform Publishing Platform  
+**Target Users:** Content creators, marketing teams, SMBs, social media managers  
+**Core Value:** "Publish everywhere, manage anywhere"  
+**Tagline:** "One platform. All channels."
 
 ## Technology Stack
 
