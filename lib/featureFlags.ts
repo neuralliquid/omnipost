@@ -146,24 +146,31 @@ export async function saveFeatureFlags(): Promise<void> {
  * @returns Current feature flags
  */
 export function loadFeatureFlags(): FeatureFlags {
-  if (globalThis.window !== undefined) {
-    // Browser environment
-    const stored = localStorage.getItem('featureFlags');
-    if (stored) {
+  try {
+    if (globalThis.window !== undefined) {
+      // Browser environment
+      const stored = localStorage.getItem('featureFlags');
+      if (stored) {
+        try {
+          return JSON.parse(stored);
+        } catch (e) {
+          console.error('Failed to parse stored feature flags:', e);
+        }
+      }
+    } else if (featureFlagsPath) {
+      // Node.js environment - check if file exists before reading
       try {
-        return JSON.parse(stored);
+        if (fs.existsSync(featureFlagsPath)) {
+          const data = fs.readFileSync(featureFlagsPath, 'utf8');
+          return { ...featureFlags, ...JSON.parse(data) };
+        }
       } catch (e) {
-        console.error('Failed to parse stored feature flags:', e);
+        console.error('Failed to load feature flags from file:', e);
       }
     }
-  } else if (featureFlagsPath && fs.existsSync(featureFlagsPath)) {
-    // Node.js environment
-    try {
-      const data = fs.readFileSync(featureFlagsPath, 'utf8');
-      return { ...featureFlags, ...JSON.parse(data) };
-    } catch (e) {
-      console.error('Failed to load feature flags from file:', e);
-    }
+  } catch (e) {
+    // Catch any unexpected errors (e.g., file system not available)
+    console.error('Error in loadFeatureFlags:', e);
   }
   return featureFlags;
 }

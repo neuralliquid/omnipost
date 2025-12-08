@@ -75,6 +75,9 @@ jobs:
           # Copy public directory
           cp -r public deploy/public || true
           
+          # Copy data directory (required for feature flags and configuration)
+          cp -r data deploy/data || true
+          
           # Copy startup script
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
