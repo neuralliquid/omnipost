@@ -75,7 +75,9 @@ async function trackContent(
 
   // Fetch records from Airtable
   // Use type assertion here since we know our params match what Airtable expects
-  let records = await airtableTable.select(queryOptions as Parameters<typeof airtableTable.select>[0]).all();
+  let records = await airtableTable
+    .select(queryOptions as Parameters<typeof airtableTable.select>[0])
+    .all();
 
   // Sanitize filter parameter before use
   const sanitizedFilter = DOMPurify.sanitize(filter);

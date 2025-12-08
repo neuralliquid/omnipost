@@ -27,9 +27,7 @@ function validateQueueItem(item: QueueItem): { valid: boolean; error?: string } 
  */
 function validatePlatformConfig(
   platformName: string
-):
-  | { valid: true; config: PlatformConfig }
-  | { valid: false; error: string } {
+): { valid: true; config: PlatformConfig } | { valid: false; error: string } {
   const platformConfig = getPlatformConfig(platformName);
 
   if (!platformConfig) {
