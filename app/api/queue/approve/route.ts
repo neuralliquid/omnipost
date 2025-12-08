@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import axios, { AxiosError } from 'axios';
 import pLimit from 'p-limit';
-import { getPlatformConfig } from '../../../../lib/config/platforms';
+import { getPlatformConfig, PlatformConfig } from '../../../../lib/config/platforms';
 import { QueueItem, PublishResult } from '../../../../types';
 import featureFlags from '../../../../lib/featureFlags';
 import { withErrorHandling, Errors } from '../../_utils/errors';
@@ -25,11 +25,9 @@ function validateQueueItem(item: QueueItem): { valid: boolean; error?: string } 
 /**
  * Validates platform configuration
  */
-function validatePlatformConfig(platformName: string): {
-  valid: boolean;
-  config?: any;
-  error?: string;
-} {
+function validatePlatformConfig(
+  platformName: string
+): { valid: true; config: PlatformConfig } | { valid: false; error: string } {
   const platformConfig = getPlatformConfig(platformName);
 
   if (!platformConfig) {

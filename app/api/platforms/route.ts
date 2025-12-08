@@ -20,7 +20,7 @@ async function validateAuth() {
  * Retrieves platforms data
  * @returns Array of platform objects
  */
-async function getPlatformsData() {
+function _getPlatformsData() {
   return platforms;
 }
 
@@ -47,7 +47,7 @@ export const GET = withErrorHandling(async () => {
   return NextResponse.json(platforms);
 });
 
-export const POST = withErrorHandling(async (request: Request) => {
+export const POST = withErrorHandling(async (_request: Request) => {
   // Check feature flags
   if (!featureFlags.trigger.cron.enabled) {
     return Errors.forbidden('CRON trigger feature is disabled');

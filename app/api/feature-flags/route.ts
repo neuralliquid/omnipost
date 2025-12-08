@@ -14,7 +14,7 @@ const FeatureFlagSchema = z.object({
 });
 
 // Type for parsed feature flag update
-type FeatureFlagUpdate = z.infer<typeof FeatureFlagSchema>;
+type _FeatureFlagUpdate = z.infer<typeof FeatureFlagSchema>;
 
 // Helper function to check if a property exists in an object
 function hasProperty<T extends object, K extends PropertyKey>(
