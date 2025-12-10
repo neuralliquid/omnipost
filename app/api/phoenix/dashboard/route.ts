@@ -6,9 +6,11 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthenticated } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
-import type { PhoenixLead, PhoenixBrand } from '@/types/phoenix-rooivalk';
-import { SEGMENT_LABELS } from '@/types/phoenix-rooivalk';
+import featureFlags from '@/lib/featureFlags';
+import type { Lead } from '@/types/lead';
+import type { PhoenixBrand, SkySnareLeadData, AeroNetLeadData } from '@/types/phoenix-rooivalk';
 
 interface SegmentBreakdown {
   segment: string;
@@ -30,19 +32,42 @@ interface DashboardMetrics {
   conversionRate: number;
 }
 
+// Extended lead type with Phoenix data from customFields
+interface PhoenixLeadWithData extends Lead {
+  phoenixData: SkySnareLeadData | AeroNetLeadData;
+}
+
 export async function GET(request: NextRequest) {
   try {
+    // Check if CRM dashboard feature is enabled
+    if (!featureFlags.crmDashboard?.enabled) {
+      return NextResponse.json(
+        { error: 'CRM dashboard feature is disabled' },
+        { status: 403 }
+      );
+    }
+
+    // Require authentication
+    if (!(await isAuthenticated())) {
+      return NextResponse.json(
+        { error: 'Authentication required' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const brandFilter = searchParams.get('phoenixBrand') as PhoenixBrand | null;
 
     // Fetch all leads
-    const { leads } = await leadsClient.list({});
+    const { leads } = await leadsClient.queryLeads({});
 
-    // Filter to Phoenix leads only
-    const phoenixLeads = leads.filter(
-      (lead): lead is PhoenixLead =>
-        'phoenixData' in lead && lead.phoenixData !== undefined
-    );
+    // Filter to Phoenix leads only (check customFields.phoenixData)
+    const phoenixLeads: PhoenixLeadWithData[] = leads
+      .filter(lead => lead.customFields?.phoenixData !== undefined)
+      .map(lead => ({
+        ...lead,
+        phoenixData: lead.customFields!.phoenixData as SkySnareLeadData | AeroNetLeadData,
+      }));
 
     // Apply brand filter if specified
     const filteredLeads = brandFilter
@@ -109,7 +134,7 @@ export async function GET(request: NextRequest) {
     };
 
     // Calculate segment breakdowns
-    const calculateBreakdown = (leads: PhoenixLead[]): SegmentBreakdown[] => {
+    const calculateBreakdown = (leads: PhoenixLeadWithData[]): SegmentBreakdown[] => {
       const segmentMap = new Map<string, { count: number; qualified: number; totalScore: number }>();
 
       leads.forEach(lead => {

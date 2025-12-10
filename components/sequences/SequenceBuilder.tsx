@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import type { Sequence, SequenceStep, CreateSequenceInput, StepType } from '@/types/sequence';
+import type { Sequence, SequenceStep, CreateSequenceInput, SequenceStepType } from '@/types/sequence';
 import { SequenceStepEditor } from './SequenceStepEditor';
 import styles from '@/styles/Sequences.module.css';
 
@@ -34,20 +34,84 @@ const DEFAULT_SCHEDULE = {
   maxPerDay: 50,
 };
 
-const createEmptyStep = (order: number): SequenceStep => ({
-  id: `temp-${Date.now()}-${order}`,
-  sequenceId: '',
-  type: 'email',
-  order,
-  config: {
-    subject: '',
-    body: '',
-    trackOpens: true,
-    trackClicks: true,
-  },
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-});
+const createEmptyStep = (order: number, type: SequenceStepType = 'email'): SequenceStep => {
+  const now = new Date().toISOString();
+  const baseStep = {
+    id: `temp-${Date.now()}-${order}`,
+    order,
+    type,
+    name: `Step ${order + 1}`,
+    enabled: true,
+    createdAt: now,
+    updatedAt: now,
+  };
+
+  // Add type-specific config
+  switch (type) {
+    case 'email':
+      return {
+        ...baseStep,
+        type: 'email',
+        emailConfig: {
+          subject: '',
+          body: '',
+          trackOpens: true,
+          trackClicks: true,
+        },
+      };
+    case 'linkedin_message':
+      return {
+        ...baseStep,
+        type: 'linkedin_message',
+        linkedinConfig: {
+          type: 'message',
+          message: '',
+        },
+      };
+    case 'linkedin_connection':
+      return {
+        ...baseStep,
+        type: 'linkedin_connection',
+        linkedinConfig: {
+          type: 'connection_request',
+          message: '',
+        },
+      };
+    case 'linkedin_view_profile':
+      return {
+        ...baseStep,
+        type: 'linkedin_view_profile',
+        linkedinConfig: {
+          type: 'view_profile',
+        },
+      };
+    case 'wait':
+      return {
+        ...baseStep,
+        type: 'wait',
+        waitConfig: {
+          duration: 1,
+          unit: 'days',
+        },
+      };
+    case 'task':
+      return {
+        ...baseStep,
+        type: 'task',
+        taskConfig: {
+          title: '',
+        },
+      };
+    case 'call':
+      return {
+        ...baseStep,
+        type: 'call',
+        callConfig: {},
+      };
+    default:
+      return baseStep as SequenceStep;
+  }
+};
 
 export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
   sequence,
@@ -122,24 +186,29 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
       newErrors.schedule = 'Select at least one sending day';
     }
 
-    // Validate email steps have subject and body
+    // Validate type-specific step configurations
     steps.forEach((step, index) => {
       if (step.type === 'email') {
-        if (!step.config.subject?.trim()) {
+        if (!step.emailConfig?.subject?.trim()) {
           newErrors[`step-${index}-subject`] = 'Email subject is required';
         }
-        if (!step.config.body?.trim()) {
+        if (!step.emailConfig?.body?.trim()) {
           newErrors[`step-${index}-body`] = 'Email body is required';
         }
       }
-      if (step.type === 'linkedin_message') {
-        if (!step.config.message?.trim()) {
+      if (step.type === 'linkedin_message' || step.type === 'linkedin_connection') {
+        if (!step.linkedinConfig?.message?.trim()) {
           newErrors[`step-${index}-message`] = 'Message is required';
         }
       }
       if (step.type === 'task') {
-        if (!step.config.title?.trim()) {
+        if (!step.taskConfig?.title?.trim()) {
           newErrors[`step-${index}-title`] = 'Task title is required';
+        }
+      }
+      if (step.type === 'wait') {
+        if (!step.waitConfig?.duration || step.waitConfig.duration < 1) {
+          newErrors[`step-${index}-duration`] = 'Wait duration must be at least 1';
         }
       }
     });
@@ -159,7 +228,15 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
       steps: steps.map((step, index) => ({
         type: step.type,
         order: index,
-        config: step.config,
+        name: step.name || `Step ${index + 1}`,
+        enabled: step.enabled ?? true,
+        emailConfig: step.emailConfig,
+        linkedinConfig: step.linkedinConfig,
+        smsConfig: step.smsConfig,
+        callConfig: step.callConfig,
+        taskConfig: step.taskConfig,
+        waitConfig: step.waitConfig,
+        conditionConfig: step.conditionConfig,
       })),
       schedule,
       stopOnReply,

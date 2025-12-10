@@ -50,8 +50,9 @@ export class FormsClient {
   private initialized: boolean = false;
   private baseUrl: string;
 
-  constructor(baseUrl: string = 'https://omnipost.nexamesh.ai') {
-    this.baseUrl = baseUrl;
+  constructor(baseUrl?: string) {
+    // Use provided URL, environment variable, or fall back to default
+    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000';
     this.initialize();
   }
 

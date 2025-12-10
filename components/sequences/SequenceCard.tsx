@@ -74,13 +74,13 @@ export const SequenceCard: React.FC<SequenceCardProps> = ({
   const { metrics } = sequence;
 
   const calculateOpenRate = () => {
-    if (!metrics.emailsSent) return 0;
-    return Math.round((metrics.emailsOpened / metrics.emailsSent) * 100);
+    if (!metrics.emailStats.sent) return 0;
+    return Math.round((metrics.emailStats.opened / metrics.emailStats.sent) * 100);
   };
 
   const calculateReplyRate = () => {
-    if (!metrics.emailsSent) return 0;
-    return Math.round((metrics.replies / metrics.emailsSent) * 100);
+    if (!metrics.emailStats.sent) return 0;
+    return Math.round((metrics.emailStats.replied / metrics.emailStats.sent) * 100);
   };
 
   return (
@@ -114,15 +114,15 @@ export const SequenceCard: React.FC<SequenceCardProps> = ({
 
       <div className={styles.metricsGrid}>
         <div className={styles.metric}>
-          <span className={styles.metricValue}>{metrics.enrolledCount}</span>
+          <span className={styles.metricValue}>{metrics.totalEnrolled}</span>
           <span className={styles.metricLabel}>Enrolled</span>
         </div>
         <div className={styles.metric}>
-          <span className={styles.metricValue}>{metrics.activeCount}</span>
+          <span className={styles.metricValue}>{metrics.activeLeads}</span>
           <span className={styles.metricLabel}>Active</span>
         </div>
         <div className={styles.metric}>
-          <span className={styles.metricValue}>{metrics.completedCount}</span>
+          <span className={styles.metricValue}>{metrics.completedLeads}</span>
           <span className={styles.metricLabel}>Completed</span>
         </div>
         <div className={styles.metric}>

@@ -35,6 +35,28 @@ export interface LeadQueryResponse {
 }
 
 /**
+ * Sanitize a string value for use in Airtable formula.
+ * Escapes single quotes by doubling them and removes potentially dangerous characters.
+ */
+function sanitizeFormulaValue(value: string): string {
+  if (typeof value !== 'string') return '';
+  // Escape single quotes by doubling them (Airtable's escape mechanism)
+  // Remove backslashes and other control characters that could break the formula
+  return value
+    .replace(/\\/g, '') // Remove backslashes
+    .replace(/'/g, "''") // Escape single quotes
+    .replace(/[\r\n\t]/g, ' ') // Replace newlines/tabs with spaces
+    .trim();
+}
+
+/**
+ * Validate that a value is a safe identifier (alphanumeric + underscore)
+ */
+function isValidIdentifier(value: string): boolean {
+  return /^[a-zA-Z0-9_-]+$/.test(value);
+}
+
+/**
  * Leads data client for Airtable
  */
 export class LeadsClient {
@@ -202,68 +224,107 @@ export class LeadsClient {
 
   /**
    * Build Airtable filter formula from LeadFilter
+   * All user inputs are sanitized to prevent formula injection
    */
   private buildFilterFormula(filter: LeadFilter): string {
     const conditions: string[] = [];
 
+    // Status filter - validate against allowed values
     if (filter.status) {
+      const allowedStatuses = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'nurturing'];
       const statuses = Array.isArray(filter.status) ? filter.status : [filter.status];
-      const statusConditions = statuses.map(s => `{Status} = '${s}'`);
-      conditions.push(`OR(${statusConditions.join(', ')})`);
+      const validStatuses = statuses.filter(s => allowedStatuses.includes(s));
+      if (validStatuses.length > 0) {
+        const statusConditions = validStatuses.map(s => `{Status} = '${s}'`);
+        conditions.push(statusConditions.length === 1 ? statusConditions[0] : `OR(${statusConditions.join(', ')})`);
+      }
     }
 
+    // Temperature filter - validate against allowed values
     if (filter.temperature) {
+      const allowedTemps = ['cold', 'warm', 'hot'];
       const temps = Array.isArray(filter.temperature) ? filter.temperature : [filter.temperature];
-      const tempConditions = temps.map(t => `{Temperature} = '${t}'`);
-      conditions.push(`OR(${tempConditions.join(', ')})`);
+      const validTemps = temps.filter(t => allowedTemps.includes(t));
+      if (validTemps.length > 0) {
+        const tempConditions = validTemps.map(t => `{Temperature} = '${t}'`);
+        conditions.push(tempConditions.length === 1 ? tempConditions[0] : `OR(${tempConditions.join(', ')})`);
+      }
     }
 
+    // Source filter - validate against allowed values
     if (filter.source) {
+      const allowedSources = ['linkedin', 'linkedin_sales_navigator', 'website', 'referral', 'cold_outreach', 'content_engagement', 'survey', 'form', 'event', 'import', 'manual', 'other'];
       const sources = Array.isArray(filter.source) ? filter.source : [filter.source];
-      const sourceConditions = sources.map(s => `{Source} = '${s}'`);
-      conditions.push(`OR(${sourceConditions.join(', ')})`);
+      const validSources = sources.filter(s => allowedSources.includes(s));
+      if (validSources.length > 0) {
+        const sourceConditions = validSources.map(s => `{Source} = '${s}'`);
+        conditions.push(sourceConditions.length === 1 ? sourceConditions[0] : `OR(${sourceConditions.join(', ')})`);
+      }
     }
 
+    // Assigned to - sanitize user input
     if (filter.assignedTo) {
-      conditions.push(`{AssignedTo} = '${filter.assignedTo}'`);
+      const sanitizedAssignedTo = sanitizeFormulaValue(filter.assignedTo);
+      if (sanitizedAssignedTo) {
+        conditions.push(`{AssignedTo} = '${sanitizedAssignedTo}'`);
+      }
     }
 
+    // Score filters - ensure numeric values
     if (filter.scoreMin !== undefined) {
-      conditions.push(`{ScoreTotal} >= ${filter.scoreMin}`);
+      const scoreMin = Math.floor(Number(filter.scoreMin));
+      if (!isNaN(scoreMin)) {
+        conditions.push(`{ScoreTotal} >= ${scoreMin}`);
+      }
     }
 
     if (filter.scoreMax !== undefined) {
-      conditions.push(`{ScoreTotal} <= ${filter.scoreMax}`);
+      const scoreMax = Math.floor(Number(filter.scoreMax));
+      if (!isNaN(scoreMax)) {
+        conditions.push(`{ScoreTotal} <= ${scoreMax}`);
+      }
     }
 
-    if (filter.createdAfter) {
+    // Date filters - validate ISO date format
+    const isoDateRegex = /^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/;
+    if (filter.createdAfter && isoDateRegex.test(filter.createdAfter)) {
       conditions.push(`IS_AFTER({CreatedAt}, '${filter.createdAfter}')`);
     }
 
-    if (filter.createdBefore) {
+    if (filter.createdBefore && isoDateRegex.test(filter.createdBefore)) {
       conditions.push(`IS_BEFORE({CreatedAt}, '${filter.createdBefore}')`);
     }
 
+    // Search filter - sanitize and limit length
     if (filter.search) {
-      const searchTerm = filter.search.toLowerCase();
-      conditions.push(
-        `OR(FIND('${searchTerm}', LOWER({FirstName})) > 0, ` +
-        `FIND('${searchTerm}', LOWER({LastName})) > 0, ` +
-        `FIND('${searchTerm}', LOWER({Email})) > 0, ` +
-        `FIND('${searchTerm}', LOWER({CompanyName})) > 0)`
-      );
+      const searchTerm = sanitizeFormulaValue(filter.search.toLowerCase()).substring(0, 100);
+      if (searchTerm) {
+        conditions.push(
+          `OR(FIND('${searchTerm}', LOWER({FirstName})) > 0, ` +
+          `FIND('${searchTerm}', LOWER({LastName})) > 0, ` +
+          `FIND('${searchTerm}', LOWER({Email})) > 0, ` +
+          `FIND('${searchTerm}', LOWER({CompanyName})) > 0)`
+        );
+      }
     }
 
+    // Tags filter - sanitize each tag
     if (filter.tags && filter.tags.length > 0) {
-      const tagConditions = filter.tags.map(t => `FIND('${t}', {Tags}) > 0`);
-      conditions.push(`OR(${tagConditions.join(', ')})`);
+      const sanitizedTags = filter.tags
+        .map(t => sanitizeFormulaValue(t))
+        .filter(t => t.length > 0 && t.length <= 50);
+      if (sanitizedTags.length > 0) {
+        const tagConditions = sanitizedTags.map(t => `FIND('${t}', {Tags}) > 0`);
+        conditions.push(tagConditions.length === 1 ? tagConditions[0] : `OR(${tagConditions.join(', ')})`);
+      }
     }
 
-    if (filter.inSequence) {
+    // Sequence filters - validate identifier format
+    if (filter.inSequence && isValidIdentifier(filter.inSequence)) {
       conditions.push(`FIND('${filter.inSequence}', {ActiveSequences}) > 0`);
     }
 
-    if (filter.notInSequence) {
+    if (filter.notInSequence && isValidIdentifier(filter.notInSequence)) {
       conditions.push(`FIND('${filter.notInSequence}', {ActiveSequences}) = 0`);
     }
 
@@ -471,6 +532,11 @@ export class LeadsClient {
   public async getInteractions(leadId: string): Promise<LeadInteraction[]> {
     if (!this.isInitialized()) {
       throw new Error('Leads client not initialized');
+    }
+
+    // Validate leadId format (Airtable record IDs are alphanumeric)
+    if (!isValidIdentifier(leadId)) {
+      throw new Error('Invalid lead ID format');
     }
 
     try {

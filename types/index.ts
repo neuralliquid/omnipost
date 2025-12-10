@@ -62,3 +62,9 @@ export interface UserPayload {
   [key: string]: any;
   isAdmin?: boolean;
 }
+
+// Re-export CRM/Outreach types
+export * from './lead';
+export * from './sequence';
+export * from './survey';
+export * from './phoenix-rooivalk';
