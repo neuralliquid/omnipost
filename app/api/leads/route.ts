@@ -5,161 +5,111 @@
  */
 
 import { NextResponse } from 'next/server';
-import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
-import type { LeadFilter, LeadSource, LeadStatus, LeadTemperature } from '@/types/lead';
-
-// Valid status values
-const VALID_STATUSES: LeadStatus[] = [
-  'new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'nurturing'
-];
-
-// Valid source values
-const VALID_SOURCES: LeadSource[] = [
-  'linkedin', 'linkedin_sales_navigator', 'website', 'referral', 'cold_outreach',
-  'content_engagement', 'survey', 'form', 'event', 'import', 'manual', 'other'
-];
-
-// Valid temperature values
-const VALID_TEMPERATURES: LeadTemperature[] = ['cold', 'warm', 'hot'];
+import type { LeadFilter } from '@/types/lead';
+import {
+  VALID_LEAD_STATUSES,
+  VALID_LEAD_SOURCES,
+  VALID_LEAD_TEMPERATURES,
+} from '@/app/api/_utils/constants';
+import {
+  requireAuth,
+  requireAuthWithUserId,
+  validateRequiredFields,
+  validateEnumField,
+  validateEmailFormat,
+  withErrorHandling,
+  parseEnumFilter,
+} from '@/app/api/_utils/middleware';
+import { ErrorResponses } from '@/app/api/_utils/responses';
 
 /**
  * GET /api/leads
  * List leads with optional filters
  */
-export async function GET(request: Request) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const GET = withErrorHandling(async (request: Request) => {
+  const authError = await requireAuth();
+  if (authError) return authError;
 
-    const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
 
-    // Build filter from query params
-    const filter: LeadFilter = {};
+  // Build filter from query params
+  const filter: LeadFilter = {};
 
-    const status = searchParams.get('status');
-    if (status) {
-      const statuses = status.split(',') as LeadStatus[];
-      if (statuses.every(s => VALID_STATUSES.includes(s))) {
-        filter.status = statuses.length === 1 ? statuses[0] : statuses;
-      }
-    }
+  filter.status = parseEnumFilter(searchParams.get('status'), VALID_LEAD_STATUSES);
+  filter.temperature = parseEnumFilter(
+    searchParams.get('temperature'),
+    VALID_LEAD_TEMPERATURES
+  );
+  filter.source = parseEnumFilter(searchParams.get('source'), VALID_LEAD_SOURCES);
 
-    const temperature = searchParams.get('temperature');
-    if (temperature) {
-      const temps = temperature.split(',') as LeadTemperature[];
-      if (temps.every(t => VALID_TEMPERATURES.includes(t))) {
-        filter.temperature = temps.length === 1 ? temps[0] : temps;
-      }
-    }
+  const tags = searchParams.get('tags');
+  if (tags) filter.tags = tags.split(',');
 
-    const source = searchParams.get('source');
-    if (source) {
-      const sources = source.split(',') as LeadSource[];
-      if (sources.every(s => VALID_SOURCES.includes(s))) {
-        filter.source = sources.length === 1 ? sources[0] : sources;
-      }
-    }
+  const assignedTo = searchParams.get('assignedTo');
+  if (assignedTo) filter.assignedTo = assignedTo;
 
-    const tags = searchParams.get('tags');
-    if (tags) {
-      filter.tags = tags.split(',');
-    }
+  const search = searchParams.get('search');
+  if (search) filter.search = search;
 
-    const assignedTo = searchParams.get('assignedTo');
-    if (assignedTo) {
-      filter.assignedTo = assignedTo;
-    }
+  const scoreMin = searchParams.get('scoreMin');
+  if (scoreMin) filter.scoreMin = parseInt(scoreMin, 10);
 
-    const search = searchParams.get('search');
-    if (search) {
-      filter.search = search;
-    }
+  const scoreMax = searchParams.get('scoreMax');
+  if (scoreMax) filter.scoreMax = parseInt(scoreMax, 10);
 
-    const scoreMin = searchParams.get('scoreMin');
-    if (scoreMin) {
-      filter.scoreMin = parseInt(scoreMin, 10);
-    }
+  const inSequence = searchParams.get('inSequence');
+  if (inSequence) filter.inSequence = inSequence;
 
-    const scoreMax = searchParams.get('scoreMax');
-    if (scoreMax) {
-      filter.scoreMax = parseInt(scoreMax, 10);
-    }
+  // Pagination
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+  const sortField = searchParams.get('sortField') || 'CreatedAt';
+  const sortDirection = (searchParams.get('sortDirection') || 'desc') as 'asc' | 'desc';
 
-    const inSequence = searchParams.get('inSequence');
-    if (inSequence) {
-      filter.inSequence = inSequence;
-    }
+  const result = await leadsClient.queryLeads(filter, {
+    page,
+    pageSize: Math.min(pageSize, 100), // Max 100 per page
+    sortField,
+    sortDirection,
+  });
 
-    // Pagination
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
-    const sortField = searchParams.get('sortField') || 'CreatedAt';
-    const sortDirection = (searchParams.get('sortDirection') || 'desc') as 'asc' | 'desc';
-
-    const result = await leadsClient.queryLeads(filter, {
-      page,
-      pageSize: Math.min(pageSize, 100), // Max 100 per page
-      sortField,
-      sortDirection,
-    });
-
-    return NextResponse.json({
-      leads: result.leads,
-      pagination: result.pagination,
-    });
-  } catch (error) {
-    console.error('Error fetching leads:', error);
-    return NextResponse.json({ error: 'Failed to fetch leads' }, { status: 500 });
-  }
-}
+  return NextResponse.json({
+    leads: result.leads,
+    pagination: result.pagination,
+  });
+});
 
 /**
  * POST /api/leads
  * Create a new lead
  */
-export async function POST(request: Request) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const POST = withErrorHandling(async (request: Request) => {
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
-    }
+  const body = await request.json();
 
-    const body = await request.json();
+  // Validate required fields
+  const requiredError = validateRequiredFields(body, [
+    'firstName',
+    'lastName',
+    'source',
+  ]);
+  if (requiredError) return requiredError;
 
-    // Validate required fields
-    if (!body.firstName?.trim()) {
-      return NextResponse.json({ error: 'firstName is required' }, { status: 400 });
-    }
+  // Validate source
+  const sourceError = validateEnumField(body.source, VALID_LEAD_SOURCES, 'source');
+  if (sourceError) return sourceError;
 
-    if (!body.lastName?.trim()) {
-      return NextResponse.json({ error: 'lastName is required' }, { status: 400 });
-    }
+  // Validate email format if provided
+  if (body.contact?.email) {
+    const emailError = validateEmailFormat(body.contact.email);
+    if (emailError) return emailError;
+  }
 
-    if (!body.source) {
-      return NextResponse.json({ error: 'source is required' }, { status: 400 });
-    }
-
-    if (!VALID_SOURCES.includes(body.source)) {
-      return NextResponse.json({
-        error: `source must be one of: ${VALID_SOURCES.join(', ')}`
-      }, { status: 400 });
-    }
-
-    // Validate email format if provided
-    if (body.contact?.email) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(body.contact.email)) {
-        return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
-      }
-    }
-
-    const lead = await leadsClient.createLead({
+  const lead = await leadsClient.createLead(
+    {
       firstName: body.firstName.trim(),
       lastName: body.lastName.trim(),
       title: body.title?.trim(),
@@ -171,12 +121,9 @@ export async function POST(request: Request) {
       notes: body.notes,
       customFields: body.customFields,
       linkedinData: body.linkedinData,
-    }, currentUserId);
+    },
+    authResult.userId
+  );
 
-    return NextResponse.json({ lead }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating lead:', error);
-    const message = error instanceof Error ? error.message : 'Failed to create lead';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
-}
+  return NextResponse.json({ lead }, { status: 201 });
+});

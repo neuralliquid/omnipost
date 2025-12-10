@@ -5,118 +5,107 @@
  */
 
 import { NextResponse } from 'next/server';
-import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { sequencesClient } from '@/lib/data/sequences';
-import type { SequenceStatus } from '@/types/sequence';
-
-// Valid status values
-const VALID_STATUSES: SequenceStatus[] = ['draft', 'active', 'paused', 'completed', 'archived'];
+import {
+  VALID_SEQUENCE_STATUSES,
+  VALID_SEQUENCE_STEP_TYPES,
+} from '@/app/api/_utils/constants';
+import {
+  requireAuth,
+  requireAuthWithUserId,
+  validateRequiredFields,
+  validateEnumField,
+  validateArrayField,
+  withErrorHandling,
+} from '@/app/api/_utils/middleware';
+import { ErrorResponses } from '@/app/api/_utils/responses';
 
 /**
  * GET /api/sequences
  * List sequences with optional filters
  */
-export async function GET(request: Request) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const GET = withErrorHandling(async (request: Request) => {
+  const authError = await requireAuth();
+  if (authError) return authError;
 
-    const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
 
-    const status = searchParams.get('status') as SequenceStatus | null;
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+  const status = searchParams.get('status');
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
 
-    // Validate status if provided
-    if (status && !VALID_STATUSES.includes(status)) {
-      return NextResponse.json({
-        error: `status must be one of: ${VALID_STATUSES.join(', ')}`
-      }, { status: 400 });
-    }
-
-    const result = await sequencesClient.querySequences({
-      status: status || undefined,
-      page,
-      pageSize: Math.min(pageSize, 50),
-    });
-
-    return NextResponse.json({
-      sequences: result.sequences,
-      pagination: result.pagination,
-    });
-  } catch (error) {
-    console.error('Error fetching sequences:', error);
-    return NextResponse.json({ error: 'Failed to fetch sequences' }, { status: 500 });
+  // Validate status if provided
+  if (status) {
+    const statusError = validateEnumField(status, VALID_SEQUENCE_STATUSES, 'status');
+    if (statusError) return statusError;
   }
-}
+
+  const result = await sequencesClient.querySequences({
+    status: status || undefined,
+    page,
+    pageSize: Math.min(pageSize, 50),
+  });
+
+  return NextResponse.json({
+    sequences: result.sequences,
+    pagination: result.pagination,
+  });
+});
 
 /**
  * POST /api/sequences
  * Create a new sequence
  */
-export async function POST(request: Request) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+export const POST = withErrorHandling(async (request: Request) => {
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
+
+  const body = await request.json();
+
+  // Validate required fields
+  const requiredError = validateRequiredFields(body, ['name', 'steps']);
+  if (requiredError) return requiredError;
+
+  // Validate steps array
+  const arrayError = validateArrayField(body.steps, 'steps', 1);
+  if (arrayError) return arrayError;
+
+  // Validate each step
+  for (let i = 0; i < body.steps.length; i++) {
+    const step = body.steps[i];
+
+    // Validate step type
+    if (!step.type || !VALID_SEQUENCE_STEP_TYPES.includes(step.type)) {
+      return ErrorResponses.badRequest(
+        `Step ${i + 1}: type must be one of: ${VALID_SEQUENCE_STEP_TYPES.join(', ')}`
+      );
     }
 
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+    // Validate step name
+    if (!step.name?.trim()) {
+      return ErrorResponses.badRequest(`Step ${i + 1}: name is required`);
     }
 
-    const body = await request.json();
-
-    // Validate required fields
-    if (!body.name?.trim()) {
-      return NextResponse.json({ error: 'name is required' }, { status: 400 });
+    // Validate wait config
+    if (step.type === 'wait' && !step.waitConfig) {
+      return ErrorResponses.badRequest(
+        `Step ${i + 1}: waitConfig is required for wait steps`
+      );
     }
 
-    if (!body.steps || !Array.isArray(body.steps) || body.steps.length === 0) {
-      return NextResponse.json({ error: 'steps must be a non-empty array' }, { status: 400 });
+    // Assign order if not provided
+    if (step.order === undefined) {
+      step.order = i + 1;
     }
 
-    // Validate each step
-    const validStepTypes = [
-      'email', 'linkedin_message', 'linkedin_connection', 'linkedin_view_profile',
-      'linkedin_endorse', 'sms', 'call', 'task', 'wait', 'condition'
-    ];
-
-    for (let i = 0; i < body.steps.length; i++) {
-      const step = body.steps[i];
-
-      if (!step.type || !validStepTypes.includes(step.type)) {
-        return NextResponse.json({
-          error: `Step ${i + 1}: type must be one of: ${validStepTypes.join(', ')}`
-        }, { status: 400 });
-      }
-
-      if (!step.name?.trim()) {
-        return NextResponse.json({
-          error: `Step ${i + 1}: name is required`
-        }, { status: 400 });
-      }
-
-      // Validate wait config
-      if (step.type === 'wait' && !step.waitConfig) {
-        return NextResponse.json({
-          error: `Step ${i + 1}: waitConfig is required for wait steps`
-        }, { status: 400 });
-      }
-
-      // Assign order if not provided
-      if (step.order === undefined) {
-        step.order = i + 1;
-      }
-
-      // Default enabled to true
-      if (step.enabled === undefined) {
-        step.enabled = true;
-      }
+    // Default enabled to true
+    if (step.enabled === undefined) {
+      step.enabled = true;
     }
+  }
 
-    const sequence = await sequencesClient.createSequence({
+  const sequence = await sequencesClient.createSequence(
+    {
       name: body.name.trim(),
       description: body.description?.trim(),
       steps: body.steps,
@@ -127,12 +116,9 @@ export async function POST(request: Request) {
       senderName: body.senderName,
       senderEmail: body.senderEmail,
       tags: body.tags,
-    }, currentUserId);
+    },
+    authResult.userId
+  );
 
-    return NextResponse.json({ sequence }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating sequence:', error);
-    const message = error instanceof Error ? error.message : 'Failed to create sequence';
-    return NextResponse.json({ error: message }, { status: 500 });
-  }
-}
+  return NextResponse.json({ sequence }, { status: 201 });
+});
