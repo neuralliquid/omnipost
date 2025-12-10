@@ -20,7 +20,7 @@ interface CampaignCardProps {
 
 export const CampaignCard: React.FC<CampaignCardProps> = ({
   campaign,
-  onEdit,
+  onEdit: _onEdit,
   onDelete,
   onDuplicate,
 }) => {

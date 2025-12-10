@@ -4,7 +4,7 @@
  * SkySnare™ (Consumer) and AeroNet™ (Enterprise) products
  */
 
-import type { Lead, LeadScore, LeadScoreBreakdown, CompanyInfo } from './lead';
+import type { Lead } from './lead';
 
 /**
  * Phoenix Rooivalk brand identifiers

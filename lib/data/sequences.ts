@@ -1,5 +1,4 @@
 import Airtable, { FieldSet, Record as AirtableRecord } from 'airtable';
-import { generateSecureId } from '../utils/id';
 import {
   Sequence,
   SequenceStatus,

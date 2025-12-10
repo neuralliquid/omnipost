@@ -12,8 +12,6 @@ import type {
   AeroNetLeadData,
 } from '@/types/phoenix-rooivalk';
 import {
-  SKYSNARE_SCORING_RULES,
-  AERONET_SCORING_RULES,
   getScoringRules,
 } from '@/types/phoenix-rooivalk';
 import { calculateScoreGrade } from '@/types/lead';

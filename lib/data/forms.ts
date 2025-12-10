@@ -1,5 +1,4 @@
 import Airtable, { FieldSet, Record as AirtableRecord } from 'airtable';
-import { generateSecureId } from '../utils/id';
 import {
   Form,
   FormStatus,
@@ -7,7 +6,6 @@ import {
   FormSubmission,
   CreateFormInput,
   UpdateFormInput,
-  FormMetrics,
   createDefaultTheme,
   createEmptyFormMetrics,
   generateEmbedCode,

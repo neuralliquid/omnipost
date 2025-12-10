@@ -9,7 +9,6 @@ import type {
   Sequence,
   SequenceStep,
   SequenceEnrollment,
-  SequenceMetrics,
 } from '../../types/sequence';
 import type { Lead } from '../../types/lead';
 
@@ -775,7 +774,7 @@ export class SequenceEngine {
   private async evaluateCondition(
     condition: { type: string; operator?: string; value?: unknown; withinDays?: number },
     lead: Lead,
-    enrollment: SequenceEnrollment
+    _enrollment: SequenceEnrollment
   ): Promise<boolean> {
     const interactions = await leadsClient.getInteractions(lead.id);
 

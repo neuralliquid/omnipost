@@ -57,7 +57,7 @@ const SOURCE_OPTIONS: { value: LeadSource; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
-const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
+const _STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
   { value: 'new', label: 'New' },
   { value: 'contacted', label: 'Contacted' },
   { value: 'qualified', label: 'Qualified' },
@@ -68,7 +68,7 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
   { value: 'nurturing', label: 'Nurturing' },
 ];
 
-const TEMPERATURE_OPTIONS: { value: LeadTemperature; label: string }[] = [
+const _TEMPERATURE_OPTIONS: { value: LeadTemperature; label: string }[] = [
   { value: 'cold', label: 'Cold' },
   { value: 'warm', label: 'Warm' },
   { value: 'hot', label: 'Hot' },
