@@ -1,0 +1,1013 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "11501620253234214118"
+    }
+  },
+  "parameters": {
+    "org": {
+      "type": "string",
+      "defaultValue": "nl",
+      "allowedValues": [
+        "nl",
+        "pvc",
+        "tws",
+        "mys"
+      ],
+      "metadata": {
+        "description": "Organisation code (nl, pvc, tws, mys)"
+      }
+    },
+    "env": {
+      "type": "string",
+      "defaultValue": "dev",
+      "allowedValues": [
+        "dev",
+        "staging",
+        "prod"
+      ],
+      "metadata": {
+        "description": "Environment (dev, staging, prod)"
+      }
+    },
+    "project": {
+      "type": "string",
+      "defaultValue": "content-creation",
+      "metadata": {
+        "description": "Project name"
+      }
+    },
+    "region": {
+      "type": "string",
+      "defaultValue": "euw",
+      "allowedValues": [
+        "euw",
+        "eun",
+        "wus",
+        "eus",
+        "san",
+        "saf",
+        "swe",
+        "uks",
+        "usw",
+        "glob"
+      ],
+      "metadata": {
+        "description": "Region code (euw, san, saf, swe, etc.)"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location to deploy the resources"
+      }
+    },
+    "sku": {
+      "type": "string",
+      "defaultValue": "B1",
+      "allowedValues": [
+        "B1",
+        "B2",
+        "B3",
+        "S1",
+        "S2",
+        "S3",
+        "P1v2",
+        "P2v2",
+        "P3v2"
+      ],
+      "metadata": {
+        "description": "The SKU of the app service plan"
+      }
+    },
+    "linuxFxVersion": {
+      "type": "string",
+      "defaultValue": "NODE|20-lts",
+      "metadata": {
+        "description": "The runtime stack of the web app"
+      }
+    },
+    "enableMonitoring": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable Application Insights monitoring"
+      }
+    },
+    "enableDeploymentSlot": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable deployment slot for blue-green deployments (staging/prod only)"
+      }
+    },
+    "enableCustomDomain": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "description": "Enable custom domain configuration"
+      }
+    },
+    "dnsZoneName": {
+      "type": "string",
+      "defaultValue": "nexamesh.ai",
+      "metadata": {
+        "description": "DNS Zone name"
+      }
+    },
+    "dnsZoneResourceGroup": {
+      "type": "string",
+      "defaultValue": "rg-dns-global",
+      "metadata": {
+        "description": "DNS Zone resource group"
+      }
+    },
+    "appSubdomain": {
+      "type": "string",
+      "defaultValue": "omnipost",
+      "metadata": {
+        "description": "Application subdomain"
+      }
+    },
+    "apiSubdomain": {
+      "type": "string",
+      "defaultValue": "api.omnipost",
+      "metadata": {
+        "description": "API subdomain"
+      }
+    }
+  },
+  "variables": {
+    "base": "[format('{0}-{1}-{2}', parameters('org'), parameters('env'), parameters('project'))]",
+    "appName": "[format('{0}-app-{1}', variables('base'), parameters('region'))]",
+    "appServicePlanName": "[format('{0}-asp-{1}', variables('base'), parameters('region'))]",
+    "tags": {
+      "org": "[parameters('org')]",
+      "environment": "[parameters('env')]",
+      "project": "[parameters('project')]",
+      "region": "[parameters('region')]",
+      "managedBy": "bicep"
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/serverfarms",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('appServicePlanName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "sku": {
+        "name": "[parameters('sku')]"
+      },
+      "kind": "linux",
+      "properties": {
+        "reserved": true
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2022-09-01",
+      "name": "[variables('appName')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "alwaysOn": true,
+          "http20Enabled": true,
+          "minTlsVersion": "1.2",
+          "appCommandLine": "",
+          "httpLoggingEnabled": true,
+          "detailedErrorLoggingEnabled": true,
+          "appSettings": [
+            {
+              "name": "SCM_DO_BUILD_DURING_DEPLOYMENT",
+              "value": "false"
+            },
+            {
+              "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+              "value": "false"
+            },
+            {
+              "name": "WEBSITE_NODE_DEFAULT_VERSION",
+              "value": "~20"
+            },
+            {
+              "name": "NODE_ENV",
+              "value": "production"
+            },
+            {
+              "name": "PORT",
+              "value": "8080"
+            },
+            {
+              "name": "WEBSITES_PORT",
+              "value": "8080"
+            },
+            {
+              "name": "WEBSITE_RUN_FROM_PACKAGE",
+              "value": "1"
+            },
+            {
+              "name": "ENABLE_ORYX_BUILD",
+              "value": "false"
+            },
+            {
+              "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+              "value": "7"
+            },
+            {
+              "name": "WEBSITE_STARTUP_FILE",
+              "value": "startup.sh"
+            },
+            {
+              "name": "ENVIRONMENT",
+              "value": "[parameters('env')]"
+            },
+            {
+              "name": "ORG",
+              "value": "[parameters('org')]"
+            },
+            {
+              "name": "PROJECT",
+              "value": "[parameters('project')]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableDeploymentSlot')]",
+      "type": "Microsoft.Web/sites/slots",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}/{1}', variables('appName'), 'staging')]",
+      "location": "[parameters('location')]",
+      "tags": "[variables('tags')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "properties": {
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "siteConfig": {
+          "linuxFxVersion": "[parameters('linuxFxVersion')]",
+          "alwaysOn": true,
+          "http20Enabled": true,
+          "minTlsVersion": "1.2",
+          "appCommandLine": "",
+          "httpLoggingEnabled": true,
+          "detailedErrorLoggingEnabled": true
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('appServicePlanName'))]",
+        "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableMonitoring')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "monitoring-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "org": {
+            "value": "[parameters('org')]"
+          },
+          "env": {
+            "value": "[parameters('env')]"
+          },
+          "project": {
+            "value": "[parameters('project')]"
+          },
+          "region": {
+            "value": "[parameters('region')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          },
+          "webAppId": {
+            "value": "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "9341973323076702655"
+            }
+          },
+          "parameters": {
+            "org": {
+              "type": "string",
+              "metadata": {
+                "description": "Organisation code"
+              }
+            },
+            "env": {
+              "type": "string",
+              "metadata": {
+                "description": "Environment"
+              }
+            },
+            "project": {
+              "type": "string",
+              "metadata": {
+                "description": "Project name"
+              }
+            },
+            "region": {
+              "type": "string",
+              "metadata": {
+                "description": "Region code"
+              }
+            },
+            "location": {
+              "type": "string",
+              "defaultValue": "[resourceGroup().location]",
+              "metadata": {
+                "description": "The location to deploy Application Insights"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to apply to resources"
+              }
+            },
+            "webAppId": {
+              "type": "string",
+              "metadata": {
+                "description": "Web App resource ID for diagnostic settings"
+              }
+            }
+          },
+          "variables": {
+            "base": "[format('{0}-{1}-{2}', parameters('org'), parameters('env'), parameters('project'))]",
+            "appInsightsName": "[format('{0}-ai-{1}', variables('base'), parameters('region'))]",
+            "logAnalyticsName": "[format('{0}-law-{1}', variables('base'), parameters('region'))]",
+            "memoryThresholdBytes": 1073741824
+          },
+          "resources": [
+            {
+              "type": "Microsoft.OperationalInsights/workspaces",
+              "apiVersion": "2022-10-01",
+              "name": "[variables('logAnalyticsName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "sku": {
+                  "name": "PerGB2018"
+                },
+                "retentionInDays": 30,
+                "features": {
+                  "enableLogAccessUsingOnlyResourcePermissions": true
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Insights/components",
+              "apiVersion": "2020-02-02",
+              "name": "[variables('appInsightsName')]",
+              "location": "[parameters('location')]",
+              "tags": "[parameters('tags')]",
+              "kind": "web",
+              "properties": {
+                "Application_Type": "web",
+                "WorkspaceResourceId": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]",
+                "IngestionMode": "LogAnalytics",
+                "publicNetworkAccessForIngestion": "Enabled",
+                "publicNetworkAccessForQuery": "Enabled"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+              ]
+            },
+            {
+              "type": "Microsoft.Insights/metricAlerts",
+              "apiVersion": "2018-03-01",
+              "name": "[format('{0}-high-5xx-errors', variables('appInsightsName'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "description": "Alert when HTTP 5xx errors exceed threshold",
+                "severity": 2,
+                "enabled": true,
+                "scopes": [
+                  "[parameters('webAppId')]"
+                ],
+                "evaluationFrequency": "PT5M",
+                "windowSize": "PT5M",
+                "criteria": {
+                  "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                  "allOf": [
+                    {
+                      "criterionType": "StaticThresholdCriterion",
+                      "name": "High5xxErrors",
+                      "metricName": "Http5xx",
+                      "operator": "GreaterThan",
+                      "threshold": 10,
+                      "timeAggregation": "Total"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Insights/metricAlerts",
+              "apiVersion": "2018-03-01",
+              "name": "[format('{0}-high-response-time', variables('appInsightsName'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "description": "Alert when average response time exceeds 2 seconds",
+                "severity": 3,
+                "enabled": true,
+                "scopes": [
+                  "[parameters('webAppId')]"
+                ],
+                "evaluationFrequency": "PT5M",
+                "windowSize": "PT15M",
+                "criteria": {
+                  "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                  "allOf": [
+                    {
+                      "criterionType": "StaticThresholdCriterion",
+                      "name": "HighResponseTime",
+                      "metricName": "AverageResponseTime",
+                      "operator": "GreaterThan",
+                      "threshold": 2,
+                      "timeAggregation": "Average"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "type": "Microsoft.Insights/metricAlerts",
+              "apiVersion": "2018-03-01",
+              "name": "[format('{0}-high-memory', variables('appInsightsName'))]",
+              "location": "global",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "description": "Alert when memory working set exceeds 1GB",
+                "severity": 3,
+                "enabled": true,
+                "scopes": [
+                  "[parameters('webAppId')]"
+                ],
+                "evaluationFrequency": "PT5M",
+                "windowSize": "PT15M",
+                "criteria": {
+                  "odata.type": "Microsoft.Azure.Monitor.SingleResourceMultipleMetricCriteria",
+                  "allOf": [
+                    {
+                      "criterionType": "StaticThresholdCriterion",
+                      "name": "HighMemoryUsage",
+                      "metricName": "MemoryWorkingSet",
+                      "operator": "GreaterThan",
+                      "threshold": "[variables('memoryThresholdBytes')]",
+                      "timeAggregation": "Average"
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          "outputs": {
+            "appInsightsName": {
+              "type": "string",
+              "value": "[variables('appInsightsName')]"
+            },
+            "appInsightsId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Insights/components', variables('appInsightsName'))]"
+            },
+            "instrumentationKey": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').InstrumentationKey]"
+            },
+            "connectionString": {
+              "type": "string",
+              "value": "[reference(resourceId('Microsoft.Insights/components', variables('appInsightsName')), '2020-02-02').ConnectionString]"
+            },
+            "logAnalyticsWorkspaceId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.OperationalInsights/workspaces', variables('logAnalyticsName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableCustomDomain')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "dns-info",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[parameters('dnsZoneName')]"
+          },
+          "dnsZoneResourceGroup": {
+            "value": "[parameters('dnsZoneResourceGroup')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "15413805596166870438"
+            }
+          },
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string",
+              "defaultValue": "nexamesh.ai",
+              "metadata": {
+                "description": "DNS Zone name"
+              }
+            },
+            "dnsZoneResourceGroup": {
+              "type": "string",
+              "defaultValue": "rg-dns-global",
+              "metadata": {
+                "description": "DNS Zone resource group name"
+              }
+            }
+          },
+          "resources": [],
+          "outputs": {
+            "dnsZoneId": {
+              "type": "string",
+              "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Network/dnsZones', parameters('dnsZoneName'))]"
+            },
+            "dnsZoneName": {
+              "type": "string",
+              "value": "[parameters('dnsZoneName')]"
+            },
+            "nameServers": {
+              "type": "array",
+              "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Network/dnsZones', parameters('dnsZoneName')), '2018-05-01').nameServers]"
+            }
+          }
+        }
+      }
+    },
+    {
+      "condition": "[parameters('enableCustomDomain')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "dns-records-deployment",
+      "resourceGroup": "[parameters('dnsZoneResourceGroup')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "dnsZoneName": {
+            "value": "[parameters('dnsZoneName')]"
+          },
+          "appSubdomain": {
+            "value": "[parameters('appSubdomain')]"
+          },
+          "apiSubdomain": {
+            "value": "[parameters('apiSubdomain')]"
+          },
+          "webAppDefaultHostname": {
+            "value": "[reference(resourceId('Microsoft.Web/sites', variables('appName')), '2022-09-01').defaultHostName]"
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "9538174032785409362"
+            }
+          },
+          "parameters": {
+            "dnsZoneName": {
+              "type": "string",
+              "metadata": {
+                "description": "DNS Zone name"
+              }
+            },
+            "appSubdomain": {
+              "type": "string",
+              "metadata": {
+                "description": "Application subdomain"
+              }
+            },
+            "apiSubdomain": {
+              "type": "string",
+              "metadata": {
+                "description": "API subdomain"
+              }
+            },
+            "webAppDefaultHostname": {
+              "type": "string",
+              "metadata": {
+                "description": "Web App default hostname"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags to apply to resources"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/dnsZones/CNAME",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), parameters('appSubdomain'))]",
+              "properties": {
+                "TTL": 3600,
+                "CNAMERecord": {
+                  "cname": "[parameters('webAppDefaultHostname')]"
+                },
+                "metadata": "[parameters('tags')]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/dnsZones/CNAME",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), parameters('apiSubdomain'))]",
+              "properties": {
+                "TTL": 3600,
+                "CNAMERecord": {
+                  "cname": "[parameters('webAppDefaultHostname')]"
+                },
+                "metadata": "[parameters('tags')]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/dnsZones/TXT",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), format('awverify.{0}', parameters('appSubdomain')))]",
+              "properties": {
+                "TTL": 3600,
+                "TXTRecords": [
+                  {
+                    "value": [
+                      "[parameters('webAppDefaultHostname')]"
+                    ]
+                  }
+                ],
+                "metadata": "[parameters('tags')]"
+              }
+            },
+            {
+              "type": "Microsoft.Network/dnsZones/TXT",
+              "apiVersion": "2018-05-01",
+              "name": "[format('{0}/{1}', parameters('dnsZoneName'), format('awverify.{0}', parameters('apiSubdomain')))]",
+              "properties": {
+                "TTL": 3600,
+                "TXTRecords": [
+                  {
+                    "value": [
+                      "[parameters('webAppDefaultHostname')]"
+                    ]
+                  }
+                ],
+                "metadata": "[parameters('tags')]"
+              }
+            }
+          ],
+          "outputs": {
+            "appCnameRecordFqdn": {
+              "type": "string",
+              "value": "[format('{0}.{1}', parameters('appSubdomain'), parameters('dnsZoneName'))]"
+            },
+            "apiCnameRecordFqdn": {
+              "type": "string",
+              "value": "[format('{0}.{1}', parameters('apiSubdomain'), parameters('dnsZoneName'))]"
+            },
+            "appVerifyRecordFqdn": {
+              "type": "string",
+              "value": "[format('awverify.{0}.{1}', parameters('appSubdomain'), parameters('dnsZoneName'))]"
+            },
+            "apiVerifyRecordFqdn": {
+              "type": "string",
+              "value": "[format('awverify.{0}.{1}', parameters('apiSubdomain'), parameters('dnsZoneName'))]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableCustomDomain')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "app-custom-domain-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "webAppName": {
+            "value": "[variables('appName')]"
+          },
+          "customHostname": {
+            "value": "[format('{0}.{1}', parameters('appSubdomain'), parameters('dnsZoneName'))]"
+          },
+          "enableSsl": {
+            "value": true
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "15014691862016691830"
+            }
+          },
+          "parameters": {
+            "webAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Web App name"
+              }
+            },
+            "customHostname": {
+              "type": "string",
+              "metadata": {
+                "description": "Custom domain hostname"
+              }
+            },
+            "enableSsl": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable managed SSL certificate"
+              }
+            },
+            "sslType": {
+              "type": "string",
+              "defaultValue": "SniEnabled",
+              "allowedValues": [
+                "SniEnabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "SSL binding type"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites/hostNameBindings",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}/{1}', parameters('webAppName'), parameters('customHostname'))]",
+              "properties": {
+                "siteName": "[parameters('webAppName')]",
+                "hostNameType": "Verified",
+                "sslState": "[if(parameters('enableSsl'), parameters('sslType'), 'Disabled')]",
+                "customHostNameDnsRecordType": "CName"
+              }
+            },
+            {
+              "condition": "[parameters('enableSsl')]",
+              "type": "Microsoft.Web/certificates",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-cert', parameters('customHostname'))]",
+              "location": "[resourceGroup().location]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "serverFarmId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2022-09-01').serverFarmId]",
+                "canonicalName": "[parameters('customHostname')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "hostnameBindingId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+            },
+            "certificateThumbprint": {
+              "type": "string",
+              "value": "[if(parameters('enableSsl'), reference(resourceId('Microsoft.Web/certificates', format('{0}-cert', parameters('customHostname'))), '2022-09-01').thumbprint, '')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Resources/deployments', 'dns-records-deployment')]",
+        "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+      ]
+    },
+    {
+      "condition": "[parameters('enableCustomDomain')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2025-04-01",
+      "name": "api-custom-domain-deployment",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "webAppName": {
+            "value": "[variables('appName')]"
+          },
+          "customHostname": {
+            "value": "[format('{0}.{1}', parameters('apiSubdomain'), parameters('dnsZoneName'))]"
+          },
+          "enableSsl": {
+            "value": true
+          },
+          "tags": {
+            "value": "[variables('tags')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.39.26.7824",
+              "templateHash": "15014691862016691830"
+            }
+          },
+          "parameters": {
+            "webAppName": {
+              "type": "string",
+              "metadata": {
+                "description": "Web App name"
+              }
+            },
+            "customHostname": {
+              "type": "string",
+              "metadata": {
+                "description": "Custom domain hostname"
+              }
+            },
+            "enableSsl": {
+              "type": "bool",
+              "defaultValue": true,
+              "metadata": {
+                "description": "Enable managed SSL certificate"
+              }
+            },
+            "sslType": {
+              "type": "string",
+              "defaultValue": "SniEnabled",
+              "allowedValues": [
+                "SniEnabled",
+                "Disabled"
+              ],
+              "metadata": {
+                "description": "SSL binding type"
+              }
+            },
+            "tags": {
+              "type": "object",
+              "defaultValue": {},
+              "metadata": {
+                "description": "Tags"
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Web/sites/hostNameBindings",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}/{1}', parameters('webAppName'), parameters('customHostname'))]",
+              "properties": {
+                "siteName": "[parameters('webAppName')]",
+                "hostNameType": "Verified",
+                "sslState": "[if(parameters('enableSsl'), parameters('sslType'), 'Disabled')]",
+                "customHostNameDnsRecordType": "CName"
+              }
+            },
+            {
+              "condition": "[parameters('enableSsl')]",
+              "type": "Microsoft.Web/certificates",
+              "apiVersion": "2022-09-01",
+              "name": "[format('{0}-cert', parameters('customHostname'))]",
+              "location": "[resourceGroup().location]",
+              "tags": "[parameters('tags')]",
+              "properties": {
+                "serverFarmId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2022-09-01').serverFarmId]",
+                "canonicalName": "[parameters('customHostname')]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+              ]
+            }
+          ],
+          "outputs": {
+            "hostnameBindingId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+            },
+            "certificateThumbprint": {
+              "type": "string",
+              "value": "[if(parameters('enableSsl'), reference(resourceId('Microsoft.Web/certificates', format('{0}-cert', parameters('customHostname'))), '2022-09-01').thumbprint, '')]"
+            }
+          }
+        }
+      },
+      "dependsOn": [
+        "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Resources/deployments', 'dns-records-deployment')]",
+        "[resourceId('Microsoft.Web/sites', variables('appName'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "webAppName": {
+      "type": "string",
+      "value": "[variables('appName')]"
+    },
+    "webAppUrl": {
+      "type": "string",
+      "value": "[format('https://{0}', reference(resourceId('Microsoft.Web/sites', variables('appName')), '2022-09-01').defaultHostName)]"
+    },
+    "appServicePlanName": {
+      "type": "string",
+      "value": "[variables('appServicePlanName')]"
+    },
+    "stagingSlotUrl": {
+      "type": "string",
+      "value": "[if(parameters('enableDeploymentSlot'), format('https://{0}', reference(resourceId('Microsoft.Web/sites/slots', variables('appName'), 'staging'), '2022-09-01').defaultHostName), 'N/A')]"
+    },
+    "customDomainUrl": {
+      "type": "string",
+      "value": "[if(parameters('enableCustomDomain'), format('https://{0}.{1}', parameters('appSubdomain'), parameters('dnsZoneName')), 'N/A')]"
+    },
+    "apiCustomDomainUrl": {
+      "type": "string",
+      "value": "[if(parameters('enableCustomDomain'), format('https://{0}.{1}', parameters('apiSubdomain'), parameters('dnsZoneName')), 'N/A')]"
+    },
+    "appInsightsConnectionString": {
+      "type": "string",
+      "value": "[if(parameters('enableMonitoring'), reference(resourceId('Microsoft.Resources/deployments', 'monitoring-deployment'), '2025-04-01').outputs.connectionString.value, '')]"
+    },
+    "appInsightsInstrumentationKey": {
+      "type": "string",
+      "value": "[if(parameters('enableMonitoring'), reference(resourceId('Microsoft.Resources/deployments', 'monitoring-deployment'), '2025-04-01').outputs.instrumentationKey.value, '')]"
+    }
+  }
+}

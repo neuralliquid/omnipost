@@ -1,0 +1,88 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "15014691862016691830"
+    }
+  },
+  "parameters": {
+    "webAppName": {
+      "type": "string",
+      "metadata": {
+        "description": "Web App name"
+      }
+    },
+    "customHostname": {
+      "type": "string",
+      "metadata": {
+        "description": "Custom domain hostname"
+      }
+    },
+    "enableSsl": {
+      "type": "bool",
+      "defaultValue": true,
+      "metadata": {
+        "description": "Enable managed SSL certificate"
+      }
+    },
+    "sslType": {
+      "type": "string",
+      "defaultValue": "SniEnabled",
+      "allowedValues": [
+        "SniEnabled",
+        "Disabled"
+      ],
+      "metadata": {
+        "description": "SSL binding type"
+      }
+    },
+    "tags": {
+      "type": "object",
+      "defaultValue": {},
+      "metadata": {
+        "description": "Tags"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}/{1}', parameters('webAppName'), parameters('customHostname'))]",
+      "properties": {
+        "siteName": "[parameters('webAppName')]",
+        "hostNameType": "Verified",
+        "sslState": "[if(parameters('enableSsl'), parameters('sslType'), 'Disabled')]",
+        "customHostNameDnsRecordType": "CName"
+      }
+    },
+    {
+      "condition": "[parameters('enableSsl')]",
+      "type": "Microsoft.Web/certificates",
+      "apiVersion": "2022-09-01",
+      "name": "[format('{0}-cert', parameters('customHostname'))]",
+      "location": "[resourceGroup().location]",
+      "tags": "[parameters('tags')]",
+      "properties": {
+        "serverFarmId": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName')), '2022-09-01').serverFarmId]",
+        "canonicalName": "[parameters('customHostname')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+      ]
+    }
+  ],
+  "outputs": {
+    "hostnameBindingId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Web/sites/hostNameBindings', parameters('webAppName'), parameters('customHostname'))]"
+    },
+    "certificateThumbprint": {
+      "type": "string",
+      "value": "[if(parameters('enableSsl'), reference(resourceId('Microsoft.Web/certificates', format('{0}-cert', parameters('customHostname'))), '2022-09-01').thumbprint, '')]"
+    }
+  }
+}

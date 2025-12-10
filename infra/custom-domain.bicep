@@ -49,4 +49,4 @@ resource managedCertificate 'Microsoft.Web/certificates@2022-09-01' = if (enable
 }
 
 output hostnameBindingId string = hostnameBinding.id
-output certificateThumbprint string = enableSsl ? managedCertificate.properties.thumbprint : ''
+output certificateThumbprint string = enableSsl ? managedCertificate!.properties.thumbprint : ''

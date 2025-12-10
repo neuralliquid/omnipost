@@ -187,19 +187,25 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
   }
 }
 
-// Deploy DNS configuration module
+// Get DNS zone information (deployed to current resource group scope)
 module dns 'dns.bicep' = if (enableCustomDomain) {
-  name: 'dns-deployment'
-  scope: resourceGroup(dnsZoneResourceGroup)
+  name: 'dns-info'
   params: {
     dnsZoneName: dnsZoneName
     dnsZoneResourceGroup: dnsZoneResourceGroup
+  }
+}
+
+// Deploy DNS records to DNS zone resource group
+module dnsRecords 'dns-records.bicep' = if (enableCustomDomain) {
+  name: 'dns-records-deployment'
+  scope: resourceGroup(dnsZoneResourceGroup)
+  params: {
+    dnsZoneName: dnsZoneName
     appSubdomain: appSubdomain
     apiSubdomain: apiSubdomain
     webAppDefaultHostname: webApp.properties.defaultHostName
-    webAppId: webApp.id
     tags: tags
-    enableCustomDomain: true
   }
 }
 
@@ -213,7 +219,7 @@ module appCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
     tags: tags
   }
   dependsOn: [
-    dns
+    dnsRecords
   ]
 }
 
@@ -227,7 +233,7 @@ module apiCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
     tags: tags
   }
   dependsOn: [
-    dns
+    dnsRecords
   ]
 }
 

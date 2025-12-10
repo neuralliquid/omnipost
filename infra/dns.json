@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.39.26.7824",
+      "templateHash": "15413805596166870438"
+    }
+  },
+  "parameters": {
+    "dnsZoneName": {
+      "type": "string",
+      "defaultValue": "nexamesh.ai",
+      "metadata": {
+        "description": "DNS Zone name"
+      }
+    },
+    "dnsZoneResourceGroup": {
+      "type": "string",
+      "defaultValue": "rg-dns-global",
+      "metadata": {
+        "description": "DNS Zone resource group name"
+      }
+    }
+  },
+  "resources": [],
+  "outputs": {
+    "dnsZoneId": {
+      "type": "string",
+      "value": "[extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Network/dnsZones', parameters('dnsZoneName'))]"
+    },
+    "dnsZoneName": {
+      "type": "string",
+      "value": "[parameters('dnsZoneName')]"
+    },
+    "nameServers": {
+      "type": "array",
+      "value": "[reference(extensionResourceId(format('/subscriptions/{0}/resourceGroups/{1}', subscription().subscriptionId, parameters('dnsZoneResourceGroup')), 'Microsoft.Network/dnsZones', parameters('dnsZoneName')), '2018-05-01').nameServers]"
+    }
+  }
+}
