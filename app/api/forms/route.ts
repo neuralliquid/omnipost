@@ -40,26 +40,32 @@ export const GET = withErrorHandling(async (request: Request) => {
 
   const { searchParams } = new URL(request.url);
 
-  const status = searchParams.get('status');
-  const type = searchParams.get('type');
+  const statusParam = searchParams.get('status');
+  const typeParam = searchParams.get('type');
   const page = parseInt(searchParams.get('page') || '1', 10);
   const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
 
-  // Validate status if provided
-  if (status) {
-    const statusError = validateEnumField(status, VALID_FORM_STATUSES, 'status');
+  // Validate and type-assert status if provided
+  let status: FormStatus | undefined;
+  if (statusParam) {
+    const statusError = validateEnumField(statusParam, VALID_FORM_STATUSES, 'status');
     if (statusError) return statusError;
+    // Safe to cast after validation
+    status = statusParam as FormStatus;
   }
 
-  // Validate type if provided
-  if (type) {
-    const typeError = validateEnumField(type, VALID_FORM_TYPES, 'type');
+  // Validate and type-assert type if provided
+  let type: Form['type'] | undefined;
+  if (typeParam) {
+    const typeError = validateEnumField(typeParam, VALID_FORM_TYPES, 'type');
     if (typeError) return typeError;
+    // Safe to cast after validation
+    type = typeParam as Form['type'];
   }
 
   const result = await formsClient.queryForms({
-    status: (status as FormStatus) || undefined,
-    type: (type as Form['type']) || undefined,
+    status,
+    type,
     page,
     pageSize: Math.min(pageSize, 50),
   });
