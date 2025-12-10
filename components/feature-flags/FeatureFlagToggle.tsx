@@ -33,8 +33,9 @@ const FeatureFlagToggle: React.FC<FeatureFlagToggleProps> = ({
       if (onToggle) {
         onToggle(!enabled);
       }
-    } catch (err: any) {
-      setError(err.message || `Failed to update ${featureName}`);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : `Failed to update ${featureName}`;
+      setError(errorMessage);
       console.error(`Error updating feature flag ${featureName}:`, err);
     } finally {
       setUpdating(false);

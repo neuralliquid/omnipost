@@ -6,7 +6,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { isAuthenticated } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
 import { calculatePhoenixLeadScore } from '@/lib/scoring/phoenix-scorer';
 import featureFlags from '@/lib/featureFlags';

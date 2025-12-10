@@ -24,19 +24,23 @@ import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
  * Validate and normalize sequence steps
  * Extracted to reduce cognitive complexity
  */
-function validateAndNormalizeSteps(steps: any[]): NextResponse | null {
+function validateAndNormalizeSteps(steps: Array<Record<string, unknown>>): NextResponse | null {
   for (let i = 0; i < steps.length; i++) {
     const step = steps[i];
 
     // Validate step type
-    if (!step.type || !VALID_SEQUENCE_STEP_TYPES.includes(step.type)) {
+    if (
+      !step.type ||
+      typeof step.type !== 'string' ||
+      !(VALID_SEQUENCE_STEP_TYPES as readonly string[]).includes(step.type)
+    ) {
       return ErrorResponses.badRequest(
         `Step ${i + 1}: type must be one of: ${VALID_SEQUENCE_STEP_TYPES.join(', ')}`
       );
     }
 
     // Validate step name
-    if (!step.name?.trim()) {
+    if (typeof step.name !== 'string' || !step.name.trim()) {
       return ErrorResponses.badRequest(`Step ${i + 1}: name is required`);
     }
 

@@ -116,12 +116,6 @@ export function validateArrayField(
  * Try-catch wrapper for API route handlers
  * Automatically handles errors and logs them
  */
-export function withErrorHandling<T>(
-  handler: (request: Request, context: T) => Promise<NextResponse>
-): (request: Request, context: T) => Promise<NextResponse>;
-export function withErrorHandling(
-  handler: (request: Request) => Promise<NextResponse>
-): (request: Request) => Promise<NextResponse>;
 export function withErrorHandling<T = unknown>(
   handler:
     | ((request: Request, context: T) => Promise<NextResponse>)
