@@ -78,7 +78,15 @@ jobs:
           # Copy data directory (required for feature flags and configuration)
           cp -r data deploy/data || true
           
-          # Copy startup script
+          # Fix package.json start script for standalone mode
+          # The standalone build includes a server.js that should be run directly
+          if [ -f deploy/package.json ]; then
+            # Update the start script to run the standalone server
+            node -e "const pkg = require('./deploy/package.json'); pkg.scripts = pkg.scripts || {}; pkg.scripts.start = 'node server.js'; require('fs').writeFileSync('./deploy/package.json', JSON.stringify(pkg, null, 2));"
+            echo "✓ Updated package.json start script for standalone mode"
+          fi
+          
+          # Copy startup script (backup option)
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
           
