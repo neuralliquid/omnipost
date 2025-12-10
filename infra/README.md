@@ -11,6 +11,7 @@ This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**.
 **Fix**: Explicitly set `appCommandLine: 'node server.js'` in `main.bicep` for both production and staging slots.
 
 **Technical Details**:
+
 - Next.js standalone mode creates a minimal `server.js` that must be run directly
 - Azure's managed Node.js runtime ignores `WEBSITE_STARTUP_FILE` when `appCommandLine` is empty
 - Setting `appCommandLine` explicitly ensures the correct startup command is used
