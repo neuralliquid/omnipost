@@ -53,8 +53,8 @@ const FeatureFlagsManager: React.FC = () => {
         const flags = await apiClient.getFeatureFlags();
         setFeatureFlags(flags);
         setError(null);
-      } catch (err: any) {
-        setError(err.message || 'Failed to fetch feature flags');
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch feature flags');
         console.error('Error fetching feature flags:', err);
       } finally {
         setLoading(false);
@@ -77,14 +77,14 @@ const FeatureFlagsManager: React.FC = () => {
 
       // For textParser, we need to include the implementation
       if (feature === 'textParser') {
-        const implementation = (featureFlags.textParser as any).implementation;
-        await apiClient.updateFeatureFlag(feature, !isEnabled, implementation);
+        const textParserFlag = featureFlags.textParser as FeatureFlag & { implementation: 'deepseek' | 'openai' | 'azure' };
+        await apiClient.updateFeatureFlag(feature, !isEnabled, textParserFlag.implementation);
       } else {
         await apiClient.updateFeatureFlag(feature, !isEnabled);
       }
 
       // Update local state
-      setFeatureFlags(prev => {
+      setFeatureFlags((prev: FeatureFlags | null) => {
         if (!prev) return prev;
 
         if (typeof prev[feature] === 'boolean') {
@@ -99,8 +99,8 @@ const FeatureFlagsManager: React.FC = () => {
           };
         }
       });
-    } catch (err: any) {
-      setUpdateError(`Failed to update ${feature}: ${err.message}`);
+    } catch (err) {
+      setUpdateError(`Failed to update ${feature}: ${err instanceof Error ? err.message : 'Unknown error'}`);
       console.error(`Error updating ${feature}:`, err);
     } finally {
       setUpdating(null);
@@ -122,7 +122,7 @@ const FeatureFlagsManager: React.FC = () => {
       );
 
       // Update local state
-      setFeatureFlags(prev => {
+      setFeatureFlags((prev: FeatureFlags | null) => {
         if (!prev) return prev;
 
         return {
@@ -133,8 +133,8 @@ const FeatureFlagsManager: React.FC = () => {
           },
         };
       });
-    } catch (err: any) {
-      setUpdateError(`Failed to update textParser implementation: ${err.message}`);
+    } catch (err) {
+      setUpdateError(`Failed to update textParser implementation: ${err instanceof Error ? err.message : 'Unknown error'}`);
       console.error('Error updating textParser implementation:', err);
     } finally {
       setUpdating(null);
