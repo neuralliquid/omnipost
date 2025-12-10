@@ -8,7 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { isAuthenticated } from '@/app/api/_utils/auth';
-import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { checkRateLimitOrRespond, ErrorResponses, SuccessResponses } from '@/app/api/_utils/responses';
 import { formsClient } from '@/lib/data/forms';
 
@@ -42,47 +42,45 @@ interface RouteParams {
 /**
  * GET /api/forms/[id]
  * Get a form by ID
+ * Uses stricter PUBLIC_API rate limiting since this endpoint supports public access
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  try {
-    // Check if this is public access (embed/share)
-    const { searchParams } = new URL(request.url);
-    const isPublic = searchParams.get('public') === 'true';
+export const GET = withRateLimit(
+  async (request: NextRequest, ...args: unknown[]): Promise<Response> => {
+    try {
+      const { params } = args[0] as RouteParams;
+      
+      // Check if this is public access (embed/share)
+      const { searchParams } = new URL(request.url);
+      const isPublic = searchParams.get('public') === 'true';
 
-    // Use stricter rate limiting for public access to prevent abuse
-    const rateLimit = isPublic ? RateLimitPresets.PUBLIC_API : RateLimitPresets.GENERAL;
-    const rateLimitResponse = checkRateLimitOrRespond(
-      request,
-      isPublic ? '/api/forms/[id]/public' : '/api/forms/[id]',
-      rateLimit
-    );
-    if (rateLimitResponse) return rateLimitResponse;
+      if (!isPublic && !(await isAuthenticated())) {
+        return ErrorResponses.unauthorized();
+      }
 
-    if (!isPublic && !(await isAuthenticated())) {
-      return ErrorResponses.unauthorized();
+      const { id } = await params;
+      const form = await formsClient.getForm(id);
+      if (!form) {
+        return ErrorResponses.notFound('Form');
+      }
+
+      // For public access, only return published forms
+      if (isPublic && form.status !== 'published') {
+        return ErrorResponses.notFound('Form');
+      }
+
+      // Track view for public access
+      if (isPublic) {
+        await formsClient.trackView(id);
+      }
+
+      return SuccessResponses.ok({ form });
+    } catch (error) {
+      return ErrorResponses.internalError('Error fetching form:', error);
     }
-
-    const { id } = await params;
-    const form = await formsClient.getForm(id);
-    if (!form) {
-      return ErrorResponses.notFound('Form');
-    }
-
-    // For public access, only return published forms
-    if (isPublic && form.status !== 'published') {
-      return ErrorResponses.notFound('Form');
-    }
-
-    // Track view for public access
-    if (isPublic) {
-      await formsClient.trackView(id);
-    }
-
-    return SuccessResponses.ok({ form });
-  } catch (error) {
-    return ErrorResponses.internalError('Error fetching form:', error);
-  }
-}
+  },
+  '/api/forms/[id]',
+  RateLimitPresets.PUBLIC_API
+);
 
 /**
  * PATCH /api/forms/[id]
