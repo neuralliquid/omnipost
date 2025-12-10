@@ -6,6 +6,7 @@
 
 import { NextResponse } from 'next/server';
 import { sequencesClient } from '@/lib/data/sequences';
+import type { SequenceStatus } from '@/types/sequence';
 import {
   VALID_SEQUENCE_STATUSES,
   VALID_SEQUENCE_STEP_TYPES,
@@ -30,18 +31,21 @@ export const GET = withErrorHandling(async (request: Request) => {
 
   const { searchParams } = new URL(request.url);
 
-  const status = searchParams.get('status');
+  const statusParam = searchParams.get('status');
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
 
-  // Validate status if provided
-  if (status) {
-    const statusError = validateEnumField(status, VALID_SEQUENCE_STATUSES, 'status');
+  // Validate and type-assert status if provided
+  let status: SequenceStatus | undefined;
+  if (statusParam) {
+    const statusError = validateEnumField(statusParam, VALID_SEQUENCE_STATUSES, 'status');
     if (statusError) return statusError;
+    // Safe to cast after validation
+    status = statusParam as SequenceStatus;
   }
 
   const result = await sequencesClient.querySequences({
-    status: status || undefined,
+    status,
     page,
     pageSize: Math.min(pageSize, 50),
   });

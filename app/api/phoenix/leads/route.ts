@@ -55,8 +55,8 @@ const VALID_PHOENIX_BRANDS = ['skysnare', 'aeronet'] as const;
 // Zod schema for GET query validation
 const getPhoenixLeadsQuerySchema = z.object({
   brand: z.enum(VALID_PHOENIX_BRANDS).optional(),
-  segment: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
-  status: z.enum(VALID_LEAD_STATUSES as [string, ...string[]]).optional(),
+  segment: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
+  status: z.enum(VALID_LEAD_STATUSES as unknown as [string, ...string[]]).optional(),
   page: z.number().int().positive().default(1),
   limit: z.number().int().positive().max(100).default(20),
 });
@@ -260,7 +260,7 @@ export const GET = withAuthAndRateLimit(
     // Validate using Zod schema
     const parseResult = getPhoenixLeadsQuerySchema.safeParse(queryData);
     if (!parseResult.success) {
-      const errors = parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      const errors = parseResult.error.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
       return ErrorResponses.badRequest(errors.join('; '));
     }
 
@@ -302,6 +302,9 @@ export const GET = withAuthAndRateLimit(
       phoenixData: lead.customFields.phoenixData,
     }));
 
+    // Calculate total pages from pagination data
+    const totalPages = Math.ceil(result.pagination.total / result.pagination.pageSize);
+    
     // Return original pagination metadata from upstream with additional filtered count
     return NextResponse.json({
       success: true,
@@ -310,7 +313,7 @@ export const GET = withAuthAndRateLimit(
         page: result.pagination.page,
         limit: result.pagination.pageSize,
         total: result.pagination.total, // Total from upstream query
-        totalPages: result.pagination.totalPages, // Total pages from upstream
+        totalPages, // Calculated from total and pageSize
         filteredCount: filteredLeads.length, // Count after Phoenix/brand/segment filters
       },
       message: 'Phoenix leads retrieved successfully',
