@@ -53,8 +53,8 @@ export const ErrorResponses = {
   unauthorized: () =>
     NextResponse.json({ error: 'Authentication required' }, { status: 401 }),
 
-  forbidden: () =>
-    NextResponse.json({ error: 'Access denied' }, { status: 403 }),
+  forbidden: (message: string = 'Access denied') =>
+    NextResponse.json({ error: message }, { status: 403 }),
 
   notFound: (resource: string = 'Resource') =>
     NextResponse.json({ error: `${resource} not found` }, { status: 404 }),

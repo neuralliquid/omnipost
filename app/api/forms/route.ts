@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { formsClient } from '@/lib/data/forms';
 import {
@@ -21,6 +22,7 @@ import {
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
+import { sanitizeText } from '@/app/api/_utils/sanitize';
 import type { FormStatus, Form } from '@/types/survey';
 
 /**
@@ -42,8 +44,8 @@ export const GET = withErrorHandling(async (request: Request) => {
 
   const statusParam = searchParams.get('status');
   const typeParam = searchParams.get('type');
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+  const page = Number.parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
 
   // Validate and type-assert status if provided
   let status: FormStatus | undefined;
@@ -71,9 +73,38 @@ export const GET = withErrorHandling(async (request: Request) => {
   });
 
   return NextResponse.json({
-    forms: result.forms,
-    pagination: result.pagination,
+    success: true,
+    data: {
+      forms: result.forms,
+      pagination: result.pagination,
+    },
+    message: 'Forms retrieved successfully',
   });
+});
+
+// Zod schema for form field validation
+const formFieldSchema = z.object({
+  type: z.enum(VALID_FORM_FIELD_TYPES as [string, ...string[]]),
+  name: z.string().min(1, 'Field name is required').transform(sanitizeText),
+  label: z.string().min(1, 'Field label is required').transform(sanitizeText),
+  placeholder: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
+  helpText: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
+  required: z.boolean().optional(),
+  order: z.number().int().optional(),
+  validation: z.any().optional(),
+  options: z.any().optional(),
+  conditionalLogic: z.any().optional(),
+});
+
+// Zod schema for create form input
+const createFormSchema = z.object({
+  name: z.string().min(1, 'Form name is required').transform(sanitizeText),
+  type: z.enum(VALID_FORM_TYPES as [string, ...string[]]),
+  description: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
+  fields: z.array(formFieldSchema).min(1, 'At least one field is required'),
+  theme: z.any().optional(),
+  integrations: z.any().optional(),
+  tags: z.array(z.string()).optional(),
 });
 
 /**
@@ -96,57 +127,29 @@ export const POST = withErrorHandling(async (request: Request) => {
 
   const body = await request.json();
 
-  // Validate required fields
-  const requiredError = validateRequiredFields(body, ['name', 'type', 'fields']);
-  if (requiredError) return requiredError;
-
-  // Validate type
-  const typeError = validateEnumField(body.type, VALID_FORM_TYPES, 'type');
-  if (typeError) return typeError;
-
-  // Validate fields array
-  const arrayError = validateArrayField(body.fields, 'fields', 1);
-  if (arrayError) return arrayError;
-
-  // Validate each field
-  for (let i = 0; i < body.fields.length; i++) {
-    const field = body.fields[i];
-
-    // Validate field type
-    if (!field.type || !VALID_FORM_FIELD_TYPES.includes(field.type)) {
-      return ErrorResponses.badRequest(
-        `Field ${i + 1}: type must be one of: ${VALID_FORM_FIELD_TYPES.join(', ')}`
-      );
-    }
-
-    // Validate field name
-    if (!field.name?.trim()) {
-      return ErrorResponses.badRequest(`Field ${i + 1}: name is required`);
-    }
-
-    // Validate field label
-    if (!field.label?.trim()) {
-      return ErrorResponses.badRequest(`Field ${i + 1}: label is required`);
-    }
-
-    // Assign order if not provided
-    if (field.order === undefined) {
-      field.order = i + 1;
-    }
+  // Validate and sanitize using Zod schema
+  const parseResult = createFormSchema.safeParse(body);
+  if (!parseResult.success) {
+    const errors = parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+    return ErrorResponses.badRequest(errors.join('; '));
   }
 
-  const form = await formsClient.createForm(
-    {
-      name: body.name.trim(),
-      description: body.description?.trim(),
-      type: body.type,
-      fields: body.fields,
-      theme: body.theme,
-      integrations: body.integrations,
-      tags: body.tags,
-    },
-    authResult.userId
-  );
+  const sanitizedData = parseResult.data;
 
-  return NextResponse.json({ form }, { status: 201 });
+  // Assign order to fields if not provided
+  sanitizedData.fields = sanitizedData.fields.map((field, index) => ({
+    ...field,
+    order: field.order !== undefined ? field.order : index + 1,
+  }));
+
+  const form = await formsClient.createForm(sanitizedData, authResult.userId);
+
+  return NextResponse.json(
+    {
+      success: true,
+      data: { form },
+      message: 'Form created successfully',
+    },
+    { status: 201 }
+  );
 });
