@@ -193,10 +193,11 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
   };
 
   const handleTaskConfigChange = (key: string, value: unknown) => {
+    const prevTaskConfig = step.taskConfig ?? { title: '' };
     onChange({
       ...step,
       taskConfig: {
-        title: step.taskConfig?.title || '',
+        ...prevTaskConfig,
         [key]: value,
       },
     });
