@@ -457,6 +457,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         <span className={styles.stepIcon}>{getStepIcon()}</span>
 
         <select
+          aria-label="Step type"
           value={step.type}
           onChange={(e) => handleTypeChange(e.target.value as SequenceStepType)}
           className={styles.stepTypeSelect}
@@ -493,6 +494,8 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             className={styles.stepActionButton}
+            aria-label={isExpanded ? 'Collapse step' : 'Expand step'}
+            aria-expanded={isExpanded}
           >
             {isExpanded ? '−' : '+'}
           </button>
@@ -500,7 +503,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
             type="button"
             onClick={onDelete}
             className={`${styles.stepActionButton} ${styles.deleteStepButton}`}
-            title="Delete step"
+            aria-label="Delete step"
           >
             ×
           </button>
