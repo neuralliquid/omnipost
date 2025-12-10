@@ -9,8 +9,35 @@ export type ReviewStep =
   | 'approving'
   | 'approved';
 
-interface ApiResponse {
-  data: any;
+interface ParsedData {
+  [key: string]: unknown;
+}
+
+interface SummaryData {
+  [key: string]: unknown;
+}
+
+interface ImageData {
+  [key: string]: unknown;
+}
+
+interface ParseApiResponse {
+  data: ParsedData;
+  message?: string;
+}
+
+interface SummarizeApiResponse {
+  data: SummaryData;
+  message?: string;
+}
+
+interface ImageApiResponse {
+  data: ImageData;
+  message?: string;
+}
+
+interface ApproveApiResponse {
+  data: unknown;
   message?: string;
 }
 
@@ -19,9 +46,9 @@ interface ApiResponse {
  */
 export function useReviewProcess() {
   const [rawInput, setRawInput] = useState<string>('');
-  const [parsedData, setParsedData] = useState<any>(null);
-  const [summary, setSummary] = useState<any>(null);
-  const [image, setImage] = useState<any>(null);
+  const [parsedData, setParsedData] = useState<ParsedData | null>(null);
+  const [summary, setSummary] = useState<SummaryData | null>(null);
+  const [image, setImage] = useState<ImageData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [currentStep, setCurrentStep] = useState<ReviewStep>('input');
@@ -36,8 +63,8 @@ export function useReviewProcess() {
     setIsLoading(true);
     setCurrentStep('parsing');
     try {
-      const response = await axios.post<ApiResponse>('/api/parse', { rawInput });
-      setParsedData(response.data);
+      const response = await axios.post<ParseApiResponse>('/api/parse', { rawInput });
+      setParsedData(response.data.data);
       setCurrentStep('summarizing');
     } catch (err) {
       handleError(err);
@@ -50,8 +77,10 @@ export function useReviewProcess() {
   const generateSummary = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApiResponse>('/api/summarize', { rawText: parsedData });
-      setSummary(response.data);
+      const response = await axios.post<SummarizeApiResponse>('/api/summarize', {
+        rawText: parsedData,
+      });
+      setSummary(response.data.data);
       setCurrentStep('generating');
     } catch (err) {
       handleError(err);
@@ -64,8 +93,10 @@ export function useReviewProcess() {
   const generateImage = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApiResponse>('/api/generate-image', { context: summary });
-      setImage(response.data);
+      const response = await axios.post<ImageApiResponse>('/api/generate-image', {
+        context: summary,
+      });
+      setImage(response.data.data);
       setCurrentStep('approving');
     } catch (err) {
       handleError(err);
@@ -78,8 +109,11 @@ export function useReviewProcess() {
   const approveContent = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApiResponse>('/api/approve-content', { summary, image });
-      console.log('Content approved:', response.data);
+      const response = await axios.post<ApproveApiResponse>('/api/approve-content', {
+        summary,
+        image,
+      });
+      console.error('Content approved:', response.data);
       setCurrentStep('approved');
     } catch (err) {
       handleError(err);
@@ -109,7 +143,7 @@ export function useReviewProcess() {
   };
 
   // Error handling helper
-  const handleError = (err: any) => {
+  const handleError = (err: unknown) => {
     if (axios.isAxiosError(err)) {
       setError(err.response?.data?.message || err.message);
     } else if (err instanceof Error) {

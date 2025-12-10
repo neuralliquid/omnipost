@@ -2,8 +2,15 @@ import React, { useState } from 'react';
 import { apiClient } from '../../lib/api-client';
 import { useRouter } from 'next/router';
 
+interface User {
+  id: string;
+  name: string;
+  username: string;
+  role: string;
+}
+
 interface LoginFormProps {
-  onLoginSuccess?: (user: any) => void;
+  onLoginSuccess?: (user: User) => void;
   redirectPath?: string;
 }
 
@@ -43,8 +50,9 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess, redirectPath = '/
       } else {
         setError('Invalid response from server');
       }
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Login failed';
+      setError(errorMessage);
       console.error('Login error:', err);
     } finally {
       setLoading(false);

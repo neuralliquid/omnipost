@@ -37,8 +37,9 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
       } else {
         setError('Failed to generate summary: Invalid response format');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to summarize text');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to summarize text';
+      setError(errorMessage);
       console.error('Error summarizing text:', err);
     } finally {
       setLoading(false);
@@ -59,8 +60,9 @@ const TextSummarizer: React.FC<TextSummarizerProps> = ({ onSummarize }) => {
       // Use the API client to approve the summary
       await apiClient.approveSummary(summary);
       setSummaryApproved(true);
-    } catch (err: any) {
-      setError(err.message || 'Failed to approve summary');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to approve summary';
+      setError(errorMessage);
       console.error('Error approving summary:', err);
     } finally {
       setLoading(false);
