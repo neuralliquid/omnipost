@@ -341,6 +341,7 @@ export async function GET(request: NextRequest) {
 
 - Check existing [documentation](./docs/)
 - Review [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md)
+- Check [Copilot Instructions](./.github/copilot-instructions.md) for comprehensive coding guidelines
 - Look at existing code for examples
 - Open an issue for questions or problems
 

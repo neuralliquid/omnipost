@@ -385,6 +385,7 @@ Tests are organized to mirror the source code structure in the `__tests__/` dire
 - **[Architecture Guide](./docs/ARCHITECTURE.md)** - Technical architecture and design
 - **[Project Structure](./PROJECT_STRUCTURE.md)** - Directory organization
 - **[Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
+- **[Copilot Instructions](./.github/copilot-instructions.md)** - Guidelines for GitHub Copilot
 - **[API Best Practices](./docs/api/next-api-best-practices.md)** - API development guidelines
 - **[Security Policy](./SECURITY.md)** - Security and vulnerability reporting
 
