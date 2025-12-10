@@ -6,6 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { isAuthenticated } from '@/app/api/_utils/auth';
 import { checkRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { formsClient } from '@/lib/data/forms';
@@ -13,6 +14,29 @@ import type { FormStatus } from '@/types/survey';
 
 // Valid status values
 const VALID_STATUSES: FormStatus[] = ['draft', 'published', 'closed', 'archived'];
+
+// Zod schema for form update validation
+const updateFormSchema = z.object({
+  name: z.string().trim().min(1).max(200).optional(),
+  description: z.string().trim().max(2000).optional(),
+  status: z.enum(['draft', 'published', 'closed', 'archived']).optional(),
+  theme: z.object({
+    primaryColor: z.string().optional(),
+    fontFamily: z.string().optional(),
+    logoUrl: z.string().url().optional(),
+  }).passthrough().optional(),
+  completionSettings: z.object({
+    redirectUrl: z.string().url().optional(),
+    showConfirmation: z.boolean().optional(),
+    confirmationMessage: z.string().optional(),
+  }).passthrough().optional(),
+  notificationSettings: z.object({
+    notifyOnSubmission: z.boolean().optional(),
+    notificationEmails: z.array(z.string().email()).optional(),
+  }).passthrough().optional(),
+  integrations: z.record(z.unknown()).optional(),
+  tags: z.array(z.string()).optional(),
+}).strict();
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -78,8 +102,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  * PATCH /api/forms/[id]
  * Update a form
  */
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
+    // Rate limiting
+    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/patch', RateLimitPresets.GENERAL);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     if (!(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -92,13 +134,22 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       return NextResponse.json({ error: 'Form not found' }, { status: 404 });
     }
 
-    const body = await request.json();
-
-    // Validate status if provided
-    if (body.status && !VALID_STATUSES.includes(body.status)) {
-      return NextResponse.json({
-        error: `status must be one of: ${VALID_STATUSES.join(', ')}`
-      }, { status: 400 });
+    // Parse and validate request body with Zod
+    let body: z.infer<typeof updateFormSchema>;
+    try {
+      const rawBody = await request.json();
+      body = updateFormSchema.parse(rawBody);
+    } catch (zodError) {
+      if (zodError instanceof z.ZodError) {
+        return NextResponse.json({
+          error: 'Validation failed',
+          details: zodError.errors.map(e => ({
+            path: e.path.join('.'),
+            message: e.message,
+          })),
+        }, { status: 400 });
+      }
+      throw zodError;
     }
 
     // Cannot publish a form without fields
@@ -109,8 +160,8 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     }
 
     const form = await formsClient.updateForm(id, {
-      name: body.name?.trim(),
-      description: body.description?.trim(),
+      name: body.name,
+      description: body.description,
       status: body.status,
       theme: body.theme,
       completionSettings: body.completionSettings,
@@ -131,8 +182,26 @@ export async function PATCH(request: Request, { params }: RouteParams) {
  * DELETE /api/forms/[id]
  * Delete a form
  */
-export async function DELETE(_request: Request, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    // Rate limiting
+    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/delete', RateLimitPresets.GENERAL);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     if (!(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }

@@ -458,7 +458,7 @@ export class SequenceEngine {
           result = await this.linkedInActions.viewProfile(lead.contact.linkedinUrl);
           break;
 
-        case 'linkedin_connection':
+        case 'linkedin_connection': {
           const connectionMessage = config?.message
             ? this.personalizeContent(config.message, lead)
             : undefined;
@@ -467,8 +467,9 @@ export class SequenceEngine {
             connectionMessage
           );
           break;
+        }
 
-        case 'linkedin_message':
+        case 'linkedin_message': {
           if (!config?.message) {
             return {
               success: false,
@@ -481,6 +482,7 @@ export class SequenceEngine {
           const message = this.personalizeContent(config.message, lead);
           result = await this.linkedInActions.sendMessage(lead.contact.linkedinUrl, message);
           break;
+        }
 
         case 'linkedin_endorse':
           result = await this.linkedInActions.endorseSkills(
@@ -855,12 +857,13 @@ export class SequenceEngine {
 
   /**
    * Personalize content with lead data
+   * Uses split/join instead of RegExp to prevent ReDoS attacks
    */
   private personalizeContent(content: string, lead: Lead): string {
     const replacements: Record<string, string> = {
-      '{{firstName}}': lead.firstName,
-      '{{lastName}}': lead.lastName,
-      '{{fullName}}': lead.fullName,
+      '{{firstName}}': lead.firstName || '',
+      '{{lastName}}': lead.lastName || '',
+      '{{fullName}}': lead.fullName || '',
       '{{title}}': lead.title || '',
       '{{company}}': lead.company?.name || '',
       '{{email}}': lead.contact.email || '',
@@ -869,7 +872,8 @@ export class SequenceEngine {
 
     let result = content;
     for (const [placeholder, value] of Object.entries(replacements)) {
-      result = result.replace(new RegExp(placeholder, 'g'), value);
+      // Use split/join for safe string replacement (avoids regex ReDoS)
+      result = result.split(placeholder).join(String(value));
     }
 
     return result;

@@ -16,6 +16,15 @@ import {
 } from '../../types/sequence';
 
 /**
+ * Escape a string value for use in Airtable formula
+ * Prevents formula injection by escaping special characters
+ */
+function escapeAirtableFormulaValue(value: string): string {
+  // Escape single quotes by doubling them and escape backslashes
+  return value.replace(/\\/g, '\\\\').replace(/'/g, "''");
+}
+
+/**
  * Pagination interface
  */
 export interface SequencePagination {
@@ -255,8 +264,9 @@ export class SequencesClient {
       const record = await this.sequencesTable!.find(id);
 
       // Fetch steps for this sequence
+      const escapedId = escapeAirtableFormulaValue(id);
       const stepsRecords = await this.stepsTable!.select({
-        filterByFormula: `{SequenceId} = '${id}'`,
+        filterByFormula: `{SequenceId} = '${escapedId}'`,
         sort: [{ field: 'Order', direction: 'asc' }],
       } as any).all();
 
@@ -576,14 +586,16 @@ export class SequencesClient {
     }
 
     try {
+      const escapedSequenceId = escapeAirtableFormulaValue(sequenceId);
+      const escapedLeadId = escapeAirtableFormulaValue(leadId);
       const records = await this.enrollmentsTable!.select({
-        filterByFormula: `AND({SequenceId} = '${sequenceId}', {LeadId} = '${leadId}')`,
+        filterByFormula: `AND({SequenceId} = '${escapedSequenceId}', {LeadId} = '${escapedLeadId}')`,
         maxRecords: 1,
       } as any).all();
 
       if (records.length === 0) return null;
       return this.recordToEnrollment(records[0]);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching enrollment:', error);
       return null;
     }
@@ -732,9 +744,9 @@ export class SequencesClient {
     try {
       const record = await this.enrollmentsTable!.update(enrollmentId, fields);
       return this.recordToEnrollment(record);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error advancing enrollment:', error);
-      throw new Error('Failed to advance enrollment');
+      throw new Error(`Failed to advance enrollment: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

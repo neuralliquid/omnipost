@@ -463,12 +463,23 @@ export interface LinkedInImportConfig {
 }
 
 /**
+ * Helper to add delay between API calls
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
  * Import leads from LinkedIn search
  */
 export async function importFromLinkedIn(
   client: LinkedInProspectingClient,
-  config: LinkedInImportConfig,
-  createLead: (input: CreateLeadInput, createdBy: string) => Promise<Lead>
+  config: LinkedInImportConfig & {
+    createdBy?: string;
+    rateLimitMs?: number;
+  },
+  createLead: (input: CreateLeadInput, createdBy: string) => Promise<Lead>,
+  findExistingLead?: (linkedinId: string, email?: string) => Promise<boolean>
 ): Promise<{
   imported: number;
   skipped: number;
@@ -480,6 +491,9 @@ export async function importFromLinkedIn(
     errors: [] as Array<{ profile: string; error: string }>,
   };
 
+  const createdBy = config.createdBy || 'linkedin_import';
+  const rateLimitMs = config.rateLimitMs || 200; // Default 200ms between calls
+
   try {
     const searchResult = await client.searchProfiles({
       ...config.searchParams,
@@ -488,22 +502,37 @@ export async function importFromLinkedIn(
 
     for (const profile of searchResult.profiles) {
       try {
+        // Check for duplicates if lookup function is provided
+        if (findExistingLead) {
+          const primaryEmail = profile.emails?.[0];
+          const exists = await findExistingLead(profile.id, primaryEmail);
+          if (exists) {
+            results.skipped++;
+            continue;
+          }
+        }
+
         const leadInput = client.profileToLeadInput(profile);
 
         if (config.defaultTags) {
           leadInput.tags = config.defaultTags;
         }
 
-        await createLead(leadInput, 'linkedin_import');
+        await createLead(leadInput, createdBy);
         results.imported++;
-      } catch (error) {
+
+        // Rate limiting between API calls
+        if (rateLimitMs > 0) {
+          await sleep(rateLimitMs);
+        }
+      } catch (error: unknown) {
         results.errors.push({
           profile: `${profile.firstName} ${profile.lastName}`,
           error: error instanceof Error ? error.message : 'Unknown error',
         });
       }
     }
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('LinkedIn import error:', error);
     throw error;
   }

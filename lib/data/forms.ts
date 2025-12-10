@@ -291,11 +291,11 @@ export class FormsClient {
     if (input.tags !== undefined) fields.Tags = input.tags.join(',');
 
     try {
-      await this.formsTable!.update(id, fields);
+      await this.formsTable!.update(id, fields as Record<string, unknown>);
       return (await this.getForm(id))!;
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error updating form:', error);
-      throw new Error('Failed to update form');
+      throw new Error(`Failed to update form: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
