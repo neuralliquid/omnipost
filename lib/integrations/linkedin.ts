@@ -207,11 +207,12 @@ export class LinkedInProspectingClient {
 
     try {
       const response = await this.makeRequest('/people', queryParams);
+      const paging = response.paging as { total?: number; start?: number; count?: number } | undefined;
 
       return {
         profiles: (response.elements || []).map((p: Record<string, unknown>) => this.normalizeProfile(p)),
-        total: response.paging?.total || 0,
-        hasMore: (response.paging?.start || 0) + (response.paging?.count || 0) < (response.paging?.total || 0),
+        total: paging?.total || 0,
+        hasMore: (paging?.start || 0) + (paging?.count || 0) < (paging?.total || 0),
       };
     } catch {
       // Fallback for when search API is not available

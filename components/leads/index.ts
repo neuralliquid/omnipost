@@ -4,6 +4,6 @@
  */
 
 export { LeadCard } from './LeadCard';
-export { LeadBadges, StatusBadge, TemperatureBadge, ScoreBadge, TagBadge, SourceBadge } from './LeadBadges';
+export { LeadStatusBadge, LeadTemperatureBadge, LeadScoreBadge, TagBadge, SourceBadge } from './LeadBadges';
 export { LeadList } from './LeadList';
 export { LeadForm } from './LeadForm';

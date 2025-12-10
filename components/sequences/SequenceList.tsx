@@ -89,7 +89,14 @@ export const SequenceList: React.FC<SequenceListProps> = ({
         steps: sequence.steps.map(step => ({
           type: step.type,
           order: step.order,
-          config: step.config,
+          name: step.name,
+          enabled: step.enabled,
+          emailConfig: step.emailConfig,
+          linkedinConfig: step.linkedinConfig,
+          waitConfig: step.waitConfig,
+          taskConfig: step.taskConfig,
+          callConfig: step.callConfig,
+          conditionConfig: step.conditionConfig,
         })),
         schedule: sequence.schedule,
         stopOnReply: sequence.stopOnReply,
@@ -138,8 +145,8 @@ export const SequenceList: React.FC<SequenceListProps> = ({
     const stats = {
       total: sequences.length,
       active: sequences.filter(s => s.status === 'active').length,
-      totalEnrolled: sequences.reduce((sum, s) => sum + s.metrics.enrolledCount, 0),
-      totalReplies: sequences.reduce((sum, s) => sum + s.metrics.replies, 0),
+      totalEnrolled: sequences.reduce((sum, s) => sum + s.metrics.totalEnrolled, 0),
+      totalReplies: sequences.reduce((sum, s) => sum + s.metrics.repliedLeads, 0),
     };
     return stats;
   };

@@ -3,79 +3,93 @@
  * Pre-built form templates for SkySnare and AeroNet lead capture
  */
 
-import type { CreateFormInput, FormField } from '@/types/survey';
-import type { PhoenixBrand, SkySnareSegment, AeroNetSegment } from '@/types/phoenix-rooivalk';
+import type { CreateFormInput, FormField, FieldOption } from '@/types/survey';
+import type { PhoenixBrand } from '@/types/phoenix-rooivalk';
+
+type FormFieldInput = Omit<FormField, 'id' | 'createdAt' | 'updatedAt'>;
+
+/**
+ * Helper to create options with proper structure
+ */
+function createOptions(options: { value: string; label: string }[]): FieldOption[] {
+  return options.map((opt, index) => ({
+    id: `opt-${opt.value}`,
+    label: opt.label,
+    value: opt.value,
+    order: index,
+  }));
+}
 
 /**
  * Common contact fields
  */
-const CONTACT_FIELDS: FormField[] = [
+const CONTACT_FIELDS: FormFieldInput[] = [
   {
-    id: 'firstName',
     type: 'text',
+    name: 'firstName',
     label: 'First Name',
-    required: true,
     placeholder: 'John',
     order: 0,
+    validation: { required: true },
   },
   {
-    id: 'lastName',
     type: 'text',
+    name: 'lastName',
     label: 'Last Name',
-    required: true,
     placeholder: 'Smith',
     order: 1,
+    validation: { required: true },
   },
   {
-    id: 'email',
     type: 'email',
+    name: 'email',
     label: 'Work Email',
-    required: true,
     placeholder: 'john@company.com',
     order: 2,
+    validation: { required: true },
   },
   {
-    id: 'phone',
     type: 'phone',
+    name: 'phone',
     label: 'Phone Number',
-    required: false,
     placeholder: '+1 (555) 123-4567',
     order: 3,
+    validation: { required: false },
   },
   {
-    id: 'company',
     type: 'text',
+    name: 'company',
     label: 'Company/Organization',
-    required: true,
     placeholder: 'Acme Inc.',
     order: 4,
+    validation: { required: true },
   },
   {
-    id: 'title',
     type: 'text',
+    name: 'title',
     label: 'Job Title',
-    required: false,
     placeholder: 'Director of Operations',
     order: 5,
+    validation: { required: false },
   },
 ];
 
 /**
  * SkySnare segment options
  */
-const SKYSNARE_SEGMENT_OPTIONS = [
+const SKYSNARE_SEGMENT_OPTIONS = createOptions([
   { value: 'sports_enthusiast', label: 'Sports Enthusiast / Hobbyist' },
   { value: 'training_facility', label: 'Training Facility' },
   { value: 'sports_club', label: 'Sports Club / League' },
   { value: 'event_organizer', label: 'Event Organizer' },
   { value: 'educational', label: 'Educational Institution' },
   { value: 'recreational', label: 'Recreational User' },
-];
+]);
 
 /**
  * AeroNet segment options
  */
-const AERONET_SEGMENT_OPTIONS = [
+const AERONET_SEGMENT_OPTIONS = createOptions([
   { value: 'airport', label: 'Airport' },
   { value: 'critical_infrastructure', label: 'Critical Infrastructure' },
   { value: 'government', label: 'Government Agency' },
@@ -85,7 +99,7 @@ const AERONET_SEGMENT_OPTIONS = [
   { value: 'port_maritime', label: 'Port / Maritime' },
   { value: 'energy_utility', label: 'Energy / Utility' },
   { value: 'data_center', label: 'Data Center' },
-];
+]);
 
 /**
  * SkySnare Form Templates
@@ -101,54 +115,42 @@ export const SKYSNARE_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'What best describes you?',
-        required: true,
         options: SKYSNARE_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'useCase',
         type: 'textarea',
+        name: 'useCase',
         label: 'How do you plan to use SkySnare?',
-        required: false,
         placeholder: 'Tell us about your training needs...',
         order: 7,
+        validation: { required: false },
       },
       {
-        id: 'timeline',
         type: 'select',
+        name: 'timeline',
         label: 'When are you looking to get started?',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'immediate', label: 'As soon as possible' },
           { value: '1_3_months', label: 'Within 1-3 months' },
           { value: '3_6_months', label: 'Within 3-6 months' },
           { value: 'researching', label: 'Just researching' },
-        ],
+        ]),
         order: 8,
+        validation: { required: true },
       },
       {
-        id: 'marketingConsent',
         type: 'checkbox',
+        name: 'marketingConsent',
         label: 'I agree to receive marketing communications from SkySnare',
-        required: false,
         order: 9,
+        validation: { required: false },
       },
     ],
-    settings: {
-      submitButtonText: 'Request Demo',
-      successMessage: 'Thank you! Our team will contact you within 24 hours to schedule your demo.',
-      notifyEmail: 'sales@skysnare.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['skysnare', 'demo-request'],
-      sequenceId: 'skysnare-demo-followup',
-    },
   },
 
   /**
@@ -161,54 +163,43 @@ export const SKYSNARE_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'What best describes you?',
-        required: true,
         options: SKYSNARE_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'inquiryType',
         type: 'select',
+        name: 'inquiryType',
         label: 'How can we help?',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'product_info', label: 'Product Information' },
           { value: 'pricing', label: 'Pricing' },
           { value: 'partnership', label: 'Partnership Opportunity' },
           { value: 'support', label: 'Customer Support' },
           { value: 'other', label: 'Other' },
-        ],
+        ]),
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'message',
         type: 'textarea',
+        name: 'message',
         label: 'Your Message',
-        required: true,
         placeholder: 'Tell us how we can help...',
         order: 8,
+        validation: { required: true },
       },
       {
-        id: 'marketingConsent',
         type: 'checkbox',
+        name: 'marketingConsent',
         label: 'I agree to receive updates from SkySnare',
-        required: false,
         order: 9,
+        validation: { required: false },
       },
     ],
-    settings: {
-      submitButtonText: 'Send Message',
-      successMessage: 'Thank you for reaching out! We\'ll get back to you within 1-2 business days.',
-      notifyEmail: 'info@skysnare.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['skysnare', 'inquiry'],
-    },
   },
 
   /**
@@ -220,45 +211,35 @@ export const SKYSNARE_FORMS: Record<string, CreateFormInput> = {
     type: 'form',
     fields: [
       {
-        id: 'email',
         type: 'email',
+        name: 'email',
         label: 'Email Address',
-        required: true,
         placeholder: 'you@example.com',
         order: 0,
+        validation: { required: true },
       },
       {
-        id: 'firstName',
         type: 'text',
+        name: 'firstName',
         label: 'First Name',
-        required: false,
         placeholder: 'John',
         order: 1,
+        validation: { required: false },
       },
       {
-        id: 'interests',
         type: 'multiselect',
+        name: 'interests',
         label: 'What interests you most?',
-        required: false,
-        options: [
+        options: createOptions([
           { value: 'product_updates', label: 'Product Updates' },
           { value: 'training_tips', label: 'Training Tips' },
           { value: 'events', label: 'Events & Competitions' },
           { value: 'industry_news', label: 'Industry News' },
-        ],
+        ]),
         order: 2,
+        validation: { required: false },
       },
     ],
-    settings: {
-      submitButtonText: 'Subscribe',
-      successMessage: 'Welcome to the SkySnare community! Check your inbox for a confirmation email.',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'content_engagement',
-      defaultTags: ['skysnare', 'newsletter'],
-    },
   },
 
   /**
@@ -271,62 +252,50 @@ export const SKYSNARE_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'Organization Type',
-        required: true,
         options: SKYSNARE_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'facilitySize',
         type: 'select',
+        name: 'facilitySize',
         label: 'Facility Size',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'small', label: 'Small (under 5,000 sq ft)' },
           { value: 'medium', label: 'Medium (5,000 - 20,000 sq ft)' },
           { value: 'large', label: 'Large (over 20,000 sq ft)' },
           { value: 'outdoor', label: 'Outdoor Facility' },
-        ],
+        ]),
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'participantCount',
         type: 'number',
+        name: 'participantCount',
         label: 'Average Participants Per Session',
-        required: false,
         placeholder: '10',
         order: 8,
+        validation: { required: false },
       },
       {
-        id: 'currentEquipment',
         type: 'textarea',
+        name: 'currentEquipment',
         label: 'What equipment do you currently use?',
-        required: false,
         placeholder: 'Describe your current training setup...',
         order: 9,
+        validation: { required: false },
       },
       {
-        id: 'marketingConsent',
         type: 'checkbox',
+        name: 'marketingConsent',
         label: 'I agree to receive communications about my trial',
-        required: true,
         order: 10,
+        validation: { required: true },
       },
     ],
-    settings: {
-      submitButtonText: 'Request Free Trial',
-      successMessage: 'Your trial request has been submitted! Our team will contact you within 24 hours.',
-      notifyEmail: 'trials@skysnare.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['skysnare', 'trial-request', 'high-intent'],
-      sequenceId: 'skysnare-demo-followup',
-    },
   },
 };
 
@@ -344,95 +313,83 @@ export const AERONET_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'Organization Type',
-        required: true,
         options: AERONET_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'orgType',
         type: 'select',
+        name: 'orgType',
         label: 'Organization Classification',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'government', label: 'Government' },
           { value: 'private', label: 'Private Sector' },
           { value: 'military', label: 'Military/Defense' },
           { value: 'quasi_government', label: 'Quasi-Government' },
-        ],
+        ]),
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'securityClearance',
         type: 'select',
+        name: 'securityClearance',
         label: 'Do you have security clearance?',
-        required: false,
-        options: [
+        options: createOptions([
           { value: 'yes', label: 'Yes' },
           { value: 'no', label: 'No' },
           { value: 'prefer_not_to_say', label: 'Prefer not to say' },
-        ],
+        ]),
         order: 8,
+        validation: { required: false },
       },
       {
-        id: 'briefingTopics',
         type: 'multiselect',
+        name: 'briefingTopics',
         label: 'Topics of Interest',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'detection', label: 'Detection Capabilities' },
           { value: 'response', label: 'Response Mechanisms' },
           { value: 'integration', label: 'System Integration' },
           { value: 'compliance', label: 'Compliance & Regulatory' },
           { value: 'evidence', label: 'Evidence Management' },
           { value: 'pricing', label: 'Pricing & Deployment' },
-        ],
+        ]),
         order: 9,
+        validation: { required: true },
       },
       {
-        id: 'timeline',
         type: 'select',
+        name: 'timeline',
         label: 'Procurement Timeline',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'immediate', label: 'Immediate need' },
           { value: 'q1', label: 'This quarter' },
           { value: 'q2', label: 'Next quarter' },
           { value: 'next_fiscal_year', label: 'Next fiscal year' },
           { value: 'evaluating', label: 'Just evaluating' },
-        ],
+        ]),
         order: 10,
+        validation: { required: true },
       },
       {
-        id: 'additionalInfo',
         type: 'textarea',
+        name: 'additionalInfo',
         label: 'Additional Information',
-        required: false,
         placeholder: 'Any specific requirements or questions...',
         order: 11,
+        validation: { required: false },
       },
       {
-        id: 'privacyConsent',
         type: 'checkbox',
+        name: 'privacyConsent',
         label: 'I acknowledge that this briefing may contain confidential information',
-        required: true,
         order: 12,
+        validation: { required: true },
       },
     ],
-    settings: {
-      submitButtonText: 'Request Briefing',
-      successMessage: 'Thank you. A member of our enterprise team will contact you within 24-48 hours to schedule your briefing.',
-      notifyEmail: 'enterprise@aeronet.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['aeronet', 'technical-briefing', 'enterprise'],
-      sequenceId: 'aeronet-enterprise-cold-outreach',
-    },
   },
 
   /**
@@ -445,106 +402,94 @@ export const AERONET_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'Facility Type',
-        required: true,
         options: AERONET_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'coverageArea',
         type: 'text',
+        name: 'coverageArea',
         label: 'Coverage Area Required',
-        required: true,
         placeholder: 'e.g., 5 square miles',
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'existingSystems',
         type: 'multiselect',
+        name: 'existingSystems',
         label: 'Existing Security Systems',
-        required: false,
-        options: [
+        options: createOptions([
           { value: 'radar', label: 'Radar Systems' },
           { value: 'camera', label: 'Camera/CCTV' },
           { value: 'access_control', label: 'Access Control' },
           { value: 'perimeter', label: 'Perimeter Detection' },
           { value: 'siem', label: 'SIEM' },
           { value: 'other', label: 'Other' },
-        ],
+        ]),
         order: 8,
+        validation: { required: false },
       },
       {
-        id: 'incidentHistory',
         type: 'select',
+        name: 'incidentHistory',
         label: 'Have you experienced drone-related incidents?',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'yes_recent', label: 'Yes, within the last year' },
           { value: 'yes_past', label: 'Yes, more than a year ago' },
           { value: 'no', label: 'No' },
-          { value: 'concerned', label: 'No, but we\'re concerned about threats' },
-        ],
+          { value: 'concerned', label: "No, but we're concerned about threats" },
+        ]),
         order: 9,
+        validation: { required: true },
       },
       {
-        id: 'budgetRange',
         type: 'select',
+        name: 'budgetRange',
         label: 'Approximate Budget Range',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'under_100k', label: 'Under $100,000' },
           { value: '100k_500k', label: '$100,000 - $500,000' },
           { value: '500k_1m', label: '$500,000 - $1,000,000' },
           { value: '1m_5m', label: '$1,000,000 - $5,000,000' },
           { value: 'over_5m', label: 'Over $5,000,000' },
-        ],
+        ]),
         order: 10,
+        validation: { required: true },
       },
       {
-        id: 'decisionMakers',
         type: 'textarea',
+        name: 'decisionMakers',
         label: 'Key Decision Makers',
-        required: false,
         placeholder: 'Who else will be involved in the evaluation?',
         order: 11,
+        validation: { required: false },
       },
       {
-        id: 'complianceRequirements',
         type: 'multiselect',
+        name: 'complianceRequirements',
         label: 'Compliance Requirements',
-        required: false,
-        options: [
+        options: createOptions([
           { value: 'faa_regulations', label: 'FAA Regulations' },
           { value: 'dhs_requirements', label: 'DHS Requirements' },
           { value: 'military_standards', label: 'Military Standards' },
           { value: 'iso_27001', label: 'ISO 27001' },
           { value: 'soc2', label: 'SOC 2' },
           { value: 'gdpr', label: 'GDPR' },
-        ],
+        ]),
         order: 12,
+        validation: { required: false },
       },
       {
-        id: 'nda',
         type: 'checkbox',
+        name: 'nda',
         label: 'I am prepared to sign an NDA for detailed technical discussions',
-        required: true,
         order: 13,
+        validation: { required: true },
       },
     ],
-    settings: {
-      submitButtonText: 'Submit Application',
-      successMessage: 'Your pilot program application has been received. An enterprise account manager will contact you within 48 hours.',
-      notifyEmail: 'pilots@aeronet.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['aeronet', 'pilot-application', 'high-value'],
-      sequenceId: 'aeronet-pilot-program',
-    },
   },
 
   /**
@@ -557,54 +502,43 @@ export const AERONET_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'Organization Type',
-        required: true,
         options: AERONET_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'partnerType',
         type: 'select',
+        name: 'partnerType',
         label: 'Partnership Interest',
-        required: true,
-        options: [
+        options: createOptions([
           { value: 'integrator', label: 'Systems Integrator' },
           { value: 'reseller', label: 'Authorized Reseller' },
           { value: 'technology', label: 'Technology Partner' },
           { value: 'consulting', label: 'Security Consulting' },
           { value: 'government', label: 'Government Contractor' },
-        ],
+        ]),
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'reason',
         type: 'textarea',
+        name: 'reason',
         label: 'Why are you requesting partner access?',
-        required: true,
         placeholder: 'Describe your partnership interest...',
         order: 8,
+        validation: { required: true },
       },
       {
-        id: 'ndaSigned',
         type: 'checkbox',
+        name: 'ndaSigned',
         label: 'I understand that partner access requires NDA execution',
-        required: true,
         order: 9,
+        validation: { required: true },
       },
     ],
-    settings: {
-      submitButtonText: 'Request Access',
-      successMessage: 'Your access request is being reviewed. You will receive a response within 3-5 business days.',
-      notifyEmail: 'partners@aeronet.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['aeronet', 'partner-request'],
-    },
   },
 
   /**
@@ -617,65 +551,53 @@ export const AERONET_FORMS: Record<string, CreateFormInput> = {
     fields: [
       ...CONTACT_FIELDS,
       {
-        id: 'segment',
         type: 'select',
+        name: 'segment',
         label: 'Facility Type',
-        required: true,
         options: AERONET_SEGMENT_OPTIONS,
         order: 6,
+        validation: { required: true },
       },
       {
-        id: 'facilityLocation',
         type: 'text',
+        name: 'facilityLocation',
         label: 'Facility Location (City, State/Country)',
-        required: true,
         placeholder: 'New York, NY',
         order: 7,
+        validation: { required: true },
       },
       {
-        id: 'facilitySize',
         type: 'text',
+        name: 'facilitySize',
         label: 'Facility Size',
-        required: true,
         placeholder: 'e.g., 500 acres, 2 square miles',
         order: 8,
+        validation: { required: true },
       },
       {
-        id: 'preferredDates',
         type: 'textarea',
+        name: 'preferredDates',
         label: 'Preferred Assessment Dates',
-        required: false,
         placeholder: 'List any preferred dates or date ranges...',
         order: 9,
+        validation: { required: false },
       },
       {
-        id: 'specialRequirements',
         type: 'textarea',
+        name: 'specialRequirements',
         label: 'Special Requirements or Restrictions',
-        required: false,
         placeholder: 'Security clearance requirements, access restrictions, etc.',
         order: 10,
+        validation: { required: false },
       },
       {
-        id: 'consent',
         type: 'checkbox',
+        name: 'consent',
         label: 'I authorize AeroNet to conduct a site assessment at my facility',
-        required: true,
         order: 11,
+        validation: { required: true },
       },
     ],
-    settings: {
-      submitButtonText: 'Request Assessment',
-      successMessage: 'Your site assessment request has been received. Our technical team will contact you to schedule the visit.',
-      notifyEmail: 'assessments@aeronet.com',
-    },
-    leadCapture: {
-      enabled: true,
-      createLead: true,
-      defaultSource: 'form',
-      defaultTags: ['aeronet', 'site-assessment', 'high-value'],
-      sequenceId: 'aeronet-pilot-program',
-    },
   },
 };
 

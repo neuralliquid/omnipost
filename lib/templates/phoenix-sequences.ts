@@ -3,7 +3,9 @@
  * Pre-built sequences for SkySnare (Consumer) and AeroNet (Enterprise)
  */
 
-import type { CreateSequenceInput } from '@/types/sequence';
+import type { CreateSequenceInput, SequenceStep } from '@/types/sequence';
+
+type StepInput = Omit<SequenceStep, 'id' | 'createdAt' | 'updatedAt'>;
 
 /**
  * SkySnare Consumer Sequences
@@ -19,29 +21,40 @@ export const SKYSNARE_SEQUENCES: Record<string, CreateSequenceInput> = {
       {
         type: 'linkedin_view_profile',
         order: 0,
-        config: {},
+        name: 'View LinkedIn Profile',
+        enabled: true,
+        linkedinConfig: { type: 'view_profile' },
       },
       {
         type: 'wait',
         order: 1,
-        config: { duration: 1, unit: 'days' },
+        name: 'Wait 1 day',
+        enabled: true,
+        waitConfig: { duration: 1, unit: 'days' },
       },
       {
         type: 'linkedin_connection',
         order: 2,
-        config: {
+        name: 'Send connection request',
+        enabled: true,
+        linkedinConfig: {
+          type: 'connection_request',
           message: `Hi {{firstName}}, I noticed you're involved in {{useCase}}. We've developed SkySnare™ - a new approach to drone training that's getting great results at facilities like yours. Would love to connect!`,
         },
       },
       {
         type: 'wait',
         order: 3,
-        config: { duration: 3, unit: 'days' },
+        name: 'Wait 3 days',
+        enabled: true,
+        waitConfig: { duration: 3, unit: 'days' },
       },
       {
         type: 'email',
         order: 4,
-        config: {
+        name: 'Initial email',
+        enabled: true,
+        emailConfig: {
           subject: 'Quick question about your training setup',
           body: `Hi {{firstName}},
 
@@ -65,12 +78,16 @@ Best,
       {
         type: 'wait',
         order: 5,
-        config: { duration: 3, unit: 'days' },
+        name: 'Wait 3 days',
+        enabled: true,
+        waitConfig: { duration: 3, unit: 'days' },
       },
       {
         type: 'email',
         order: 6,
-        config: {
+        name: 'Follow-up email',
+        enabled: true,
+        emailConfig: {
           subject: 'Re: Quick question about your training setup',
           body: `Hi {{firstName}},
 
@@ -88,24 +105,33 @@ Would you like me to send it over?
       {
         type: 'wait',
         order: 7,
-        config: { duration: 4, unit: 'days' },
+        name: 'Wait 4 days',
+        enabled: true,
+        waitConfig: { duration: 4, unit: 'days' },
       },
       {
         type: 'linkedin_message',
         order: 8,
-        config: {
+        name: 'LinkedIn message',
+        enabled: true,
+        linkedinConfig: {
+          type: 'message',
           message: `Hey {{firstName}}, just wanted to make sure my emails aren't going to spam! Let me know if you'd like to see how SkySnare could work for {{company}}.`,
         },
       },
       {
         type: 'wait',
         order: 9,
-        config: { duration: 5, unit: 'days' },
+        name: 'Wait 5 days',
+        enabled: true,
+        waitConfig: { duration: 5, unit: 'days' },
       },
       {
         type: 'email',
         order: 10,
-        config: {
+        name: 'Final email',
+        enabled: true,
+        emailConfig: {
           subject: 'Last try + special offer',
           body: `Hi {{firstName}},
 
@@ -122,7 +148,7 @@ Thanks for your time either way!
           trackClicks: true,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
       sendingHours: { start: '09:00', end: '17:00' },
@@ -143,7 +169,9 @@ Thanks for your time either way!
       {
         type: 'email',
         order: 0,
-        config: {
+        name: 'Demo confirmation',
+        enabled: true,
+        emailConfig: {
           subject: 'Your SkySnare demo is confirmed!',
           body: `Hi {{firstName}},
 
@@ -169,12 +197,16 @@ See you soon!
       {
         type: 'wait',
         order: 1,
-        config: { duration: 1, unit: 'days' },
+        name: 'Wait 1 day',
+        enabled: true,
+        waitConfig: { duration: 1, unit: 'days' },
       },
       {
         type: 'email',
         order: 2,
-        config: {
+        name: 'Demo prep',
+        enabled: true,
+        emailConfig: {
           subject: 'Quick prep for your demo',
           body: `Hi {{firstName}},
 
@@ -195,18 +227,21 @@ Feel free to reply with any thoughts, or we can cover it live!
       {
         type: 'wait',
         order: 3,
-        config: { duration: 2, unit: 'days' },
+        name: 'Wait 2 days',
+        enabled: true,
+        waitConfig: { duration: 2, unit: 'days' },
       },
       {
         type: 'task',
         order: 4,
-        config: {
+        name: 'Conduct demo',
+        enabled: true,
+        taskConfig: {
           title: 'Conduct SkySnare demo for {{firstName}} at {{company}}',
           description: 'Demo scheduled - prepare personalized presentation',
-          priority: 'high',
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
       sendingHours: { start: '08:00', end: '18:00' },
@@ -227,7 +262,9 @@ Feel free to reply with any thoughts, or we can cover it live!
       {
         type: 'email',
         order: 0,
-        config: {
+        name: 'Thank you email',
+        enabled: true,
+        emailConfig: {
           subject: 'Thanks for your time today!',
           body: `Hi {{firstName}},
 
@@ -250,12 +287,16 @@ What are your thoughts on next steps?
       {
         type: 'wait',
         order: 1,
-        config: { duration: 2, unit: 'days' },
+        name: 'Wait 2 days',
+        enabled: true,
+        waitConfig: { duration: 2, unit: 'days' },
       },
       {
         type: 'email',
         order: 2,
-        config: {
+        name: 'Check-in email',
+        enabled: true,
+        emailConfig: {
           subject: 'Quick question',
           body: `Hi {{firstName}},
 
@@ -271,12 +312,16 @@ Any questions I can help answer? I'm also happy to jump on a quick call if that'
       {
         type: 'wait',
         order: 3,
-        config: { duration: 3, unit: 'days' },
+        name: 'Wait 3 days',
+        enabled: true,
+        waitConfig: { duration: 3, unit: 'days' },
       },
       {
         type: 'call',
         order: 4,
-        config: {
+        name: 'Check-in call',
+        enabled: true,
+        callConfig: {
           duration: 15,
           script: `Check-in call after demo:
 1. Any questions about the product?
@@ -288,12 +333,16 @@ Any questions I can help answer? I'm also happy to jump on a quick call if that'
       {
         type: 'wait',
         order: 5,
-        config: { duration: 4, unit: 'days' },
+        name: 'Wait 4 days',
+        enabled: true,
+        waitConfig: { duration: 4, unit: 'days' },
       },
       {
         type: 'email',
         order: 6,
-        config: {
+        name: 'Special offer',
+        enabled: true,
+        emailConfig: {
           subject: 'Special offer for {{company}}',
           body: `Hi {{firstName}},
 
@@ -311,7 +360,7 @@ Let me know if you'd like to take advantage of this before it expires!
           trackClicks: true,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
       sendingHours: { start: '09:00', end: '17:00' },
@@ -337,17 +386,23 @@ export const AERONET_SEQUENCES: Record<string, CreateSequenceInput> = {
       {
         type: 'linkedin_view_profile',
         order: 0,
-        config: {},
+        name: 'View LinkedIn Profile',
+        enabled: true,
+        linkedinConfig: { type: 'view_profile' },
       },
       {
         type: 'wait',
         order: 1,
-        config: { duration: 1, unit: 'days' },
+        name: 'Wait 1 day',
+        enabled: true,
+        waitConfig: { duration: 1, unit: 'days' },
       },
       {
         type: 'email',
         order: 2,
-        config: {
+        name: 'Initial outreach',
+        enabled: true,
+        emailConfig: {
           subject: 'Drone security for {{company}}',
           body: `{{firstName}},
 
@@ -372,24 +427,33 @@ Would you have 20 minutes for a confidential discussion?
       {
         type: 'wait',
         order: 3,
-        config: { duration: 4, unit: 'days' },
+        name: 'Wait 4 days',
+        enabled: true,
+        waitConfig: { duration: 4, unit: 'days' },
       },
       {
         type: 'linkedin_connection',
         order: 4,
-        config: {
+        name: 'LinkedIn connection',
+        enabled: true,
+        linkedinConfig: {
+          type: 'connection_request',
           message: `{{firstName}}, I recently reached out regarding drone security solutions. Given your role at {{company}}, I thought you might find our approach to infrastructure protection valuable. Would be great to connect.`,
         },
       },
       {
         type: 'wait',
         order: 5,
-        config: { duration: 3, unit: 'days' },
+        name: 'Wait 3 days',
+        enabled: true,
+        waitConfig: { duration: 3, unit: 'days' },
       },
       {
         type: 'email',
         order: 6,
-        config: {
+        name: 'Case study follow-up',
+        enabled: true,
+        emailConfig: {
           subject: 'Re: Drone security for {{company}}',
           body: `{{firstName}},
 
@@ -410,26 +474,33 @@ Would this be relevant for {{company}}'s security infrastructure?
       {
         type: 'wait',
         order: 7,
-        config: { duration: 5, unit: 'days' },
+        name: 'Wait 5 days',
+        enabled: true,
+        waitConfig: { duration: 5, unit: 'days' },
       },
       {
         type: 'task',
         order: 8,
-        config: {
+        name: 'Research company',
+        enabled: true,
+        taskConfig: {
           title: 'Research {{company}} security initiatives',
           description: 'Look for public announcements, RFPs, or news about security investments',
-          priority: 'medium',
         },
       },
       {
         type: 'wait',
         order: 9,
-        config: { duration: 2, unit: 'days' },
+        name: 'Wait 2 days',
+        enabled: true,
+        waitConfig: { duration: 2, unit: 'days' },
       },
       {
         type: 'email',
         order: 10,
-        config: {
+        name: 'Technical brief',
+        enabled: true,
+        emailConfig: {
           subject: 'Technical brief: Counter-drone architecture',
           body: `{{firstName}},
 
@@ -452,24 +523,33 @@ No strings attached - just hoping it's useful for your planning.
       {
         type: 'wait',
         order: 11,
-        config: { duration: 7, unit: 'days' },
+        name: 'Wait 7 days',
+        enabled: true,
+        waitConfig: { duration: 7, unit: 'days' },
       },
       {
         type: 'linkedin_message',
         order: 12,
-        config: {
+        name: 'LinkedIn message',
+        enabled: true,
+        linkedinConfig: {
+          type: 'message',
           message: `{{firstName}}, I've sent a few emails about AeroNet's counter-drone capabilities. If drone security isn't a priority right now, I completely understand. But if you'd like a quick overview, I'm happy to arrange a confidential briefing at your convenience.`,
         },
       },
       {
         type: 'wait',
         order: 13,
-        config: { duration: 10, unit: 'days' },
+        name: 'Wait 10 days',
+        enabled: true,
+        waitConfig: { duration: 10, unit: 'days' },
       },
       {
         type: 'email',
         order: 14,
-        config: {
+        name: 'Closing email',
+        enabled: true,
+        emailConfig: {
           subject: 'Closing the loop',
           body: `{{firstName}},
 
@@ -489,7 +569,7 @@ Either way, I appreciate your consideration.
           trackClicks: true,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'],
       sendingHours: { start: '08:00', end: '16:00' },
@@ -510,7 +590,9 @@ Either way, I appreciate your consideration.
       {
         type: 'email',
         order: 0,
-        config: {
+        name: 'Welcome email',
+        enabled: true,
+        emailConfig: {
           subject: 'Welcome to the AeroNet Pilot Program',
           body: `{{firstName}},
 
@@ -541,26 +623,33 @@ Welcome aboard!
       {
         type: 'wait',
         order: 1,
-        config: { duration: 1, unit: 'days' },
+        name: 'Wait 1 day',
+        enabled: true,
+        waitConfig: { duration: 1, unit: 'days' },
       },
       {
         type: 'task',
         order: 2,
-        config: {
+        name: 'Schedule requirements call',
+        enabled: true,
+        taskConfig: {
           title: 'Schedule technical requirements call with {{firstName}}',
           description: 'Review technical requirements, integration needs, and site assessment scheduling',
-          priority: 'high',
         },
       },
       {
         type: 'wait',
         order: 3,
-        config: { duration: 3, unit: 'days' },
+        name: 'Wait 3 days',
+        enabled: true,
+        waitConfig: { duration: 3, unit: 'days' },
       },
       {
         type: 'email',
         order: 4,
-        config: {
+        name: 'Site assessment prep',
+        enabled: true,
+        emailConfig: {
           subject: 'Preparing for your site assessment',
           body: `{{firstName}},
 
@@ -586,12 +675,16 @@ Please let me know if you have any questions or need to adjust the schedule.
       {
         type: 'wait',
         order: 5,
-        config: { duration: 7, unit: 'days' },
+        name: 'Wait 7 days',
+        enabled: true,
+        waitConfig: { duration: 7, unit: 'days' },
       },
       {
         type: 'email',
         order: 6,
-        config: {
+        name: 'Post-assessment',
+        enabled: true,
+        emailConfig: {
           subject: 'Site assessment complete - next steps',
           body: `{{firstName}},
 
@@ -610,7 +703,7 @@ I'd like to schedule a call to walk through these recommendations with your team
           trackClicks: true,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
       sendingHours: { start: '08:00', end: '17:00' },
@@ -631,7 +724,9 @@ I'd like to schedule a call to walk through these recommendations with your team
       {
         type: 'email',
         order: 0,
-        config: {
+        name: 'Initial outreach',
+        enabled: true,
+        emailConfig: {
           subject: 'Counter-UAS capabilities briefing request',
           body: `{{firstName}},
 
@@ -657,26 +752,33 @@ Respectfully,
       {
         type: 'wait',
         order: 1,
-        config: { duration: 7, unit: 'days' },
+        name: 'Wait 7 days',
+        enabled: true,
+        waitConfig: { duration: 7, unit: 'days' },
       },
       {
         type: 'task',
         order: 2,
-        config: {
+        name: 'Follow up task',
+        enabled: true,
+        taskConfig: {
           title: 'Follow up with {{firstName}} - Government outreach',
           description: 'Attempt phone contact, research alternative contacts at agency',
-          priority: 'medium',
         },
       },
       {
         type: 'wait',
         order: 3,
-        config: { duration: 7, unit: 'days' },
+        name: 'Wait 7 days',
+        enabled: true,
+        waitConfig: { duration: 7, unit: 'days' },
       },
       {
         type: 'email',
         order: 4,
-        config: {
+        name: 'Follow-up email',
+        enabled: true,
+        emailConfig: {
           subject: 'Re: Counter-UAS capabilities briefing request',
           body: `{{firstName}},
 
@@ -698,12 +800,16 @@ Please let me know how I can best support your evaluation process.
       {
         type: 'wait',
         order: 5,
-        config: { duration: 14, unit: 'days' },
+        name: 'Wait 14 days',
+        enabled: true,
+        waitConfig: { duration: 14, unit: 'days' },
       },
       {
         type: 'email',
         order: 6,
-        config: {
+        name: 'Quarterly update',
+        enabled: true,
+        emailConfig: {
           subject: 'AeroNet quarterly update',
           body: `{{firstName}},
 
@@ -720,7 +826,7 @@ If counter-UAS becomes a priority for your organization, we'd welcome the opport
           trackClicks: true,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'],
       sendingHours: { start: '09:00', end: '15:00' },
@@ -741,7 +847,9 @@ If counter-UAS becomes a priority for your organization, we'd welcome the opport
       {
         type: 'email',
         order: 0,
-        config: {
+        name: 'Re-engagement email',
+        enabled: true,
+        emailConfig: {
           subject: 'Checking in - drone security update',
           body: `{{firstName}},
 
@@ -764,12 +872,16 @@ Would you have 15 minutes for a quick catch-up?
       {
         type: 'wait',
         order: 1,
-        config: { duration: 7, unit: 'days' },
+        name: 'Wait 7 days',
+        enabled: true,
+        waitConfig: { duration: 7, unit: 'days' },
       },
       {
         type: 'email',
         order: 2,
-        config: {
+        name: 'Case study email',
+        enabled: true,
+        emailConfig: {
           subject: 'New case study: {{segment}} drone security',
           body: `{{firstName}},
 
@@ -792,16 +904,21 @@ Happy to discuss how this might apply to {{company}}'s environment.
       {
         type: 'wait',
         order: 3,
-        config: { duration: 10, unit: 'days' },
+        name: 'Wait 10 days',
+        enabled: true,
+        waitConfig: { duration: 10, unit: 'days' },
       },
       {
         type: 'linkedin_message',
         order: 4,
-        config: {
+        name: 'LinkedIn message',
+        enabled: true,
+        linkedinConfig: {
+          type: 'message',
           message: `Hi {{firstName}}, hope you're doing well! I recently shared some updates about AeroNet's counter-drone platform. Would love to reconnect if drone security has moved up your priority list.`,
         },
       },
-    ],
+    ] as StepInput[],
     schedule: {
       sendingDays: ['tuesday', 'wednesday', 'thursday'],
       sendingHours: { start: '10:00', end: '14:00' },

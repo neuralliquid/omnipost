@@ -1,5 +1,5 @@
 import Airtable, { FieldSet, Record as AirtableRecord } from 'airtable';
-import { generateId } from '../utils/id';
+import { generateSecureId } from '../utils/id';
 import {
   Lead,
   LeadStatus,
@@ -498,7 +498,7 @@ export class LeadsClient {
     const now = new Date().toISOString();
     const interactionRecord: LeadInteraction = {
       ...interaction,
-      id: generateId(),
+      id: generateSecureId(),
       createdAt: now,
     };
 

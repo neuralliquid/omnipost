@@ -17,7 +17,9 @@ interface SequenceBuilderProps {
   loading?: boolean;
 }
 
-const DAYS_OF_WEEK = [
+type DayOfWeek = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday';
+
+const DAYS_OF_WEEK: { value: DayOfWeek; label: string }[] = [
   { value: 'monday', label: 'Mon' },
   { value: 'tuesday', label: 'Tue' },
   { value: 'wednesday', label: 'Wed' },
@@ -27,7 +29,12 @@ const DAYS_OF_WEEK = [
   { value: 'sunday', label: 'Sun' },
 ];
 
-const DEFAULT_SCHEDULE = {
+const DEFAULT_SCHEDULE: {
+  sendingDays: DayOfWeek[];
+  sendingHours: { start: string; end: string };
+  timezone: string;
+  maxPerDay: number;
+} = {
   sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
   sendingHours: { start: '09:00', end: '17:00' },
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
@@ -162,7 +169,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
     });
   }, [steps.length]);
 
-  const handleDayToggle = (day: string) => {
+  const handleDayToggle = (day: DayOfWeek) => {
     setSchedule(prev => ({
       ...prev,
       sendingDays: prev.sendingDays.includes(day)
