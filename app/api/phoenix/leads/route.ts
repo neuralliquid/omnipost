@@ -9,6 +9,7 @@ import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
 import { calculatePhoenixLeadScore } from '@/lib/scoring/phoenix-scorer';
 import featureFlags from '@/lib/featureFlags';
+import { validateEmail } from '@/app/api/_utils/validation';
 import type { CreateLeadInput, LeadStatus } from '@/types/lead';
 import type {
   PhoenixFormSubmission,
@@ -63,11 +64,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(body.email)) {
+    // Validate email format using ReDoS-safe validation
+    const emailError = validateEmail('email', body.email);
+    if (emailError) {
       return NextResponse.json(
-        { error: 'Invalid email format' },
+        { error: emailError },
         { status: 400 }
       );
     }

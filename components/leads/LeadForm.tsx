@@ -9,6 +9,32 @@ import React, { useState } from 'react';
 import type { Lead, CreateLeadInput, LeadSource, LeadStatus, LeadTemperature } from '@/types/lead';
 import styles from '@/styles/Leads.module.css';
 
+/**
+ * ReDoS-safe email validation for client-side
+ * Matches the server-side validation in app/api/_utils/validation.ts
+ */
+function validateEmailFormat(email: string): boolean {
+  // Length check to prevent DoS
+  if (email.length > 254) {
+    return false;
+  }
+
+  // Simple validation: must have exactly one @, something before and after, and a dot after @
+  const atIndex = email.indexOf('@');
+  const lastAtIndex = email.lastIndexOf('@');
+
+  if (atIndex < 1 || atIndex !== lastAtIndex || atIndex >= email.length - 1) {
+    return false;
+  }
+
+  const domain = email.slice(atIndex + 1);
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+    return false;
+  }
+
+  return true;
+}
+
 interface LeadFormProps {
   lead?: Lead;
   onSubmit: (data: CreateLeadInput) => Promise<void>;
@@ -105,7 +131,7 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       newErrors.lastName = 'Last name is required';
     }
 
-    if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    if (formData.email && !validateEmailFormat(formData.email)) {
       newErrors.email = 'Invalid email format';
     }
 

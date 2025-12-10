@@ -121,12 +121,21 @@ export function validateArrayField(
  * Try-catch wrapper for API route handlers
  * Automatically handles errors and logs them
  */
-export function withErrorHandling<T = unknown>(
-  handler: (request: Request, context?: T) => Promise<NextResponse>
+export function withErrorHandling<T>(
+  handler: (request: Request, context: T) => Promise<NextResponse>
+): (request: Request, context: T) => Promise<NextResponse>;
+export function withErrorHandling(
+  handler: (request: Request) => Promise<NextResponse>
+): (request: Request) => Promise<NextResponse>;
+export function withErrorHandling<T = any>(
+  handler: ((request: Request, context: T) => Promise<NextResponse>) | ((request: Request) => Promise<NextResponse>)
 ) {
   return async (request: Request, context?: T): Promise<NextResponse> => {
     try {
-      return await handler(request, context);
+      if (context !== undefined) {
+        return await (handler as (request: Request, context: T) => Promise<NextResponse>)(request, context);
+      }
+      return await (handler as (request: Request) => Promise<NextResponse>)(request);
     } catch (error) {
       console.error('API Error:', error);
       const message = error instanceof Error ? error.message : 'An error occurred';
