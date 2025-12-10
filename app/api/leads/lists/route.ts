@@ -5,80 +5,69 @@
  */
 
 import { NextResponse } from 'next/server';
-import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
+import {
+  requireAuth,
+  requireAuthWithUserId,
+  validateRequiredFields,
+  validateEnumField,
+  validateArrayField,
+  withErrorHandling,
+} from '@/app/api/_utils/middleware';
 
 /**
  * GET /api/leads/lists
  * List all lead lists
  */
-export async function GET() {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const GET = withErrorHandling(async () => {
+  const authError = await requireAuth();
+  if (authError) return authError;
 
-    const lists = await leadsClient.getLists();
+  const lists = await leadsClient.getLists();
 
-    return NextResponse.json({
-      lists,
-      count: lists.length,
-    });
-  } catch (error) {
-    console.error('Error fetching lists:', error);
-    return NextResponse.json({ error: 'Failed to fetch lists' }, { status: 500 });
-  }
-}
+  return NextResponse.json({
+    lists,
+    count: lists.length,
+  });
+});
 
 /**
  * POST /api/leads/lists
  * Create a new lead list
  */
-export async function POST(request: Request) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const POST = withErrorHandling(async (request: Request) => {
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
-    }
+  const body = await request.json();
 
-    const body = await request.json();
+  // Validate required fields
+  const requiredError = validateRequiredFields(body, ['name', 'type']);
+  if (requiredError) return requiredError;
 
-    // Validate required fields
-    if (!body.name?.trim()) {
-      return NextResponse.json({ error: 'name is required' }, { status: 400 });
-    }
+  // Validate type field
+  const typeError = validateEnumField(body.type, ['static', 'dynamic'] as const, 'type');
+  if (typeError) return typeError;
 
-    if (!body.type || !['static', 'dynamic'].includes(body.type)) {
-      return NextResponse.json({ error: 'type must be "static" or "dynamic"' }, { status: 400 });
-    }
-
-    // For dynamic lists, filter is required
-    if (body.type === 'dynamic' && !body.filter) {
-      return NextResponse.json({ error: 'filter is required for dynamic lists' }, { status: 400 });
-    }
-
-    // For static lists, leadIds can be provided
-    if (body.type === 'static' && body.leadIds && !Array.isArray(body.leadIds)) {
-      return NextResponse.json({ error: 'leadIds must be an array' }, { status: 400 });
-    }
-
-    const list = await leadsClient.createList({
-      name: body.name.trim(),
-      description: body.description?.trim(),
-      type: body.type,
-      filter: body.filter,
-      leadIds: body.leadIds,
-      createdBy: currentUserId,
-    });
-
-    return NextResponse.json({ list }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating list:', error);
-    const message = error instanceof Error ? error.message : 'Failed to create list';
-    return NextResponse.json({ error: message }, { status: 500 });
+  // For dynamic lists, filter is required
+  if (body.type === 'dynamic' && !body.filter) {
+    return NextResponse.json({ error: 'filter is required for dynamic lists' }, { status: 400 });
   }
-}
+
+  // For static lists, leadIds can be provided
+  if (body.type === 'static' && body.leadIds) {
+    const arrayError = validateArrayField(body.leadIds, 'leadIds');
+    if (arrayError) return arrayError;
+  }
+
+  const list = await leadsClient.createList({
+    name: body.name.trim(),
+    description: body.description?.trim(),
+    type: body.type,
+    filter: body.filter,
+    leadIds: body.leadIds,
+    createdBy: authResult.userId,
+  });
+
+  return NextResponse.json({ list }, { status: 201 });
+});
