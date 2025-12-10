@@ -4,6 +4,18 @@ This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**.
 
 ## Recent Changes (December 2024)
 
+### App Service Startup Command Configuration (Dec 10, 2024)
+
+**Issue**: Container was terminating during startup because Azure App Service was using default Node.js startup (`npm start`) instead of running the Next.js standalone server.
+
+**Fix**: Explicitly set `appCommandLine: 'node server.js'` in `main.bicep` for both production and staging slots.
+
+**Technical Details**:
+- Next.js standalone mode creates a minimal `server.js` that must be run directly
+- Azure's managed Node.js runtime ignores `WEBSITE_STARTUP_FILE` when `appCommandLine` is empty
+- Setting `appCommandLine` explicitly ensures the correct startup command is used
+- This affects lines 88 and 182 in `main.bicep`
+
 ### DNS Module Restructuring
 
 The DNS configuration has been split into two modules to resolve cross-resource-group deployment issues:
