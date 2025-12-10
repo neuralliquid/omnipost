@@ -47,6 +47,10 @@ interface RouteParams {
 export const GET = withRateLimit(
   async (request: NextRequest, ...args: unknown[]): Promise<Response> => {
     try {
+      // Extract params from args (Next.js passes RouteParams as first arg for dynamic routes)
+      if (!args[0] || typeof args[0] !== 'object' || !('params' in args[0])) {
+        return ErrorResponses.badRequest('Invalid route parameters');
+      }
       const { params } = args[0] as RouteParams;
       
       // Check if this is public access (embed/share)
