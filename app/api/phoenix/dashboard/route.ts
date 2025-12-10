@@ -41,18 +41,12 @@ export async function GET(request: NextRequest) {
   try {
     // Check if CRM dashboard feature is enabled
     if (!featureFlags.crmDashboard?.enabled) {
-      return NextResponse.json(
-        { error: 'CRM dashboard feature is disabled' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'CRM dashboard feature is disabled' }, { status: 403 });
     }
 
     // Require authentication
     if (!(await isAuthenticated())) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -83,9 +77,7 @@ export async function GET(request: NextRequest) {
     const aeronetLeads = phoenixLeads.filter(l => l.phoenixData?.brand === 'aeronet');
 
     // Calculate metrics
-    const newThisWeek = filteredLeads.filter(
-      l => new Date(l.createdAt) >= oneWeekAgo
-    ).length;
+    const newThisWeek = filteredLeads.filter(l => new Date(l.createdAt) >= oneWeekAgo).length;
 
     const qualifiedLeads = filteredLeads.filter(
       l => l.status === 'qualified' || l.status === 'proposal' || l.status === 'negotiation'
@@ -112,13 +104,12 @@ export async function GET(request: NextRequest) {
 
     // Average score
     const totalScore = filteredLeads.reduce((sum, l) => sum + l.score.total, 0);
-    const averageScore = filteredLeads.length > 0 ? Math.round(totalScore / filteredLeads.length) : 0;
+    const averageScore =
+      filteredLeads.length > 0 ? Math.round(totalScore / filteredLeads.length) : 0;
 
     // Conversion rate (qualified / total)
     const conversionRate =
-      filteredLeads.length > 0
-        ? Math.round((qualifiedLeads / filteredLeads.length) * 100)
-        : 0;
+      filteredLeads.length > 0 ? Math.round((qualifiedLeads / filteredLeads.length) * 100) : 0;
 
     const metrics: DashboardMetrics = {
       totalLeads: filteredLeads.length,
@@ -135,7 +126,10 @@ export async function GET(request: NextRequest) {
 
     // Calculate segment breakdowns
     const calculateBreakdown = (leads: PhoenixLeadWithData[]): SegmentBreakdown[] => {
-      const segmentMap = new Map<string, { count: number; qualified: number; totalScore: number }>();
+      const segmentMap = new Map<
+        string,
+        { count: number; qualified: number; totalScore: number }
+      >();
 
       leads.forEach(lead => {
         const segment = lead.phoenixData?.segment || 'unknown';
@@ -176,9 +170,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching Phoenix dashboard:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch dashboard data' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch dashboard data' }, { status: 500 });
   }
 }

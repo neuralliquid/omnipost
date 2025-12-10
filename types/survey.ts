@@ -65,7 +65,15 @@ export interface ConditionalLogic {
   action: 'show' | 'hide';
   conditions: Array<{
     fieldId: string;
-    operator: 'equals' | 'not_equals' | 'contains' | 'not_contains' | 'greater_than' | 'less_than' | 'is_empty' | 'is_not_empty';
+    operator:
+      | 'equals'
+      | 'not_equals'
+      | 'contains'
+      | 'not_contains'
+      | 'greater_than'
+      | 'less_than'
+      | 'is_empty'
+      | 'is_not_empty';
     value?: string | number | boolean;
   }>;
   logicType: 'all' | 'any'; // AND vs OR
@@ -99,7 +107,7 @@ export interface FormField {
 
   // NPS settings
   npsConfig?: {
-    lowLabel?: string;  // e.g., "Not at all likely"
+    lowLabel?: string; // e.g., "Not at all likely"
     highLabel?: string; // e.g., "Extremely likely"
   };
 
@@ -375,7 +383,7 @@ function escapeHtml(str: string): string {
     '"': '&quot;',
     "'": '&#39;',
   };
-  return str.replace(/[&<>"']/g, (char) => escapeMap[char] || char);
+  return str.replace(/[&<>"']/g, char => escapeMap[char] || char);
 }
 
 /**
@@ -394,21 +402,63 @@ export function generateEmbedCode(formId: string, baseUrl: string): string {
  */
 export const FIELD_TEMPLATES = {
   contactInfo: [
-    { type: 'text', name: 'firstName', label: 'First Name', leadField: 'firstName', validation: { required: true } },
-    { type: 'text', name: 'lastName', label: 'Last Name', leadField: 'lastName', validation: { required: true } },
-    { type: 'email', name: 'email', label: 'Email', leadField: 'contact.email', validation: { required: true } },
-    { type: 'phone', name: 'phone', label: 'Phone', leadField: 'contact.phone', validation: { required: false } },
+    {
+      type: 'text',
+      name: 'firstName',
+      label: 'First Name',
+      leadField: 'firstName',
+      validation: { required: true },
+    },
+    {
+      type: 'text',
+      name: 'lastName',
+      label: 'Last Name',
+      leadField: 'lastName',
+      validation: { required: true },
+    },
+    {
+      type: 'email',
+      name: 'email',
+      label: 'Email',
+      leadField: 'contact.email',
+      validation: { required: true },
+    },
+    {
+      type: 'phone',
+      name: 'phone',
+      label: 'Phone',
+      leadField: 'contact.phone',
+      validation: { required: false },
+    },
   ],
   companyInfo: [
-    { type: 'text', name: 'company', label: 'Company', leadField: 'company.name', validation: { required: false } },
-    { type: 'text', name: 'jobTitle', label: 'Job Title', leadField: 'title', validation: { required: false } },
-    { type: 'select', name: 'companySize', label: 'Company Size', leadField: 'company.size', options: [
-      { id: '1', label: '1-10', value: '1-10', order: 1 },
-      { id: '2', label: '11-50', value: '11-50', order: 2 },
-      { id: '3', label: '51-200', value: '51-200', order: 3 },
-      { id: '4', label: '201-500', value: '201-500', order: 4 },
-      { id: '5', label: '500+', value: '500+', order: 5 },
-    ] },
+    {
+      type: 'text',
+      name: 'company',
+      label: 'Company',
+      leadField: 'company.name',
+      validation: { required: false },
+    },
+    {
+      type: 'text',
+      name: 'jobTitle',
+      label: 'Job Title',
+      leadField: 'title',
+      validation: { required: false },
+    },
+    {
+      type: 'select',
+      name: 'companySize',
+      label: 'Company Size',
+      leadField: 'company.size',
+      options: [
+        { id: '1', label: '1-10', value: '1-10', order: 1 },
+        { id: '2', label: '11-50', value: '11-50', order: 2 },
+        { id: '3', label: '51-200', value: '51-200', order: 3 },
+        { id: '4', label: '201-500', value: '201-500', order: 4 },
+        { id: '5', label: '500+', value: '500+', order: 5 },
+      ],
+    },
   ],
   npsQuestion: {
     type: 'nps',

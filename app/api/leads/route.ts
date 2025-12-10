@@ -36,10 +36,7 @@ export const GET = withErrorHandling(async (request: Request) => {
   const filter: LeadFilter = {};
 
   filter.status = parseEnumFilter(searchParams.get('status'), VALID_LEAD_STATUSES);
-  filter.temperature = parseEnumFilter(
-    searchParams.get('temperature'),
-    VALID_LEAD_TEMPERATURES
-  );
+  filter.temperature = parseEnumFilter(searchParams.get('temperature'), VALID_LEAD_TEMPERATURES);
   filter.source = parseEnumFilter(searchParams.get('source'), VALID_LEAD_SOURCES);
 
   const tags = searchParams.get('tags');
@@ -92,11 +89,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   const body = await request.json();
 
   // Validate required fields
-  const requiredError = validateRequiredFields(body, [
-    'firstName',
-    'lastName',
-    'source',
-  ]);
+  const requiredError = validateRequiredFields(body, ['firstName', 'lastName', 'source']);
   if (requiredError) return requiredError;
 
   // Validate source

@@ -11,7 +11,13 @@ import type { SequenceEnrollment } from '@/types/sequence';
 
 // Valid enrollment statuses
 const VALID_STATUSES: SequenceEnrollment['status'][] = [
-  'active', 'paused', 'completed', 'replied', 'bounced', 'unsubscribed', 'stopped'
+  'active',
+  'paused',
+  'completed',
+  'replied',
+  'bounced',
+  'unsubscribed',
+  'stopped',
 ];
 
 interface RouteParams {
@@ -44,9 +50,12 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     // Validate status if provided
     if (status && !VALID_STATUSES.includes(status)) {
-      return NextResponse.json({
-        error: `status must be one of: ${VALID_STATUSES.join(', ')}`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `status must be one of: ${VALID_STATUSES.join(', ')}`,
+        },
+        { status: 400 }
+      );
     }
 
     const result = await sequencesClient.queryEnrollments({
@@ -76,12 +85,7 @@ async function handleSingleEnrollment(
   startAt?: string
 ): Promise<NextResponse> {
   try {
-    const enrollment = await sequencesClient.enrollLead(
-      sequenceId,
-      leadId,
-      userId,
-      startAt
-    );
+    const enrollment = await sequencesClient.enrollLead(sequenceId, leadId, userId, startAt);
     return NextResponse.json({ enrollment }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Failed to enroll lead';
@@ -117,11 +121,14 @@ async function handleBulkEnrollment(
     userId
   );
 
-  return NextResponse.json({
-    enrolled: result.enrolled,
-    skipped: result.skipped,
-    errors: result.errors,
-  }, { status: 201 });
+  return NextResponse.json(
+    {
+      enrolled: result.enrolled,
+      skipped: result.skipped,
+      errors: result.errors,
+    },
+    { status: 201 }
+  );
 }
 
 /**
@@ -149,9 +156,12 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     // Check if sequence is active or draft
     if (!['active', 'draft'].includes(sequence.status)) {
-      return NextResponse.json({
-        error: `Cannot enroll leads in a ${sequence.status} sequence`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `Cannot enroll leads in a ${sequence.status} sequence`,
+        },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
@@ -172,9 +182,12 @@ export async function POST(request: Request, { params }: RouteParams) {
       );
     }
 
-    return NextResponse.json({
-      error: 'Either leadId or leadIds is required'
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'Either leadId or leadIds is required',
+      },
+      { status: 400 }
+    );
   } catch (error) {
     console.error('Error enrolling leads:', error);
     const message = error instanceof Error ? error.message : 'Failed to enroll leads';

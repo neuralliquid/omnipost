@@ -6,7 +6,12 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type { PhoenixLead, PhoenixBrand, SkySnareLeadData, AeroNetLeadData } from '@/types/phoenix-rooivalk';
+import type {
+  PhoenixLead,
+  PhoenixBrand,
+  SkySnareLeadData,
+  AeroNetLeadData,
+} from '@/types/phoenix-rooivalk';
 import { SEGMENT_LABELS, isHighValueEnterprise } from '@/types/phoenix-rooivalk';
 import styles from '@/styles/PhoenixDashboard.module.css';
 
@@ -189,7 +194,9 @@ export const PhoenixDashboard: React.FC<PhoenixDashboardProps> = ({
           <div className={styles.brandSection}>
             <div className={styles.brandHeader}>
               <div className={styles.brandTitle}>
-                <span className={styles.brandIcon} style={{ background: '#22C55E' }}>S</span>
+                <span className={styles.brandIcon} style={{ background: '#22C55E' }}>
+                  S
+                </span>
                 <div>
                   <h2>SkySnare™</h2>
                   <span className={styles.brandTagline}>Consumer Training Equipment</span>
@@ -237,7 +244,8 @@ export const PhoenixDashboard: React.FC<PhoenixDashboardProps> = ({
               {skysnareBreakdown.map(segment => (
                 <div key={segment.segment} className={styles.segmentRow}>
                   <span className={styles.segmentName}>
-                    {SEGMENT_LABELS[segment.segment as keyof typeof SEGMENT_LABELS] || segment.segment}
+                    {SEGMENT_LABELS[segment.segment as keyof typeof SEGMENT_LABELS] ||
+                      segment.segment}
                   </span>
                   <span className={styles.segmentCount}>{segment.count} leads</span>
                   <span className={styles.segmentScore}>Avg: {segment.avgScore}</span>
@@ -252,7 +260,9 @@ export const PhoenixDashboard: React.FC<PhoenixDashboardProps> = ({
           <div className={styles.brandSection}>
             <div className={styles.brandHeader}>
               <div className={styles.brandTitle}>
-                <span className={styles.brandIcon} style={{ background: '#3B82F6' }}>A</span>
+                <span className={styles.brandIcon} style={{ background: '#3B82F6' }}>
+                  A
+                </span>
                 <div>
                   <h2>AeroNet™</h2>
                   <span className={styles.brandTagline}>Enterprise Infrastructure Security</span>
@@ -298,7 +308,8 @@ export const PhoenixDashboard: React.FC<PhoenixDashboardProps> = ({
               {aeronetBreakdown.map(segment => (
                 <div key={segment.segment} className={styles.segmentRow}>
                   <span className={styles.segmentName}>
-                    {SEGMENT_LABELS[segment.segment as keyof typeof SEGMENT_LABELS] || segment.segment}
+                    {SEGMENT_LABELS[segment.segment as keyof typeof SEGMENT_LABELS] ||
+                      segment.segment}
                   </span>
                   <span className={styles.segmentCount}>{segment.count} leads</span>
                   <span className={styles.segmentScore}>Avg: {segment.avgScore}</span>
@@ -313,11 +324,7 @@ export const PhoenixDashboard: React.FC<PhoenixDashboardProps> = ({
       <div className={styles.recentLeadsSection}>
         <div className={styles.sectionHeader}>
           <h3>Recent Phoenix Leads</h3>
-          <button
-            type="button"
-            className={styles.viewAllButton}
-            onClick={() => onViewLeads?.()}
-          >
+          <button type="button" className={styles.viewAllButton} onClick={() => onViewLeads?.()}>
             View All →
           </button>
         </div>

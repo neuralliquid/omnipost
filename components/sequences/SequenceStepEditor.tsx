@@ -221,7 +221,12 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
           ...step.conditionConfig,
           condition: {
             ...step.conditionConfig?.condition,
-            type: value as 'email_opened' | 'email_clicked' | 'email_replied' | 'linkedin_accepted' | 'linkedin_replied',
+            type: value as
+              | 'email_opened'
+              | 'email_clicked'
+              | 'email_replied'
+              | 'linkedin_accepted'
+              | 'linkedin_replied',
           },
         },
       });
@@ -244,22 +249,26 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-email-subject`} className={styles.configLabel}>Subject Line</label>
+              <label htmlFor={`step-${step.id}-email-subject`} className={styles.configLabel}>
+                Subject Line
+              </label>
               <input
                 id={`step-${step.id}-email-subject`}
                 type="text"
                 value={step.emailConfig?.subject || ''}
-                onChange={(e) => handleEmailConfigChange('subject', e.target.value)}
+                onChange={e => handleEmailConfigChange('subject', e.target.value)}
                 className={styles.configInput}
                 placeholder="Enter email subject..."
               />
             </div>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-email-body`} className={styles.configLabel}>Email Body</label>
+              <label htmlFor={`step-${step.id}-email-body`} className={styles.configLabel}>
+                Email Body
+              </label>
               <textarea
                 id={`step-${step.id}-email-body`}
                 value={step.emailConfig?.body || ''}
-                onChange={(e) => handleEmailConfigChange('body', e.target.value)}
+                onChange={e => handleEmailConfigChange('body', e.target.value)}
                 className={styles.configTextarea}
                 rows={6}
                 placeholder="Write your email content... Use {{firstName}}, {{lastName}}, {{company}} for personalization"
@@ -270,7 +279,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
                 <input
                   type="checkbox"
                   checked={step.emailConfig?.trackOpens ?? true}
-                  onChange={(e) => handleEmailConfigChange('trackOpens', e.target.checked)}
+                  onChange={e => handleEmailConfigChange('trackOpens', e.target.checked)}
                 />
                 Track Opens
               </label>
@@ -278,7 +287,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
                 <input
                   type="checkbox"
                   checked={step.emailConfig?.trackClicks ?? true}
-                  onChange={(e) => handleEmailConfigChange('trackClicks', e.target.checked)}
+                  onChange={e => handleEmailConfigChange('trackClicks', e.target.checked)}
                 />
                 Track Clicks
               </label>
@@ -290,11 +299,16 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-linkedin-connection-message`} className={styles.configLabel}>Connection Message (Optional)</label>
+              <label
+                htmlFor={`step-${step.id}-linkedin-connection-message`}
+                className={styles.configLabel}
+              >
+                Connection Message (Optional)
+              </label>
               <textarea
                 id={`step-${step.id}-linkedin-connection-message`}
                 value={step.linkedinConfig?.message || ''}
-                onChange={(e) => handleLinkedinConfigChange('message', e.target.value)}
+                onChange={e => handleLinkedinConfigChange('message', e.target.value)}
                 className={styles.configTextarea}
                 rows={3}
                 placeholder="Hi {{firstName}}, I'd love to connect..."
@@ -311,11 +325,13 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-linkedin-message`} className={styles.configLabel}>Message</label>
+              <label htmlFor={`step-${step.id}-linkedin-message`} className={styles.configLabel}>
+                Message
+              </label>
               <textarea
                 id={`step-${step.id}-linkedin-message`}
                 value={step.linkedinConfig?.message || ''}
-                onChange={(e) => handleLinkedinConfigChange('message', e.target.value)}
+                onChange={e => handleLinkedinConfigChange('message', e.target.value)}
                 className={styles.configTextarea}
                 rows={4}
                 placeholder="Hi {{firstName}}, following up on..."
@@ -338,26 +354,32 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
           <div className={styles.stepConfig}>
             <div className={styles.configRow}>
               <div className={styles.configField}>
-                <label htmlFor={`step-${step.id}-wait-duration`} className={styles.configLabel}>Duration</label>
+                <label htmlFor={`step-${step.id}-wait-duration`} className={styles.configLabel}>
+                  Duration
+                </label>
                 <input
                   id={`step-${step.id}-wait-duration`}
                   type="number"
                   min={1}
                   value={step.waitConfig?.duration || 1}
-                  onChange={(e) => handleWaitConfigChange('duration', parseInt(e.target.value, 10))}
+                  onChange={e => handleWaitConfigChange('duration', parseInt(e.target.value, 10))}
                   className={styles.configInputSmall}
                 />
               </div>
               <div className={styles.configField}>
-                <label htmlFor={`step-${step.id}-wait-unit`} className={styles.configLabel}>Unit</label>
+                <label htmlFor={`step-${step.id}-wait-unit`} className={styles.configLabel}>
+                  Unit
+                </label>
                 <select
                   id={`step-${step.id}-wait-unit`}
                   value={step.waitConfig?.unit || 'days'}
-                  onChange={(e) => handleWaitConfigChange('unit', e.target.value)}
+                  onChange={e => handleWaitConfigChange('unit', e.target.value)}
                   className={styles.configSelect}
                 >
                   {WAIT_UNITS.map(unit => (
-                    <option key={unit.value} value={unit.value}>{unit.label}</option>
+                    <option key={unit.value} value={unit.value}>
+                      {unit.label}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -369,22 +391,26 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-task-title`} className={styles.configLabel}>Task Title</label>
+              <label htmlFor={`step-${step.id}-task-title`} className={styles.configLabel}>
+                Task Title
+              </label>
               <input
                 id={`step-${step.id}-task-title`}
                 type="text"
                 value={step.taskConfig?.title || ''}
-                onChange={(e) => handleTaskConfigChange('title', e.target.value)}
+                onChange={e => handleTaskConfigChange('title', e.target.value)}
                 className={styles.configInput}
                 placeholder="Follow up with {{firstName}}"
               />
             </div>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-task-description`} className={styles.configLabel}>Description</label>
+              <label htmlFor={`step-${step.id}-task-description`} className={styles.configLabel}>
+                Description
+              </label>
               <textarea
                 id={`step-${step.id}-task-description`}
                 value={step.taskConfig?.description || ''}
-                onChange={(e) => handleTaskConfigChange('description', e.target.value)}
+                onChange={e => handleTaskConfigChange('description', e.target.value)}
                 className={styles.configTextarea}
                 rows={3}
                 placeholder="Task details..."
@@ -398,24 +424,28 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
           <div className={styles.stepConfig}>
             <div className={styles.configRow}>
               <div className={styles.configField}>
-                <label htmlFor={`step-${step.id}-call-duration`} className={styles.configLabel}>Duration (minutes)</label>
+                <label htmlFor={`step-${step.id}-call-duration`} className={styles.configLabel}>
+                  Duration (minutes)
+                </label>
                 <input
                   id={`step-${step.id}-call-duration`}
                   type="number"
                   min={5}
                   step={5}
                   value={step.callConfig?.duration || 30}
-                  onChange={(e) => handleCallConfigChange('duration', parseInt(e.target.value, 10))}
+                  onChange={e => handleCallConfigChange('duration', parseInt(e.target.value, 10))}
                   className={styles.configInputSmall}
                 />
               </div>
             </div>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-call-script`} className={styles.configLabel}>Call Script</label>
+              <label htmlFor={`step-${step.id}-call-script`} className={styles.configLabel}>
+                Call Script
+              </label>
               <textarea
                 id={`step-${step.id}-call-script`}
                 value={step.callConfig?.script || ''}
-                onChange={(e) => handleCallConfigChange('script', e.target.value)}
+                onChange={e => handleCallConfigChange('script', e.target.value)}
                 className={styles.configTextarea}
                 rows={4}
                 placeholder="Key talking points..."
@@ -428,21 +458,25 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label htmlFor={`step-${step.id}-condition-type`} className={styles.configLabel}>Condition Type</label>
+              <label htmlFor={`step-${step.id}-condition-type`} className={styles.configLabel}>
+                Condition Type
+              </label>
               <select
                 id={`step-${step.id}-condition-type`}
                 value={step.conditionConfig?.condition?.type || 'email_opened'}
-                onChange={(e) => handleConditionConfigChange('type', e.target.value)}
+                onChange={e => handleConditionConfigChange('type', e.target.value)}
                 className={styles.configSelect}
               >
                 {CONDITION_TYPES.map(cond => (
-                  <option key={cond.value} value={cond.value}>{cond.label}</option>
+                  <option key={cond.value} value={cond.value}>
+                    {cond.label}
+                  </option>
                 ))}
               </select>
             </div>
             <p className={styles.configHint}>
-              Branch logic will be evaluated when this step is reached.
-              Configure branches in the full sequence editor.
+              Branch logic will be evaluated when this step is reached. Configure branches in the
+              full sequence editor.
             </p>
           </div>
         );
@@ -462,7 +496,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         <select
           aria-label="Step type"
           value={step.type}
-          onChange={(e) => handleTypeChange(e.target.value as SequenceStepType)}
+          onChange={e => handleTypeChange(e.target.value as SequenceStepType)}
           className={styles.stepTypeSelect}
         >
           {STEP_TYPES.map(type => (
@@ -513,11 +547,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         </div>
       </div>
 
-      {isExpanded && (
-        <div className={styles.stepBody}>
-          {renderConfigEditor()}
-        </div>
-      )}
+      {isExpanded && <div className={styles.stepBody}>{renderConfigEditor()}</div>}
     </div>
   );
 };

@@ -11,9 +11,7 @@ import type {
   SkySnareLeadData,
   AeroNetLeadData,
 } from '@/types/phoenix-rooivalk';
-import {
-  getScoringRules,
-} from '@/types/phoenix-rooivalk';
+import { getScoringRules } from '@/types/phoenix-rooivalk';
 import { calculateScoreGrade } from '@/types/lead';
 
 /**
@@ -42,10 +40,10 @@ export class PhoenixLeadScorer {
     const total = Math.min(
       100,
       breakdown.demographic +
-      breakdown.behavioral +
-      breakdown.engagement +
-      breakdown.recency +
-      breakdown.custom
+        breakdown.behavioral +
+        breakdown.engagement +
+        breakdown.recency +
+        breakdown.custom
     );
 
     return {
@@ -114,10 +112,7 @@ export class PhoenixLeadScorer {
         score += 15; // Trial request for consumer
       }
       if (data.eventsAttended?.length) {
-        score += Math.min(
-          this.rules.behavioral.eventAttendance,
-          data.eventsAttended.length * 5
-        );
+        score += Math.min(this.rules.behavioral.eventAttendance, data.eventsAttended.length * 5);
       }
     } else {
       const data = lead.phoenixData as AeroNetLeadData;
@@ -260,11 +255,11 @@ export class PhoenixLeadScorer {
 
         // Budget range scoring
         const budgetScores: Record<string, number> = {
-          'over_5m': 10,
+          over_5m: 10,
           '1m_5m': 8,
           '500k_1m': 6,
           '100k_500k': 4,
-          'under_100k': 2,
+          under_100k: 2,
         };
         if (data.procurement.budgetRange) {
           score += budgetScores[data.procurement.budgetRange] || 0;
@@ -356,8 +351,7 @@ export function shouldFastTrack(lead: PhoenixLead): boolean {
     // Large budget with immediate timeline
     if (
       data.procurement?.timeline === 'immediate' &&
-      (data.procurement?.budgetRange === 'over_5m' ||
-        data.procurement?.budgetRange === '1m_5m')
+      (data.procurement?.budgetRange === 'over_5m' || data.procurement?.budgetRange === '1m_5m')
     ) {
       return true;
     }

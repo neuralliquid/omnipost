@@ -27,28 +27,27 @@ const STATUS_CONFIG: Record<LeadStatus, { label: string; className: string }> = 
 export const LeadStatusBadge: React.FC<LeadStatusBadgeProps> = ({ status }) => {
   const config = STATUS_CONFIG[status] || { label: status, className: '' };
 
-  return (
-    <span className={`${styles.badge} ${styles[config.className]}`}>
-      {config.label}
-    </span>
-  );
+  return <span className={`${styles.badge} ${styles[config.className]}`}>{config.label}</span>;
 };
 
 interface LeadTemperatureBadgeProps {
   temperature: LeadTemperature;
 }
 
-const TEMPERATURE_CONFIG: Record<LeadTemperature, { label: string; icon: string; className: string }> = {
+const TEMPERATURE_CONFIG: Record<
+  LeadTemperature,
+  { label: string; icon: string; className: string }
+> = {
   cold: { label: 'Cold', icon: '❄️', className: 'tempCold' },
   warm: { label: 'Warm', icon: '🔥', className: 'tempWarm' },
   hot: { label: 'Hot', icon: '🔥🔥', className: 'tempHot' },
 };
 
 export const LeadTemperatureBadge: React.FC<LeadTemperatureBadgeProps> = ({ temperature }) => {
-  const config = TEMPERATURE_CONFIG[temperature] || { 
-    label: 'Unknown', 
-    icon: '❓', 
-    className: 'tempCold' 
+  const config = TEMPERATURE_CONFIG[temperature] || {
+    label: 'Unknown',
+    icon: '❓',
+    className: 'tempCold',
   };
 
   // Log warning when unexpected temperature value is received
@@ -121,11 +120,7 @@ export const TagBadge: React.FC<TagBadgeProps> = ({ name, color, onRemove }) => 
     >
       {name}
       {onRemove && (
-        <button
-          onClick={onRemove}
-          className={styles.tagRemove}
-          aria-label={`Remove tag ${name}`}
-        >
+        <button onClick={onRemove} className={styles.tagRemove} aria-label={`Remove tag ${name}`}>
           ×
         </button>
       )}

@@ -7,10 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sequencesClient } from '@/lib/data/sequences';
 import type { SequenceStatus } from '@/types/sequence';
-import {
-  VALID_SEQUENCE_STATUSES,
-  VALID_SEQUENCE_STEP_TYPES,
-} from '@/app/api/_utils/constants';
+import { VALID_SEQUENCE_STATUSES, VALID_SEQUENCE_STEP_TYPES } from '@/app/api/_utils/constants';
 import {
   requireAuth,
   requireAuthWithUserId,
@@ -104,9 +101,7 @@ export const POST = withErrorHandling(async (request: Request) => {
 
     // Validate wait config
     if (step.type === 'wait' && !step.waitConfig) {
-      return ErrorResponses.badRequest(
-        `Step ${i + 1}: waitConfig is required for wait steps`
-      );
+      return ErrorResponses.badRequest(`Step ${i + 1}: waitConfig is required for wait steps`);
     }
 
     // Assign order if not provided
@@ -136,9 +131,12 @@ export const POST = withErrorHandling(async (request: Request) => {
     authResult.userId
   );
 
-  return NextResponse.json({
-    success: true,
-    data: { sequence },
-    message: 'Sequence created successfully',
-  }, { status: 201 });
+  return NextResponse.json(
+    {
+      success: true,
+      data: { sequence },
+      message: 'Sequence created successfully',
+    },
+    { status: 201 }
+  );
 });

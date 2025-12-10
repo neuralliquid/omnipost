@@ -6,7 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { checkRateLimit, RateLimitPresets } from './rateLimit';
 
-type RateLimitPreset = typeof RateLimitPresets[keyof typeof RateLimitPresets];
+type RateLimitPreset = (typeof RateLimitPresets)[keyof typeof RateLimitPresets];
 
 /**
  * Create a rate limit exceeded response with proper headers
@@ -50,8 +50,7 @@ export function checkRateLimitOrRespond(
  * Standard error responses
  */
 export const ErrorResponses = {
-  unauthorized: () =>
-    NextResponse.json({ error: 'Authentication required' }, { status: 401 }),
+  unauthorized: () => NextResponse.json({ error: 'Authentication required' }, { status: 401 }),
 
   forbidden: (message: string = 'Access denied') =>
     NextResponse.json({ error: message }, { status: 403 }),
@@ -59,8 +58,7 @@ export const ErrorResponses = {
   notFound: (resource: string = 'Resource') =>
     NextResponse.json({ error: `${resource} not found` }, { status: 404 }),
 
-  badRequest: (message: string) =>
-    NextResponse.json({ error: message }, { status: 400 }),
+  badRequest: (message: string) => NextResponse.json({ error: message }, { status: 400 }),
 
   validationError: (errors: string[]) =>
     NextResponse.json({ error: 'Validation failed', errors }, { status: 400 }),
@@ -72,8 +70,7 @@ export const ErrorResponses = {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   },
 
-  conflict: (message: string) =>
-    NextResponse.json({ error: message }, { status: 409 }),
+  conflict: (message: string) => NextResponse.json({ error: message }, { status: 409 }),
 };
 
 /**

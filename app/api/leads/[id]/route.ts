@@ -7,10 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { leadsClient } from '@/lib/data/leads';
-import {
-  VALID_LEAD_STATUSES,
-  VALID_LEAD_TEMPERATURES,
-} from '@/app/api/_utils/constants';
+import { VALID_LEAD_STATUSES, VALID_LEAD_TEMPERATURES } from '@/app/api/_utils/constants';
 import {
   requireAuth,
   validateEnumField,
@@ -76,11 +73,7 @@ export const PATCH = withErrorHandling(async (request: Request, { params }: Rout
 
   // Validate temperature if provided
   if (body.temperature) {
-    const tempError = validateEnumField(
-      body.temperature,
-      VALID_LEAD_TEMPERATURES,
-      'temperature'
-    );
+    const tempError = validateEnumField(body.temperature, VALID_LEAD_TEMPERATURES, 'temperature');
     if (tempError) return tempError;
   }
 

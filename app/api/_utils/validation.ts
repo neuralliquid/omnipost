@@ -198,10 +198,7 @@ export function validateNumber(
  * Validate a single form field value
  * Returns error message if invalid, null if valid
  */
-export function validateFormField(
-  field: FormField,
-  value: unknown
-): string | null {
+export function validateFormField(field: FormField, value: unknown): string | null {
   // Required validation
   if (field.validation?.required) {
     if (value === undefined || value === null || value === '') {
@@ -220,12 +217,7 @@ export function validateFormField(
       return validateEmail(field.label, value);
 
     case 'number':
-      return validateNumber(
-        field.label,
-        value,
-        field.validation?.min,
-        field.validation?.max
-      );
+      return validateNumber(field.label, value, field.validation?.min, field.validation?.max);
 
     case 'text':
     case 'textarea':

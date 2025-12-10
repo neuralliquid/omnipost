@@ -420,9 +420,7 @@ export interface PhoenixFormSubmission {
 /**
  * Helper to determine brand from segment
  */
-export function getBrandFromSegment(
-  segment: SkySnareSegment | AeroNetSegment
-): PhoenixBrand {
+export function getBrandFromSegment(segment: SkySnareSegment | AeroNetSegment): PhoenixBrand {
   const skySnareSegments: SkySnareSegment[] = [
     'sports_enthusiast',
     'training_facility',
@@ -432,9 +430,7 @@ export function getBrandFromSegment(
     'recreational',
   ];
 
-  return skySnareSegments.includes(segment as SkySnareSegment)
-    ? 'skysnare'
-    : 'aeronet';
+  return skySnareSegments.includes(segment as SkySnareSegment) ? 'skysnare' : 'aeronet';
 }
 
 /**
@@ -462,8 +458,8 @@ export function isHighValueEnterprise(lead: PhoenixLead): boolean {
 
   return (
     highValueSegments.includes(data.segment) ||
-    (data.procurement?.budgetRange === 'over_5m') ||
-    (data.procurement?.budgetRange === '1m_5m')
+    data.procurement?.budgetRange === 'over_5m' ||
+    data.procurement?.budgetRange === '1m_5m'
   );
 }
 

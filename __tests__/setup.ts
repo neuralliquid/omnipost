@@ -102,7 +102,7 @@ global.createMockRequest = (
 
 // Extend global types
 declare global {
-  // eslint-disable-next-line no-var
+   
   var createMockRequest: (
     method: string,
     body?: Record<string, unknown>,

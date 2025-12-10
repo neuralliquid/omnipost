@@ -125,11 +125,7 @@ export class LinkedInProspectingClient {
       throw new Error('LinkedIn client not initialized');
     }
 
-    const scopes = [
-      'r_liteprofile',
-      'r_emailaddress',
-      'w_member_social',
-    ].join(' ');
+    const scopes = ['r_liteprofile', 'r_emailaddress', 'w_member_social'].join(' ');
 
     const params = new URLSearchParams({
       response_type: 'code',
@@ -222,7 +218,9 @@ export class LinkedInProspectingClient {
 
     try {
       const response = await this.makeRequest('/people', queryParams);
-      const paging = response.paging as { total?: number; start?: number; count?: number } | undefined;
+      const paging = response.paging as
+        | { total?: number; start?: number; count?: number }
+        | undefined;
       const elements = Array.isArray(response.elements) ? response.elements : [];
 
       return {
@@ -234,11 +232,13 @@ export class LinkedInProspectingClient {
       // Re-throw authentication errors - these should surface to callers
       if (error instanceof Error) {
         const errorMessage = error.message.toLowerCase();
-        if (errorMessage.includes('no access token') ||
-            errorMessage.includes('401') ||
-            errorMessage.includes('403') ||
-            errorMessage.includes('unauthorized') ||
-            errorMessage.includes('authentication')) {
+        if (
+          errorMessage.includes('no access token') ||
+          errorMessage.includes('401') ||
+          errorMessage.includes('403') ||
+          errorMessage.includes('unauthorized') ||
+          errorMessage.includes('authentication')
+        ) {
           throw error;
         }
         // Log error details for debugging
@@ -265,7 +265,8 @@ export class LinkedInProspectingClient {
 
     try {
       const response = await this.makeRequest(`/people/${identifier}`, {
-        projection: '(id,firstName,lastName,headline,summary,profilePicture,vanityName,positions,education,skills)',
+        projection:
+          '(id,firstName,lastName,headline,summary,profilePicture,vanityName,positions,education,skills)',
       });
 
       return this.normalizeProfile(response);
@@ -291,7 +292,7 @@ export class LinkedInProspectingClient {
     // It requires browser automation or Sales Navigator access
     throw new Error(
       'viewProfile not implemented: LinkedIn API does not support profile viewing. ' +
-      'Use browser automation or Sales Navigator integration instead.'
+        'Use browser automation or Sales Navigator integration instead.'
     );
   }
 
@@ -322,10 +323,7 @@ export class LinkedInProspectingClient {
   /**
    * Send message to a connection
    */
-  public async sendMessage(
-    profileId: string,
-    message: string
-  ): Promise<{ success: boolean }> {
+  public async sendMessage(profileId: string, message: string): Promise<{ success: boolean }> {
     if (!this.isInitialized()) {
       throw new Error('LinkedIn client not initialized or not authenticated');
     }
@@ -359,9 +357,11 @@ export class LinkedInProspectingClient {
           ? `https://www.linkedin.com/in/${profile.vanityName}`
           : undefined,
       },
-      company: currentPosition ? {
-        name: currentPosition.companyName,
-      } : undefined,
+      company: currentPosition
+        ? {
+            name: currentPosition.companyName,
+          }
+        : undefined,
       source: 'linkedin',
       sourceDetails: 'LinkedIn Prospecting',
       linkedinData: {
@@ -369,17 +369,21 @@ export class LinkedInProspectingClient {
         headline: profile.headline,
         summary: profile.summary,
         location: profile.location
-          ? `${profile.location.city || ''}, ${profile.location.country || ''}`.trim().replace(/^,\s*|,\s*$/g, '')
+          ? `${profile.location.city || ''}, ${profile.location.country || ''}`
+              .trim()
+              .replace(/^,\s*|,\s*$/g, '')
           : undefined,
         connections: profile.connections,
         profilePictureUrl: profile.profilePicture,
-        currentPosition: currentPosition ? {
-          title: currentPosition.title,
-          company: currentPosition.companyName,
-          startDate: currentPosition.startDate
-            ? `${currentPosition.startDate.year}-${String(currentPosition.startDate.month || 1).padStart(2, '0')}`
-            : undefined,
-        } : undefined,
+        currentPosition: currentPosition
+          ? {
+              title: currentPosition.title,
+              company: currentPosition.companyName,
+              startDate: currentPosition.startDate
+                ? `${currentPosition.startDate.year}-${String(currentPosition.startDate.month || 1).padStart(2, '0')}`
+                : undefined,
+            }
+          : undefined,
         education: profile.education?.map(e => ({
           school: e.schoolName,
           degree: e.degree,
@@ -412,7 +416,7 @@ export class LinkedInProspectingClient {
     }
 
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${this._accessToken}`,
+      Authorization: `Bearer ${this._accessToken}`,
       'X-Restli-Protocol-Version': '2.0.0',
     };
 
@@ -447,34 +451,33 @@ export class LinkedInProspectingClient {
       id: data.id,
       firstName: this.getLocalizedName(
         typeof data.firstName === 'object' && data.firstName !== null
-          ? data.firstName as Record<string, unknown>
+          ? (data.firstName as Record<string, unknown>)
           : undefined
       ),
       lastName: this.getLocalizedName(
         typeof data.lastName === 'object' && data.lastName !== null
-          ? data.lastName as Record<string, unknown>
+          ? (data.lastName as Record<string, unknown>)
           : undefined
       ),
       headline: typeof data.headline === 'string' ? data.headline : undefined,
       summary: typeof data.summary === 'string' ? data.summary : undefined,
       profilePicture: this.getProfilePicture(
         typeof data.profilePicture === 'object' && data.profilePicture !== null
-          ? data.profilePicture as Record<string, unknown>
+          ? (data.profilePicture as Record<string, unknown>)
           : undefined
       ),
       vanityName: typeof data.vanityName === 'string' ? data.vanityName : undefined,
-      location: typeof data.location === 'object' && data.location !== null
-        ? data.location as LinkedInAPIProfile['location']
-        : undefined,
+      location:
+        typeof data.location === 'object' && data.location !== null
+          ? (data.location as LinkedInAPIProfile['location'])
+          : undefined,
       positions: Array.isArray(data.positions)
-        ? data.positions as LinkedInAPIProfile['positions']
+        ? (data.positions as LinkedInAPIProfile['positions'])
         : undefined,
       education: Array.isArray(data.education)
-        ? data.education as LinkedInAPIProfile['education']
+        ? (data.education as LinkedInAPIProfile['education'])
         : undefined,
-      skills: Array.isArray(data.skills)
-        ? data.skills as string[]
-        : undefined,
+      skills: Array.isArray(data.skills) ? (data.skills as string[]) : undefined,
       connections: typeof data.connections === 'number' ? data.connections : undefined,
     };
   }

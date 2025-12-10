@@ -148,7 +148,7 @@ export interface SequenceStep {
 
   conditionConfig?: {
     condition: ConditionConfig;
-    trueStepId?: string;  // Next step if condition is true
+    trueStepId?: string; // Next step if condition is true
     falseStepId?: string; // Next step if condition is false
   };
 
@@ -163,10 +163,18 @@ export interface SequenceStep {
  */
 export interface SequenceSchedule {
   timezone: string;
-  sendingDays: ('monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday' | 'saturday' | 'sunday')[];
+  sendingDays: (
+    | 'monday'
+    | 'tuesday'
+    | 'wednesday'
+    | 'thursday'
+    | 'friday'
+    | 'saturday'
+    | 'sunday'
+  )[];
   sendingHours: {
     start: string; // HH:mm format, e.g., "09:00"
-    end: string;   // HH:mm format, e.g., "17:00"
+    end: string; // HH:mm format, e.g., "17:00"
   };
   maxPerDay?: number;
   maxPerHour?: number;
@@ -426,7 +434,17 @@ export const SEQUENCE_TEMPLATES = {
   coldOutreach: {
     name: 'Cold Outreach',
     description: 'Standard cold outreach sequence with email and LinkedIn',
-    steps: ['linkedin_view_profile', 'wait', 'linkedin_connection', 'wait', 'email', 'wait', 'email', 'wait', 'linkedin_message'],
+    steps: [
+      'linkedin_view_profile',
+      'wait',
+      'linkedin_connection',
+      'wait',
+      'email',
+      'wait',
+      'email',
+      'wait',
+      'linkedin_message',
+    ],
   },
   warmFollowUp: {
     name: 'Warm Follow-up',

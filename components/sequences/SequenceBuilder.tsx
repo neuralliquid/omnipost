@@ -6,7 +6,12 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import type { Sequence, SequenceStep, CreateSequenceInput, SequenceStepType } from '@/types/sequence';
+import type {
+  Sequence,
+  SequenceStep,
+  CreateSequenceInput,
+  SequenceStepType,
+} from '@/types/sequence';
 import { SequenceStepEditor } from './SequenceStepEditor';
 import styles from '@/styles/Sequences.module.css';
 
@@ -169,17 +174,20 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
     });
   }, []);
 
-  const handleMoveStep = useCallback((fromIndex: number, toIndex: number) => {
-    if (toIndex < 0 || toIndex >= steps.length) return;
+  const handleMoveStep = useCallback(
+    (fromIndex: number, toIndex: number) => {
+      if (toIndex < 0 || toIndex >= steps.length) return;
 
-    setSteps(prev => {
-      const newSteps = [...prev];
-      const [movedStep] = newSteps.splice(fromIndex, 1);
-      newSteps.splice(toIndex, 0, movedStep);
-      // Reorder steps
-      return newSteps.map((step, i) => ({ ...step, order: i }));
-    });
-  }, [steps.length]);
+      setSteps(prev => {
+        const newSteps = [...prev];
+        const [movedStep] = newSteps.splice(fromIndex, 1);
+        newSteps.splice(toIndex, 0, movedStep);
+        // Reorder steps
+        return newSteps.map((step, i) => ({ ...step, order: i }));
+      });
+    },
+    [steps.length]
+  );
 
   const handleDayToggle = (day: DayOfWeek) => {
     setSchedule(prev => ({
@@ -279,9 +287,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
   return (
     <form onSubmit={handleSubmit} className={styles.sequenceBuilder}>
       <div className={styles.builderHeader}>
-        <h2 className={styles.builderTitle}>
-          {sequence ? 'Edit Sequence' : 'Create Sequence'}
-        </h2>
+        <h2 className={styles.builderTitle}>{sequence ? 'Edit Sequence' : 'Create Sequence'}</h2>
       </div>
 
       <div className={styles.builderSection}>
@@ -295,7 +301,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
             type="text"
             id="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={e => setName(e.target.value)}
             className={`${styles.input} ${errors.name ? styles.inputError : ''}`}
             placeholder="e.g., Cold Outreach - Enterprise"
           />
@@ -303,11 +309,13 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="description" className={styles.label}>Description</label>
+          <label htmlFor="description" className={styles.label}>
+            Description
+          </label>
           <textarea
             id="description"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
             className={styles.textarea}
             rows={2}
             placeholder="Describe the purpose of this sequence..."
@@ -321,11 +329,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
             Sequence Steps
             <span className={styles.stepCount}>({steps.length})</span>
           </h3>
-          <button
-            type="button"
-            onClick={handleAddStep}
-            className={styles.addStepButton}
-          >
+          <button type="button" onClick={handleAddStep} className={styles.addStepButton}>
             + Add Step
           </button>
         </div>
@@ -345,7 +349,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
               <SequenceStepEditor
                 step={step}
                 stepNumber={index + 1}
-                onChange={(updated) => handleStepChange(index, updated)}
+                onChange={updated => handleStepChange(index, updated)}
                 onDelete={() => handleDeleteStep(index)}
                 onMoveUp={() => handleMoveStep(index, index - 1)}
                 onMoveDown={() => handleMoveStep(index, index + 1)}
@@ -381,43 +385,55 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label htmlFor="startTime" className={styles.label}>Start Time</label>
+            <label htmlFor="startTime" className={styles.label}>
+              Start Time
+            </label>
             <input
               type="time"
               id="startTime"
               value={schedule.sendingHours.start}
-              onChange={(e) => setSchedule(prev => ({
-                ...prev,
-                sendingHours: { ...prev.sendingHours, start: e.target.value },
-              }))}
+              onChange={e =>
+                setSchedule(prev => ({
+                  ...prev,
+                  sendingHours: { ...prev.sendingHours, start: e.target.value },
+                }))
+              }
               className={styles.input}
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="endTime" className={styles.label}>End Time</label>
+            <label htmlFor="endTime" className={styles.label}>
+              End Time
+            </label>
             <input
               type="time"
               id="endTime"
               value={schedule.sendingHours.end}
-              onChange={(e) => setSchedule(prev => ({
-                ...prev,
-                sendingHours: { ...prev.sendingHours, end: e.target.value },
-              }))}
+              onChange={e =>
+                setSchedule(prev => ({
+                  ...prev,
+                  sendingHours: { ...prev.sendingHours, end: e.target.value },
+                }))
+              }
               className={styles.input}
             />
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="maxPerDay" className={styles.label}>Max per Day</label>
+            <label htmlFor="maxPerDay" className={styles.label}>
+              Max per Day
+            </label>
             <input
               type="number"
               id="maxPerDay"
               min={1}
               max={200}
               value={schedule.maxPerDay}
-              onChange={(e) => setSchedule(prev => ({
-                ...prev,
-                maxPerDay: parseInt(e.target.value, 10),
-              }))}
+              onChange={e =>
+                setSchedule(prev => ({
+                  ...prev,
+                  maxPerDay: parseInt(e.target.value, 10),
+                }))
+              }
               className={styles.input}
             />
           </div>
@@ -432,7 +448,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
             <input
               type="checkbox"
               checked={stopOnReply}
-              onChange={(e) => setStopOnReply(e.target.checked)}
+              onChange={e => setStopOnReply(e.target.checked)}
             />
             <span>Stop sequence when lead replies</span>
           </label>
@@ -440,7 +456,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
             <input
               type="checkbox"
               checked={stopOnBounce}
-              onChange={(e) => setStopOnBounce(e.target.checked)}
+              onChange={e => setStopOnBounce(e.target.checked)}
             />
             <span>Stop sequence on email bounce</span>
           </label>
@@ -462,11 +478,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
         >
           Cancel
         </button>
-        <button
-          type="submit"
-          className={styles.saveButton}
-          disabled={loading || isSubmitting}
-        >
+        <button type="submit" className={styles.saveButton} disabled={loading || isSubmitting}>
           {loading || isSubmitting ? 'Saving...' : sequence ? 'Update Sequence' : 'Create Sequence'}
         </button>
       </div>

@@ -79,24 +79,30 @@ export const LeadList: React.FC<LeadListProps> = ({
     }
   }, [leads, selectedLeads.size]);
 
-  const handleFilterChange = useCallback((key: keyof LeadFilter, value: unknown) => {
-    const newFilter = { ...filter, [key]: value || undefined };
-    setFilter(newFilter);
-    if (onFilterChange) {
-      onFilterChange(newFilter);
-    }
-  }, [filter, onFilterChange]);
+  const handleFilterChange = useCallback(
+    (key: keyof LeadFilter, value: unknown) => {
+      const newFilter = { ...filter, [key]: value || undefined };
+      setFilter(newFilter);
+      if (onFilterChange) {
+        onFilterChange(newFilter);
+      }
+    },
+    [filter, onFilterChange]
+  );
 
   const handleSearch = useCallback(() => {
     handleFilterChange('search', searchQuery);
   }, [searchQuery, handleFilterChange]);
 
-  const handleBulkAction = useCallback((action: string) => {
-    if (onBulkAction && selectedLeads.size > 0) {
-      onBulkAction(Array.from(selectedLeads), action);
-      setSelectedLeads(new Set());
-    }
-  }, [onBulkAction, selectedLeads]);
+  const handleBulkAction = useCallback(
+    (action: string) => {
+      if (onBulkAction && selectedLeads.size > 0) {
+        onBulkAction(Array.from(selectedLeads), action);
+        setSelectedLeads(new Set());
+      }
+    },
+    [onBulkAction, selectedLeads]
+  );
 
   const clearFilters = useCallback(() => {
     setFilter({});
@@ -135,24 +141,28 @@ export const LeadList: React.FC<LeadListProps> = ({
 
         <div className={styles.filterGroup}>
           <select
-            value={filter.status as string || ''}
+            value={(filter.status as string) || ''}
             onChange={e => handleFilterChange('status', e.target.value as LeadStatus)}
             className={styles.filterSelect}
           >
             <option value="">All Status</option>
             {STATUS_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
 
           <select
-            value={filter.temperature as string || ''}
+            value={(filter.temperature as string) || ''}
             onChange={e => handleFilterChange('temperature', e.target.value as LeadTemperature)}
             className={styles.filterSelect}
           >
             <option value="">All Temperature</option>
             {TEMPERATURE_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
             ))}
           </select>
 
@@ -160,7 +170,12 @@ export const LeadList: React.FC<LeadListProps> = ({
             type="number"
             placeholder="Min Score"
             value={filter.scoreMin || ''}
-            onChange={e => handleFilterChange('scoreMin', e.target.value ? Number.parseInt(e.target.value, 10) : undefined)}
+            onChange={e =>
+              handleFilterChange(
+                'scoreMin',
+                e.target.value ? Number.parseInt(e.target.value, 10) : undefined
+              )
+            }
             className={styles.filterInput}
             min={0}
             max={100}
@@ -181,10 +196,7 @@ export const LeadList: React.FC<LeadListProps> = ({
             {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
           </span>
           <div className={styles.bulkActions}>
-            <button
-              onClick={() => handleBulkAction('addTag')}
-              className={styles.bulkActionButton}
-            >
+            <button onClick={() => handleBulkAction('addTag')} className={styles.bulkActionButton}>
               Add Tag
             </button>
             <button
@@ -241,7 +253,9 @@ export const LeadList: React.FC<LeadListProps> = ({
             />
           </svg>
           <h3>No leads found</h3>
-          <p>{hasActiveFilters ? 'Try adjusting your filters' : 'Add your first lead to get started'}</p>
+          <p>
+            {hasActiveFilters ? 'Try adjusting your filters' : 'Add your first lead to get started'}
+          </p>
         </div>
       ) : (
         <div className={styles.leadGrid}>

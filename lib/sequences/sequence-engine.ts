@@ -5,11 +5,7 @@
 
 import { sequencesClient } from '../data/sequences';
 import { leadsClient } from '../data/leads';
-import type {
-  Sequence,
-  SequenceStep,
-  SequenceEnrollment,
-} from '../../types/sequence';
+import type { Sequence, SequenceStep, SequenceEnrollment } from '../../types/sequence';
 import type { Lead } from '../../types/lead';
 
 /**
@@ -503,9 +499,12 @@ export class SequenceEngine {
       if (result.success) {
         // Record interaction
         await leadsClient.addInteraction(lead.id, {
-          type: step.type === 'linkedin_connection' ? 'linkedin_connection' :
-                step.type === 'linkedin_message' ? 'linkedin_message' :
-                'linkedin_view',
+          type:
+            step.type === 'linkedin_connection'
+              ? 'linkedin_connection'
+              : step.type === 'linkedin_message'
+                ? 'linkedin_message'
+                : 'linkedin_view',
           description: `LinkedIn action: ${step.name}`,
           metadata: {
             sequenceId: sequence.id,
@@ -558,8 +557,12 @@ export class SequenceEngine {
       `Step: ${step.name}`,
       `Lead: ${lead.fullName}`,
       lead.contact.linkedinUrl ? `LinkedIn: ${lead.contact.linkedinUrl}` : '',
-      step.linkedinConfig?.message ? `Message: ${this.personalizeContent(step.linkedinConfig.message, lead)}` : '',
-    ].filter(Boolean).join('\n');
+      step.linkedinConfig?.message
+        ? `Message: ${this.personalizeContent(step.linkedinConfig.message, lead)}`
+        : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
 
     try {
       const result = await this.taskCreator.create({
@@ -631,7 +634,9 @@ export class SequenceEngine {
     try {
       const result = await this.taskCreator.create({
         title: this.personalizeContent(config.title, lead),
-        description: config.description ? this.personalizeContent(config.description, lead) : undefined,
+        description: config.description
+          ? this.personalizeContent(config.description, lead)
+          : undefined,
         assignTo: config.assignTo || sequence.createdBy,
         dueDate,
         leadId: lead.id,
@@ -690,7 +695,9 @@ export class SequenceEngine {
           config?.script ? `Script: ${this.personalizeContent(config.script, lead)}` : '',
           lead.contact.phone ? `Phone: ${lead.contact.phone}` : 'No phone number on file',
           `Expected duration: ${config?.duration || 15} minutes`,
-        ].filter(Boolean).join('\n'),
+        ]
+          .filter(Boolean)
+          .join('\n'),
         assignTo: sequence.createdBy,
         leadId: lead.id,
         sequenceId: sequence.id,
@@ -780,30 +787,29 @@ export class SequenceEngine {
 
     switch (condition.type) {
       case 'email_opened':
-        return interactions.some(i =>
-          i.type === 'email_opened' &&
-          this.isWithinDays(i.createdAt, condition.withinDays || 7)
+        return interactions.some(
+          i =>
+            i.type === 'email_opened' && this.isWithinDays(i.createdAt, condition.withinDays || 7)
         );
 
       case 'email_clicked':
-        return interactions.some(i =>
-          i.type === 'email_clicked' &&
-          this.isWithinDays(i.createdAt, condition.withinDays || 7)
+        return interactions.some(
+          i =>
+            i.type === 'email_clicked' && this.isWithinDays(i.createdAt, condition.withinDays || 7)
         );
 
       case 'email_replied':
-        return interactions.some(i =>
-          i.type === 'email_replied' &&
-          this.isWithinDays(i.createdAt, condition.withinDays || 7)
+        return interactions.some(
+          i =>
+            i.type === 'email_replied' && this.isWithinDays(i.createdAt, condition.withinDays || 7)
         );
 
       case 'linkedin_accepted':
         return interactions.some(i => i.type === 'linkedin_connection');
 
       case 'linkedin_replied':
-        return interactions.some(i =>
-          i.type === 'linkedin_message' &&
-          i.metadata?.isReply === true
+        return interactions.some(
+          i => i.type === 'linkedin_message' && i.metadata?.isReply === true
         );
 
       case 'tag_present':
@@ -839,7 +845,15 @@ export class SequenceEngine {
     const now = new Date();
 
     // Check day of week
-    const dayNames = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
+    const dayNames = [
+      'sunday',
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+    ] as const;
     const currentDay = dayNames[now.getDay()];
     if (!schedule.sendingDays.includes(currentDay)) {
       return false;
@@ -929,7 +943,11 @@ export class SequenceEngine {
 
     const sequence = await sequencesClient.getSequence(sequenceId);
     if (sequence?.stopOnUnsubscribe) {
-      await sequencesClient.updateEnrollmentStatus(enrollment.id, 'unsubscribed', 'Lead unsubscribed');
+      await sequencesClient.updateEnrollmentStatus(
+        enrollment.id,
+        'unsubscribed',
+        'Lead unsubscribed'
+      );
     }
   }
 
@@ -941,9 +959,10 @@ export class SequenceEngine {
     metrics.repliedLeads++;
     metrics.activeLeads = Math.max(0, metrics.activeLeads - 1);
     metrics.emailStats.replied++;
-    metrics.emailStats.replyRate = metrics.emailStats.sent > 0
-      ? (metrics.emailStats.replied / metrics.emailStats.sent) * 100
-      : 0;
+    metrics.emailStats.replyRate =
+      metrics.emailStats.sent > 0
+        ? (metrics.emailStats.replied / metrics.emailStats.sent) * 100
+        : 0;
 
     await sequencesClient.updateSequence(sequence.id, { metrics });
   }

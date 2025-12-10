@@ -10,7 +10,14 @@ import type { LeadStatus, LeadTemperature } from '@/types/lead';
 
 // Valid status values
 const VALID_STATUSES: LeadStatus[] = [
-  'new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'nurturing'
+  'new',
+  'contacted',
+  'qualified',
+  'proposal',
+  'negotiation',
+  'won',
+  'lost',
+  'nurturing',
 ];
 
 // Valid temperature values
@@ -18,7 +25,7 @@ const VALID_TEMPERATURES: LeadTemperature[] = ['cold', 'warm', 'hot'];
 
 // Valid bulk operations
 const VALID_OPERATIONS = ['update', 'delete', 'addTag', 'removeTag', 'assignTo'] as const;
-type BulkOperation = typeof VALID_OPERATIONS[number];
+type BulkOperation = (typeof VALID_OPERATIONS)[number];
 
 /**
  * POST /api/leads/bulk
@@ -45,9 +52,12 @@ export async function POST(request: Request) {
     }
 
     if (!VALID_OPERATIONS.includes(body.operation as BulkOperation)) {
-      return NextResponse.json({
-        error: `operation must be one of: ${VALID_OPERATIONS.join(', ')}`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `operation must be one of: ${VALID_OPERATIONS.join(', ')}`,
+        },
+        { status: 400 }
+      );
     }
 
     // Validate leadIds
@@ -66,20 +76,29 @@ export async function POST(request: Request) {
     switch (operation) {
       case 'update': {
         if (!body.data) {
-          return NextResponse.json({ error: 'data is required for update operation' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'data is required for update operation' },
+            { status: 400 }
+          );
         }
 
         // Validate update data
         if (body.data.status && !VALID_STATUSES.includes(body.data.status)) {
-          return NextResponse.json({
-            error: `status must be one of: ${VALID_STATUSES.join(', ')}`
-          }, { status: 400 });
+          return NextResponse.json(
+            {
+              error: `status must be one of: ${VALID_STATUSES.join(', ')}`,
+            },
+            { status: 400 }
+          );
         }
 
         if (body.data.temperature && !VALID_TEMPERATURES.includes(body.data.temperature)) {
-          return NextResponse.json({
-            error: `temperature must be one of: ${VALID_TEMPERATURES.join(', ')}`
-          }, { status: 400 });
+          return NextResponse.json(
+            {
+              error: `temperature must be one of: ${VALID_TEMPERATURES.join(', ')}`,
+            },
+            { status: 400 }
+          );
         }
 
         const result = await leadsClient.bulkUpdate(leadIds, body.data);
@@ -99,7 +118,10 @@ export async function POST(request: Request) {
 
       case 'addTag': {
         if (!body.data?.tagId) {
-          return NextResponse.json({ error: 'data.tagId is required for addTag operation' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'data.tagId is required for addTag operation' },
+            { status: 400 }
+          );
         }
 
         const result = await leadsClient.bulkAddTag(leadIds, body.data.tagId);
@@ -111,7 +133,10 @@ export async function POST(request: Request) {
 
       case 'removeTag': {
         if (!body.data?.tagId) {
-          return NextResponse.json({ error: 'data.tagId is required for removeTag operation' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'data.tagId is required for removeTag operation' },
+            { status: 400 }
+          );
         }
 
         // Remove tag from each lead
@@ -150,7 +175,10 @@ export async function POST(request: Request) {
 
       case 'assignTo': {
         if (!body.data?.userId) {
-          return NextResponse.json({ error: 'data.userId is required for assignTo operation' }, { status: 400 });
+          return NextResponse.json(
+            { error: 'data.userId is required for assignTo operation' },
+            { status: 400 }
+          );
         }
 
         const result = await leadsClient.bulkUpdate(leadIds, { assignedTo: body.data.userId });

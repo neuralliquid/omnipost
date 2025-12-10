@@ -10,9 +10,4 @@ export {
   getSequenceTemplate,
 } from './phoenix-sequences';
 
-export {
-  SKYSNARE_FORMS,
-  AERONET_FORMS,
-  getFormTemplates,
-  getFormTemplate,
-} from './phoenix-forms';
+export { SKYSNARE_FORMS, AERONET_FORMS, getFormTemplates, getFormTemplate } from './phoenix-forms';

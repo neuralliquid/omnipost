@@ -9,7 +9,7 @@ import { checkRateLimitOrRespond, ErrorResponses } from './responses';
 import { RateLimitPresets } from './rateLimit';
 import { validateEmail as validateEmailUtil } from './validation';
 
-type RateLimitPreset = typeof RateLimitPresets[keyof typeof RateLimitPresets];
+type RateLimitPreset = (typeof RateLimitPresets)[keyof typeof RateLimitPresets];
 
 /**
  * Require authentication middleware
@@ -87,9 +87,7 @@ export function validateEnumField<T extends string>(
   fieldName: string
 ): NextResponse | null {
   if (!allowedValues.includes(value as T)) {
-    return ErrorResponses.badRequest(
-      `${fieldName} must be one of: ${allowedValues.join(', ')}`
-    );
+    return ErrorResponses.badRequest(`${fieldName} must be one of: ${allowedValues.join(', ')}`);
   }
   return null;
 }
@@ -108,9 +106,7 @@ export function validateArrayField(
   }
 
   if (minLength !== undefined && value.length < minLength) {
-    return ErrorResponses.badRequest(
-      `${fieldName} must have at least ${minLength} item(s)`
-    );
+    return ErrorResponses.badRequest(`${fieldName} must have at least ${minLength} item(s)`);
   }
 
   return null;
@@ -120,21 +116,20 @@ export function validateArrayField(
  * Try-catch wrapper for API route handlers
  * Automatically handles errors and logs them
  */
-// Overload signatures
-function withErrorHandlingOverload<T>(
-  handler: (request: Request, context: T) => Promise<NextResponse>
-): (request: Request, context: T) => Promise<NextResponse>;
-function withErrorHandlingOverload(
-  handler: (request: Request) => Promise<NextResponse>
-): (request: Request) => Promise<NextResponse>;
-// Implementation
-function withErrorHandlingOverload<T = unknown>(
-  handler: ((request: Request, context: T) => Promise<NextResponse>) | ((request: Request) => Promise<NextResponse>)
-) {
-  return async (request: Request, context?: T): Promise<NextResponse> => {
+export function withErrorHandling<T = never>(
+  handler: T extends never
+    ? (request: Request) => Promise<NextResponse>
+    : (request: Request, context: T) => Promise<NextResponse>
+): T extends never
+  ? (request: Request) => Promise<NextResponse>
+  : (request: Request, context: T) => Promise<NextResponse> {
+  return (async (request: Request, context?: T): Promise<NextResponse> => {
     try {
       if (context !== undefined) {
-        return await (handler as (request: Request, context: T) => Promise<NextResponse>)(request, context);
+        return await (handler as (request: Request, context: T) => Promise<NextResponse>)(
+          request,
+          context
+        );
       }
       return await (handler as (request: Request) => Promise<NextResponse>)(request);
     } catch (error) {
@@ -142,10 +137,10 @@ function withErrorHandlingOverload<T = unknown>(
       const message = error instanceof Error ? error.message : 'An error occurred';
       return NextResponse.json({ error: message }, { status: 500 });
     }
-  };
+  }) as T extends never
+    ? (request: Request) => Promise<NextResponse>
+    : (request: Request, context: T) => Promise<NextResponse>;
 }
-
-export { withErrorHandlingOverload as withErrorHandling };
 
 /**
  * Combined middleware: error handling + auth + rate limiting
@@ -197,12 +192,10 @@ export function parseEnumFilter<T extends string>(
   if (!value) return undefined;
 
   const items = value.split(',') as T[];
-  
+
   // Check if all items are valid
-  const allValid = items.every((item) =>
-    (validValues as readonly string[]).includes(item)
-  );
-  
+  const allValid = items.every(item => (validValues as readonly string[]).includes(item));
+
   if (!allValid) return undefined;
 
   return items.length === 1 ? items[0] : items;

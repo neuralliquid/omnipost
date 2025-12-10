@@ -634,7 +634,8 @@ Welcome aboard!
         enabled: true,
         taskConfig: {
           title: 'Schedule technical requirements call with {{firstName}}',
-          description: 'Review technical requirements, integration needs, and site assessment scheduling',
+          description:
+            'Review technical requirements, integration needs, and site assessment scheduling',
         },
       },
       {
@@ -933,7 +934,9 @@ Happy to discuss how this might apply to {{company}}'s environment.
 /**
  * Get all sequence templates for a brand
  */
-export function getSequenceTemplates(brand: 'skysnare' | 'aeronet'): Record<string, CreateSequenceInput> {
+export function getSequenceTemplates(
+  brand: 'skysnare' | 'aeronet'
+): Record<string, CreateSequenceInput> {
   return brand === 'skysnare' ? SKYSNARE_SEQUENCES : AERONET_SEQUENCES;
 }
 
