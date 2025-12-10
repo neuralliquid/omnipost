@@ -227,7 +227,7 @@ export class LeadsClient {
 
     // Status filter - validate against allowed values
     if (filter.status) {
-      const allowedStatuses = [
+      const allowedStatuses = new Set([
         'new',
         'contacted',
         'qualified',
@@ -236,9 +236,9 @@ export class LeadsClient {
         'won',
         'lost',
         'nurturing',
-      ];
+      ]);
       const statuses = Array.isArray(filter.status) ? filter.status : [filter.status];
-      const validStatuses = statuses.filter(s => allowedStatuses.includes(s));
+      const validStatuses = statuses.filter(s => allowedStatuses.has(s));
       if (validStatuses.length > 0) {
         const statusConditions = validStatuses.map(s => `{Status} = '${s}'`);
         conditions.push(
@@ -262,7 +262,7 @@ export class LeadsClient {
 
     // Source filter - validate against allowed values
     if (filter.source) {
-      const allowedSources = [
+      const allowedSources = new Set([
         'linkedin',
         'linkedin_sales_navigator',
         'website',
@@ -275,9 +275,9 @@ export class LeadsClient {
         'import',
         'manual',
         'other',
-      ];
+      ]);
       const sources = Array.isArray(filter.source) ? filter.source : [filter.source];
-      const validSources = sources.filter(s => allowedSources.includes(s));
+      const validSources = sources.filter(s => allowedSources.has(s));
       if (validSources.length > 0) {
         const sourceConditions = validSources.map(s => `{Source} = '${s}'`);
         conditions.push(

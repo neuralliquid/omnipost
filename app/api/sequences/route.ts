@@ -21,6 +21,44 @@ import { ErrorResponses } from '@/app/api/_utils/responses';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 
 /**
+ * Validate and normalize sequence steps
+ * Extracted to reduce cognitive complexity
+ */
+function validateAndNormalizeSteps(steps: any[]): NextResponse | null {
+  for (let i = 0; i < steps.length; i++) {
+    const step = steps[i];
+
+    // Validate step type
+    if (!step.type || !VALID_SEQUENCE_STEP_TYPES.includes(step.type)) {
+      return ErrorResponses.badRequest(
+        `Step ${i + 1}: type must be one of: ${VALID_SEQUENCE_STEP_TYPES.join(', ')}`
+      );
+    }
+
+    // Validate step name
+    if (!step.name?.trim()) {
+      return ErrorResponses.badRequest(`Step ${i + 1}: name is required`);
+    }
+
+    // Validate wait config
+    if (step.type === 'wait' && !step.waitConfig) {
+      return ErrorResponses.badRequest(`Step ${i + 1}: waitConfig is required for wait steps`);
+    }
+
+    // Assign order if not provided
+    if (step.order === undefined) {
+      step.order = i + 1;
+    }
+
+    // Default enabled to true
+    if (step.enabled === undefined) {
+      step.enabled = true;
+    }
+  }
+  return null;
+}
+
+/**
  * GET /api/sequences
  * List sequences with optional filters
  */
@@ -83,37 +121,9 @@ export const POST = withErrorHandling(async (request: Request) => {
   const arrayError = validateArrayField(body.steps, 'steps', 1);
   if (arrayError) return arrayError;
 
-  // Validate each step
-  for (let i = 0; i < body.steps.length; i++) {
-    const step = body.steps[i];
-
-    // Validate step type
-    if (!step.type || !VALID_SEQUENCE_STEP_TYPES.includes(step.type)) {
-      return ErrorResponses.badRequest(
-        `Step ${i + 1}: type must be one of: ${VALID_SEQUENCE_STEP_TYPES.join(', ')}`
-      );
-    }
-
-    // Validate step name
-    if (!step.name?.trim()) {
-      return ErrorResponses.badRequest(`Step ${i + 1}: name is required`);
-    }
-
-    // Validate wait config
-    if (step.type === 'wait' && !step.waitConfig) {
-      return ErrorResponses.badRequest(`Step ${i + 1}: waitConfig is required for wait steps`);
-    }
-
-    // Assign order if not provided
-    if (step.order === undefined) {
-      step.order = i + 1;
-    }
-
-    // Default enabled to true
-    if (step.enabled === undefined) {
-      step.enabled = true;
-    }
-  }
+  // Validate and normalize each step
+  const stepError = validateAndNormalizeSteps(body.steps);
+  if (stepError) return stepError;
 
   const sequence = await sequencesClient.createSequence(
     {

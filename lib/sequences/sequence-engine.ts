@@ -497,14 +497,19 @@ export class SequenceEngine {
       }
 
       if (result.success) {
+        // Determine interaction type
+        let interactionType: 'linkedin_connection' | 'linkedin_message' | 'linkedin_view';
+        if (step.type === 'linkedin_connection') {
+          interactionType = 'linkedin_connection';
+        } else if (step.type === 'linkedin_message') {
+          interactionType = 'linkedin_message';
+        } else {
+          interactionType = 'linkedin_view';
+        }
+
         // Record interaction
         await leadsClient.addInteraction(lead.id, {
-          type:
-            step.type === 'linkedin_connection'
-              ? 'linkedin_connection'
-              : step.type === 'linkedin_message'
-                ? 'linkedin_message'
-                : 'linkedin_view',
+          type: interactionType,
           description: `LinkedIn action: ${step.name}`,
           metadata: {
             sequenceId: sequence.id,

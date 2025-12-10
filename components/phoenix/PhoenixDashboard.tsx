@@ -6,12 +6,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import type {
-  PhoenixLead,
-  PhoenixBrand,
-  SkySnareLeadData,
-  AeroNetLeadData,
-} from '@/types/phoenix-rooivalk';
+import type { PhoenixLead, PhoenixBrand } from '@/types/phoenix-rooivalk';
 import { SEGMENT_LABELS, isHighValueEnterprise } from '@/types/phoenix-rooivalk';
 import styles from '@/styles/PhoenixDashboard.module.css';
 

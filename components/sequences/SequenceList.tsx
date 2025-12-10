@@ -117,7 +117,7 @@ export const SequenceList: React.FC<SequenceListProps> = ({ onCreateNew, onEdit,
   };
 
   const handleDelete = async (sequence: Sequence) => {
-    if (!window.confirm(`Are you sure you want to delete "${sequence.name}"?`)) {
+    if (!globalThis.confirm(`Are you sure you want to delete "${sequence.name}"?`)) {
       return;
     }
 

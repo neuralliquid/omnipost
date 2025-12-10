@@ -383,7 +383,7 @@ function escapeHtml(str: string): string {
     '"': '&quot;',
     "'": '&#39;',
   };
-  return str.replace(/[&<>"']/g, char => escapeMap[char] || char);
+  return str.replaceAll(/[&<>"']/g, char => escapeMap[char] || char);
 }
 
 /**
