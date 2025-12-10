@@ -371,7 +371,7 @@ export class LinkedInProspectingClient {
         location: profile.location
           ? `${profile.location.city || ''}, ${profile.location.country || ''}`
               .trim()
-              .replaceAll(/^,\s*|,\s*$/g, '')
+              .replaceAll(/(^,\s*|,\s*$)/g, '')
           : undefined,
         connections: profile.connections,
         profilePictureUrl: profile.profilePicture,

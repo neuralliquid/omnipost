@@ -362,7 +362,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
                   type="number"
                   min={1}
                   value={step.waitConfig?.duration || 1}
-                  onChange={e => handleWaitConfigChange('duration', Number.parseInt(e.target.value, 10))}
+                  onChange={e =>
+                    handleWaitConfigChange('duration', Number.parseInt(e.target.value, 10))
+                  }
                   className={styles.configInputSmall}
                 />
               </div>
@@ -433,7 +435,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
                   min={5}
                   step={5}
                   value={step.callConfig?.duration || 30}
-                  onChange={e => handleCallConfigChange('duration', Number.parseInt(e.target.value, 10))}
+                  onChange={e =>
+                    handleCallConfigChange('duration', Number.parseInt(e.target.value, 10))
+                  }
                   className={styles.configInputSmall}
                 />
               </div>
