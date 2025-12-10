@@ -8,6 +8,7 @@ import { isAuthenticated, getCurrentUserId } from './auth';
 import { checkRateLimitOrRespond } from './responses';
 import { ErrorResponses } from './responses';
 import { RateLimitPresets } from './rateLimit';
+import { validateEmail as validateEmailUtil } from './validation';
 
 type RateLimitPreset = typeof RateLimitPresets[keyof typeof RateLimitPresets];
 
@@ -166,8 +167,7 @@ export function validateEmailFormat(
   fieldName: string = 'email'
 ): NextResponse | null {
   // Use existing ReDoS-safe email validation from validation.ts
-  const { validateEmail } = require('./validation');
-  const error = validateEmail(fieldName, email);
+  const error = validateEmailUtil(fieldName, email);
   if (error) {
     return ErrorResponses.badRequest(error);
   }
