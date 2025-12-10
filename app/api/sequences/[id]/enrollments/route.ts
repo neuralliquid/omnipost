@@ -67,6 +67,64 @@ export async function GET(request: Request, { params }: RouteParams) {
 }
 
 /**
+ * Handle single lead enrollment
+ */
+async function handleSingleEnrollment(
+  sequenceId: string,
+  leadId: string,
+  userId: string,
+  startAt?: string
+): Promise<NextResponse> {
+  try {
+    const enrollment = await sequencesClient.enrollLead(
+      sequenceId,
+      leadId,
+      userId,
+      startAt
+    );
+    return NextResponse.json({ enrollment }, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to enroll lead';
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}
+
+/**
+ * Handle bulk lead enrollment
+ */
+async function handleBulkEnrollment(
+  sequenceId: string,
+  leadIds: string[],
+  userId: string,
+  startAt?: string,
+  skipDuplicates: boolean = true
+): Promise<NextResponse> {
+  if (leadIds.length === 0) {
+    return NextResponse.json({ error: 'leadIds must not be empty' }, { status: 400 });
+  }
+
+  if (leadIds.length > 100) {
+    return NextResponse.json({ error: 'Maximum 100 leads per bulk enrollment' }, { status: 400 });
+  }
+
+  const result = await sequencesClient.bulkEnroll(
+    {
+      sequenceId,
+      leadIds,
+      startAt,
+      skipDuplicates,
+    },
+    userId
+  );
+
+  return NextResponse.json({
+    enrolled: result.enrolled,
+    skipped: result.skipped,
+    errors: result.errors,
+  }, { status: 201 });
+}
+
+/**
  * POST /api/sequences/[id]/enrollments
  * Enroll leads in a sequence
  */
@@ -100,45 +158,18 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     // Single lead enrollment
     if (body.leadId) {
-      try {
-        const enrollment = await sequencesClient.enrollLead(
-          id,
-          body.leadId,
-          currentUserId,
-          body.startAt
-        );
-        return NextResponse.json({ enrollment }, { status: 201 });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to enroll lead';
-        return NextResponse.json({ error: message }, { status: 400 });
-      }
+      return await handleSingleEnrollment(id, body.leadId, currentUserId, body.startAt);
     }
 
     // Bulk enrollment
     if (body.leadIds && Array.isArray(body.leadIds)) {
-      if (body.leadIds.length === 0) {
-        return NextResponse.json({ error: 'leadIds must not be empty' }, { status: 400 });
-      }
-
-      if (body.leadIds.length > 100) {
-        return NextResponse.json({ error: 'Maximum 100 leads per bulk enrollment' }, { status: 400 });
-      }
-
-      const result = await sequencesClient.bulkEnroll(
-        {
-          sequenceId: id,
-          leadIds: body.leadIds,
-          startAt: body.startAt,
-          skipDuplicates: body.skipDuplicates ?? true,
-        },
-        currentUserId
+      return await handleBulkEnrollment(
+        id,
+        body.leadIds,
+        currentUserId,
+        body.startAt,
+        body.skipDuplicates ?? true
       );
-
-      return NextResponse.json({
-        enrolled: result.enrolled,
-        skipped: result.skipped,
-        errors: result.errors,
-      }, { status: 201 });
     }
 
     return NextResponse.json({

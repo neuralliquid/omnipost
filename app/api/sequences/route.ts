@@ -4,7 +4,7 @@
  * POST - Create new sequence
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { sequencesClient } from '@/lib/data/sequences';
 import type { SequenceStatus } from '@/types/sequence';
 import {
@@ -18,8 +18,10 @@ import {
   validateEnumField,
   validateArrayField,
   withErrorHandling,
+  checkAuthAndRateLimit,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 
 /**
  * GET /api/sequences
@@ -61,6 +63,16 @@ export const GET = withErrorHandling(async (request: Request) => {
  * Create a new sequence
  */
 export const POST = withErrorHandling(async (request: Request) => {
+  const nextRequest = request as NextRequest;
+
+  // Check rate limit and auth
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/sequences',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
+
   const authResult = await requireAuthWithUserId();
   if ('error' in authResult) return authResult.error;
 
@@ -124,5 +136,9 @@ export const POST = withErrorHandling(async (request: Request) => {
     authResult.userId
   );
 
-  return NextResponse.json({ sequence }, { status: 201 });
+  return NextResponse.json({
+    success: true,
+    data: { sequence },
+    message: 'Sequence created successfully',
+  }, { status: 201 });
 });

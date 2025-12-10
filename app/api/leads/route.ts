@@ -64,7 +64,9 @@ export const GET = withErrorHandling(async (request: Request) => {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
   const sortField = searchParams.get('sortField') || 'CreatedAt';
-  const sortDirection = (searchParams.get('sortDirection') || 'desc') as 'asc' | 'desc';
+  const sortDirectionParam = searchParams.get('sortDirection') || 'desc';
+  // Safely validate sortDirection to only allow 'asc' or 'desc'
+  const sortDirection: 'asc' | 'desc' = sortDirectionParam === 'asc' ? 'asc' : 'desc';
 
   const result = await leadsClient.queryLeads(filter, {
     page,

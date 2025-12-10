@@ -45,7 +45,16 @@ const TEMPERATURE_CONFIG: Record<LeadTemperature, { label: string; icon: string;
 };
 
 export const LeadTemperatureBadge: React.FC<LeadTemperatureBadgeProps> = ({ temperature }) => {
-  const config = TEMPERATURE_CONFIG[temperature];
+  const config = TEMPERATURE_CONFIG[temperature] || { 
+    label: 'Unknown', 
+    icon: '❓', 
+    className: 'tempCold' 
+  };
+
+  // Log warning when unexpected temperature value is received
+  if (!TEMPERATURE_CONFIG[temperature]) {
+    console.warn(`LeadTemperatureBadge: Unexpected temperature value "${temperature}"`);
+  }
 
   return (
     <span className={`${styles.badge} ${styles[config.className]}`} title={`${config.label} Lead`}>
