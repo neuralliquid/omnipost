@@ -29,6 +29,21 @@ param enableMonitoring bool = true
 @description('Enable deployment slot for blue-green deployments (staging/prod only)')
 param enableDeploymentSlot bool = false
 
+@description('Enable custom domain configuration')
+param enableCustomDomain bool = false
+
+@description('DNS Zone name')
+param dnsZoneName string = 'nexamesh.ai'
+
+@description('DNS Zone resource group')
+param dnsZoneResourceGroup string = 'rg-dns-global'
+
+@description('Application subdomain')
+param appSubdomain string = 'omnipost'
+
+@description('API subdomain')
+param apiSubdomain string = 'api.omnipost'
+
 // Generate names directly (required for resource names - must be available at deployment start)
 var base = '${org}-${env}-${project}'
 var appName = '${base}-app-${region}'
@@ -172,10 +187,58 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
   }
 }
 
+// Deploy DNS configuration module
+module dns 'dns.bicep' = if (enableCustomDomain) {
+  name: 'dns-deployment'
+  scope: resourceGroup(dnsZoneResourceGroup)
+  params: {
+    dnsZoneName: dnsZoneName
+    dnsZoneResourceGroup: dnsZoneResourceGroup
+    appSubdomain: appSubdomain
+    apiSubdomain: apiSubdomain
+    webAppDefaultHostname: webApp.properties.defaultHostName
+    webAppId: webApp.id
+    tags: tags
+    enableCustomDomain: true
+  }
+}
+
+// Custom domain binding for main app (omnipost.nexamesh.ai)
+module appCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
+  name: 'app-custom-domain-deployment'
+  params: {
+    webAppName: webApp.name
+    customHostname: '${appSubdomain}.${dnsZoneName}'
+    enableSsl: true
+    tags: tags
+  }
+  dependsOn: [
+    dns
+  ]
+}
+
+// Custom domain binding for API (api.omnipost.nexamesh.ai)
+module apiCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
+  name: 'api-custom-domain-deployment'
+  params: {
+    webAppName: webApp.name
+    customHostname: '${apiSubdomain}.${dnsZoneName}'
+    enableSsl: true
+    tags: tags
+  }
+  dependsOn: [
+    dns
+  ]
+}
+
 output webAppName string = webApp.name
 output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 output appServicePlanName string = appServicePlan.name
 output stagingSlotUrl string = enableDeploymentSlot ? 'https://${stagingSlot!.properties.defaultHostName}' : 'N/A'
+
+// Custom domain outputs
+output customDomainUrl string = enableCustomDomain ? 'https://${appSubdomain}.${dnsZoneName}' : 'N/A'
+output apiCustomDomainUrl string = enableCustomDomain ? 'https://${apiSubdomain}.${dnsZoneName}' : 'N/A'
 
 // Monitoring outputs
 output appInsightsConnectionString string = enableMonitoring ? monitoring!.outputs.connectionString : ''
