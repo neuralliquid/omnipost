@@ -16,7 +16,7 @@ import { withAuthAndRateLimit } from '@/app/api/_utils/middleware';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { VALID_LEAD_STATUSES } from '@/app/api/_utils/constants';
-import type { CreateLeadInput, LeadStatus, Lead } from '@/types/lead';
+import type { CreateLeadInput, LeadStatus, Lead, LeadFilter } from '@/types/lead';
 import type {
   PhoenixFormSubmission,
   PhoenixBrand,
@@ -266,9 +266,11 @@ export const GET = withAuthAndRateLimit(
 
     const { brand, segment, status, page, limit } = parseResult.data;
 
-    // Fetch leads from upstream
+    // Fetch leads from upstream with proper filter type
+    // After Zod validation, status is guaranteed to be a valid LeadStatus if present
+    const filter: LeadFilter | undefined = status ? { status: status as LeadStatus } : undefined;
     const result = await leadsClient.queryLeads(
-      status ? { status } : {},
+      filter,
       { page, pageSize: limit }
     );
 

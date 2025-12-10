@@ -23,7 +23,7 @@ import {
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { sanitizeText } from '@/app/api/_utils/sanitize';
-import type { FormStatus, Form } from '@/types/survey';
+import type { FormStatus, Form, CreateFormInput } from '@/types/survey';
 
 /**
  * GET /api/forms
@@ -142,7 +142,8 @@ export const POST = withErrorHandling(async (request: Request) => {
     order: field.order !== undefined ? field.order : index + 1,
   }));
 
-  const form = await formsClient.createForm(sanitizedData, authResult.userId);
+  // Cast to CreateFormInput after validation (type is guaranteed to be valid by Zod enum)
+  const form = await formsClient.createForm(sanitizedData as CreateFormInput, authResult.userId);
 
   return NextResponse.json(
     {
