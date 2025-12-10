@@ -16,7 +16,7 @@ import { withAuthAndRateLimit } from '@/app/api/_utils/middleware';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { VALID_LEAD_STATUSES } from '@/app/api/_utils/constants';
-import type { CreateLeadInput, LeadStatus, Lead } from '@/types/lead';
+import type { CreateLeadInput, LeadStatus, Lead, LeadFilter } from '@/types/lead';
 import type {
   PhoenixFormSubmission,
   PhoenixBrand,
@@ -55,8 +55,8 @@ const VALID_PHOENIX_BRANDS = ['skysnare', 'aeronet'] as const;
 // Zod schema for GET query validation
 const getPhoenixLeadsQuerySchema = z.object({
   brand: z.enum(VALID_PHOENIX_BRANDS).optional(),
-  segment: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
-  status: z.enum(VALID_LEAD_STATUSES as [string, ...string[]]).optional(),
+  segment: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
+  status: z.enum(VALID_LEAD_STATUSES as unknown as [string, ...string[]]).optional(),
   page: z.number().int().positive().default(1),
   limit: z.number().int().positive().max(100).default(20),
 });
@@ -260,15 +260,17 @@ export const GET = withAuthAndRateLimit(
     // Validate using Zod schema
     const parseResult = getPhoenixLeadsQuerySchema.safeParse(queryData);
     if (!parseResult.success) {
-      const errors = parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      const errors = parseResult.error.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
       return ErrorResponses.badRequest(errors.join('; '));
     }
 
     const { brand, segment, status, page, limit } = parseResult.data;
 
-    // Fetch leads from upstream
+    // Fetch leads from upstream with proper filter type
+    // After Zod validation, status is guaranteed to be a valid LeadStatus if present
+    const filter: LeadFilter | undefined = status ? { status: status as LeadStatus } : undefined;
     const result = await leadsClient.queryLeads(
-      status ? { status } : {},
+      filter,
       { page, pageSize: limit }
     );
 
@@ -291,17 +293,20 @@ export const GET = withAuthAndRateLimit(
     }
 
     // Sort by creation date (newest first)
-    filteredLeads.sort(
+    const sortedLeads = filteredLeads.toSorted(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     // Transform leads to include phoenixData at top level for convenience
-    const transformedLeads = filteredLeads.map((lead) => ({
+    const transformedLeads = sortedLeads.map((lead) => ({
       ...lead,
       phoenixData: lead.customFields.phoenixData,
     }));
 
+    // Calculate total pages from pagination data
+    const totalPages = Math.ceil(result.pagination.total / result.pagination.pageSize);
+    
     // Return original pagination metadata from upstream with additional filtered count
     return NextResponse.json({
       success: true,
@@ -310,8 +315,8 @@ export const GET = withAuthAndRateLimit(
         page: result.pagination.page,
         limit: result.pagination.pageSize,
         total: result.pagination.total, // Total from upstream query
-        totalPages: result.pagination.totalPages, // Total pages from upstream
-        filteredCount: filteredLeads.length, // Count after Phoenix/brand/segment filters
+        totalPages, // Calculated from total and pageSize
+        filteredCount: sortedLeads.length, // Count after Phoenix/brand/segment filters
       },
       message: 'Phoenix leads retrieved successfully',
     });

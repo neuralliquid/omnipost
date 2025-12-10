@@ -16,14 +16,12 @@ import {
 import {
   checkAuthAndRateLimit,
   requireAuthWithUserId,
-  validateRequiredFields,
   validateEnumField,
-  validateArrayField,
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { sanitizeText } from '@/app/api/_utils/sanitize';
-import type { FormStatus, Form } from '@/types/survey';
+import type { FormStatus, Form, CreateFormInput } from '@/types/survey';
 
 /**
  * GET /api/forms
@@ -84,11 +82,11 @@ export const GET = withErrorHandling(async (request: Request) => {
 
 // Zod schema for form field validation
 const formFieldSchema = z.object({
-  type: z.enum(VALID_FORM_FIELD_TYPES as [string, ...string[]]),
+  type: z.enum(VALID_FORM_FIELD_TYPES as unknown as [string, ...string[]]),
   name: z.string().min(1, 'Field name is required').transform(sanitizeText),
   label: z.string().min(1, 'Field label is required').transform(sanitizeText),
-  placeholder: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
-  helpText: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
+  placeholder: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
+  helpText: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
   required: z.boolean().optional(),
   order: z.number().int().optional(),
   validation: z.any().optional(),
@@ -99,8 +97,8 @@ const formFieldSchema = z.object({
 // Zod schema for create form input
 const createFormSchema = z.object({
   name: z.string().min(1, 'Form name is required').transform(sanitizeText),
-  type: z.enum(VALID_FORM_TYPES as [string, ...string[]]),
-  description: z.string().optional().transform(val => val ? sanitizeText(val) : undefined),
+  type: z.enum(VALID_FORM_TYPES as unknown as [string, ...string[]]),
+  description: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
   fields: z.array(formFieldSchema).min(1, 'At least one field is required'),
   theme: z.any().optional(),
   integrations: z.any().optional(),
@@ -130,19 +128,20 @@ export const POST = withErrorHandling(async (request: Request) => {
   // Validate and sanitize using Zod schema
   const parseResult = createFormSchema.safeParse(body);
   if (!parseResult.success) {
-    const errors = parseResult.error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+    const errors = parseResult.error.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
     return ErrorResponses.badRequest(errors.join('; '));
   }
 
   const sanitizedData = parseResult.data;
 
   // Assign order to fields if not provided
-  sanitizedData.fields = sanitizedData.fields.map((field, index) => ({
+  sanitizedData.fields = sanitizedData.fields.map((field: z.infer<typeof formFieldSchema>, index: number) => ({
     ...field,
-    order: field.order !== undefined ? field.order : index + 1,
+    order: field.order ?? index + 1,
   }));
 
-  const form = await formsClient.createForm(sanitizedData, authResult.userId);
+  // Cast to CreateFormInput after validation (type is guaranteed to be valid by Zod enum)
+  const form = await formsClient.createForm(sanitizedData as CreateFormInput, authResult.userId);
 
   return NextResponse.json(
     {
