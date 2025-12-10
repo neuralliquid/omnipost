@@ -1,5 +1,10 @@
 # GitHub Copilot Instructions for OmniPost
 
+## 📌 Quick Reference
+
+**Repository:** JustAGhosT/content_creation  
+**Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+
 ## Project Overview
 
 This is OmniPost - an AI-powered multi-platform content publishing platform built with Next.js 14, React 18, and TypeScript. The platform enables seamless publishing across all major social media platforms with AI-powered text processing and image generation capabilities.
@@ -9,6 +14,45 @@ This is OmniPost - an AI-powered multi-platform content publishing platform buil
 **Target Users:** Content creators, marketing teams, SMBs, social media managers  
 **Core Value:** "Publish everywhere, manage anywhere"  
 **Tagline:** "One platform. All channels."
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 20.x (see `.nvmrc`)
+- pnpm (package manager)
+- Git
+
+### Quick Setup
+```bash
+# Install dependencies
+pnpm install
+
+# Copy environment template
+cp .env.example .env.local
+
+# Start development server
+pnpm dev
+```
+
+### Essential Commands
+```bash
+# Development
+pnpm dev              # Start dev server (http://localhost:3000)
+pnpm build            # Build for production
+pnpm type-check       # TypeScript validation
+
+# Testing
+pnpm test             # Run all tests
+pnpm test:watch       # Watch mode
+pnpm test:coverage    # Coverage report
+
+# Quality Checks
+pnpm lint             # Run ESLint
+pnpm lint:fix         # Fix ESLint issues
+pnpm format           # Format with Prettier
+pnpm format:check     # Check formatting
+pnpm check-all        # Run all quality checks
+```
 
 ## Technology Stack
 
@@ -568,6 +612,209 @@ npm run format           # Format with Prettier
 npm run format:check     # Check formatting
 ```
 
+## 🔄 Development Workflow
+
+### Branch Naming Convention
+- `feature/description` - New features
+- `fix/description` - Bug fixes
+- `docs/description` - Documentation updates
+- `refactor/description` - Code refactoring
+- `test/description` - Test additions/updates
+- `chore/description` - Maintenance tasks
+
+### Commit Message Format
+Follow conventional commits:
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer]
+```
+
+**Examples:**
+```
+feat(api): add content summarization endpoint
+fix(auth): resolve token expiration issue
+docs(readme): update installation instructions
+test(api): add tests for parse endpoint
+```
+
+### Pull Request Process
+1. Create feature branch from `main`
+2. Make changes following coding standards
+3. Write/update tests
+4. Run `pnpm check-all` to verify quality
+5. Commit with clear messages
+6. Push and create PR
+7. Address review feedback
+
+### Before Submitting PR
+Run the complete check:
+```bash
+pnpm check-all
+```
+This runs: type-check → lint → format:check → test
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**TypeScript Errors**
+```bash
+# Clear Next.js cache
+rm -rf .next
+pnpm type-check
+```
+
+**Test Failures**
+```bash
+# Clear Jest cache
+pnpm test --clearCache
+pnpm test
+```
+
+**Missing Environment Variables**
+- Ensure `.env.local` exists (copy from `.env.example`)
+- Required: `JWT_SECRET`
+- Optional: Airtable, Hugging Face, notification services
+
+**Port Already in Use**
+```bash
+# Kill process on port 3000
+lsof -ti:3000 | xargs kill -9
+pnpm dev
+```
+
+**Module Not Found Errors**
+```bash
+# Reinstall dependencies
+rm -rf node_modules pnpm-lock.yaml
+pnpm install
+```
+
+## 📝 Common Tasks
+
+### Adding a New API Route
+
+1. **Create route file:**
+   ```typescript
+   // app/api/my-feature/route.ts
+   import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+   import { validateAndSanitize, textInputSchema } from '@/app/api/_utils/sanitize';
+   import { isAuthenticated } from '@/app/api/_utils/auth';
+   import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
+
+   export const POST = withRateLimit(
+     withErrorHandling(async (request: Request) => {
+       if (!(await isAuthenticated())) {
+         return Errors.unauthorized();
+       }
+
+       const body = await request.json();
+       const validation = validateAndSanitize(textInputSchema, body);
+       
+       if (!validation.success) {
+         return Errors.badRequest('Invalid input');
+       }
+
+       // Your logic here
+       return Response.json({ success: true });
+     }),
+     '/api/my-feature',
+     RateLimitPresets.GENERAL
+   );
+   ```
+
+2. **Add tests:**
+   ```typescript
+   // __tests__/api/my-feature.test.ts
+   import { POST } from '@/app/api/my-feature/route';
+   
+   describe('POST /api/my-feature', () => {
+     it('should require authentication', async () => {
+       // Test implementation
+     });
+   });
+   ```
+
+3. **Update documentation** if needed
+
+### Adding a New Component
+
+1. **Create component:**
+   ```typescript
+   // components/features/MyComponent.tsx
+   import React from 'react';
+   import styles from './MyComponent.module.css';
+
+   interface MyComponentProps {
+     title: string;
+     onAction: () => void;
+   }
+
+   export function MyComponent({ title, onAction }: MyComponentProps) {
+     return (
+       <div className={styles.container}>
+         <h2>{title}</h2>
+         <button onClick={onAction} aria-label="Perform action">
+           Action
+         </button>
+       </div>
+     );
+   }
+   ```
+
+2. **Create styles:**
+   ```css
+   /* components/features/MyComponent.module.css */
+   .container {
+     padding: 1rem;
+   }
+   ```
+
+3. **Add tests:**
+   ```typescript
+   // __tests__/components/MyComponent.test.tsx
+   import { render, screen } from '@testing-library/react';
+   import { MyComponent } from '@/components/features/MyComponent';
+
+   describe('MyComponent', () => {
+     it('renders correctly', () => {
+       render(<MyComponent title="Test" onAction={() => {}} />);
+       expect(screen.getByText('Test')).toBeInTheDocument();
+     });
+   });
+   ```
+
+### Adding a New Utility Function
+
+1. **Create utility:**
+   ```typescript
+   // lib/utils/myUtil.ts
+   /**
+    * Description of what this function does
+    * @param input - Description of parameter
+    * @returns Description of return value
+    */
+   export function myUtil(input: string): string {
+     // Implementation
+     return input.trim();
+   }
+   ```
+
+2. **Add tests:**
+   ```typescript
+   // __tests__/lib/utils/myUtil.test.ts
+   import { myUtil } from '@/lib/utils/myUtil';
+
+   describe('myUtil', () => {
+     it('should trim input', () => {
+       expect(myUtil('  test  ')).toBe('test');
+     });
+   });
+   ```
+
 ## When in Doubt
 
 1. **Security First:** If unsure, add more security checks rather than fewer
@@ -575,9 +822,21 @@ npm run format:check     # Check formatting
 3. **Test Everything:** Write tests before marking code complete
 4. **Ask Questions:** Use comments to clarify unclear requirements
 5. **Document Decisions:** Add comments explaining non-obvious choices
+6. **Check Documentation:** Review README.md, CONTRIBUTING.md, and docs/ folder
+7. **Run Quality Checks:** Always run `pnpm check-all` before committing
+
+## 📚 Additional Resources
+
+- **Repository:** [GitHub](https://github.com/JustAGhosT/content_creation)
+- **Documentation Hub:** [docs/README.md](../docs/README.md)
+- **Architecture Guide:** [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
+- **API Best Practices:** [docs/api/next-api-best-practices.md](../docs/api/next-api-best-practices.md)
+- **Contributing Guide:** [CONTRIBUTING.md](../CONTRIBUTING.md)
+- **Security Policy:** [SECURITY.md](../SECURITY.md)
 
 ---
 
-**Last Updated:** November 22, 2025  
+**Last Updated:** December 10, 2024  
 **Maintained By:** Development Team  
-**Questions?** See CONTRIBUTING.md or create an issue
+**Questions?** See CONTRIBUTING.md or create an issue  
+**Live Demo:** https://content-creation.azurewebsites.net
