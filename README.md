@@ -105,30 +105,30 @@ pnpm dev
 
 ### Development Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm dev` | 🚀 Start development server at http://localhost:3000 |
-| `pnpm build` | 🏗️ Build the application for production |
-| `pnpm start` | ▶️ Start the production server |
-| `pnpm type-check` | 🔍 Run TypeScript type checking |
+| Command           | Description                                          |
+| ----------------- | ---------------------------------------------------- |
+| `pnpm dev`        | 🚀 Start development server at http://localhost:3000 |
+| `pnpm build`      | 🏗️ Build the application for production              |
+| `pnpm start`      | ▶️ Start the production server                       |
+| `pnpm type-check` | 🔍 Run TypeScript type checking                      |
 
 ### Testing Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm test` | 🧪 Run all tests |
-| `pnpm test:watch` | 👀 Run tests in watch mode |
+| Command              | Description                      |
+| -------------------- | -------------------------------- |
+| `pnpm test`          | 🧪 Run all tests                 |
+| `pnpm test:watch`    | 👀 Run tests in watch mode       |
 | `pnpm test:coverage` | 📊 Generate test coverage report |
 
 ### Code Quality Commands
 
-| Command | Description |
-|---------|-------------|
-| `pnpm lint` | 🔎 Run ESLint to check code quality |
-| `pnpm lint:fix` | 🔧 Fix ESLint issues automatically |
-| `pnpm format` | ✨ Format code with Prettier |
-| `pnpm format:check` | 📝 Check code formatting |
-| `pnpm check-all` | ✅ Run all quality checks (type-check + lint + format + test) |
+| Command             | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `pnpm lint`         | 🔎 Run ESLint to check code quality                           |
+| `pnpm lint:fix`     | 🔧 Fix ESLint issues automatically                            |
+| `pnpm format`       | ✨ Format code with Prettier                                  |
+| `pnpm format:check` | 📝 Check code formatting                                      |
+| `pnpm check-all`    | ✅ Run all quality checks (type-check + lint + format + test) |
 
 ### Recommended Workflow
 
@@ -167,7 +167,7 @@ pnpm test:watch   # In another terminal
 - **JWT Authentication**: Secure, industry-standard authentication and authorization
 - **Comprehensive Audit Trail**: Track all system actions for compliance and debugging
 - **Dynamic Feature Flags**: Control feature availability without redeployment
-- **Multi-Channel Notifications**: 
+- **Multi-Channel Notifications**:
   - 📧 Email (via Nodemailer)
   - 💬 Slack integration
   - 📱 SMS (via Twilio)
@@ -233,6 +233,7 @@ JWT_SECRET=your-secure-jwt-secret-key-minimum-32-characters
 ```
 
 > 🔐 **Security Tip**: Generate a secure JWT secret using:
+>
 > ```bash
 > node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
 > ```
@@ -344,12 +345,14 @@ OmniPost is optimized for Azure Web Apps with **Next.js standalone output mode**
 #### 🎯 Quick Deploy
 
 **Automatic Deployment:**
+
 - Push to `main` branch → Automatically deploys to **dev** environment
 - **Manual deployment:** GitHub Actions → Run workflow → Select environment (dev/test/prod)
 
 **Deployment Time:** 10-15 minutes total
+
 - Build Phase: 5-7 minutes
-- Infrastructure Phase: 2-3 minutes  
+- Infrastructure Phase: 2-3 minutes
 - Deploy Phase: 3-5 minutes
 
 #### 📋 Prerequisites
@@ -367,11 +370,11 @@ OmniPost is optimized for Azure Web Apps with **Next.js standalone output mode**
 
 ```yaml
 env:
-  NODE_VERSION: '18.20.0'    # Must match .nvmrc
-  ORG_CODE: 'nl'             # Organization code
+  NODE_VERSION: '18.20.0' # Must match .nvmrc
+  ORG_CODE: 'nl' # Organization code
   PROJECT_NAME: 'content-creation'
-  REGION_CODE: 'euw'         # Region: euw, eus, etc.
-  LOCATION: 'westeurope'     # Azure region
+  REGION_CODE: 'euw' # Region: euw, eus, etc.
+  LOCATION: 'westeurope' # Azure region
 ```
 
 **Infrastructure Configuration** (`infra/parameters.json`):
@@ -408,6 +411,7 @@ env:
 ```
 
 The script will:
+
 1. Authenticate with Azure (via `az login`)
 2. Create the resource group if it doesn't exist
 3. Deploy the Bicep template with the specified configuration
@@ -437,6 +441,7 @@ The script will:
    - Warm-up requests
 
 For detailed deployment instructions, see:
+
 - [Deployment Guide](./docs/DEPLOYMENT.md)
 - [Deployment Runbook](./docs/DEPLOYMENT_RUNBOOK.md)
 - [Workflow file](./.github/workflows/azure-webapps-node.yml)
@@ -447,43 +452,43 @@ OmniPost provides a comprehensive REST API for content management and publishing
 
 ### 🔐 Authentication
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/auth` | POST | User login and token generation |
-| `/api/auth` | GET | Get current authenticated user |
+| Endpoint    | Method | Description                        |
+| ----------- | ------ | ---------------------------------- |
+| `/api/auth` | POST   | User login and token generation    |
+| `/api/auth` | GET    | Get current authenticated user     |
 | `/api/auth` | DELETE | User logout and token invalidation |
 
 ### 📝 Content Management
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/content` | POST | Store content in Airtable |
-| `/api/content` | GET | Retrieve and track content |
-| `/api/queue/approve` | POST | Approve content in review queue |
+| Endpoint             | Method | Description                     |
+| -------------------- | ------ | ------------------------------- |
+| `/api/content`       | POST   | Store content in Airtable       |
+| `/api/content`       | GET    | Retrieve and track content      |
+| `/api/queue/approve` | POST   | Approve content in review queue |
 
 ### 🤖 AI Services
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/parse` | POST | Parse and analyze text with AI |
-| `/api/summarize` | POST | Generate intelligent text summaries |
-| `/api/images` | POST | Generate images using AI |
+| Endpoint         | Method | Description                         |
+| ---------------- | ------ | ----------------------------------- |
+| `/api/parse`     | POST   | Parse and analyze text with AI      |
+| `/api/summarize` | POST   | Generate intelligent text summaries |
+| `/api/images`    | POST   | Generate images using AI            |
 
 ### 📱 Platform Publishing
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/platforms` | GET | List all available publishing platforms |
-| `/api/platforms/[id]/capabilities` | GET | Get platform-specific capabilities |
+| Endpoint                           | Method | Description                             |
+| ---------------------------------- | ------ | --------------------------------------- |
+| `/api/platforms`                   | GET    | List all available publishing platforms |
+| `/api/platforms/[id]/capabilities` | GET    | Get platform-specific capabilities      |
 
 ### ⚙️ Administration
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/audit` | GET | Retrieve system audit logs |
-| `/api/feature-flags` | GET | Get and manage feature flags |
-| `/api/feedback` | POST | Submit user feedback |
-| `/api/notifications` | POST | Send multi-channel notifications |
+| Endpoint             | Method | Description                      |
+| -------------------- | ------ | -------------------------------- |
+| `/api/audit`         | GET    | Retrieve system audit logs       |
+| `/api/feature-flags` | GET    | Get and manage feature flags     |
+| `/api/feedback`      | POST   | Submit user feedback             |
+| `/api/notifications` | POST   | Send multi-channel notifications |
 
 ### 📖 API Documentation
 
@@ -563,19 +568,19 @@ For more testing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md#testing).
 
 <div align="center">
 
-| Category | Technologies |
-|----------|-------------|
-| **Frontend** | React 18, Next.js 14 (App Router + Pages Router), TypeScript 5.3 |
-| **Styling** | CSS Modules, Global CSS |
-| **API** | Next.js Route Handlers, RESTful API design |
-| **Authentication** | JWT tokens, Secure middleware |
-| **Validation** | Zod schemas, DOMPurify sanitization |
-| **Testing** | Jest, React Testing Library |
-| **Deployment** | Azure Web Apps, Bicep IaC |
-| **CI/CD** | GitHub Actions |
-| **AI Services** | Hugging Face (image generation), Multiple LLM providers |
-| **Integrations** | Airtable, Slack, Twilio, Nodemailer |
-| **Package Manager** | pnpm 9.0.0 |
+| Category            | Technologies                                                     |
+| ------------------- | ---------------------------------------------------------------- |
+| **Frontend**        | React 18, Next.js 14 (App Router + Pages Router), TypeScript 5.3 |
+| **Styling**         | CSS Modules, Global CSS                                          |
+| **API**             | Next.js Route Handlers, RESTful API design                       |
+| **Authentication**  | JWT tokens, Secure middleware                                    |
+| **Validation**      | Zod schemas, DOMPurify sanitization                              |
+| **Testing**         | Jest, React Testing Library                                      |
+| **Deployment**      | Azure Web Apps, Bicep IaC                                        |
+| **CI/CD**           | GitHub Actions                                                   |
+| **AI Services**     | Hugging Face (image generation), Multiple LLM providers          |
+| **Integrations**    | Airtable, Slack, Twilio, Nodemailer                              |
+| **Package Manager** | pnpm 9.0.0                                                       |
 
 </div>
 
@@ -591,33 +596,33 @@ For more testing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md#testing).
 
 ### 📖 Core Documentation
 
-| Document | Description |
-|----------|-------------|
-| [Documentation Hub](./docs/README.md) | Complete documentation index and overview |
-| [Architecture Guide](./docs/ARCHITECTURE.md) | Technical architecture and design decisions |
-| [Project Structure](./PROJECT_STRUCTURE.md) | Detailed directory organization |
-| [Contributing Guidelines](./CONTRIBUTING.md) | How to contribute to the project |
-| [Security Policy](./SECURITY.md) | Security practices and vulnerability reporting |
+| Document                                     | Description                                    |
+| -------------------------------------------- | ---------------------------------------------- |
+| [Documentation Hub](./docs/README.md)        | Complete documentation index and overview      |
+| [Architecture Guide](./docs/ARCHITECTURE.md) | Technical architecture and design decisions    |
+| [Project Structure](./PROJECT_STRUCTURE.md)  | Detailed directory organization                |
+| [Contributing Guidelines](./CONTRIBUTING.md) | How to contribute to the project               |
+| [Security Policy](./SECURITY.md)             | Security practices and vulnerability reporting |
 
 ### 🛠️ Developer Guides
 
-| Document | Description |
-|----------|-------------|
-| [GitHub Copilot Instructions](./.github/copilot-instructions.md) | AI coding assistant guidelines |
-| [API Best Practices](./docs/api/next-api-best-practices.md) | API development standards |
-| [API Migration Guide](./docs/api/api-migration-todo.md) | Pages to App Router migration status |
-| [Next.js Best Practices](./docs/guides/next-best-practices/) | Framework-specific patterns |
+| Document                                                         | Description                          |
+| ---------------------------------------------------------------- | ------------------------------------ |
+| [GitHub Copilot Instructions](./.github/copilot-instructions.md) | AI coding assistant guidelines       |
+| [API Best Practices](./docs/api/next-api-best-practices.md)      | API development standards            |
+| [API Migration Guide](./docs/api/api-migration-todo.md)          | Pages to App Router migration status |
+| [Next.js Best Practices](./docs/guides/next-best-practices/)     | Framework-specific patterns          |
 
 ### 📋 Additional Resources
 
-| Document | Description |
-|----------|-------------|
-| [Code of Conduct](./CODE_OF_CONDUCT.md) | Community guidelines and expectations |
-| [Changelog](./CHANGELOG.md) | Version history and release notes |
-| [License](./LICENSE) | MIT License details |
-| [Environment Variables](./.env.example) | Configuration template and examples |
-| [Deployment Guide](./docs/DEPLOYMENT.md) | Detailed deployment instructions |
-| [Azure Secrets Setup](./docs/AZURE_SECRETS.md) | Azure configuration guide |
+| Document                                       | Description                           |
+| ---------------------------------------------- | ------------------------------------- |
+| [Code of Conduct](./CODE_OF_CONDUCT.md)        | Community guidelines and expectations |
+| [Changelog](./CHANGELOG.md)                    | Version history and release notes     |
+| [License](./LICENSE)                           | MIT License details                   |
+| [Environment Variables](./.env.example)        | Configuration template and examples   |
+| [Deployment Guide](./docs/DEPLOYMENT.md)       | Detailed deployment instructions      |
+| [Azure Secrets Setup](./docs/AZURE_SECRETS.md) | Azure configuration guide             |
 
 ### 🎯 Quick Links for Common Tasks
 
@@ -638,6 +643,7 @@ For more testing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md#testing).
 **Error**: Application fails to start or returns 500 errors
 
 **Solution**:
+
 ```bash
 # Ensure .env.local exists
 cp .env.example .env.local
@@ -657,6 +663,7 @@ Verify `JWT_SECRET` is configured in `.env.local`
 **Error**: "Unauthorized" or "Invalid token" errors
 
 **Solutions**:
+
 - Verify `JWT_SECRET` matches between client and server
 - Check if token has expired (tokens have limited lifetime)
 - Clear browser cookies and local storage
@@ -670,6 +677,7 @@ Verify `JWT_SECRET` is configured in `.env.local`
 **Error**: Cannot connect to Airtable or save content
 
 **Solutions**:
+
 - Verify `AIRTABLE_API_KEY`, `AIRTABLE_BASE_ID`, and `AIRTABLE_TABLE_NAME` are correct
 - Check Airtable API permissions for your API key
 - Ensure Airtable base is shared with the API key owner
@@ -683,6 +691,7 @@ Verify `JWT_SECRET` is configured in `.env.local`
 **Error**: Build fails with TypeScript or dependency errors
 
 **Solutions**:
+
 ```bash
 # Clear all caches and rebuild
 rm -rf node_modules .next pnpm-lock.yaml
@@ -701,6 +710,7 @@ pnpm type-check
 **Error**: Tests fail during `pnpm test`
 
 **Solutions**:
+
 ```bash
 # Clear Jest cache
 pnpm test --clearCache
@@ -723,6 +733,7 @@ Check [docs/TEST_STATUS.md](./docs/TEST_STATUS.md) for known test issues.
 **Error**: "Port 3000 is already in use"
 
 **Solutions**:
+
 ```bash
 # Find and kill process on port 3000
 lsof -ti:3000 | xargs kill -9
@@ -739,6 +750,7 @@ PORT=3001 pnpm dev
 **Error**: "Command not found: pnpm" or version conflicts
 
 **Solutions**:
+
 ```bash
 # Install pnpm globally
 npm install -g pnpm@9.0.0
@@ -802,6 +814,7 @@ We welcome contributions from the community! Whether you're fixing bugs, adding 
 For detailed contribution guidelines, please read [CONTRIBUTING.md](./CONTRIBUTING.md).
 
 **Key points:**
+
 - Follow TypeScript strict mode and coding standards
 - Write tests for all new features
 - Ensure all quality checks pass before submitting PR
@@ -852,7 +865,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ### Author
 
-**JustAGhosT** - *Creator and Lead Developer*
+**JustAGhosT** - _Creator and Lead Developer_
+
 - GitHub: [@JustAGhosT](https://github.com/JustAGhosT)
 - Repository: [content_creation](https://github.com/JustAGhosT/content_creation)
 
