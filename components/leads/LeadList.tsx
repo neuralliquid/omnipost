@@ -178,7 +178,7 @@ export const LeadList: React.FC<LeadListProps> = ({
       {selectedLeads.size > 0 && onBulkAction && (
         <div className={styles.bulkActionsBar}>
           <span className={styles.selectedCount}>
-            {selectedLeads.size} lead{selectedLeads.size !== 1 ? 's' : ''} selected
+            {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
           </span>
           <div className={styles.bulkActions}>
             <button
@@ -221,7 +221,7 @@ export const LeadList: React.FC<LeadListProps> = ({
           Select All
         </label>
         <span className={styles.leadCount}>
-          {leads.length} lead{leads.length !== 1 ? 's' : ''}
+          {leads.length} lead{leads.length === 1 ? '' : 's'}
         </span>
       </div>
 

@@ -21,7 +21,6 @@ import {
   withErrorHandling,
   parseEnumFilter,
 } from '@/app/api/_utils/middleware';
-import { ErrorResponses } from '@/app/api/_utils/responses';
 
 /**
  * GET /api/leads
