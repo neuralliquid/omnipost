@@ -77,7 +77,9 @@ export function useReviewProcess() {
   const generateSummary = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<SummarizeApiResponse>('/api/summarize', { rawText: parsedData });
+      const response = await axios.post<SummarizeApiResponse>('/api/summarize', {
+        rawText: parsedData,
+      });
       setSummary(response.data.data);
       setCurrentStep('generating');
     } catch (err) {
@@ -91,7 +93,9 @@ export function useReviewProcess() {
   const generateImage = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ImageApiResponse>('/api/generate-image', { context: summary });
+      const response = await axios.post<ImageApiResponse>('/api/generate-image', {
+        context: summary,
+      });
       setImage(response.data.data);
       setCurrentStep('approving');
     } catch (err) {
@@ -105,7 +109,10 @@ export function useReviewProcess() {
   const approveContent = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApproveApiResponse>('/api/approve-content', { summary, image });
+      const response = await axios.post<ApproveApiResponse>('/api/approve-content', {
+        summary,
+        image,
+      });
       console.error('Content approved:', response.data);
       setCurrentStep('approved');
     } catch (err) {
