@@ -36,8 +36,9 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
       } else {
         setError('Failed to generate image: Invalid response format');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate image');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to generate image';
+      setError(errorMessage);
       console.error('Error generating image:', err);
     } finally {
       setLoading(false);
@@ -68,8 +69,9 @@ const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({ onImageGenera
       } else {
         setError('Failed to regenerate image: Invalid response format');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to regenerate image');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to regenerate image';
+      setError(errorMessage);
       console.error('Error regenerating image:', err);
     } finally {
       setLoading(false);

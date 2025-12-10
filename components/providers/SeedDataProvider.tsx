@@ -23,7 +23,7 @@ export function SeedDataProvider({ children }: SeedDataProviderProps) {
     if (!isSeedLoaded()) {
       const result = loadAllSeedData();
       const stats = getSeedStats();
-      console.log('[SeedDataProvider] Loaded seed data:', {
+      console.warn('[SeedDataProvider] Loaded seed data:', {
         series: result.series.length,
         campaigns: result.campaigns.length,
         totalPosts: stats.campaigns.totalPosts,

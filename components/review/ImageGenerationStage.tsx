@@ -9,7 +9,7 @@ const ImageGeneration = dynamic(() => import('../image/ImageGeneration'), {
 });
 
 interface ImageGenerationStageProps {
-  summary: any;
+  summary: string;
   onBack: () => void;
   onNext: () => void;
   isDisabled: boolean;

@@ -27,8 +27,9 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
         // Use the API client instead of direct fetch/axios calls
         const data = await apiClient.getPlatforms();
         setPlatforms(data);
-      } catch (err: any) {
-        setError(err.message || 'Failed to load platforms');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load platforms';
+        setError(errorMessage);
         console.error('Error fetching platforms:', err);
       } finally {
         setLoading(false);

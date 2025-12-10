@@ -9,7 +9,7 @@ const SummarizationAPI = dynamic(() => import('../text/SummarizationAPI'), {
 });
 
 interface SummarizationStageProps {
-  parsedData: any;
+  parsedData: string;
   onBack: () => void;
   onNext: () => void;
   isDisabled: boolean;

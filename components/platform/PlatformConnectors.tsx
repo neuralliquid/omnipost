@@ -15,7 +15,7 @@ interface ContentItem {
     tags?: string[];
     publishDate?: string;
     author?: string;
-    [key: string]: any; // For any additional metadata fields
+    [key: string]: unknown; // For any additional metadata fields
   };
 }
 

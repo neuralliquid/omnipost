@@ -6,7 +6,7 @@ interface TextParserProps {
 }
 
 const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
-  const [parsedData, setParsedData] = useState<any>(null);
+  const [parsedData, setParsedData] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -22,8 +22,10 @@ const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
     try {
       const response = await axios.post('/api/parse', { rawInput });
       setParsedData(response.data);
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message;
+    } catch (err: unknown) {
+      const errorMessage = axios.isAxiosError(err) 
+        ? (err.response?.data?.message || err.message)
+        : 'An unexpected error occurred';
       setError(errorMessage);
       setParsedData(null);
     } finally {
@@ -42,8 +44,10 @@ const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
     try {
       const response = await axios.post('/api/analyze', { parsedData });
       setParsedData(response.data);
-    } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message;
+    } catch (err: unknown) {
+      const errorMessage = axios.isAxiosError(err)
+        ? (err.response?.data?.message || err.message)
+        : 'An unexpected error occurred';
       setError(errorMessage);
     } finally {
       setIsLoading(false);
