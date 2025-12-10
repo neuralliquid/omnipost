@@ -504,8 +504,7 @@ export async function importFromLinkedIn(
       try {
         // Check for duplicates if lookup function is provided
         if (findExistingLead) {
-          const primaryEmail = profile.emails?.[0];
-          const exists = await findExistingLead(profile.id, primaryEmail);
+          const exists = await findExistingLead(profile.id, undefined);
           if (exists) {
             results.skipped++;
             continue;
