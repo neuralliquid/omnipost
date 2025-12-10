@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentUserId } from './auth';
 import { checkRateLimitOrRespond } from './responses';
 import { ErrorResponses } from './responses';
-import type { RateLimitPresets } from './rateLimit';
+import { RateLimitPresets } from './rateLimit';
 
 type RateLimitPreset = typeof RateLimitPresets[keyof typeof RateLimitPresets];
 
@@ -158,16 +158,40 @@ export function withAuthAndRateLimit<T = unknown>(
 }
 
 /**
- * Email validation helper
+ * Email validation helper using the existing validation utility
  * Returns error response if validation fails, null otherwise
  */
 export function validateEmailFormat(
   email: string,
   fieldName: string = 'email'
 ): NextResponse | null {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(email)) {
-    return ErrorResponses.badRequest(`Invalid ${fieldName} format`);
+  // Use existing ReDoS-safe email validation from validation.ts
+  const { validateEmail } = require('./validation');
+  const error = validateEmail(fieldName, email);
+  if (error) {
+    return ErrorResponses.badRequest(error);
   }
   return null;
+}
+
+/**
+ * Parse comma-separated enum values from query parameter
+ * Returns the parsed value(s) or undefined if invalid
+ */
+export function parseEnumFilter<T extends string>(
+  value: string | null,
+  validValues: readonly T[]
+): T | T[] | undefined {
+  if (!value) return undefined;
+
+  const items = value.split(',') as T[];
+  
+  // Check if all items are valid
+  const allValid = items.every((item) =>
+    (validValues as readonly string[]).includes(item)
+  );
+  
+  if (!allValid) return undefined;
+
+  return items.length === 1 ? items[0] : items;
 }

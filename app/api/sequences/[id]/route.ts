@@ -107,7 +107,7 @@ export const DELETE = withErrorHandling(async (_request: Request, { params }: Ro
 
   const success = await sequencesClient.deleteSequence(id);
   if (!success) {
-    return NextResponse.json({ error: 'Failed to delete sequence' }, { status: 500 });
+    return ErrorResponses.internalError('Failed to delete sequence');
   }
 
   return NextResponse.json({ success: true, message: 'Sequence deleted' });

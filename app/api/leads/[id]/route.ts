@@ -126,7 +126,7 @@ export const DELETE = withErrorHandling(async (_request: Request, { params }: Ro
 
   const success = await leadsClient.deleteLead(id);
   if (!success) {
-    return NextResponse.json({ error: 'Failed to delete lead' }, { status: 500 });
+    return ErrorResponses.internalError('Failed to delete lead');
   }
 
   return NextResponse.json({ success: true, message: 'Lead deleted' });

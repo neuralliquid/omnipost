@@ -19,25 +19,9 @@ import {
   validateEnumField,
   validateEmailFormat,
   withErrorHandling,
+  parseEnumFilter,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
-
-/**
- * Helper to parse comma-separated enum values
- */
-function parseEnumFilter<T extends string>(
-  value: string | null,
-  validValues: readonly T[]
-): T | T[] | undefined {
-  if (!value) return undefined;
-
-  const items = value.split(',') as T[];
-  if (!items.every((item) => validValues.includes(item))) {
-    return undefined;
-  }
-
-  return items.length === 1 ? items[0] : items;
-}
 
 /**
  * GET /api/leads
