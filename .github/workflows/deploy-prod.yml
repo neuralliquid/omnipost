@@ -1,0 +1,419 @@
+name: Production Deployment with DNS
+
+on:
+  workflow_dispatch:
+    inputs:
+      enable_custom_domain:
+        description: 'Enable custom domain (omnipost.nexamesh.ai)'
+        required: true
+        default: 'true'
+        type: boolean
+      skip_dns_verification:
+        description: 'Skip DNS verification'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  NODE_VERSION: '20.x'
+  AZURE_WEBAPP_PACKAGE_PATH: '.'
+  ORG_CODE: 'nl'
+  PROJECT_NAME: 'content-creation'
+  REGION_CODE: 'euw'
+  LOCATION: 'westeurope'
+  DNS_ZONE: 'nexamesh.ai'
+  DNS_ZONE_RG: 'rg-dns-global'
+  APP_SUBDOMAIN: 'omnipost'
+  API_SUBDOMAIN: 'api.omnipost'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@fe02b34f77f8bc703788d5817da081398fad5dd2 # v4.0.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'pnpm'
+
+      - name: Cache Next.js build
+        uses: actions/cache@v3
+        with:
+          path: |
+            .next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-${{ hashFiles('**/*.ts', '**/*.tsx', '**/*.js', '**/*.jsx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('pnpm-lock.yaml') }}-
+            ${{ runner.os }}-nextjs-
+
+      - name: Install, build, and test
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run type-check
+          pnpm run lint
+          pnpm run build
+          pnpm test
+        env:
+          JWT_SECRET: test-secret-key-for-deployment-ci
+
+      - name: Prepare deployment package
+        run: |
+          mkdir -p deploy
+          cp -r .next/standalone/. deploy/
+          mkdir -p deploy/.next/static
+          cp -r .next/static/. deploy/.next/static/
+          cp -r public deploy/public || true
+          cp -r data deploy/data || true
+          cp startup.sh deploy/
+          chmod +x deploy/startup.sh
+          echo "✓ Standalone deployment package contents:"
+          find deploy -maxdepth 2 -print | head -20
+          echo "✓ Package size:"
+          du -sh deploy/
+
+      - name: Zip artifact for deployment
+        run: cd deploy && zip -r ../node-app.zip ./*
+
+      - name: Upload artifact for deployment job
+        uses: actions/upload-artifact@v4
+        with:
+          name: node-app
+          path: node-app.zip
+
+  dns-verification:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ github.event.inputs.enable_custom_domain == 'true' && github.event.inputs.skip_dns_verification != 'true' }}
+    steps:
+      - name: Verify DNS Zone exists
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Check DNS Zone
+        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
+        with:
+          inlineScript: |
+            echo "Checking DNS zone: ${{ env.DNS_ZONE }}"
+
+            # Check if DNS zone exists
+            if az network dns zone show --name ${{ env.DNS_ZONE }} --resource-group ${{ env.DNS_ZONE_RG }} > /dev/null 2>&1; then
+              echo "✅ DNS Zone '${{ env.DNS_ZONE }}' exists in resource group '${{ env.DNS_ZONE_RG }}'"
+
+              # List existing records
+              echo "📋 Existing DNS records:"
+              az network dns record-set list --zone-name ${{ env.DNS_ZONE }} --resource-group ${{ env.DNS_ZONE_RG }} --output table
+            else
+              echo "❌ DNS Zone '${{ env.DNS_ZONE }}' not found in resource group '${{ env.DNS_ZONE_RG }}'"
+              echo "Please create the DNS zone first or check the resource group name"
+              exit 1
+            fi
+
+      - name: Verify DNS resolution
+        run: |
+          echo "Checking current DNS resolution..."
+
+          # Check if subdomains already resolve (they may or may not)
+          echo "Checking ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}..."
+          dig +short ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} || echo "No record yet (expected for new setup)"
+
+          echo "Checking ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }}..."
+          dig +short ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }} || echo "No record yet (expected for new setup)"
+
+  infrastructure:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    needs: [build, dns-verification]
+    if: ${{ always() && needs.build.result == 'success' }}
+    environment: prod
+    outputs:
+      app_name: ${{ steps.generate-names.outputs.APP_NAME }}
+      web_app_hostname: ${{ steps.deploy-infra.outputs.webAppUrl }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate Resource Names
+        id: generate-names
+        run: |
+          chmod +x ./infra/naming.sh
+          while IFS= read -r line; do
+            echo "$line" >> $GITHUB_ENV
+            # Also export as output
+            echo "${line}" >> $GITHUB_OUTPUT
+          done < <(./infra/naming.sh ${{ env.ORG_CODE }} prod ${{ env.PROJECT_NAME }} ${{ env.REGION_CODE }})
+
+      - name: Azure Login
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Create Resource Group
+        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
+        with:
+          inlineScript: |
+            az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
+
+      - name: Deploy Bicep template
+        id: deploy-infra
+        uses: azure/arm-deploy@65ae74fb7aec7c680c88ef456811f353adae4d06 # v1
+        with:
+          resourceGroupName: ${{ env.RESOURCE_GROUP }}
+          template: ./infra/main.bicep
+          parameters: >
+            org=${{ env.ORG_CODE }}
+            env=prod
+            project=${{ env.PROJECT_NAME }}
+            region=${{ env.REGION_CODE }}
+            location=${{ env.LOCATION }}
+            sku=S1
+            enableMonitoring=true
+            enableDeploymentSlot=true
+            enableCustomDomain=${{ github.event.inputs.enable_custom_domain }}
+            dnsZoneName=${{ env.DNS_ZONE }}
+            dnsZoneResourceGroup=${{ env.DNS_ZONE_RG }}
+            appSubdomain=${{ env.APP_SUBDOMAIN }}
+            apiSubdomain=${{ env.API_SUBDOMAIN }}
+
+  configure-dns:
+    runs-on: ubuntu-latest
+    needs: infrastructure
+    if: ${{ github.event.inputs.enable_custom_domain == 'true' }}
+    steps:
+      - name: Azure Login
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get Web App Hostname
+        id: get-hostname
+        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
+        with:
+          inlineScript: |
+            # Get the default hostname
+            HOSTNAME=$(az webapp show --name ${{ needs.infrastructure.outputs.app_name }} --resource-group ${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-rg-${{ env.REGION_CODE }} --query defaultHostName -o tsv)
+            echo "WEBAPP_HOSTNAME=${HOSTNAME}" >> $GITHUB_OUTPUT
+            echo "Web App hostname: ${HOSTNAME}"
+
+      - name: Create/Update DNS Records
+        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
+        with:
+          inlineScript: |
+            HOSTNAME=${{ steps.get-hostname.outputs.WEBAPP_HOSTNAME }}
+
+            echo "📝 Configuring DNS records for ${{ env.DNS_ZONE }}..."
+
+            # Create CNAME for omnipost.nexamesh.ai
+            echo "Creating CNAME: ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} -> ${HOSTNAME}"
+            az network dns record-set cname set-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name ${{ env.APP_SUBDOMAIN }} \
+              --cname ${HOSTNAME} \
+              2>/dev/null || \
+            az network dns record-set cname create \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --name ${{ env.APP_SUBDOMAIN }} \
+              --ttl 3600 && \
+            az network dns record-set cname set-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name ${{ env.APP_SUBDOMAIN }} \
+              --cname ${HOSTNAME}
+
+            # Create CNAME for api.omnipost.nexamesh.ai
+            echo "Creating CNAME: ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }} -> ${HOSTNAME}"
+            az network dns record-set cname set-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name ${{ env.API_SUBDOMAIN }} \
+              --cname ${HOSTNAME} \
+              2>/dev/null || \
+            az network dns record-set cname create \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --name ${{ env.API_SUBDOMAIN }} \
+              --ttl 3600 && \
+            az network dns record-set cname set-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name ${{ env.API_SUBDOMAIN }} \
+              --cname ${HOSTNAME}
+
+            # Create TXT verification records
+            echo "Creating TXT verification records..."
+            az network dns record-set txt add-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name asuid.${{ env.APP_SUBDOMAIN }} \
+              --value ${HOSTNAME} \
+              2>/dev/null || \
+            az network dns record-set txt create \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --name asuid.${{ env.APP_SUBDOMAIN }} \
+              --ttl 3600 && \
+            az network dns record-set txt add-record \
+              --zone-name ${{ env.DNS_ZONE }} \
+              --resource-group ${{ env.DNS_ZONE_RG }} \
+              --record-set-name asuid.${{ env.APP_SUBDOMAIN }} \
+              --value ${HOSTNAME}
+
+            echo "✅ DNS records configured successfully"
+
+      - name: Verify DNS Propagation
+        run: |
+          echo "Waiting for DNS propagation (this may take a few minutes)..."
+          sleep 30
+
+          echo "Checking DNS resolution..."
+          for i in {1..5}; do
+            echo "Attempt $i/5..."
+
+            RESOLVED=$(dig +short ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }})
+            if [ -n "$RESOLVED" ]; then
+              echo "✅ ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} resolves to: ${RESOLVED}"
+              break
+            fi
+
+            if [ $i -lt 5 ]; then
+              echo "DNS not propagated yet, waiting 30 seconds..."
+              sleep 30
+            fi
+          done
+
+  deploy:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    needs: [infrastructure, configure-dns]
+    if: ${{ always() && needs.infrastructure.result == 'success' }}
+    environment:
+      name: prod
+      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            infra/naming.sh
+          sparse-checkout-cone-mode: false
+
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: node-app
+
+      - name: Unzip artifact for deployment
+        run: unzip -o node-app.zip
+
+      - name: Azure Login
+        uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Generate Resource Names
+        id: generate-names
+        run: |
+          chmod +x ./infra/naming.sh
+          while IFS= read -r line; do
+            echo "$line" >> $GITHUB_ENV
+          done < <(./infra/naming.sh ${{ env.ORG_CODE }} prod ${{ env.PROJECT_NAME }} ${{ env.REGION_CODE }})
+
+      - name: 'Deploy to Azure WebApp'
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@657f0700ea5214d56a0400d8ac5e8023c963d25d # v3
+        with:
+          app-name: ${{ env.APP_NAME }}
+          package: ${{ env.AZURE_WEBAPP_PACKAGE_PATH }}
+
+      - name: Verify deployment health
+        run: |
+          echo "Waiting 30 seconds for app to start..."
+          sleep 30
+
+          # Test default Azure hostname
+          APP_URL="https://${{ env.APP_NAME }}.azurewebsites.net"
+          echo "Testing health endpoint: ${APP_URL}/api/health"
+
+          MAX_RETRIES=5
+          RETRY_COUNT=0
+
+          while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${APP_URL}/api/health" || echo "000")
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Health check passed on Azure hostname!"
+              break
+            else
+              RETRY_COUNT=$((RETRY_COUNT + 1))
+              echo "⚠️  Attempt $RETRY_COUNT/$MAX_RETRIES: Health check returned $HTTP_CODE"
+              if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                sleep 10
+              fi
+            fi
+          done
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "❌ Health check failed on Azure hostname"
+            exit 1
+          fi
+
+      - name: Verify custom domain (if enabled)
+        if: ${{ github.event.inputs.enable_custom_domain == 'true' }}
+        run: |
+          echo "Verifying custom domain..."
+
+          CUSTOM_URL="https://${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}"
+          echo "Testing: ${CUSTOM_URL}/api/health"
+
+          # Give more time for SSL certificate provisioning
+          sleep 60
+
+          for i in {1..5}; do
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${CUSTOM_URL}/api/health" 2>/dev/null || echo "000")
+
+            if [ "$HTTP_CODE" = "200" ]; then
+              echo "✅ Custom domain is working!"
+              echo "🌐 Application available at: ${CUSTOM_URL}"
+              exit 0
+            fi
+
+            echo "Attempt $i/5: HTTP $HTTP_CODE (SSL may still be provisioning)"
+            sleep 30
+          done
+
+          echo "⚠️  Custom domain not fully ready yet. SSL certificate may still be provisioning."
+          echo "The application should be accessible at ${CUSTOM_URL} within 15-30 minutes."
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [deploy]
+    if: always()
+    steps:
+      - name: Deployment Summary
+        run: |
+          echo "## 🚀 Deployment Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### URLs" >> $GITHUB_STEP_SUMMARY
+          echo "- **Azure URL:** https://${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-app-${{ env.REGION_CODE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ github.event.inputs.enable_custom_domain }}" = "true" ]; then
+            echo "- **Custom Domain:** https://${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}" >> $GITHUB_STEP_SUMMARY
+            echo "- **API Domain:** https://${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }}" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### DNS Configuration" >> $GITHUB_STEP_SUMMARY
+          echo "- Zone: \`${{ env.DNS_ZONE }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- App CNAME: \`${{ env.APP_SUBDOMAIN }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- API CNAME: \`${{ env.API_SUBDOMAIN }}\`" >> $GITHUB_STEP_SUMMARY

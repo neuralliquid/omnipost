@@ -28,6 +28,42 @@ export interface FeatureFlag {
   implementation?: string;
 }
 
+// CRM and Prospecting Feature Flags
+export interface LeadManagementFeatureFlag {
+  enabled: boolean;
+  scoring: boolean;
+  tagging: boolean;
+  lists: boolean;
+}
+
+export interface OutreachSequencesFeatureFlag {
+  enabled: boolean;
+  emailAutomation: boolean;
+  linkedinAutomation: boolean;
+  maxSequences: number;
+  maxStepsPerSequence: number;
+}
+
+export interface SurveyFormsFeatureFlag {
+  enabled: boolean;
+  leadCapture: boolean;
+  nps: boolean;
+  maxFormsPerUser: number;
+}
+
+export interface LinkedInProspectingFeatureFlag {
+  enabled: boolean;
+  searchEnabled: boolean;
+  importEnabled: boolean;
+  automationEnabled: boolean;
+}
+
+export interface CrmDashboardFeatureFlag {
+  enabled: boolean;
+  analytics: boolean;
+  pipelineView: boolean;
+}
+
 // Define the base feature flags interface without index signature
 interface BaseFeatureFlags {
   textParser: TextParserFeatureFlag;
@@ -38,6 +74,12 @@ interface BaseFeatureFlags {
   notificationSystem: boolean;
   feedbackMechanism: boolean;
   airtableIntegration: boolean;
+  // CRM and Prospecting
+  leadManagement: LeadManagementFeatureFlag;
+  outreachSequences: OutreachSequencesFeatureFlag;
+  surveyForms: SurveyFormsFeatureFlag;
+  linkedinProspecting: LinkedInProspectingFeatureFlag;
+  crmDashboard: CrmDashboardFeatureFlag;
 }
 
 // Extend the base interface with an index signature for dynamic access
@@ -123,6 +165,37 @@ const featureFlags: FeatureFlags = {
   notificationSystem: true,
   feedbackMechanism: true,
   airtableIntegration: true,
+  // CRM and Prospecting defaults
+  leadManagement: {
+    enabled: true,
+    scoring: true,
+    tagging: true,
+    lists: true,
+  },
+  outreachSequences: {
+    enabled: true,
+    emailAutomation: true,
+    linkedinAutomation: false,
+    maxSequences: 10,
+    maxStepsPerSequence: 20,
+  },
+  surveyForms: {
+    enabled: true,
+    leadCapture: true,
+    nps: true,
+    maxFormsPerUser: 50,
+  },
+  linkedinProspecting: {
+    enabled: false,
+    searchEnabled: false,
+    importEnabled: true,
+    automationEnabled: false,
+  },
+  crmDashboard: {
+    enabled: true,
+    analytics: true,
+    pipelineView: true,
+  },
 };
 /**
  * Save feature flags to localStorage (in browser) or file (in Node.js)
