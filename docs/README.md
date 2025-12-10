@@ -1,6 +1,6 @@
 # Documentation Directory
 
-> **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+> **🌐 Live Demo:** [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
 
 This directory contains all project documentation organized by type and purpose.
 

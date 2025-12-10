@@ -7,7 +7,7 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-latest-black)](https://nextjs.org/)
 
-> **🌐 Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+> **🌐 Live Demo:** [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
 
 ## Publish everywhere, manage anywhere
 

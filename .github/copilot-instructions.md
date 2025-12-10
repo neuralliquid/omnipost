@@ -3,7 +3,7 @@
 ## 📌 Quick Reference
 
 **Repository:** JustAGhosT/content_creation  
-**Live Demo:** [https://content-creation.azurewebsites.net](https://content-creation.azurewebsites.net)
+**Live Demo:** [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
 
 ## Project Overview
 
@@ -862,4 +862,4 @@ pnpm install
 **Last Updated:** December 10, 2024  
 **Maintained By:** Development Team  
 **Questions?** See CONTRIBUTING.md or create an issue  
-**Live Demo:** https://content-creation.azurewebsites.net
+**Live Demo:** https://nl-dev-content-creation-app-euw.azurewebsites.net
