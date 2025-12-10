@@ -115,3 +115,161 @@ export function validateAllowedProperties<T extends Record<string, unknown>>(
   const invalidProps = Object.keys(obj).filter(prop => !allowedProps.includes(prop));
   return invalidProps.length > 0 ? invalidProps : null;
 }
+
+// ============ Form Field Validation ============
+
+import type { FormField } from '@/types/survey';
+
+/**
+ * ReDoS-safe email validation
+ */
+export function validateEmail(label: string, value: unknown): string | null {
+  const emailValue = String(value);
+
+  // Length check to prevent DoS
+  if (emailValue.length > 254) {
+    return `${label} is too long for an email address`;
+  }
+
+  // Simple validation: must have exactly one @, something before and after, and a dot after @
+  const atIndex = emailValue.indexOf('@');
+  const lastAtIndex = emailValue.lastIndexOf('@');
+
+  if (atIndex < 1 || atIndex !== lastAtIndex || atIndex >= emailValue.length - 1) {
+    return `${label} must be a valid email address`;
+  }
+
+  const domain = emailValue.slice(atIndex + 1);
+  if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+    return `${label} must be a valid email address`;
+  }
+
+  return null;
+}
+
+/**
+ * Text length validation
+ */
+export function validateTextLength(
+  label: string,
+  value: unknown,
+  minLength?: number,
+  maxLength?: number
+): string | null {
+  const strValue = String(value);
+
+  if (minLength !== undefined && strValue.length < minLength) {
+    return `${label} must be at least ${minLength} characters`;
+  }
+
+  if (maxLength !== undefined && strValue.length > maxLength) {
+    return `${label} must be at most ${maxLength} characters`;
+  }
+
+  return null;
+}
+
+/**
+ * Number validation with min/max
+ */
+export function validateNumber(
+  label: string,
+  value: unknown,
+  min?: number,
+  max?: number
+): string | null {
+  const numValue = Number(value);
+  if (isNaN(numValue)) {
+    return `${label} must be a valid number`;
+  }
+
+  if (min !== undefined && numValue < min) {
+    return `${label} must be at least ${min}`;
+  }
+
+  if (max !== undefined && numValue > max) {
+    return `${label} must be at most ${max}`;
+  }
+
+  return null;
+}
+
+/**
+ * Validate a single form field value
+ * Returns error message if invalid, null if valid
+ */
+export function validateFormField(
+  field: FormField,
+  value: unknown
+): string | null {
+  // Required validation
+  if (field.validation?.required) {
+    if (value === undefined || value === null || value === '') {
+      return `${field.label} is required`;
+    }
+  }
+
+  // Skip further validation if value is empty and not required
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  // Type-specific validation
+  switch (field.type) {
+    case 'email':
+      return validateEmail(field.label, value);
+
+    case 'number':
+      return validateNumber(
+        field.label,
+        value,
+        field.validation?.min,
+        field.validation?.max
+      );
+
+    case 'text':
+    case 'textarea':
+    default:
+      return validateTextLength(
+        field.label,
+        value,
+        field.validation?.minLength,
+        field.validation?.maxLength
+      );
+  }
+}
+
+/**
+ * Validate all form fields and return array of errors
+ */
+export function validateFormSubmission(
+  fields: FormField[],
+  responses: Record<string, unknown>
+): string[] {
+  const errors: string[] = [];
+
+  for (const field of fields) {
+    const value = responses[field.name];
+    const error = validateFormField(field, value);
+    if (error) {
+      errors.push(error);
+    }
+  }
+
+  return errors;
+}
+
+/**
+ * Parse and validate pagination parameters
+ */
+export function parsePaginationParams(
+  searchParams: URLSearchParams,
+  maxPageSize: number = 100
+): { page: number; pageSize: number } {
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+  const pageSize = Math.min(
+    maxPageSize,
+    Math.max(1, parseInt(searchParams.get('pageSize') || '20', 10))
+  );
+  return { page, pageSize };
+}

@@ -6,11 +6,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
-import { checkRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { checkRateLimitOrRespond, ErrorResponses, SuccessResponses } from '@/app/api/_utils/responses';
+import { validateFormSubmission } from '@/app/api/_utils/validation';
 import { formsClient } from '@/lib/data/forms';
 import { leadsClient } from '@/lib/data/leads';
 import { sequencesClient } from '@/lib/data/sequences';
 import type { CreateLeadInput } from '@/types/lead';
+import type { Form } from '@/types/survey';
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -22,34 +25,17 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/submissions', RateLimitPresets.GENERAL);
-    if (!rateLimitResult.allowed) {
-      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests', retryAfter },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          },
-        }
-      );
-    }
+    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/submissions', RateLimitPresets.GENERAL);
+    if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const { id } = await params;
-
-    // Check if form exists
     const form = await formsClient.getForm(id);
     if (!form) {
-      return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
     const { searchParams } = new URL(request.url);
@@ -61,14 +47,83 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       pageSize: Math.min(pageSize, 100),
     });
 
-    return NextResponse.json({
+    return SuccessResponses.ok({
       submissions: result.submissions,
       pagination: result.pagination,
     });
   } catch (error) {
-    console.error('Error fetching submissions:', error);
-    return NextResponse.json({ error: 'Failed to fetch submissions' }, { status: 500 });
+    return ErrorResponses.internalError('Error fetching submissions:', error);
   }
+}
+
+/**
+ * Validate that a form can accept submissions
+ */
+function validateFormAcceptsSubmissions(form: Form): NextResponse | null {
+  if (form.status !== 'published') {
+    return ErrorResponses.badRequest('Form is not accepting submissions');
+  }
+
+  if (form.expiresAt && new Date(form.expiresAt) < new Date()) {
+    return ErrorResponses.badRequest('Form has expired');
+  }
+
+  if (form.submissionLimit && form.metrics.submissions >= form.submissionLimit) {
+    return ErrorResponses.badRequest('Form submission limit reached');
+  }
+
+  return null;
+}
+
+/**
+ * Extract metadata from request headers
+ */
+function extractSubmissionMetadata(request: NextRequest) {
+  return {
+    ipAddress: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined,
+    userAgent: request.headers.get('user-agent') ?? undefined,
+    referrer: request.headers.get('referer') ?? undefined,
+  };
+}
+
+/**
+ * Create lead from form submission and handle sequence enrollment
+ */
+async function createLeadFromSubmission(
+  form: Form,
+  responses: Record<string, unknown>,
+  submissionId: string
+): Promise<string | undefined> {
+  const leadData = extractLeadData(form, responses);
+  if (!leadData) return undefined;
+
+  const createdBy = (await isAuthenticated()) ? await getCurrentUserId() : 'form_submission';
+  const lead = await leadsClient.createLead(leadData, createdBy || 'form_submission');
+
+  // Add form submission interaction
+  await leadsClient.addInteraction(lead.id, {
+    type: 'form_submission',
+    description: `Submitted form: ${form.name}`,
+    metadata: {
+      formId: form.id,
+      submissionId,
+    },
+  });
+
+  // Enroll in sequence if configured
+  if (form.integrations.enrollInSequence) {
+    try {
+      await sequencesClient.enrollLead(
+        form.integrations.enrollInSequence,
+        lead.id,
+        createdBy || 'form_submission'
+      );
+    } catch (enrollError) {
+      console.error('Error enrolling lead in sequence:', enrollError);
+    }
+  }
+
+  return lead.id;
 }
 
 /**
@@ -77,170 +132,56 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting - stricter limits for public endpoints to prevent flooding
-    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/submissions/post', RateLimitPresets.PUBLIC_API);
-    if (!rateLimitResult.allowed) {
-      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
-      return NextResponse.json(
-        { error: 'Too many submissions. Please try again in a minute.', retryAfter },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': RateLimitPresets.PUBLIC_API.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          },
-        }
-      );
-    }
+    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/submissions/post', RateLimitPresets.PUBLIC_API);
+    if (rateLimitResponse) return rateLimitResponse;
 
     const { id } = await params;
-
-    // Get form
     const form = await formsClient.getForm(id);
     if (!form) {
-      return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
-    // Check if form is published
-    if (form.status !== 'published') {
-      return NextResponse.json({ error: 'Form is not accepting submissions' }, { status: 400 });
-    }
-
-    // Check expiration
-    if (form.expiresAt && new Date(form.expiresAt) < new Date()) {
-      return NextResponse.json({ error: 'Form has expired' }, { status: 400 });
-    }
-
-    // Check submission limit
-    if (form.submissionLimit && form.metrics.submissions >= form.submissionLimit) {
-      return NextResponse.json({ error: 'Form submission limit reached' }, { status: 400 });
-    }
+    // Validate form can accept submissions
+    const formError = validateFormAcceptsSubmissions(form);
+    if (formError) return formError;
 
     // Check authentication if required
     if (form.requireAuthentication && !(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const body = await request.json();
-
-    // Validate required fields
     const responses = body.responses || body;
-    const errors: string[] = [];
 
-    for (const field of form.fields) {
-      if (field.validation?.required) {
-        const value = responses[field.name];
-        if (value === undefined || value === null || value === '') {
-          errors.push(`${field.label} is required`);
-        }
-      }
-
-      // Email validation - use a simple, ReDoS-safe approach
-      if (field.type === 'email' && responses[field.name]) {
-        const emailValue = String(responses[field.name]);
-        // Limit length to prevent DoS and use simple validation
-        if (emailValue.length > 254) {
-          errors.push(`${field.label} is too long for an email address`);
-        } else {
-          // Simple validation: must have exactly one @, something before and after, and a dot after @
-          const atIndex = emailValue.indexOf('@');
-          const lastAtIndex = emailValue.lastIndexOf('@');
-          if (atIndex < 1 || atIndex !== lastAtIndex || atIndex >= emailValue.length - 1) {
-            errors.push(`${field.label} must be a valid email address`);
-          } else {
-            const domain = emailValue.slice(atIndex + 1);
-            if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
-              errors.push(`${field.label} must be a valid email address`);
-            }
-          }
-        }
-      }
-
-      // Min/max length validation
-      if (field.validation?.minLength && responses[field.name]) {
-        if (responses[field.name].length < field.validation.minLength) {
-          errors.push(`${field.label} must be at least ${field.validation.minLength} characters`);
-        }
-      }
-
-      if (field.validation?.maxLength && responses[field.name]) {
-        if (responses[field.name].length > field.validation.maxLength) {
-          errors.push(`${field.label} must be at most ${field.validation.maxLength} characters`);
-        }
-      }
-    }
-
+    // Validate form fields using shared utility
+    const errors = validateFormSubmission(form.fields, responses);
     if (errors.length > 0) {
-      return NextResponse.json({ error: 'Validation failed', errors }, { status: 400 });
+      return ErrorResponses.validationError(errors);
     }
-
-    // Extract metadata from headers
-    const metadata = {
-      ipAddress: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined,
-      userAgent: request.headers.get('user-agent') ?? undefined,
-      referrer: request.headers.get('referer') ?? undefined,
-    };
 
     // Create submission
-    const submission = await formsClient.createSubmission(
-      id,
-      responses,
-      metadata,
-      body.startedAt
-    );
+    const metadata = extractSubmissionMetadata(request);
+    const submission = await formsClient.createSubmission(id, responses, metadata, body.startedAt);
 
     // Create lead if integration is enabled
     let leadId: string | undefined;
     if (form.integrations.createLead) {
       try {
-        const leadData = extractLeadData(form, responses);
-        if (leadData) {
-          const createdBy = (await isAuthenticated()) ? await getCurrentUserId() : 'form_submission';
-          const lead = await leadsClient.createLead(leadData, createdBy || 'form_submission');
-          leadId = lead.id;
-
-          // Add form submission interaction
-          await leadsClient.addInteraction(lead.id, {
-            type: 'form_submission',
-            description: `Submitted form: ${form.name}`,
-            metadata: {
-              formId: form.id,
-              submissionId: submission.id,
-            },
-          });
-
-          // Enroll in sequence if configured
-          if (form.integrations.enrollInSequence) {
-            try {
-              await sequencesClient.enrollLead(
-                form.integrations.enrollInSequence,
-                lead.id,
-                createdBy || 'form_submission'
-              );
-            } catch (enrollError) {
-              console.error('Error enrolling lead in sequence:', enrollError);
-            }
-          }
-        }
+        leadId = await createLeadFromSubmission(form, responses, submission.id);
       } catch (leadError) {
         console.error('Error creating lead from form submission:', leadError);
       }
     }
 
-    // Return success response
-    return NextResponse.json({
+    return SuccessResponses.created({
       success: true,
       submissionId: submission.id,
       leadId,
       message: form.completionSettings.message || 'Thank you for your submission!',
       redirectUrl: form.completionSettings.redirectUrl,
-    }, { status: 201 });
+    });
   } catch (error) {
-    console.error('Error creating submission:', error);
-    // Don't expose internal error details to clients
-    return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });
+    return ErrorResponses.internalError('Error creating submission:', error);
   }
 }
 

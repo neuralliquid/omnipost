@@ -8,12 +8,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { isAuthenticated } from '@/app/api/_utils/auth';
-import { checkRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { checkRateLimitOrRespond, ErrorResponses, SuccessResponses } from '@/app/api/_utils/responses';
 import { formsClient } from '@/lib/data/forms';
-import type { FormStatus } from '@/types/survey';
-
-// Valid status values
-const VALID_STATUSES: FormStatus[] = ['draft', 'published', 'closed', 'archived'];
 
 // Zod schema for form update validation
 const updateFormSchema = z.object({
@@ -54,41 +51,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // Use stricter rate limiting for public access to prevent abuse
     const rateLimit = isPublic ? RateLimitPresets.PUBLIC_API : RateLimitPresets.GENERAL;
-    const rateLimitResult = checkRateLimit(
+    const rateLimitResponse = checkRateLimitOrRespond(
       request,
       isPublic ? '/api/forms/[id]/public' : '/api/forms/[id]',
       rateLimit
     );
-    if (!rateLimitResult.allowed) {
-      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests', retryAfter },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': rateLimit.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          },
-        }
-      );
-    }
+    if (rateLimitResponse) return rateLimitResponse;
 
     if (!isPublic && !(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const { id } = await params;
-
     const form = await formsClient.getForm(id);
     if (!form) {
-      return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
     // For public access, only return published forms
     if (isPublic && form.status !== 'published') {
-      return NextResponse.json({ error: 'Form not available' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
     // Track view for public access
@@ -96,10 +78,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       await formsClient.trackView(id);
     }
 
-    return NextResponse.json({ form });
+    return SuccessResponses.ok({ form });
   } catch (error) {
-    console.error('Error fetching form:', error);
-    return NextResponse.json({ error: 'Failed to fetch form' }, { status: 500 });
+    return ErrorResponses.internalError('Error fetching form:', error);
   }
 }
 
@@ -109,34 +90,17 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/patch', RateLimitPresets.GENERAL);
-    if (!rateLimitResult.allowed) {
-      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests', retryAfter },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          },
-        }
-      );
-    }
+    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/patch', RateLimitPresets.GENERAL);
+    if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const { id } = await params;
-
-    // Check if form exists
     const existingForm = await formsClient.getForm(id);
     if (!existingForm) {
-      return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
     // Parse and validate request body with Zod
@@ -159,9 +123,7 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
 
     // Cannot publish a form without fields
     if (body.status === 'published' && existingForm.fields.length === 0) {
-      return NextResponse.json({
-        error: 'Cannot publish a form without fields'
-      }, { status: 400 });
+      return ErrorResponses.badRequest('Cannot publish a form without fields');
     }
 
     const form = await formsClient.updateForm(id, {
@@ -175,11 +137,9 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       tags: body.tags,
     });
 
-    return NextResponse.json({ form });
+    return SuccessResponses.ok({ form });
   } catch (error) {
-    console.error('Error updating form:', error);
-    // Don't expose internal error details to clients
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return ErrorResponses.internalError('Error updating form:', error);
   }
 }
 
@@ -189,44 +149,26 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/delete', RateLimitPresets.GENERAL);
-    if (!rateLimitResult.allowed) {
-      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
-      return NextResponse.json(
-        { error: 'Too many requests', retryAfter },
-        {
-          status: 429,
-          headers: {
-            'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
-          },
-        }
-      );
-    }
+    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/delete', RateLimitPresets.GENERAL);
+    if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return ErrorResponses.unauthorized();
     }
 
     const { id } = await params;
-
-    // Check if form exists
     const existingForm = await formsClient.getForm(id);
     if (!existingForm) {
-      return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+      return ErrorResponses.notFound('Form');
     }
 
     const success = await formsClient.deleteForm(id);
     if (!success) {
-      return NextResponse.json({ error: 'Failed to delete form' }, { status: 500 });
+      return ErrorResponses.internalError('Failed to delete form');
     }
 
-    return NextResponse.json({ success: true, message: 'Form deleted' });
+    return SuccessResponses.deleted('Form deleted');
   } catch (error) {
-    console.error('Error deleting form:', error);
-    return NextResponse.json({ error: 'Failed to delete form' }, { status: 500 });
+    return ErrorResponses.internalError('Error deleting form:', error);
   }
 }
