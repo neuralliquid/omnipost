@@ -238,7 +238,7 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
     return stepType?.icon || '📌';
   };
 
-  const getStepLabel = () => {
+  const _getStepLabel = () => {
     const stepType = STEP_TYPES.find(t => t.value === step.type);
     return stepType?.label || step.type;
   };

@@ -18,7 +18,7 @@ env:
   NODE_VERSION: '20.x'
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   ORG_CODE: 'nl'
-  PROJECT_NAME: 'content-creation'
+  PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw'
   LOCATION: 'westeurope'
   DNS_ZONE: 'nexamesh.ai'
@@ -71,6 +71,13 @@ jobs:
           cp -r .next/static/. deploy/.next/static/
           cp -r public deploy/public || true
           cp -r data deploy/data || true
+          
+          # Fix package.json start script for standalone mode
+          if [ -f deploy/package.json ]; then
+            node -e "const pkg = require('./deploy/package.json'); pkg.scripts = pkg.scripts || {}; pkg.scripts.start = 'node server.js'; require('fs').writeFileSync('./deploy/package.json', JSON.stringify(pkg, null, 2));"
+            echo "✓ Updated package.json start script for standalone mode"
+          fi
+          
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
           echo "✓ Standalone deployment package contents:"

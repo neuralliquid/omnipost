@@ -14,7 +14,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.0.0-orange)](https://pnpm.io/)
 
-[🌐 Live Demo](https://nl-dev-content-creation-app-euw.azurewebsites.net) · [📖 Documentation](./docs/README.md) · [🐛 Report Bug](https://github.com/JustAGhosT/content_creation/issues) · [✨ Request Feature](https://github.com/JustAGhosT/content_creation/issues)
+[🌐 Live Demo](https://nl-dev-omnipost-app-euw.azurewebsites.net) · [📖 Documentation](./docs/README.md) · [🐛 Report Bug](https://github.com/JustAGhosT/content_creation/issues) · [✨ Request Feature](https://github.com/JustAGhosT/content_creation/issues)
 
 </div>
 
@@ -96,7 +96,7 @@ pnpm dev
 
 1. **Configure authentication**: Set a secure `JWT_SECRET` in your `.env.local` file
 2. **Optional integrations**: Add API keys for Airtable, Hugging Face, or notification services
-3. **Explore the platform**: Visit the live demo at [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
+3. **Explore the platform**: Visit the live demo at [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
 4. **Read the docs**: Check out the [Documentation Hub](./docs/README.md) for detailed guides
 
 ## 📋 Available Scripts
@@ -372,7 +372,7 @@ OmniPost is optimized for Azure Web Apps with **Next.js standalone output mode**
 env:
   NODE_VERSION: '18.20.0' # Must match .nvmrc
   ORG_CODE: 'nl' # Organization code
-  PROJECT_NAME: 'content-creation'
+  PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw' # Region: euw, eus, etc.
   LOCATION: 'westeurope' # Azure region
 ```
@@ -383,7 +383,7 @@ env:
 {
   "org": { "value": "nl" },
   "env": { "value": "dev" },
-  "project": { "value": "content-creation" },
+  "project": { "value": "omnipost" },
   "region": { "value": "euw" },
   "sku": { "value": "B1" },
   "enableMonitoring": { "value": true },
@@ -940,7 +940,7 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history and [GitHub Projects](htt
 
 ### Project Links
 
-- **🌐 Live Demo**: [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
+- **🌐 Live Demo**: [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
 - **📦 Repository**: [github.com/JustAGhosT/content_creation](https://github.com/JustAGhosT/content_creation)
 - **🐛 Issues**: [GitHub Issues](https://github.com/JustAGhosT/content_creation/issues)
 - **💬 Discussions**: [GitHub Discussions](https://github.com/JustAGhosT/content_creation/discussions)
