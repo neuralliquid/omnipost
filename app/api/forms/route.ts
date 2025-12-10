@@ -21,6 +21,7 @@ import {
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
+import type { FormStatus, Form } from '@/types/survey';
 
 /**
  * GET /api/forms
@@ -57,8 +58,8 @@ export const GET = withErrorHandling(async (request: Request) => {
   }
 
   const result = await formsClient.queryForms({
-    status: status || undefined,
-    type: type || undefined,
+    status: (status as FormStatus) || undefined,
+    type: (type as Form['type']) || undefined,
     page,
     pageSize: Math.min(pageSize, 50),
   });
