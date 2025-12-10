@@ -18,11 +18,13 @@ This is OmniPost - an AI-powered multi-platform content publishing platform buil
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 20.x (see `.nvmrc`)
 - pnpm (package manager)
 - Git
 
 ### Quick Setup
+
 ```bash
 # Install dependencies
 pnpm install
@@ -35,6 +37,7 @@ pnpm dev
 ```
 
 ### Essential Commands
+
 ```bash
 # Development
 pnpm dev              # Start dev server (http://localhost:3000)
@@ -615,6 +618,7 @@ npm run format:check     # Check formatting
 ## 🔄 Development Workflow
 
 ### Branch Naming Convention
+
 - `feature/description` - New features
 - `fix/description` - Bug fixes
 - `docs/description` - Documentation updates
@@ -623,7 +627,9 @@ npm run format:check     # Check formatting
 - `chore/description` - Maintenance tasks
 
 ### Commit Message Format
+
 Follow conventional commits:
+
 ```
 <type>(<scope>): <description>
 
@@ -633,6 +639,7 @@ Follow conventional commits:
 ```
 
 **Examples:**
+
 ```
 feat(api): add content summarization endpoint
 fix(auth): resolve token expiration issue
@@ -641,6 +648,7 @@ test(api): add tests for parse endpoint
 ```
 
 ### Pull Request Process
+
 1. Create feature branch from `main`
 2. Make changes following coding standards
 3. Write/update tests
@@ -650,10 +658,13 @@ test(api): add tests for parse endpoint
 7. Address review feedback
 
 ### Before Submitting PR
+
 Run the complete check:
+
 ```bash
 pnpm check-all
 ```
+
 This runs: type-check → lint → format:check → test
 
 ## 🐛 Troubleshooting
@@ -661,6 +672,7 @@ This runs: type-check → lint → format:check → test
 ### Common Issues
 
 **TypeScript Errors**
+
 ```bash
 # Clear Next.js cache
 rm -rf .next
@@ -668,6 +680,7 @@ pnpm type-check
 ```
 
 **Test Failures**
+
 ```bash
 # Clear Jest cache
 pnpm test --clearCache
@@ -675,11 +688,13 @@ pnpm test
 ```
 
 **Missing Environment Variables**
+
 - Ensure `.env.local` exists (copy from `.env.example`)
 - Required: `JWT_SECRET`
 - Optional: Airtable, Hugging Face, notification services
 
 **Port Already in Use**
+
 ```bash
 # Kill process on port 3000
 lsof -ti:3000 | xargs kill -9
@@ -687,6 +702,7 @@ pnpm dev
 ```
 
 **Module Not Found Errors**
+
 ```bash
 # Reinstall dependencies
 rm -rf node_modules pnpm-lock.yaml
@@ -698,6 +714,7 @@ pnpm install
 ### Adding a New API Route
 
 1. **Create route file:**
+
    ```typescript
    // app/api/my-feature/route.ts
    import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
@@ -713,7 +730,7 @@ pnpm install
 
        const body = await request.json();
        const validation = validateAndSanitize(textInputSchema, body);
-       
+
        if (!validation.success) {
          return Errors.badRequest('Invalid input');
        }
@@ -727,10 +744,11 @@ pnpm install
    ```
 
 2. **Add tests:**
+
    ```typescript
    // __tests__/api/my-feature.test.ts
    import { POST } from '@/app/api/my-feature/route';
-   
+
    describe('POST /api/my-feature', () => {
      it('should require authentication', async () => {
        // Test implementation
@@ -743,6 +761,7 @@ pnpm install
 ### Adding a New Component
 
 1. **Create component:**
+
    ```typescript
    // components/features/MyComponent.tsx
    import React from 'react';
@@ -766,6 +785,7 @@ pnpm install
    ```
 
 2. **Create styles:**
+
    ```css
    /* components/features/MyComponent.module.css */
    .container {
@@ -774,6 +794,7 @@ pnpm install
    ```
 
 3. **Add tests:**
+
    ```typescript
    // __tests__/components/MyComponent.test.tsx
    import { render, screen } from '@testing-library/react';
@@ -790,6 +811,7 @@ pnpm install
 ### Adding a New Utility Function
 
 1. **Create utility:**
+
    ```typescript
    // lib/utils/myUtil.ts
    /**
@@ -804,6 +826,7 @@ pnpm install
    ```
 
 2. **Add tests:**
+
    ```typescript
    // __tests__/lib/utils/myUtil.test.ts
    import { myUtil } from '@/lib/utils/myUtil';
