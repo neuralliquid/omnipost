@@ -85,7 +85,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: ''
+      appCommandLine: 'node server.js' // Explicit startup command for Next.js standalone mode
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
@@ -130,7 +130,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
         }
         {
           name: 'WEBSITE_STARTUP_FILE'
-          value: 'startup.sh'
+          value: 'startup.sh' // Fallback/legacy - appCommandLine takes precedence
         }
         {
           name: 'ENVIRONMENT'
@@ -179,7 +179,7 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: ''
+      appCommandLine: 'node server.js' // Explicit startup command for Next.js standalone mode
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       // Inherit app settings from production slot

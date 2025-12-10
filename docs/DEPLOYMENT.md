@@ -201,7 +201,43 @@ nslookup omnipost.nexamesh.ai 1.1.1.1
 
 ### Common Issues
 
-#### 1. DNS Not Resolving
+#### 1. Container Terminating During Startup / 503 Errors
+
+**Symptoms**:
+
+- Health check fails with 503 errors
+- Container terminates during startup probe
+- Logs show: "Site container terminated during site startup"
+
+**Root Cause**:
+Azure App Service on Linux with `NODE|20-lts` runtime defaults to running `npm start` when `appCommandLine` is not explicitly set. For Next.js standalone mode, this fails because:
+
+- `package.json` contains `"start": "next start"`
+- The Next.js CLI (`next`) is not available in standalone builds
+- The app requires `node server.js` to start the standalone server
+
+**Solution**:
+The Bicep template now explicitly sets `appCommandLine: 'node server.js'` in `infra/main.bicep` (lines 88 and 182).
+
+If you encounter this issue:
+
+1. Verify `appCommandLine` is set in your Bicep deployment
+2. Redeploy infrastructure: The GitHub Actions workflow will update this automatically
+3. Manual fix (temporary):
+   ```bash
+   az webapp config set --name nl-dev-omnipost-app-euw \
+     --resource-group nl-dev-omnipost-rg-euw \
+     --startup-file "node server.js"
+   ```
+
+**Technical Details**:
+
+- Next.js standalone mode creates a minimal `server.js` with embedded dependencies
+- The server expects to be run directly with `node server.js`
+- `WEBSITE_STARTUP_FILE` is ignored when using managed Node.js runtime
+- `appCommandLine` takes precedence and explicitly sets the startup command
+
+#### 2. DNS Not Resolving
 
 **Symptoms**: `dig` returns no results
 
