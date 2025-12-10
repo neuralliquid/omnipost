@@ -48,8 +48,17 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    // Rate limiting
-    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]', RateLimitPresets.GENERAL);
+    // Check if this is public access (embed/share)
+    const { searchParams } = new URL(request.url);
+    const isPublic = searchParams.get('public') === 'true';
+
+    // Use stricter rate limiting for public access to prevent abuse
+    const rateLimit = isPublic ? RateLimitPresets.PUBLIC_API : RateLimitPresets.GENERAL;
+    const rateLimitResult = checkRateLimit(
+      request,
+      isPublic ? '/api/forms/[id]/public' : '/api/forms/[id]',
+      rateLimit
+    );
     if (!rateLimitResult.allowed) {
       const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
       return NextResponse.json(
@@ -58,17 +67,13 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           status: 429,
           headers: {
             'Retry-After': retryAfter.toString(),
-            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Limit': rateLimit.maxRequests.toString(),
             'X-RateLimit-Remaining': '0',
             'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
           },
         }
       );
     }
-
-    // Allow public access for form viewing (embed/share)
-    const { searchParams } = new URL(request.url);
-    const isPublic = searchParams.get('public') === 'true';
 
     if (!isPublic && !(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

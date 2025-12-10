@@ -115,8 +115,19 @@ const createEmptyStep = (order: number, type: SequenceStepType = 'email'): Seque
         type: 'call',
         callConfig: {},
       };
+    case 'condition':
+      return {
+        ...baseStep,
+        type: 'condition',
+        conditionConfig: {
+          condition: {
+            type: 'email_opened',
+          },
+        },
+      };
     default:
-      return baseStep as SequenceStep;
+      // All known step types should be handled above
+      throw new Error(`Unknown step type: ${type}`);
   }
 };
 
@@ -135,6 +146,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
   const [stopOnReply, setStopOnReply] = useState(sequence?.stopOnReply ?? true);
   const [stopOnBounce, setStopOnBounce] = useState(sequence?.stopOnBounce ?? true);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleStepChange = useCallback((index: number, updatedStep: SequenceStep) => {
     setSteps(prev => {
@@ -228,6 +240,7 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
     e.preventDefault();
 
     if (!validate()) return;
+    if (isSubmitting) return;
 
     const data: CreateSequenceInput = {
       name: name.trim(),
@@ -250,7 +263,17 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
       stopOnBounce,
     };
 
-    await onSave(data);
+    setIsSubmitting(true);
+    setErrors(prev => ({ ...prev, submit: '' }));
+
+    try {
+      await onSave(data);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to save sequence';
+      setErrors(prev => ({ ...prev, submit: message }));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -424,21 +447,27 @@ export const SequenceBuilder: React.FC<SequenceBuilderProps> = ({
         </div>
       </div>
 
+      {errors.submit && (
+        <div className={styles.formError} role="alert">
+          {errors.submit}
+        </div>
+      )}
+
       <div className={styles.builderActions}>
         <button
           type="button"
           onClick={onCancel}
           className={styles.cancelButton}
-          disabled={loading}
+          disabled={loading || isSubmitting}
         >
           Cancel
         </button>
         <button
           type="submit"
           className={styles.saveButton}
-          disabled={loading}
+          disabled={loading || isSubmitting}
         >
-          {loading ? 'Saving...' : sequence ? 'Update Sequence' : 'Create Sequence'}
+          {loading || isSubmitting ? 'Saving...' : sequence ? 'Update Sequence' : 'Create Sequence'}
         </button>
       </div>
     </form>

@@ -196,4 +196,14 @@ export const RateLimitPresets = {
     windowMs: 60 * 60 * 1000, // 1 hour
     message: 'Too many admin requests. Please try again in an hour.',
   },
+
+  /**
+   * For public API endpoints (form submissions, etc.) - stricter limits
+   * 20 requests per minute to prevent flooding
+   */
+  PUBLIC_API: {
+    maxRequests: 20,
+    windowMs: 60 * 1000, // 1 minute
+    message: 'Too many requests. Please try again in a minute.',
+  },
 };

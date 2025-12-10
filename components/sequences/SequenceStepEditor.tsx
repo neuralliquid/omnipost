@@ -154,7 +154,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         });
         break;
       default:
-        onChange(baseStep);
+        // All known step types should be handled above
+        // If we reach here, it's an unknown type - throw an error
+        throw new Error(`Unknown step type: ${type}`);
     }
   };
 
@@ -239,8 +241,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
         return (
           <div className={styles.stepConfig}>
             <div className={styles.configField}>
-              <label className={styles.configLabel}>Subject Line</label>
+              <label htmlFor={`step-${step.id}-email-subject`} className={styles.configLabel}>Subject Line</label>
               <input
+                id={`step-${step.id}-email-subject`}
                 type="text"
                 value={step.emailConfig?.subject || ''}
                 onChange={(e) => handleEmailConfigChange('subject', e.target.value)}
@@ -249,8 +252,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
               />
             </div>
             <div className={styles.configField}>
-              <label className={styles.configLabel}>Email Body</label>
+              <label htmlFor={`step-${step.id}-email-body`} className={styles.configLabel}>Email Body</label>
               <textarea
+                id={`step-${step.id}-email-body`}
                 value={step.emailConfig?.body || ''}
                 onChange={(e) => handleEmailConfigChange('body', e.target.value)}
                 className={styles.configTextarea}

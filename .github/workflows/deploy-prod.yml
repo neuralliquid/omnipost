@@ -197,7 +197,7 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Get Web App Hostname
+      - name: Get Web App Hostname and Verification ID
         id: get-hostname
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
@@ -206,6 +206,11 @@ jobs:
             HOSTNAME=$(az webapp show --name ${{ needs.infrastructure.outputs.app_name }} --resource-group ${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-rg-${{ env.REGION_CODE }} --query defaultHostName -o tsv)
             echo "WEBAPP_HOSTNAME=${HOSTNAME}" >> $GITHUB_OUTPUT
             echo "Web App hostname: ${HOSTNAME}"
+
+            # Get the custom domain verification ID for TXT record
+            VERIFICATION_ID=$(az webapp show --name ${{ needs.infrastructure.outputs.app_name }} --resource-group ${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-rg-${{ env.REGION_CODE }} --query customDomainVerificationId -o tsv)
+            echo "VERIFICATION_ID=${VERIFICATION_ID}" >> $GITHUB_OUTPUT
+            echo "Domain verification ID retrieved"
 
       - name: Create/Update DNS Records
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
@@ -253,13 +258,14 @@ jobs:
               --record-set-name ${{ env.API_SUBDOMAIN }} \
               --cname ${HOSTNAME}
 
-            # Create TXT verification records
-            echo "Creating TXT verification records..."
+            # Create TXT verification records using the domain verification ID
+            VERIFICATION_ID="${{ steps.get-hostname.outputs.VERIFICATION_ID }}"
+            echo "Creating TXT verification records with verification ID..."
             az network dns record-set txt add-record \
               --zone-name ${{ env.DNS_ZONE }} \
               --resource-group ${{ env.DNS_ZONE_RG }} \
               --record-set-name asuid.${{ env.APP_SUBDOMAIN }} \
-              --value ${HOSTNAME} \
+              --value "${VERIFICATION_ID}" \
               2>/dev/null || \
             az network dns record-set txt create \
               --zone-name ${{ env.DNS_ZONE }} \
@@ -270,7 +276,7 @@ jobs:
               --zone-name ${{ env.DNS_ZONE }} \
               --resource-group ${{ env.DNS_ZONE_RG }} \
               --record-set-name asuid.${{ env.APP_SUBDOMAIN }} \
-              --value ${HOSTNAME}
+              --value "${VERIFICATION_ID}"
 
             echo "✅ DNS records configured successfully"
 
@@ -409,6 +415,8 @@ jobs:
     runs-on: ubuntu-latest
     needs: [deploy]
     if: always()
+    env:
+      ENABLE_CUSTOM_DOMAIN: ${{ github.event.inputs.enable_custom_domain == 'true' && 'true' || 'false' }}
     steps:
       - name: Deployment Summary
         run: |
@@ -417,7 +425,7 @@ jobs:
           echo "### URLs" >> $GITHUB_STEP_SUMMARY
           echo "- **Azure URL:** https://${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-app-${{ env.REGION_CODE }}.azurewebsites.net" >> $GITHUB_STEP_SUMMARY
 
-          if [ "${{ github.event.inputs.enable_custom_domain }}" = "true" ]; then
+          if [ "${ENABLE_CUSTOM_DOMAIN}" = "true" ]; then
             echo "- **Custom Domain:** https://${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}" >> $GITHUB_STEP_SUMMARY
             echo "- **API Domain:** https://${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }}" >> $GITHUB_STEP_SUMMARY
           fi

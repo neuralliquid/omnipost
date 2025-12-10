@@ -75,8 +75,26 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
  * POST /api/forms/[id]/submissions
  * Create a new submission (public endpoint for form submissions)
  */
-export async function POST(request: Request, { params }: RouteParams) {
+export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
+    // Rate limiting - stricter limits for public endpoints to prevent flooding
+    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]/submissions/post', RateLimitPresets.PUBLIC_API);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many submissions. Please try again in a minute.', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.PUBLIC_API.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     const { id } = await params;
 
     // Get form
