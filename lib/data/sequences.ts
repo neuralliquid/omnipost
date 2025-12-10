@@ -710,9 +710,12 @@ export class SequencesClient {
       throw new Error('Sequences client not initialized');
     }
 
-    const enrollment = await this.enrollmentsTable!.find(enrollmentId);
-    if (!enrollment) {
-      throw new Error('Enrollment not found');
+    let enrollment;
+    try {
+      enrollment = await this.enrollmentsTable!.find(enrollmentId);
+    } catch (error: unknown) {
+      console.error('Error fetching enrollment:', error);
+      throw new Error(`Enrollment not found: ${enrollmentId}. ${error instanceof Error ? error.message : String(error)}`);
     }
 
     const enrollmentData = this.recordToEnrollment(enrollment);
