@@ -333,6 +333,7 @@ export interface UpdateSequenceInput {
   senderName?: string;
   senderEmail?: string;
   tags?: string[];
+  metrics?: SequenceMetrics;
 }
 
 /**

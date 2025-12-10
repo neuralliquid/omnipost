@@ -117,15 +117,19 @@ jobs:
             fi
 
       - name: Verify DNS resolution
+        env:
+          APP_SUBDOMAIN_VAR: ${{ env.APP_SUBDOMAIN }}
+          API_SUBDOMAIN_VAR: ${{ env.API_SUBDOMAIN }}
+          DNS_ZONE_VAR: ${{ env.DNS_ZONE }}
         run: |
           echo "Checking current DNS resolution..."
 
           # Check if subdomains already resolve (they may or may not)
-          echo "Checking ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}..."
-          dig +short ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} || echo "No record yet (expected for new setup)"
+          echo "Checking ${APP_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}..."
+          dig +short "${APP_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}" || echo "No record yet (expected for new setup)"
 
-          echo "Checking ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }}..."
-          dig +short ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }} || echo "No record yet (expected for new setup)"
+          echo "Checking ${API_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}..."
+          dig +short "${API_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}" || echo "No record yet (expected for new setup)"
 
   infrastructure:
     runs-on: ubuntu-latest
@@ -271,6 +275,9 @@ jobs:
             echo "✅ DNS records configured successfully"
 
       - name: Verify DNS Propagation
+        env:
+          APP_SUBDOMAIN_VAR: ${{ env.APP_SUBDOMAIN }}
+          DNS_ZONE_VAR: ${{ env.DNS_ZONE }}
         run: |
           echo "Waiting for DNS propagation (this may take a few minutes)..."
           sleep 30
@@ -279,9 +286,9 @@ jobs:
           for i in {1..5}; do
             echo "Attempt $i/5..."
 
-            RESOLVED=$(dig +short ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }})
+            RESOLVED=$(dig +short "${APP_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}")
             if [ -n "$RESOLVED" ]; then
-              echo "✅ ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} resolves to: ${RESOLVED}"
+              echo "✅ ${APP_SUBDOMAIN_VAR}.${DNS_ZONE_VAR} resolves to: ${RESOLVED}"
               break
             fi
 
@@ -370,10 +377,13 @@ jobs:
 
       - name: Verify custom domain (if enabled)
         if: ${{ github.event.inputs.enable_custom_domain == 'true' }}
+        env:
+          APP_SUBDOMAIN_VAR: ${{ env.APP_SUBDOMAIN }}
+          DNS_ZONE_VAR: ${{ env.DNS_ZONE }}
         run: |
           echo "Verifying custom domain..."
 
-          CUSTOM_URL="https://${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }}"
+          CUSTOM_URL="https://${APP_SUBDOMAIN_VAR}.${DNS_ZONE_VAR}"
           echo "Testing: ${CUSTOM_URL}/api/health"
 
           # Give more time for SSL certificate provisioning

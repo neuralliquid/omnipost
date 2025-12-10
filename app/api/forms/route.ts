@@ -4,8 +4,9 @@
  * POST - Create new form
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import { checkRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { formsClient } from '@/lib/data/forms';
 import type { FormStatus, Form } from '@/types/survey';
 
@@ -26,8 +27,26 @@ const VALID_FIELD_TYPES = [
  * GET /api/forms
  * List forms with optional filters
  */
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResult = checkRateLimit(request, '/api/forms', RateLimitPresets.GENERAL);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     if (!(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
@@ -74,8 +93,26 @@ export async function GET(request: Request) {
  * POST /api/forms
  * Create a new form
  */
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
+    // Rate limiting
+    const rateLimitResult = checkRateLimit(request, '/api/forms', RateLimitPresets.GENERAL);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     if (!(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }

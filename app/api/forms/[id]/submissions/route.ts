@@ -128,9 +128,9 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     // Extract metadata from headers
     const metadata = {
-      ipAddress: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip'),
-      userAgent: request.headers.get('user-agent'),
-      referrer: request.headers.get('referer'),
+      ipAddress: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined,
+      userAgent: request.headers.get('user-agent') ?? undefined,
+      referrer: request.headers.get('referer') ?? undefined,
     };
 
     // Create submission

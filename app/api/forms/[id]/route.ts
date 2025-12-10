@@ -5,8 +5,9 @@
  * DELETE - Delete form
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated } from '@/app/api/_utils/auth';
+import { checkRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { formsClient } from '@/lib/data/forms';
 import type { FormStatus } from '@/types/survey';
 
@@ -21,8 +22,26 @@ interface RouteParams {
  * GET /api/forms/[id]
  * Get a form by ID
  */
-export async function GET(request: Request, { params }: RouteParams) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    // Rate limiting
+    const rateLimitResult = checkRateLimit(request, '/api/forms/[id]', RateLimitPresets.GENERAL);
+    if (!rateLimitResult.allowed) {
+      const retryAfter = Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000);
+      return NextResponse.json(
+        { error: 'Too many requests', retryAfter },
+        {
+          status: 429,
+          headers: {
+            'Retry-After': retryAfter.toString(),
+            'X-RateLimit-Limit': RateLimitPresets.GENERAL.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString(),
+          },
+        }
+      );
+    }
+
     // Allow public access for form viewing (embed/share)
     const { searchParams } = new URL(request.url);
     const isPublic = searchParams.get('public') === 'true';

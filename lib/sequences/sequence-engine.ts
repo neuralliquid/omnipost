@@ -942,7 +942,7 @@ export class SequenceEngine {
       ? (metrics.emailStats.replied / metrics.emailStats.sent) * 100
       : 0;
 
-    await sequencesClient.updateSequence(sequence.id, {});
+    await sequencesClient.updateSequence(sequence.id, { metrics });
   }
 }
 

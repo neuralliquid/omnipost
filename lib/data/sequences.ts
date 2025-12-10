@@ -290,6 +290,7 @@ export class SequencesClient {
     if (input.senderName !== undefined) fields.SenderName = input.senderName;
     if (input.senderEmail !== undefined) fields.SenderEmail = input.senderEmail;
     if (input.tags !== undefined) fields.Tags = input.tags.join(',');
+    if (input.metrics !== undefined) fields.Metrics = JSON.stringify(input.metrics);
 
     try {
       await this.sequencesTable!.update(id, fields);

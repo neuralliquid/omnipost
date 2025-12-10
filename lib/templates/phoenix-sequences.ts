@@ -150,7 +150,7 @@ Thanks for your time either way!
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const,
       sendingHours: { start: '09:00', end: '17:00' },
       timezone: 'America/New_York',
       maxPerDay: 50,
@@ -243,7 +243,7 @@ Feel free to reply with any thoughts, or we can cover it live!
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const,
       sendingHours: { start: '08:00', end: '18:00' },
       timezone: 'America/New_York',
       maxPerDay: 30,
@@ -362,7 +362,7 @@ Let me know if you'd like to take advantage of this before it expires!
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const,
       sendingHours: { start: '09:00', end: '17:00' },
       timezone: 'America/New_York',
       maxPerDay: 30,
@@ -571,7 +571,7 @@ Either way, I appreciate your consideration.
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'] as const,
       sendingHours: { start: '08:00', end: '16:00' },
       timezone: 'America/New_York',
       maxPerDay: 25,
@@ -705,7 +705,7 @@ I'd like to schedule a call to walk through these recommendations with your team
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'] as const,
       sendingHours: { start: '08:00', end: '17:00' },
       timezone: 'America/New_York',
       maxPerDay: 20,
@@ -828,7 +828,7 @@ If counter-UAS becomes a priority for your organization, we'd welcome the opport
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'],
+      sendingDays: ['monday', 'tuesday', 'wednesday', 'thursday'] as const,
       sendingHours: { start: '09:00', end: '15:00' },
       timezone: 'America/New_York',
       maxPerDay: 15,
@@ -920,7 +920,7 @@ Happy to discuss how this might apply to {{company}}'s environment.
       },
     ] as StepInput[],
     schedule: {
-      sendingDays: ['tuesday', 'wednesday', 'thursday'],
+      sendingDays: ['tuesday', 'wednesday', 'thursday'] as const,
       sendingHours: { start: '10:00', end: '14:00' },
       timezone: 'America/New_York',
       maxPerDay: 20,
