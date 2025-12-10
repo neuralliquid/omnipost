@@ -37,8 +37,8 @@ const FeedbackForm: React.FC<FeedbackFormProps> = ({ reviewId, onSubmitSuccess }
       if (onSubmitSuccess) {
         onSubmitSuccess();
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit feedback');
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to submit feedback');
       console.error('Error submitting feedback:', err);
     } finally {
       setLoading(false);

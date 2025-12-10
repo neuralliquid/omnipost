@@ -25,8 +25,8 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
         context,
       });
       setImage(response.data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -39,8 +39,8 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
     try {
       await axios.post('/api/approve-image', { image });
       setFeedback('Image approved successfully');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -52,8 +52,8 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
     try {
       await axios.post('/api/reject-image', { image });
       setFeedback('Image rejected successfully');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     }
   };
 
@@ -67,8 +67,8 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
       });
       setImage(response.data);
       setFeedback('Image regenerated successfully');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }
@@ -109,8 +109,8 @@ const ImageGeneration: React.FC<ImageGenerationProps> = ({ context }) => {
       );
       setImage(response.data);
       setFeedback('Image uploaded successfully');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsLoading(false);
     }

@@ -2,6 +2,26 @@
 
 This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**.
 
+## Recent Changes (December 2024)
+
+### DNS Module Restructuring
+
+The DNS configuration has been split into two modules to resolve cross-resource-group deployment issues:
+
+1. **`dns.bicep`** - References the existing DNS zone and provides zone information
+2. **`dns-records.bicep`** - Creates DNS records (CNAME and TXT) in the DNS zone
+
+This change fixes Bicep error BCP165 by ensuring DNS records are deployed with the correct scope (DNS zone's resource group).
+
+**Before:** Single `dns.bicep` module tried to create child resources of a zone in a different resource group (not allowed).
+
+**After:** Separate modules with proper scoping:
+
+- `dns.bicep` - Deployed in app resource group, references existing zone
+- `dns-records.bicep` - Deployed in DNS zone resource group, creates records
+
+See `main.bicep` for usage example.
+
 ## Naming Pattern
 
 All resources follow the pattern:
