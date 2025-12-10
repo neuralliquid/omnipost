@@ -23,8 +23,8 @@ const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
       const response = await axios.post('/api/parse', { rawInput });
       setParsedData(response.data);
     } catch (err: unknown) {
-      const errorMessage = axios.isAxiosError(err) 
-        ? (err.response?.data?.message || err.message)
+      const errorMessage = axios.isAxiosError(err)
+        ? err.response?.data?.message || err.message
         : 'An unexpected error occurred';
       setError(errorMessage);
       setParsedData(null);
@@ -46,7 +46,7 @@ const TextParser: React.FC<TextParserProps> = ({ rawInput }) => {
       setParsedData(response.data);
     } catch (err: unknown) {
       const errorMessage = axios.isAxiosError(err)
-        ? (err.response?.data?.message || err.message)
+        ? err.response?.data?.message || err.message
         : 'An unexpected error occurred';
       setError(errorMessage);
     } finally {

@@ -7,7 +7,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import type { PhoenixLead, PhoenixBrand } from '@/types/phoenix-rooivalk';
-import { SEGMENT_LABELS, isHighValueEnterprise as _isHighValueEnterprise } from '@/types/phoenix-rooivalk';
+import {
+  SEGMENT_LABELS,
+  isHighValueEnterprise as _isHighValueEnterprise,
+} from '@/types/phoenix-rooivalk';
 import styles from '@/styles/PhoenixDashboard.module.css';
 
 interface DashboardMetrics {
