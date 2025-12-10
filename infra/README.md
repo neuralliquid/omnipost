@@ -16,6 +16,7 @@ This change fixes Bicep error BCP165 by ensuring DNS records are deployed with t
 **Before:** Single `dns.bicep` module tried to create child resources of a zone in a different resource group (not allowed).
 
 **After:** Separate modules with proper scoping:
+
 - `dns.bicep` - Deployed in app resource group, references existing zone
 - `dns-records.bicep` - Deployed in DNS zone resource group, creates records
 

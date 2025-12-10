@@ -77,7 +77,9 @@ const FeatureFlagsManager: React.FC = () => {
 
       // For textParser, we need to include the implementation
       if (feature === 'textParser') {
-        const textParserFlag = featureFlags.textParser as FeatureFlag & { implementation: 'deepseek' | 'openai' | 'azure' };
+        const textParserFlag = featureFlags.textParser as FeatureFlag & {
+          implementation: 'deepseek' | 'openai' | 'azure';
+        };
         await apiClient.updateFeatureFlag(feature, !isEnabled, textParserFlag.implementation);
       } else {
         await apiClient.updateFeatureFlag(feature, !isEnabled);
@@ -100,7 +102,9 @@ const FeatureFlagsManager: React.FC = () => {
         }
       });
     } catch (err) {
-      setUpdateError(`Failed to update ${feature}: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setUpdateError(
+        `Failed to update ${feature}: ${err instanceof Error ? err.message : 'Unknown error'}`
+      );
       console.error(`Error updating ${feature}:`, err);
     } finally {
       setUpdating(null);
@@ -134,7 +138,9 @@ const FeatureFlagsManager: React.FC = () => {
         };
       });
     } catch (err) {
-      setUpdateError(`Failed to update textParser implementation: ${err instanceof Error ? err.message : 'Unknown error'}`);
+      setUpdateError(
+        `Failed to update textParser implementation: ${err instanceof Error ? err.message : 'Unknown error'}`
+      );
       console.error('Error updating textParser implementation:', err);
     } finally {
       setUpdating(null);
