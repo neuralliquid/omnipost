@@ -8,7 +8,7 @@ import { NextResponse } from 'next/server';
 import { isAuthenticated } from '@/app/api/_utils/auth';
 import { leadsClient } from '@/lib/data/leads';
 import { TAG_COLORS } from '@/types/lead';
-import { webcrypto } from 'crypto';
+import { webcrypto } from 'node:crypto';
 
 /**
  * Generate a cryptographically secure random index for array selection
@@ -60,7 +60,7 @@ export async function POST(request: Request) {
 
     // Validate color (use default if not provided or invalid)
     let color = body.color;
-    if (!color || !color.match(/^#[0-9A-Fa-f]{6}$/)) {
+    if (!color?.match(/^#[0-9A-Fa-f]{6}$/)) {
       color = TAG_COLORS[getSecureRandomIndex(TAG_COLORS.length)];
     }
 

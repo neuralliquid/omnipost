@@ -16,9 +16,7 @@ import {
 import {
   checkAuthAndRateLimit,
   requireAuthWithUserId,
-  validateRequiredFields,
   validateEnumField,
-  validateArrayField,
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
@@ -139,7 +137,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   // Assign order to fields if not provided
   sanitizedData.fields = sanitizedData.fields.map((field: z.infer<typeof formFieldSchema>, index: number) => ({
     ...field,
-    order: field.order !== undefined ? field.order : index + 1,
+    order: field.order ?? index + 1,
   }));
 
   // Cast to CreateFormInput after validation (type is guaranteed to be valid by Zod enum)

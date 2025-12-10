@@ -293,13 +293,13 @@ export const GET = withAuthAndRateLimit(
     }
 
     // Sort by creation date (newest first)
-    filteredLeads.sort(
+    const sortedLeads = filteredLeads.toSorted(
       (a, b) =>
         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     // Transform leads to include phoenixData at top level for convenience
-    const transformedLeads = filteredLeads.map((lead) => ({
+    const transformedLeads = sortedLeads.map((lead) => ({
       ...lead,
       phoenixData: lead.customFields.phoenixData,
     }));
@@ -316,7 +316,7 @@ export const GET = withAuthAndRateLimit(
         limit: result.pagination.pageSize,
         total: result.pagination.total, // Total from upstream query
         totalPages, // Calculated from total and pageSize
-        filteredCount: filteredLeads.length, // Count after Phoenix/brand/segment filters
+        filteredCount: sortedLeads.length, // Count after Phoenix/brand/segment filters
       },
       message: 'Phoenix leads retrieved successfully',
     });

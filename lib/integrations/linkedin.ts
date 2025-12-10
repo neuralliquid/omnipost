@@ -87,7 +87,7 @@ export interface LinkedInTokenResponse {
  */
 export class LinkedInProspectingClient {
   private config: LinkedInConfig | null = null;
-  private apiBaseUrl = 'https://api.linkedin.com/v2';
+  private readonly apiBaseUrl = 'https://api.linkedin.com/v2';
   /**
    * Separate token storage to avoid mutating the config object passed to initialize()
    */
