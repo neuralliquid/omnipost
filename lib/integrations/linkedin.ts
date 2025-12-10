@@ -223,9 +223,10 @@ export class LinkedInProspectingClient {
     try {
       const response = await this.makeRequest('/people', queryParams);
       const paging = response.paging as { total?: number; start?: number; count?: number } | undefined;
+      const elements = Array.isArray(response.elements) ? response.elements : [];
 
       return {
-        profiles: (response.elements || []).map((p: Record<string, unknown>) => this.normalizeProfile(p)),
+        profiles: elements.map((p: Record<string, unknown>) => this.normalizeProfile(p)),
         total: paging?.total || 0,
         hasMore: (paging?.start || 0) + (paging?.count || 0) < (paging?.total || 0),
       };

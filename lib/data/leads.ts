@@ -374,7 +374,7 @@ export class LeadsClient {
     };
 
     try {
-      const record = await this.leadsTable!.create(fields);
+      const record = await this.leadsTable!.create(fields as Partial<FieldSet>);
       return this.recordToLead(record);
     } catch (error) {
       console.error('Error creating lead:', error);
@@ -410,7 +410,7 @@ export class LeadsClient {
     const fields = this.leadToFields(input as Partial<Lead>);
 
     try {
-      const record = await this.leadsTable!.update(id, fields);
+      const record = await this.leadsTable!.update(id, fields as Partial<FieldSet>);
       return this.recordToLead(record);
     } catch (error) {
       console.error('Error updating lead:', error);

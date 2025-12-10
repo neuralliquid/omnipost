@@ -303,7 +303,7 @@ export class SequencesClient {
     if (input.metrics !== undefined) fields.Metrics = JSON.stringify(input.metrics);
 
     try {
-      await this.sequencesTable!.update(id, fields);
+      await this.sequencesTable!.update(id, fields as Partial<FieldSet>);
       return (await this.getSequence(id))!;
     } catch (error) {
       console.error('Error updating sequence:', error);
@@ -462,7 +462,7 @@ export class SequencesClient {
     if (update.enabled !== undefined) fields.Enabled = update.enabled;
 
     try {
-      const record = await this.stepsTable!.update(stepId, fields);
+      const record = await this.stepsTable!.update(stepId, fields as Partial<FieldSet>);
       return this.recordToStep(record);
     } catch (error) {
       console.error('Error updating step:', error);
@@ -690,7 +690,7 @@ export class SequencesClient {
     }
 
     try {
-      const record = await this.enrollmentsTable!.update(enrollmentId, fields);
+      const record = await this.enrollmentsTable!.update(enrollmentId, fields as Partial<FieldSet>);
       return this.recordToEnrollment(record);
     } catch (error) {
       console.error('Error updating enrollment status:', error);
@@ -754,7 +754,7 @@ export class SequencesClient {
     }
 
     try {
-      const record = await this.enrollmentsTable!.update(enrollmentId, fields);
+      const record = await this.enrollmentsTable!.update(enrollmentId, fields as Partial<FieldSet>);
       return this.recordToEnrollment(record);
     } catch (error: unknown) {
       console.error('Error advancing enrollment:', error);
