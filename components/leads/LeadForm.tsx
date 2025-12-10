@@ -105,10 +105,12 @@ export const LeadForm: React.FC<LeadFormProps> = ({ lead, onSubmit, onCancel, lo
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (
-    // eslint-disable-next-line no-undef
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  // Type alias for form element change events (HTMLSelectElement requires eslint exception)
+  type FormChangeEvent = React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement // eslint-disable-line no-undef
+  >;
+
+  const handleChange = (e: FormChangeEvent) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {

@@ -102,7 +102,6 @@ global.createMockRequest = (
 
 // Extend global types
 declare global {
-   
   var createMockRequest: (
     method: string,
     body?: Record<string, unknown>,
