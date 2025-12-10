@@ -187,6 +187,15 @@ export class SequencesClient {
 
   /**
    * Create a new sequence
+   * 
+   * Creates a new sequence with the provided configuration including name, description,
+   * steps, schedule, and behavior settings. Steps are created as child records and the
+   * first step (by order) is set as the entry step.
+   * 
+   * @param {CreateSequenceInput} input - Sequence configuration data
+   * @param {string} createdBy - ID of the user creating the sequence
+   * @returns {Promise<Sequence>} The created sequence with all steps
+   * @throws {Error} If client not initialized or creation fails
    */
   public async createSequence(input: CreateSequenceInput, createdBy: string): Promise<Sequence> {
     if (!this.isInitialized()) {
@@ -254,6 +263,13 @@ export class SequencesClient {
 
   /**
    * Get a sequence by ID
+   * 
+   * Retrieves a sequence record with all its associated steps sorted by order.
+   * Returns null if the sequence is not found.
+   * 
+   * @param {string} id - ID of the sequence to retrieve
+   * @returns {Promise<Sequence | null>} The sequence with steps or null if not found
+   * @throws {Error} If client not initialized
    */
   public async getSequence(id: string): Promise<Sequence | null> {
     if (!this.isInitialized()) {
@@ -281,6 +297,14 @@ export class SequencesClient {
 
   /**
    * Update a sequence
+   * 
+   * Updates one or more fields of an existing sequence. Only provided fields are updated;
+   * undefined fields are left unchanged. The UpdatedAt timestamp is automatically set.
+   * 
+   * @param {string} id - ID of the sequence to update
+   * @param {UpdateSequenceInput} input - Fields to update
+   * @returns {Promise<Sequence>} The updated sequence with all steps
+   * @throws {Error} If client not initialized or update fails
    */
   public async updateSequence(id: string, input: UpdateSequenceInput): Promise<Sequence> {
     if (!this.isInitialized()) {
@@ -313,6 +337,13 @@ export class SequencesClient {
 
   /**
    * Delete a sequence
+   * 
+   * Deletes a sequence and all its associated steps. This is a destructive operation
+   * and cannot be undone.
+   * 
+   * @param {string} id - ID of the sequence to delete
+   * @returns {Promise<boolean>} True if deletion was successful, false otherwise
+   * @throws {Error} If client not initialized
    */
   public async deleteSequence(id: string): Promise<boolean> {
     if (!this.isInitialized()) {
@@ -341,6 +372,16 @@ export class SequencesClient {
 
   /**
    * Query sequences
+   * 
+   * Retrieves sequences with optional status filter. Results are paginated and sorted
+   * by CreatedAt in descending order. Each sequence includes all its steps.
+   * 
+   * @param {Object} [options] - Query options
+   * @param {SequenceStatus} [options.status] - Filter by sequence status
+   * @param {number} [options.page=1] - Page number for pagination
+   * @param {number} [options.pageSize=20] - Number of records per page
+   * @returns {Promise<SequenceQueryResponse>} Sequences and pagination info
+   * @throws {Error} If client not initialized or query fails
    */
   public async querySequences(options?: {
     status?: SequenceStatus;
@@ -491,6 +532,17 @@ export class SequencesClient {
 
   /**
    * Enroll a lead in a sequence
+   * 
+   * Creates a new enrollment record for a lead in the specified sequence. The lead
+   * will start at the sequence's entry step with status 'active'. If the lead is
+   * already actively enrolled in this sequence, an error is thrown.
+   * 
+   * @param {string} sequenceId - ID of the sequence to enroll the lead in
+   * @param {string} leadId - ID of the lead to enroll
+   * @param {string} createdBy - ID of the user creating the enrollment
+   * @param {string} [startAt] - Optional ISO timestamp to start the sequence (defaults to now)
+   * @returns {Promise<SequenceEnrollment>} The created enrollment record
+   * @throws {Error} If lead is already enrolled, sequence not found, or enrollment fails
    */
   public async enrollLead(
     sequenceId: string,
@@ -545,6 +597,15 @@ export class SequencesClient {
 
   /**
    * Bulk enroll leads
+   * 
+   * Enrolls multiple leads in a sequence. Returns counts of successful enrollments,
+   * skipped duplicates, and any errors encountered. If skipDuplicates is true, leads
+   * already actively enrolled will be skipped instead of causing errors.
+   * 
+   * @param {BulkEnrollInput} input - Bulk enrollment configuration including sequenceId, leadIds, startAt, and skipDuplicates
+   * @param {string} createdBy - ID of the user creating the enrollments
+   * @returns {Promise<{enrolled: number, skipped: number, errors: Array<{leadId: string, error: string}>}>} Summary of enrollment results
+   * @throws {Error} If client not initialized (individual lead errors are returned in results)
    */
   public async bulkEnroll(input: BulkEnrollInput, createdBy: string): Promise<{
     enrolled: number;
@@ -582,6 +643,14 @@ export class SequencesClient {
 
   /**
    * Get enrollment for a specific lead in a sequence
+   * 
+   * Retrieves the enrollment record for a specific lead in a sequence, if it exists.
+   * Returns null if no enrollment is found.
+   * 
+   * @param {string} sequenceId - ID of the sequence
+   * @param {string} leadId - ID of the lead
+   * @returns {Promise<SequenceEnrollment | null>} The enrollment record or null if not found
+   * @throws {Error} If client not initialized
    */
   public async getEnrollment(sequenceId: string, leadId: string): Promise<SequenceEnrollment | null> {
     if (!this.isInitialized()) {
@@ -606,6 +675,18 @@ export class SequencesClient {
 
   /**
    * Query enrollments
+   * 
+   * Retrieves enrollments with optional filters for sequenceId, leadId, and status.
+   * Results are paginated and sorted by EnrolledAt in descending order.
+   * 
+   * @param {Object} options - Query options
+   * @param {string} [options.sequenceId] - Filter by sequence ID
+   * @param {string} [options.leadId] - Filter by lead ID
+   * @param {SequenceEnrollment['status']} [options.status] - Filter by enrollment status
+   * @param {number} [options.page=1] - Page number for pagination
+   * @param {number} [options.pageSize=20] - Number of records per page
+   * @returns {Promise<EnrollmentQueryResponse>} Enrollments and pagination info
+   * @throws {Error} If client not initialized or query fails
    */
   public async queryEnrollments(options: {
     sequenceId?: string;
@@ -669,6 +750,15 @@ export class SequencesClient {
 
   /**
    * Update enrollment status
+   * 
+   * Updates the status of a sequence enrollment and sets appropriate timestamps
+   * based on the new status (e.g., CompletedAt for 'completed', StoppedAt for stopped statuses).
+   * 
+   * @param {string} enrollmentId - ID of the enrollment to update
+   * @param {SequenceEnrollment['status']} status - New status value
+   * @param {string} [reason] - Optional reason for status change (used for stopped statuses)
+   * @returns {Promise<SequenceEnrollment>} Updated enrollment record
+   * @throws {Error} If client not initialized or update fails
    */
   public async updateEnrollmentStatus(
     enrollmentId: string,
@@ -700,6 +790,17 @@ export class SequencesClient {
 
   /**
    * Move enrollment to next step
+   * 
+   * Advances an enrollment to the next step in its sequence, recording the step history,
+   * calculating the next action time for wait steps, and marking the sequence as completed
+   * if there are no more steps. The method handles step transitions and maintains history
+   * of execution results.
+   * 
+   * @param {string} enrollmentId - ID of the enrollment to advance
+   * @param {'success' | 'failed' | 'skipped'} result - Result of the current step execution
+   * @param {Record<string, unknown>} [metadata] - Optional metadata about the step execution
+   * @returns {Promise<SequenceEnrollment>} Updated enrollment record with new step
+   * @throws {Error} If client not initialized, enrollment/sequence not found, or update fails
    */
   public async advanceEnrollment(
     enrollmentId: string,
@@ -796,6 +897,13 @@ export class SequencesClient {
 
   /**
    * Create email template
+   * 
+   * Creates a new email template with the provided details including name, subject,
+   * body content, variables, and optional category.
+   * 
+   * @param {Omit<EmailTemplate, 'id' | 'createdAt' | 'updatedAt'>} template - Template data without generated fields
+   * @returns {Promise<EmailTemplate>} The created email template with generated id and timestamps
+   * @throws {Error} If client not initialized or template creation fails
    */
   public async createEmailTemplate(
     template: Omit<EmailTemplate, 'id' | 'createdAt' | 'updatedAt'>
@@ -835,6 +943,11 @@ export class SequencesClient {
 
   /**
    * Get email templates
+   * 
+   * Retrieves all email templates sorted by name in ascending order.
+   * 
+   * @returns {Promise<EmailTemplate[]>} Array of all email templates
+   * @throws {Error} If client not initialized or fetch fails
    */
   public async getEmailTemplates(): Promise<EmailTemplate[]> {
     if (!this.isInitialized()) {
@@ -864,6 +977,11 @@ export class SequencesClient {
 
   /**
    * Get LinkedIn templates
+   * 
+   * Retrieves all LinkedIn templates sorted by name in ascending order.
+   * 
+   * @returns {Promise<LinkedInTemplate[]>} Array of all LinkedIn templates
+   * @throws {Error} If client not initialized or fetch fails
    */
   public async getLinkedInTemplates(): Promise<LinkedInTemplate[]> {
     if (!this.isInitialized()) {
@@ -895,6 +1013,13 @@ export class SequencesClient {
 
   /**
    * Get enrollments with due actions
+   * 
+   * Returns active enrollments where NextActionAt is less than or equal to the current time,
+   * sorted by NextActionAt in ascending order.
+   * 
+   * @param {number} [limit=50] - Maximum number of records to return (default: 50)
+   * @returns {Promise<SequenceEnrollment[]>} Array of enrollments sorted by NextActionAt
+   * @throws {Error} If client not initialized or fetch fails
    */
   public async getDueEnrollments(limit: number = 50): Promise<SequenceEnrollment[]> {
     if (!this.isInitialized()) {
@@ -902,10 +1027,11 @@ export class SequencesClient {
     }
 
     const now = new Date().toISOString();
+    const escapedNow = escapeAirtableFormulaValue(now);
 
     try {
       const records = await this.enrollmentsTable!.select({
-        filterByFormula: `AND({Status} = 'active', {NextActionAt} <= '${now}')`,
+        filterByFormula: `AND({Status} = 'active', {NextActionAt} <= '${escapedNow}')`,
         maxRecords: limit,
         sort: [{ field: 'NextActionAt', direction: 'asc' }],
       } as any).all();
