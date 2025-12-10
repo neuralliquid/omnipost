@@ -11,6 +11,22 @@ import type { Lead } from '@/types/lead';
 import { LeadStatusBadge, LeadTemperatureBadge, LeadScoreBadge } from './LeadBadges';
 import styles from '@/styles/Leads.module.css';
 
+/**
+ * Validate that a URL is a legitimate LinkedIn URL
+ * Prevents XSS attacks through malicious URLs in href attributes
+ */
+function isValidLinkedInUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    // Only allow https LinkedIn URLs
+    return parsed.protocol === 'https:' &&
+           (parsed.hostname === 'www.linkedin.com' ||
+            parsed.hostname === 'linkedin.com');
+  } catch {
+    return false;
+  }
+}
+
 interface LeadCardProps {
   lead: Lead;
   onEdit?: (lead: Lead) => void;
@@ -124,7 +140,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
             {lead.contact.phone}
           </a>
         )}
-        {lead.contact.linkedinUrl && (
+        {lead.contact.linkedinUrl && isValidLinkedInUrl(lead.contact.linkedinUrl) && (
           <a
             href={lead.contact.linkedinUrl}
             target="_blank"

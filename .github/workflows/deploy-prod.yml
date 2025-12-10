@@ -136,7 +136,8 @@ jobs:
     permissions:
       contents: read
     needs: [build, dns-verification]
-    if: ${{ always() && needs.build.result == 'success' }}
+    # Run if build succeeded, and dns-verification either succeeded or was skipped
+    if: ${{ always() && needs.build.result == 'success' && (needs.dns-verification.result == 'success' || needs.dns-verification.result == 'skipped') }}
     environment: prod
     outputs:
       app_name: ${{ steps.generate-names.outputs.APP_NAME }}

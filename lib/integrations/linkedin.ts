@@ -3,7 +3,7 @@
  * Handles LinkedIn Sales Navigator integration for lead prospecting
  */
 
-import type { Lead, LinkedInProfile, CreateLeadInput } from '../../types/lead';
+import type { Lead, CreateLeadInput } from '../../types/lead';
 
 /**
  * LinkedIn API configuration
@@ -88,19 +88,33 @@ export interface LinkedInTokenResponse {
 export class LinkedInProspectingClient {
   private config: LinkedInConfig | null = null;
   private apiBaseUrl = 'https://api.linkedin.com/v2';
+  /**
+   * Separate token storage to avoid mutating the config object passed to initialize()
+   */
+  private _accessToken: string | null = null;
 
   /**
-   * Initialize with OAuth credentials
+   * Initialize with OAuth credentials.
+   * Note: The config object is stored by reference but will not be mutated.
+   * Use getAccessToken() to retrieve the current token.
    */
   public initialize(config: LinkedInConfig): void {
     this.config = config;
+    this._accessToken = config.accessToken || null;
   }
 
   /**
    * Check if client is initialized
    */
   public isInitialized(): boolean {
-    return this.config !== null && !!this.config.accessToken;
+    return this.config !== null && !!this._accessToken;
+  }
+
+  /**
+   * Get the current access token
+   */
+  public getAccessToken(): string | null {
+    return this._accessToken;
   }
 
   /**
@@ -155,7 +169,8 @@ export class LinkedInProspectingClient {
     }
 
     const data = await response.json();
-    this.config.accessToken = data.access_token;
+    // Store token in separate field to avoid mutating the original config
+    this._accessToken = data.access_token;
     return data;
   }
 
@@ -214,9 +229,23 @@ export class LinkedInProspectingClient {
         total: paging?.total || 0,
         hasMore: (paging?.start || 0) + (paging?.count || 0) < (paging?.total || 0),
       };
-    } catch {
-      // Fallback for when search API is not available
-      console.warn('LinkedIn search API not available, returning empty results');
+    } catch (error: unknown) {
+      // Re-throw authentication errors - these should surface to callers
+      if (error instanceof Error) {
+        const errorMessage = error.message.toLowerCase();
+        if (errorMessage.includes('no access token') ||
+            errorMessage.includes('401') ||
+            errorMessage.includes('403') ||
+            errorMessage.includes('unauthorized') ||
+            errorMessage.includes('authentication')) {
+          throw error;
+        }
+        // Log error details for debugging
+        console.warn('LinkedIn search API error:', error.message);
+      } else {
+        console.warn('LinkedIn search API error:', error);
+      }
+      // Return empty results only for API unavailability (e.g., missing Sales Navigator license)
       return {
         profiles: [],
         total: 0,
@@ -246,16 +275,23 @@ export class LinkedInProspectingClient {
 
   /**
    * View a profile (for Sales Navigator sequences)
+   *
+   * Note: Profile viewing requires browser automation or Sales Navigator API access.
+   * This method is not implemented via the standard LinkedIn API.
+   *
+   * @throws Error Always throws - method not implemented
    */
-  public async viewProfile(profileId: string): Promise<{ success: boolean }> {
+  public async viewProfile(_profileId: string): Promise<{ success: boolean; reason?: string }> {
     if (!this.isInitialized()) {
       throw new Error('LinkedIn client not initialized or not authenticated');
     }
 
-    // Note: Profile viewing is typically done via browser automation
-    // This is a placeholder for the API-based approach
-    console.log(`Viewing LinkedIn profile: ${profileId}`);
-    return { success: true };
+    // Profile viewing is not available via the standard LinkedIn API
+    // It requires browser automation or Sales Navigator access
+    throw new Error(
+      'viewProfile not implemented: LinkedIn API does not support profile viewing. ' +
+      'Use browser automation or Sales Navigator integration instead.'
+    );
   }
 
   /**
@@ -363,7 +399,7 @@ export class LinkedInProspectingClient {
     method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET',
     body?: Record<string, unknown>
   ): Promise<Record<string, unknown>> {
-    if (!this.config?.accessToken) {
+    if (!this._accessToken) {
       throw new Error('No access token available');
     }
 
@@ -375,7 +411,7 @@ export class LinkedInProspectingClient {
     }
 
     const headers: Record<string, string> = {
-      'Authorization': `Bearer ${this.config.accessToken}`,
+      'Authorization': `Bearer ${this._accessToken}`,
       'X-Restli-Protocol-Version': '2.0.0',
     };
 
@@ -398,21 +434,47 @@ export class LinkedInProspectingClient {
 
   /**
    * Normalize LinkedIn API response to standard profile format
+   * Includes runtime validation to prevent type errors from unexpected API responses
    */
   private normalizeProfile(data: Record<string, unknown>): LinkedInAPIProfile {
+    // Validate required field: id
+    if (!data.id || typeof data.id !== 'string') {
+      throw new Error('Invalid LinkedIn profile: missing or invalid id');
+    }
+
     return {
-      id: data.id as string,
-      firstName: this.getLocalizedName(data.firstName as Record<string, unknown>),
-      lastName: this.getLocalizedName(data.lastName as Record<string, unknown>),
-      headline: data.headline as string,
-      summary: data.summary as string,
-      profilePicture: this.getProfilePicture(data.profilePicture as Record<string, unknown>),
-      vanityName: data.vanityName as string,
-      location: data.location as LinkedInAPIProfile['location'],
-      positions: data.positions as LinkedInAPIProfile['positions'],
-      education: data.education as LinkedInAPIProfile['education'],
-      skills: data.skills as string[],
-      connections: data.connections as number,
+      id: data.id,
+      firstName: this.getLocalizedName(
+        typeof data.firstName === 'object' && data.firstName !== null
+          ? data.firstName as Record<string, unknown>
+          : undefined
+      ),
+      lastName: this.getLocalizedName(
+        typeof data.lastName === 'object' && data.lastName !== null
+          ? data.lastName as Record<string, unknown>
+          : undefined
+      ),
+      headline: typeof data.headline === 'string' ? data.headline : undefined,
+      summary: typeof data.summary === 'string' ? data.summary : undefined,
+      profilePicture: this.getProfilePicture(
+        typeof data.profilePicture === 'object' && data.profilePicture !== null
+          ? data.profilePicture as Record<string, unknown>
+          : undefined
+      ),
+      vanityName: typeof data.vanityName === 'string' ? data.vanityName : undefined,
+      location: typeof data.location === 'object' && data.location !== null
+        ? data.location as LinkedInAPIProfile['location']
+        : undefined,
+      positions: Array.isArray(data.positions)
+        ? data.positions as LinkedInAPIProfile['positions']
+        : undefined,
+      education: Array.isArray(data.education)
+        ? data.education as LinkedInAPIProfile['education']
+        : undefined,
+      skills: Array.isArray(data.skills)
+        ? data.skills as string[]
+        : undefined,
+      connections: typeof data.connections === 'number' ? data.connections : undefined,
     };
   }
 

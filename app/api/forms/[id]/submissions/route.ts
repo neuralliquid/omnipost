@@ -137,11 +137,24 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         }
       }
 
-      // Email validation
+      // Email validation - use a simple, ReDoS-safe approach
       if (field.type === 'email' && responses[field.name]) {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(responses[field.name])) {
-          errors.push(`${field.label} must be a valid email address`);
+        const emailValue = String(responses[field.name]);
+        // Limit length to prevent DoS and use simple validation
+        if (emailValue.length > 254) {
+          errors.push(`${field.label} is too long for an email address`);
+        } else {
+          // Simple validation: must have exactly one @, something before and after, and a dot after @
+          const atIndex = emailValue.indexOf('@');
+          const lastAtIndex = emailValue.lastIndexOf('@');
+          if (atIndex < 1 || atIndex !== lastAtIndex || atIndex >= emailValue.length - 1) {
+            errors.push(`${field.label} must be a valid email address`);
+          } else {
+            const domain = emailValue.slice(atIndex + 1);
+            if (!domain.includes('.') || domain.startsWith('.') || domain.endsWith('.')) {
+              errors.push(`${field.label} must be a valid email address`);
+            }
+          }
         }
       }
 
@@ -226,6 +239,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     }, { status: 201 });
   } catch (error) {
     console.error('Error creating submission:', error);
+    // Don't expose internal error details to clients
     return NextResponse.json({ error: 'Failed to create submission' }, { status: 500 });
   }
 }

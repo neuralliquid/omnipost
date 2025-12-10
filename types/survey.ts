@@ -365,10 +365,28 @@ export function createEmptyFormMetrics(): FormMetrics {
 }
 
 /**
+ * Escape HTML special characters to prevent XSS
+ */
+function escapeHtml(str: string): string {
+  const escapeMap: Record<string, string> = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;',
+  };
+  return str.replace(/[&<>"']/g, (char) => escapeMap[char] || char);
+}
+
+/**
  * Helper to generate embed code
+ * Escapes user-provided values to prevent XSS attacks
  */
 export function generateEmbedCode(formId: string, baseUrl: string): string {
-  return `<iframe src="${baseUrl}/forms/embed/${formId}" width="100%" height="600" frameborder="0"></iframe>`;
+  // Validate and sanitize inputs
+  const safeFormId = escapeHtml(formId);
+  const safeBaseUrl = escapeHtml(baseUrl);
+  return `<iframe src="${safeBaseUrl}/forms/embed/${safeFormId}" width="100%" height="600" frameborder="0"></iframe>`;
 }
 
 /**

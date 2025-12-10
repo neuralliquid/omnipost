@@ -154,7 +154,7 @@ export class SequenceEngine {
           const result = await this.processEnrollment(enrollment);
           results.push(result);
         } catch (error) {
-          console.error(`Error processing enrollment ${enrollment.id}:`, error);
+          console.error('Error processing enrollment %s:', enrollment.id, error);
           results.push({
             success: false,
             stepId: enrollment.currentStepId,

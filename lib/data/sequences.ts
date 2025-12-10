@@ -321,8 +321,9 @@ export class SequencesClient {
 
     try {
       // Delete all steps first
+      const escapedId = escapeAirtableFormulaValue(id);
       const stepsRecords = await this.stepsTable!.select({
-        filterByFormula: `{SequenceId} = '${id}'`,
+        filterByFormula: `{SequenceId} = '${escapedId}'`,
       } as any).all();
 
       for (const step of stepsRecords) {
@@ -360,7 +361,8 @@ export class SequencesClient {
       };
 
       if (options?.status) {
-        selectOptions.filterByFormula = `{Status} = '${options.status}'`;
+        const escapedStatus = escapeAirtableFormulaValue(options.status);
+        selectOptions.filterByFormula = `{Status} = '${escapedStatus}'`;
       }
 
       const records = await this.sequencesTable!.select(selectOptions as any).all();
@@ -371,8 +373,9 @@ export class SequencesClient {
       // Fetch steps for each sequence
       const sequences: Sequence[] = [];
       for (const record of sequencesToReturn) {
+        const escapedRecordId = escapeAirtableFormulaValue(record.id);
         const stepsRecords = await this.stepsTable!.select({
-          filterByFormula: `{SequenceId} = '${record.id}'`,
+          filterByFormula: `{SequenceId} = '${escapedRecordId}'`,
           sort: [{ field: 'Order', direction: 'asc' }],
         } as any).all();
 
@@ -619,9 +622,18 @@ export class SequencesClient {
     const pageSize = options.pageSize || 20;
 
     const conditions: string[] = [];
-    if (options.sequenceId) conditions.push(`{SequenceId} = '${options.sequenceId}'`);
-    if (options.leadId) conditions.push(`{LeadId} = '${options.leadId}'`);
-    if (options.status) conditions.push(`{Status} = '${options.status}'`);
+    if (options.sequenceId) {
+      const escapedSequenceId = escapeAirtableFormulaValue(options.sequenceId);
+      conditions.push(`{SequenceId} = '${escapedSequenceId}'`);
+    }
+    if (options.leadId) {
+      const escapedLeadId = escapeAirtableFormulaValue(options.leadId);
+      conditions.push(`{LeadId} = '${escapedLeadId}'`);
+    }
+    if (options.status) {
+      const escapedStatus = escapeAirtableFormulaValue(options.status);
+      conditions.push(`{Status} = '${escapedStatus}'`);
+    }
 
     try {
       const selectOptions: Record<string, unknown> = {

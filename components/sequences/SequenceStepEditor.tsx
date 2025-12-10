@@ -218,7 +218,9 @@ export const SequenceStepEditor: React.FC<SequenceStepEditorProps> = ({
       onChange({
         ...step,
         conditionConfig: {
+          ...step.conditionConfig,
           condition: {
+            ...step.conditionConfig?.condition,
             type: value as 'email_opened' | 'email_clicked' | 'email_replied' | 'linkedin_accepted' | 'linkedin_replied',
           },
         },

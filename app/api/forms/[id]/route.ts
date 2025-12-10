@@ -178,8 +178,8 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
     return NextResponse.json({ form });
   } catch (error) {
     console.error('Error updating form:', error);
-    const message = error instanceof Error ? error.message : 'Failed to update form';
-    return NextResponse.json({ error: message }, { status: 500 });
+    // Don't expose internal error details to clients
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
 
