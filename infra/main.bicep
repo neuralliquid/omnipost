@@ -85,7 +85,7 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: ''
+      appCommandLine: 'node server.js'
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       appSettings: [
@@ -179,7 +179,7 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
       alwaysOn: true
       http20Enabled: true
       minTlsVersion: '1.2'
-      appCommandLine: ''
+      appCommandLine: 'node server.js'
       httpLoggingEnabled: true
       detailedErrorLoggingEnabled: true
       // Inherit app settings from production slot
