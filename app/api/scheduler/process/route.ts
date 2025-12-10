@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     };
 
     // Log for monitoring
-    console.log('[Scheduler] Process results:', summary);
+    console.warn('[Scheduler] Process results:', summary);
 
     return NextResponse.json({
       message: `Processed ${summary.processed} jobs`,

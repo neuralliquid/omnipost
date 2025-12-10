@@ -18,7 +18,7 @@ const Analytics: React.FC = () => {
       // window.gtag('config', siteConfig.analytics.googleAnalyticsId, {
       //   page_path: router.asPath,
       // });
-      console.log('Analytics initialized for', router.asPath);
+      console.warn('Analytics initialized for', router.asPath);
     }
   }, [router.asPath]);
 

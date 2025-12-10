@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api-client';
 
 interface ContentItem {
@@ -23,7 +23,7 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
   const [submitting, setSubmitting] = useState<boolean>(false);
 
   // Fetch content using the API client
-  const fetchContent = async () => {
+  const fetchContent = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -37,18 +37,19 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       } else {
         setError('Invalid response format');
       }
-    } catch (err: any) {
-      setError(err.message || 'Failed to load content');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load content';
+      setError(errorMessage);
       console.error('Error fetching content:', err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, pageSize, filter]);
 
   // Load content on initial render and when dependencies change
   useEffect(() => {
     fetchContent();
-  }, [page, pageSize, filter]);
+  }, [fetchContent]);
 
   // Handle content submission
   const handleSubmit = async (e: React.FormEvent) => {
@@ -69,8 +70,9 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       setNewContent('');
       setPage(1);
       fetchContent();
-    } catch (err: any) {
-      setError(err.message || 'Failed to submit content');
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to submit content';
+      setError(errorMessage);
       console.error('Error submitting content:', err);
     } finally {
       setSubmitting(false);

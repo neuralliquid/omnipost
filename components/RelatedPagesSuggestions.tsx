@@ -8,7 +8,7 @@ interface RelatedPagesSuggestionsProps {
 /**
  * Component that suggests related pages to the user
  */
-const RelatedPagesSuggestions: React.FC<RelatedPagesSuggestionsProps> = ({ currentPath }) => {
+const RelatedPagesSuggestions: React.FC<RelatedPagesSuggestionsProps> = ({ currentPath: _currentPath }) => {
   // Default suggestions based on common pages
   const suggestions = [
     { title: 'Home', path: '/', description: 'Go back to the homepage' },
