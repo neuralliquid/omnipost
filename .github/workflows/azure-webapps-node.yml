@@ -19,7 +19,7 @@ env:
   NODE_VERSION: '20.x'
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   ORG_CODE: 'nl'
-  PROJECT_NAME: 'content-creation'
+  PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw'
   LOCATION: 'westeurope'
 

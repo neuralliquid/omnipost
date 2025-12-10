@@ -7,7 +7,7 @@ param org string = 'nl'
 param env string = 'dev'
 
 @description('Project name')
-param project string = 'content-creation'
+param project string = 'omnipost'
 
 @description('Region code (euw, san, saf, swe, etc.)')
 @allowed(['euw', 'eun', 'wus', 'eus', 'san', 'saf', 'swe', 'uks', 'usw', 'glob'])

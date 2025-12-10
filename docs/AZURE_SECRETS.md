@@ -22,8 +22,8 @@ The application requires several environment variables and secrets to function p
 - **How to Set:**
   ```bash
   az webapp config appsettings set \
-    --name nl-dev-content-creation-app-euw \
-    --resource-group nl-dev-content-creation-rg-euw \
+    --name nl-dev-omnipost-app-euw \
+    --resource-group nl-dev-omnipost-rg-euw \
     --settings JWT_SECRET="your-generated-secret-here"
   ```
 
@@ -35,8 +35,8 @@ Configure these only if you're using the respective integrations:
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     AIRTABLE_API_KEY="your-api-key" \
     AIRTABLE_BASE_ID="your-base-id" \
@@ -47,8 +47,8 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings HUGGING_FACE_API_KEY="your-api-key"
 ```
 
@@ -56,8 +56,8 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     EMAIL_USER="your-email@gmail.com" \
     GMAIL_CLIENT_ID="your-client-id" \
@@ -69,8 +69,8 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings SLACK_TOKEN="xoxb-your-slack-bot-token"
 ```
 
@@ -78,8 +78,8 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     TWILIO_ACCOUNT_SID="your-account-sid" \
     TWILIO_AUTH_TOKEN="your-auth-token" \
@@ -91,32 +91,32 @@ az webapp config appsettings set \
 ```bash
 # Facebook
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     FACEBOOK_API_URL="https://graph.facebook.com" \
     FACEBOOK_API_KEY="your-api-key"
 
 # Instagram
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     INSTAGRAM_API_URL="https://graph.instagram.com" \
     INSTAGRAM_API_KEY="your-api-key"
 
 # LinkedIn
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     LINKEDIN_API_URL="https://api.linkedin.com" \
     LINKEDIN_API_KEY="your-api-key"
 
 # Twitter/X
 az webapp config appsettings set \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --settings \
     TWITTER_API_URL="https://api.twitter.com" \
     TWITTER_API_KEY="your-api-key"
@@ -126,7 +126,7 @@ az webapp config appsettings set \
 
 Alternatively, you can configure these via the Azure Portal:
 
-1. Navigate to your App Service: `nl-dev-content-creation-app-euw`
+1. Navigate to your App Service: `nl-dev-omnipost-app-euw`
 2. Go to **Settings** → **Configuration**
 3. Click **+ New application setting**
 4. Add each setting with its value
@@ -182,13 +182,13 @@ After setting secrets, verify they're available:
 ```bash
 # List all app settings
 az webapp config appsettings list \
-  --name nl-dev-content-creation-app-euw \
-  --resource-group nl-dev-content-creation-rg-euw \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
   --query "[].{Name:name, Value:value}" \
   --output table
 
 # Test the health endpoint
-curl https://nl-dev-content-creation-app-euw.azurewebsites.net/api/health
+curl https://nl-dev-omnipost-app-euw.azurewebsites.net/api/health
 ```
 
 ## GitHub Secrets for CI/CD
