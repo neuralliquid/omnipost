@@ -75,10 +75,7 @@ export class LeadsClient {
    * Initialize Airtable connection for leads
    */
   public initialize(): boolean {
-    if (
-      !process.env.AIRTABLE_API_KEY ||
-      !process.env.AIRTABLE_BASE_ID
-    ) {
+    if (!process.env.AIRTABLE_API_KEY || !process.env.AIRTABLE_BASE_ID) {
       console.error('Missing required Airtable environment variables');
       return false;
     }
@@ -91,7 +88,9 @@ export class LeadsClient {
       this.leadsTable = this.base(process.env.AIRTABLE_LEADS_TABLE || 'Leads');
       this.tagsTable = this.base(process.env.AIRTABLE_TAGS_TABLE || 'LeadTags');
       this.listsTable = this.base(process.env.AIRTABLE_LISTS_TABLE || 'LeadLists');
-      this.interactionsTable = this.base(process.env.AIRTABLE_INTERACTIONS_TABLE || 'LeadInteractions');
+      this.interactionsTable = this.base(
+        process.env.AIRTABLE_INTERACTIONS_TABLE || 'LeadInteractions'
+      );
       this.initialized = true;
       return true;
     } catch (error) {
@@ -128,21 +127,21 @@ export class LeadsClient {
         twitterHandle: fields.TwitterHandle as string | undefined,
         website: fields.Website as string | undefined,
       },
-      company: fields.CompanyName ? {
-        name: fields.CompanyName as string,
-        industry: fields.CompanyIndustry as string | undefined,
-        size: fields.CompanySize as string | undefined,
-        website: fields.CompanyWebsite as string | undefined,
-        linkedinUrl: fields.CompanyLinkedIn as string | undefined,
-        location: fields.CompanyLocation as string | undefined,
-        description: fields.CompanyDescription as string | undefined,
-      } : undefined,
+      company: fields.CompanyName
+        ? {
+            name: fields.CompanyName as string,
+            industry: fields.CompanyIndustry as string | undefined,
+            size: fields.CompanySize as string | undefined,
+            website: fields.CompanyWebsite as string | undefined,
+            linkedinUrl: fields.CompanyLinkedIn as string | undefined,
+            location: fields.CompanyLocation as string | undefined,
+            description: fields.CompanyDescription as string | undefined,
+          }
+        : undefined,
       status: (fields.Status as LeadStatus) || 'new',
       temperature: (fields.Temperature as LeadTemperature) || 'cold',
       assignedTo: fields.AssignedTo as string | undefined,
-      score: fields.ScoreData
-        ? JSON.parse(fields.ScoreData as string)
-        : createDefaultScore(),
+      score: fields.ScoreData ? JSON.parse(fields.ScoreData as string) : createDefaultScore(),
       source: (fields.Source as LeadSource) || 'manual',
       sourceDetails: fields.SourceDetails as string | undefined,
       utm: fields.UTMData ? JSON.parse(fields.UTMData as string) : undefined,
@@ -151,22 +150,16 @@ export class LeadsClient {
       interactions: [], // Loaded separately
       lastInteractionAt: fields.LastInteractionAt as string | undefined,
       nextFollowUpAt: fields.NextFollowUpAt as string | undefined,
-      activeSequences: fields.ActiveSequences
-        ? (fields.ActiveSequences as string).split(',')
-        : [],
+      activeSequences: fields.ActiveSequences ? (fields.ActiveSequences as string).split(',') : [],
       completedSequences: fields.CompletedSequences
         ? (fields.CompletedSequences as string).split(',')
         : [],
-      customFields: fields.CustomFields
-        ? JSON.parse(fields.CustomFields as string)
-        : undefined,
+      customFields: fields.CustomFields ? JSON.parse(fields.CustomFields as string) : undefined,
       notes: fields.Notes as string | undefined,
-      createdAt: fields.CreatedAt as string || new Date().toISOString(),
-      updatedAt: fields.UpdatedAt as string || new Date().toISOString(),
-      createdBy: fields.CreatedBy as string || '',
-      linkedinData: fields.LinkedInData
-        ? JSON.parse(fields.LinkedInData as string)
-        : undefined,
+      createdAt: (fields.CreatedAt as string) || new Date().toISOString(),
+      updatedAt: (fields.UpdatedAt as string) || new Date().toISOString(),
+      createdBy: (fields.CreatedBy as string) || '',
+      linkedinData: fields.LinkedInData ? JSON.parse(fields.LinkedInData as string) : undefined,
     };
   }
 
@@ -185,7 +178,8 @@ export class LeadsClient {
       if (lead.contact.email !== undefined) fields.Email = lead.contact.email;
       if (lead.contact.phone !== undefined) fields.Phone = lead.contact.phone;
       if (lead.contact.linkedinUrl !== undefined) fields.LinkedInUrl = lead.contact.linkedinUrl;
-      if (lead.contact.twitterHandle !== undefined) fields.TwitterHandle = lead.contact.twitterHandle;
+      if (lead.contact.twitterHandle !== undefined)
+        fields.TwitterHandle = lead.contact.twitterHandle;
       if (lead.contact.website !== undefined) fields.Website = lead.contact.website;
     }
 
@@ -197,7 +191,8 @@ export class LeadsClient {
       if (lead.company.website !== undefined) fields.CompanyWebsite = lead.company.website;
       if (lead.company.linkedinUrl !== undefined) fields.CompanyLinkedIn = lead.company.linkedinUrl;
       if (lead.company.location !== undefined) fields.CompanyLocation = lead.company.location;
-      if (lead.company.description !== undefined) fields.CompanyDescription = lead.company.description;
+      if (lead.company.description !== undefined)
+        fields.CompanyDescription = lead.company.description;
     }
 
     if (lead.status !== undefined) fields.Status = lead.status;
@@ -212,7 +207,8 @@ export class LeadsClient {
     if (lead.lastInteractionAt !== undefined) fields.LastInteractionAt = lead.lastInteractionAt;
     if (lead.nextFollowUpAt !== undefined) fields.NextFollowUpAt = lead.nextFollowUpAt;
     if (lead.activeSequences !== undefined) fields.ActiveSequences = lead.activeSequences.join(',');
-    if (lead.completedSequences !== undefined) fields.CompletedSequences = lead.completedSequences.join(',');
+    if (lead.completedSequences !== undefined)
+      fields.CompletedSequences = lead.completedSequences.join(',');
     if (lead.customFields !== undefined) fields.CustomFields = JSON.stringify(lead.customFields);
     if (lead.notes !== undefined) fields.Notes = lead.notes;
     if (lead.linkedinData !== undefined) fields.LinkedInData = JSON.stringify(lead.linkedinData);
@@ -231,12 +227,23 @@ export class LeadsClient {
 
     // Status filter - validate against allowed values
     if (filter.status) {
-      const allowedStatuses = ['new', 'contacted', 'qualified', 'proposal', 'negotiation', 'won', 'lost', 'nurturing'];
+      const allowedStatuses = new Set([
+        'new',
+        'contacted',
+        'qualified',
+        'proposal',
+        'negotiation',
+        'won',
+        'lost',
+        'nurturing',
+      ]);
       const statuses = Array.isArray(filter.status) ? filter.status : [filter.status];
-      const validStatuses = statuses.filter(s => allowedStatuses.includes(s));
+      const validStatuses = statuses.filter(s => allowedStatuses.has(s));
       if (validStatuses.length > 0) {
         const statusConditions = validStatuses.map(s => `{Status} = '${s}'`);
-        conditions.push(statusConditions.length === 1 ? statusConditions[0] : `OR(${statusConditions.join(', ')})`);
+        conditions.push(
+          statusConditions.length === 1 ? statusConditions[0] : `OR(${statusConditions.join(', ')})`
+        );
       }
     }
 
@@ -247,18 +254,35 @@ export class LeadsClient {
       const validTemps = temps.filter(t => allowedTemps.includes(t));
       if (validTemps.length > 0) {
         const tempConditions = validTemps.map(t => `{Temperature} = '${t}'`);
-        conditions.push(tempConditions.length === 1 ? tempConditions[0] : `OR(${tempConditions.join(', ')})`);
+        conditions.push(
+          tempConditions.length === 1 ? tempConditions[0] : `OR(${tempConditions.join(', ')})`
+        );
       }
     }
 
     // Source filter - validate against allowed values
     if (filter.source) {
-      const allowedSources = ['linkedin', 'linkedin_sales_navigator', 'website', 'referral', 'cold_outreach', 'content_engagement', 'survey', 'form', 'event', 'import', 'manual', 'other'];
+      const allowedSources = new Set([
+        'linkedin',
+        'linkedin_sales_navigator',
+        'website',
+        'referral',
+        'cold_outreach',
+        'content_engagement',
+        'survey',
+        'form',
+        'event',
+        'import',
+        'manual',
+        'other',
+      ]);
       const sources = Array.isArray(filter.source) ? filter.source : [filter.source];
-      const validSources = sources.filter(s => allowedSources.includes(s));
+      const validSources = sources.filter(s => allowedSources.has(s));
       if (validSources.length > 0) {
         const sourceConditions = validSources.map(s => `{Source} = '${s}'`);
-        conditions.push(sourceConditions.length === 1 ? sourceConditions[0] : `OR(${sourceConditions.join(', ')})`);
+        conditions.push(
+          sourceConditions.length === 1 ? sourceConditions[0] : `OR(${sourceConditions.join(', ')})`
+        );
       }
     }
 
@@ -301,9 +325,9 @@ export class LeadsClient {
       if (searchTerm) {
         conditions.push(
           `OR(FIND('${searchTerm}', LOWER({FirstName})) > 0, ` +
-          `FIND('${searchTerm}', LOWER({LastName})) > 0, ` +
-          `FIND('${searchTerm}', LOWER({Email})) > 0, ` +
-          `FIND('${searchTerm}', LOWER({CompanyName})) > 0)`
+            `FIND('${searchTerm}', LOWER({LastName})) > 0, ` +
+            `FIND('${searchTerm}', LOWER({Email})) > 0, ` +
+            `FIND('${searchTerm}', LOWER({CompanyName})) > 0)`
         );
       }
     }
@@ -315,7 +339,9 @@ export class LeadsClient {
         .filter(t => t.length > 0 && t.length <= 50);
       if (sanitizedTags.length > 0) {
         const tagConditions = sanitizedTags.map(t => `FIND('${t}', {Tags}) > 0`);
-        conditions.push(tagConditions.length === 1 ? tagConditions[0] : `OR(${tagConditions.join(', ')})`);
+        conditions.push(
+          tagConditions.length === 1 ? tagConditions[0] : `OR(${tagConditions.join(', ')})`
+        );
       }
     }
 
@@ -440,7 +466,12 @@ export class LeadsClient {
    */
   public async queryLeads(
     filter?: LeadFilter,
-    options?: { page?: number; pageSize?: number; sortField?: string; sortDirection?: 'asc' | 'desc' }
+    options?: {
+      page?: number;
+      pageSize?: number;
+      sortField?: string;
+      sortDirection?: 'asc' | 'desc';
+    }
   ): Promise<LeadQueryResponse> {
     if (!this.isInitialized()) {
       throw new Error('Leads client not initialized');
@@ -640,7 +671,9 @@ export class LeadsClient {
   /**
    * Create a lead list
    */
-  public async createList(list: Omit<LeadList, 'id' | 'createdAt' | 'updatedAt' | 'leadCount'>): Promise<LeadList> {
+  public async createList(
+    list: Omit<LeadList, 'id' | 'createdAt' | 'updatedAt' | 'leadCount'>
+  ): Promise<LeadList> {
     if (!this.isInitialized()) {
       throw new Error('Leads client not initialized');
     }
@@ -665,7 +698,9 @@ export class LeadsClient {
         description: record.fields.Description as string | undefined,
         type: record.fields.Type as 'static' | 'dynamic',
         filter: record.fields.Filter ? JSON.parse(record.fields.Filter as string) : undefined,
-        leadIds: record.fields.LeadIds ? (record.fields.LeadIds as string).split(',').filter(Boolean) : [],
+        leadIds: record.fields.LeadIds
+          ? (record.fields.LeadIds as string).split(',').filter(Boolean)
+          : [],
         leadCount: 0,
         createdAt: now,
         updatedAt: now,
@@ -697,7 +732,9 @@ export class LeadsClient {
         type: r.fields.Type as 'static' | 'dynamic',
         filter: r.fields.Filter ? JSON.parse(r.fields.Filter as string) : undefined,
         leadIds: r.fields.LeadIds ? (r.fields.LeadIds as string).split(',').filter(Boolean) : [],
-        leadCount: r.fields.LeadIds ? (r.fields.LeadIds as string).split(',').filter(Boolean).length : 0,
+        leadCount: r.fields.LeadIds
+          ? (r.fields.LeadIds as string).split(',').filter(Boolean).length
+          : 0,
         createdAt: r.fields.CreatedAt as string,
         updatedAt: r.fields.UpdatedAt as string,
         createdBy: r.fields.CreatedBy as string,

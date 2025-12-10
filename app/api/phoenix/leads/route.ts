@@ -23,9 +23,7 @@ import type {
   SkySnareLeadData,
   AeroNetLeadData,
 } from '@/types/phoenix-rooivalk';
-import {
-  DEFAULT_PHOENIX_CONFIG,
-} from '@/types/phoenix-rooivalk';
+import { DEFAULT_PHOENIX_CONFIG } from '@/types/phoenix-rooivalk';
 
 // Timeline type for safe access
 type PurchaseTimeline = 'immediate' | '1_3_months' | '3_6_months' | '6_12_months' | 'researching';
@@ -55,7 +53,10 @@ const VALID_PHOENIX_BRANDS = ['skysnare', 'aeronet'] as const;
 // Zod schema for GET query validation
 const getPhoenixLeadsQuerySchema = z.object({
   brand: z.enum(VALID_PHOENIX_BRANDS).optional(),
-  segment: z.string().optional().transform((val: string | undefined) => val ? sanitizeText(val) : undefined),
+  segment: z
+    .string()
+    .optional()
+    .transform((val: string | undefined) => (val ? sanitizeText(val) : undefined)),
   status: z.enum(VALID_LEAD_STATUSES as unknown as [string, ...string[]]).optional(),
   page: z.number().int().positive().default(1),
   limit: z.number().int().positive().max(100).default(20),
@@ -70,57 +71,36 @@ export async function POST(request: NextRequest) {
   try {
     // Check if lead management feature is enabled
     if (!featureFlags.leadManagement?.enabled) {
-      return NextResponse.json(
-        { error: 'Lead management feature is disabled' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'Lead management feature is disabled' }, { status: 403 });
     }
 
     const body: PhoenixFormSubmission = await request.json();
 
     // Validate required fields
     if (!body.firstName?.trim()) {
-      return NextResponse.json(
-        { error: 'firstName is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'firstName is required' }, { status: 400 });
     }
 
     if (!body.lastName?.trim()) {
-      return NextResponse.json(
-        { error: 'lastName is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'lastName is required' }, { status: 400 });
     }
 
     if (!body.email?.trim()) {
-      return NextResponse.json(
-        { error: 'email is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'email is required' }, { status: 400 });
     }
 
     // Validate email format using ReDoS-safe validation
     const emailError = validateEmail('email', body.email);
     if (emailError) {
-      return NextResponse.json(
-        { error: emailError },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: emailError }, { status: 400 });
     }
 
     if (!body.segment) {
-      return NextResponse.json(
-        { error: 'segment is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'segment is required' }, { status: 400 });
     }
 
     if (!body.brand || !['skysnare', 'aeronet'].includes(body.brand)) {
-      return NextResponse.json(
-        { error: 'brand must be skysnare or aeronet' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'brand must be skysnare or aeronet' }, { status: 400 });
     }
 
     // Get brand configuration
@@ -136,9 +116,7 @@ export async function POST(request: NextRequest) {
         segment: body.segment as SkySnareLeadData['segment'],
         productInterest: 'considering',
         useCase: body.useCase ? { primaryActivity: body.useCase } : undefined,
-        purchaseIntent: body.timeline
-          ? { timeline: body.timeline as PurchaseTimeline }
-          : undefined,
+        purchaseIntent: body.timeline ? { timeline: body.timeline as PurchaseTimeline } : undefined,
         demoRequested: body.requestType === 'demo',
         trialRequested: body.requestType === 'pilot',
         newsletterSubscribed: body.marketingConsent,
@@ -152,9 +130,7 @@ export async function POST(request: NextRequest) {
         technicalBriefingRequested: body.requestType === 'info',
         siteAssessmentRequested: false,
         partnersAccessed: body.requestType === 'partner',
-        procurement: body.timeline
-          ? { timeline: body.timeline as ProcurementTimeline }
-          : undefined,
+        procurement: body.timeline ? { timeline: body.timeline as ProcurementTimeline } : undefined,
       };
     }
 
@@ -228,10 +204,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error creating Phoenix lead:', error);
-    return NextResponse.json(
-      { error: 'Failed to create lead' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create lead' }, { status: 500 });
   }
 }
 
@@ -260,7 +233,9 @@ export const GET = withAuthAndRateLimit(
     // Validate using Zod schema
     const parseResult = getPhoenixLeadsQuerySchema.safeParse(queryData);
     if (!parseResult.success) {
-      const errors = parseResult.error.errors.map((e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`);
+      const errors = parseResult.error.errors.map(
+        (e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`
+      );
       return ErrorResponses.badRequest(errors.join('; '));
     }
 
@@ -269,10 +244,7 @@ export const GET = withAuthAndRateLimit(
     // Fetch leads from upstream with proper filter type
     // After Zod validation, status is guaranteed to be a valid LeadStatus if present
     const filter: LeadFilter | undefined = status ? { status: status as LeadStatus } : undefined;
-    const result = await leadsClient.queryLeads(
-      filter,
-      { page, pageSize: limit }
-    );
+    const result = await leadsClient.queryLeads(filter, { page, pageSize: limit });
 
     // Filter to Phoenix leads only using type guard
     const phoenixLeads = result.leads.filter(isPhoenixLead);
@@ -280,33 +252,30 @@ export const GET = withAuthAndRateLimit(
     // Apply brand filter with proper type safety
     let filteredLeads = phoenixLeads;
     if (brand) {
-      filteredLeads = phoenixLeads.filter(
-        (lead) => lead.customFields.phoenixData.brand === brand
-      );
+      filteredLeads = phoenixLeads.filter(lead => lead.customFields.phoenixData.brand === brand);
     }
 
     // Apply segment filter with proper type safety
     if (segment) {
       filteredLeads = filteredLeads.filter(
-        (lead) => lead.customFields.phoenixData.segment === segment
+        lead => lead.customFields.phoenixData.segment === segment
       );
     }
 
     // Sort by creation date (newest first)
     const sortedLeads = filteredLeads.toSorted(
-      (a, b) =>
-        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
 
     // Transform leads to include phoenixData at top level for convenience
-    const transformedLeads = sortedLeads.map((lead) => ({
+    const transformedLeads = sortedLeads.map(lead => ({
       ...lead,
       phoenixData: lead.customFields.phoenixData,
     }));
 
     // Calculate total pages from pagination data
     const totalPages = Math.ceil(result.pagination.total / result.pagination.pageSize);
-    
+
     // Return original pagination metadata from upstream with additional filtered count
     return NextResponse.json({
       success: true,

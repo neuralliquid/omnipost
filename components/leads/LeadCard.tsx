@@ -19,9 +19,10 @@ function isValidLinkedInUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
     // Only allow https LinkedIn URLs
-    return parsed.protocol === 'https:' &&
-           (parsed.hostname === 'www.linkedin.com' ||
-            parsed.hostname === 'linkedin.com');
+    return (
+      parsed.protocol === 'https:' &&
+      (parsed.hostname === 'www.linkedin.com' || parsed.hostname === 'linkedin.com')
+    );
   } catch {
     return false;
   }
@@ -162,9 +163,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
               {tag}
             </span>
           ))}
-          {lead.tags.length > 5 && (
-            <span className={styles.moreTag}>+{lead.tags.length - 5}</span>
-          )}
+          {lead.tags.length > 5 && <span className={styles.moreTag}>+{lead.tags.length - 5}</span>}
         </div>
       )}
 
@@ -227,11 +226,7 @@ export const LeadCard: React.FC<LeadCardProps> = ({
           </button>
         )}
         {onEdit && (
-          <button
-            onClick={() => onEdit(lead)}
-            className={styles.iconButton}
-            title="Edit lead"
-          >
+          <button onClick={() => onEdit(lead)} className={styles.iconButton} title="Edit lead">
             <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"

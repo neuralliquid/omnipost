@@ -140,9 +140,13 @@ export const SequenceCard: React.FC<SequenceCardProps> = ({
         <span className={styles.scheduleValue}>
           {sequence.schedule.sendingDays.length === 7
             ? 'Every day'
-            : sequence.schedule.sendingDays.slice(0, 3).map(d => d.charAt(0).toUpperCase() + d.slice(1, 3)).join(', ')}
-          {sequence.schedule.sendingDays.length > 3 && sequence.schedule.sendingDays.length < 7 && '...'}
-          {' '}
+            : sequence.schedule.sendingDays
+                .slice(0, 3)
+                .map(d => d.charAt(0).toUpperCase() + d.slice(1, 3))
+                .join(', ')}
+          {sequence.schedule.sendingDays.length > 3 &&
+            sequence.schedule.sendingDays.length < 7 &&
+            '...'}{' '}
           {sequence.schedule.sendingHours.start} - {sequence.schedule.sendingHours.end}
         </span>
       </div>

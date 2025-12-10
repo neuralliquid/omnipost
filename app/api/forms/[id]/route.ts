@@ -9,31 +9,46 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { isAuthenticated } from '@/app/api/_utils/auth';
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
-import { checkRateLimitOrRespond, ErrorResponses, SuccessResponses } from '@/app/api/_utils/responses';
+import {
+  checkRateLimitOrRespond,
+  ErrorResponses,
+  SuccessResponses,
+} from '@/app/api/_utils/responses';
 import { formsClient } from '@/lib/data/forms';
 
 // Zod schema for form update validation
-const updateFormSchema = z.object({
-  name: z.string().trim().min(1).max(200).optional(),
-  description: z.string().trim().max(2000).optional(),
-  status: z.enum(['draft', 'published', 'closed', 'archived']).optional(),
-  theme: z.object({
-    primaryColor: z.string().optional(),
-    fontFamily: z.string().optional(),
-    logoUrl: z.string().url().optional(),
-  }).passthrough().optional(),
-  completionSettings: z.object({
-    redirectUrl: z.string().url().optional(),
-    showConfirmation: z.boolean().optional(),
-    confirmationMessage: z.string().optional(),
-  }).passthrough().optional(),
-  notificationSettings: z.object({
-    notifyOnSubmission: z.boolean().optional(),
-    notificationEmails: z.array(z.string().email()).optional(),
-  }).passthrough().optional(),
-  integrations: z.record(z.unknown()).optional(),
-  tags: z.array(z.string()).optional(),
-}).strict();
+const updateFormSchema = z
+  .object({
+    name: z.string().trim().min(1).max(200).optional(),
+    description: z.string().trim().max(2000).optional(),
+    status: z.enum(['draft', 'published', 'closed', 'archived']).optional(),
+    theme: z
+      .object({
+        primaryColor: z.string().optional(),
+        fontFamily: z.string().optional(),
+        logoUrl: z.string().url().optional(),
+      })
+      .passthrough()
+      .optional(),
+    completionSettings: z
+      .object({
+        redirectUrl: z.string().url().optional(),
+        showConfirmation: z.boolean().optional(),
+        confirmationMessage: z.string().optional(),
+      })
+      .passthrough()
+      .optional(),
+    notificationSettings: z
+      .object({
+        notifyOnSubmission: z.boolean().optional(),
+        notificationEmails: z.array(z.string().email()).optional(),
+      })
+      .passthrough()
+      .optional(),
+    integrations: z.record(z.unknown()).optional(),
+    tags: z.array(z.string()).optional(),
+  })
+  .strict();
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -52,7 +67,7 @@ export const GET = withRateLimit(
         return ErrorResponses.badRequest('Invalid route parameters');
       }
       const { params } = args[0] as RouteParams;
-      
+
       // Check if this is public access (embed/share)
       const { searchParams } = new URL(request.url);
       const isPublic = searchParams.get('public') === 'true';
@@ -92,7 +107,11 @@ export const GET = withRateLimit(
  */
 export async function PATCH(request: NextRequest, { params }: RouteParams) {
   try {
-    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/patch', RateLimitPresets.GENERAL);
+    const rateLimitResponse = checkRateLimitOrRespond(
+      request,
+      '/api/forms/[id]/patch',
+      RateLimitPresets.GENERAL
+    );
     if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {
@@ -112,13 +131,16 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
       body = updateFormSchema.parse(rawBody);
     } catch (zodError) {
       if (zodError instanceof z.ZodError) {
-        return NextResponse.json({
-          error: 'Validation failed',
-          details: zodError.errors.map(e => ({
-            path: e.path.join('.'),
-            message: e.message,
-          })),
-        }, { status: 400 });
+        return NextResponse.json(
+          {
+            error: 'Validation failed',
+            details: zodError.errors.map(e => ({
+              path: e.path.join('.'),
+              message: e.message,
+            })),
+          },
+          { status: 400 }
+        );
       }
       throw zodError;
     }
@@ -151,7 +173,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
  */
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/delete', RateLimitPresets.GENERAL);
+    const rateLimitResponse = checkRateLimitOrRespond(
+      request,
+      '/api/forms/[id]/delete',
+      RateLimitPresets.GENERAL
+    );
     if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {

@@ -18,14 +18,14 @@ This document describes the new CRM, Lead Management, and Outreach Sequence feat
 
 The Phoenix Strategy requires a comprehensive lead generation and nurturing system. OmniPost now includes:
 
-| Feature | Status | Description |
-|---------|--------|-------------|
-| Lead Database/CRM | ✅ Implemented | Full lead management with scoring and tagging |
-| Cold Outreach Sequences | ✅ Implemented | Multi-step drip campaigns |
-| LinkedIn Prospecting | ✅ Implemented | Profile import and automation |
-| Survey/Form Collection | ✅ Implemented | Lead capture forms with scoring |
-| Lead Scoring/Tagging | ✅ Implemented | Automatic and manual scoring |
-| Drip Campaign Automation | ✅ Implemented | Time-based sequence execution |
+| Feature                  | Status         | Description                                   |
+| ------------------------ | -------------- | --------------------------------------------- |
+| Lead Database/CRM        | ✅ Implemented | Full lead management with scoring and tagging |
+| Cold Outreach Sequences  | ✅ Implemented | Multi-step drip campaigns                     |
+| LinkedIn Prospecting     | ✅ Implemented | Profile import and automation                 |
+| Survey/Form Collection   | ✅ Implemented | Lead capture forms with scoring               |
+| Lead Scoring/Tagging     | ✅ Implemented | Automatic and manual scoring                  |
+| Drip Campaign Automation | ✅ Implemented | Time-based sequence execution                 |
 
 ---
 
@@ -50,9 +50,17 @@ interface Lead {
   company?: {
     name: string;
     industry?: string;
-    size?: string;  // '1-10', '11-50', '51-200', '201-500', '500+'
+    size?: string; // '1-10', '11-50', '51-200', '201-500', '500+'
   };
-  status: 'new' | 'contacted' | 'qualified' | 'proposal' | 'negotiation' | 'won' | 'lost' | 'nurturing';
+  status:
+    | 'new'
+    | 'contacted'
+    | 'qualified'
+    | 'proposal'
+    | 'negotiation'
+    | 'won'
+    | 'lost'
+    | 'nurturing';
   temperature: 'cold' | 'warm' | 'hot';
   score: LeadScore;
   source: LeadSource;
@@ -66,14 +74,15 @@ interface Lead {
 
 Leads are automatically scored on a 0-100 scale based on:
 
-| Category | Max Points | Factors |
-|----------|------------|---------|
-| Demographic | 25 | Contact info completeness, company data, industry match |
-| Behavioral | 30 | Email engagement, LinkedIn activity, calls, meetings |
-| Engagement | 25 | Content views, form submissions, survey responses |
-| Recency | 20 | Time since last interaction |
+| Category    | Max Points | Factors                                                 |
+| ----------- | ---------- | ------------------------------------------------------- |
+| Demographic | 25         | Contact info completeness, company data, industry match |
+| Behavioral  | 30         | Email engagement, LinkedIn activity, calls, meetings    |
+| Engagement  | 25         | Content views, form submissions, survey responses       |
+| Recency     | 20         | Time since last interaction                             |
 
 Score grades:
+
 - **A (80-100)**: Hot lead, prioritize immediately
 - **B (60-79)**: Warm lead, follow up soon
 - **C (40-59)**: Needs nurturing
@@ -109,8 +118,8 @@ interface Sequence {
   status: 'draft' | 'active' | 'paused' | 'completed';
   steps: SequenceStep[];
   schedule: {
-    sendingDays: string[];  // ['monday', 'tuesday', ...]
-    sendingHours: { start: '09:00', end: '17:00' };
+    sendingDays: string[]; // ['monday', 'tuesday', ...]
+    sendingHours: { start: '09:00'; end: '17:00' };
     maxPerDay: number;
   };
   stopOnReply: boolean;
@@ -120,16 +129,16 @@ interface Sequence {
 
 ### Step Types
 
-| Type | Description | Configuration |
-|------|-------------|---------------|
-| `email` | Send automated email | Subject, body, tracking |
-| `linkedin_connection` | Send connection request | Optional message |
-| `linkedin_message` | Send LinkedIn message | Message template |
-| `linkedin_view_profile` | View prospect's profile | (no config needed) |
-| `wait` | Pause for specified time | Duration, unit (days/hours) |
-| `task` | Create manual task | Title, assignee, due date |
-| `call` | Schedule call reminder | Script, duration |
-| `condition` | Branch based on action | Condition type, branches |
+| Type                    | Description              | Configuration               |
+| ----------------------- | ------------------------ | --------------------------- |
+| `email`                 | Send automated email     | Subject, body, tracking     |
+| `linkedin_connection`   | Send connection request  | Optional message            |
+| `linkedin_message`      | Send LinkedIn message    | Message template            |
+| `linkedin_view_profile` | View prospect's profile  | (no config needed)          |
+| `wait`                  | Pause for specified time | Duration, unit (days/hours) |
+| `task`                  | Create manual task       | Title, assignee, due date   |
+| `call`                  | Schedule call reminder   | Script, duration            |
+| `condition`             | Branch based on action   | Condition type, branches    |
 
 ### Sequence Templates
 
@@ -178,12 +187,12 @@ POST   /api/sequences/:id/enrollments - Enroll leads
 
 ### Form Types
 
-| Type | Use Case |
-|------|----------|
-| `form` | Lead capture, contact forms |
-| `survey` | Customer feedback, NPS |
-| `quiz` | Assessment, qualification |
-| `poll` | Quick opinions |
+| Type     | Use Case                    |
+| -------- | --------------------------- |
+| `form`   | Lead capture, contact forms |
+| `survey` | Customer feedback, NPS      |
+| `quiz`   | Assessment, qualification   |
+| `poll`   | Quick opinions              |
 
 ### Field Types
 
@@ -197,6 +206,7 @@ POST   /api/sequences/:id/enrollments - Enroll leads
 ### Lead Capture Integration
 
 Forms can automatically:
+
 1. Create a new lead from submissions
 2. Add tags based on responses
 3. Enroll in sequences
@@ -241,11 +251,11 @@ linkedInClient.initialize({
 
 ### Safety Limits
 
-| Action | Daily Limit | Notes |
-|--------|-------------|-------|
-| Profile Views | 100 | Configurable |
-| Connection Requests | 25 | LinkedIn enforced |
-| Messages | 50 | Only to connections |
+| Action              | Daily Limit | Notes               |
+| ------------------- | ----------- | ------------------- |
+| Profile Views       | 100         | Configurable        |
+| Connection Requests | 25          | LinkedIn enforced   |
+| Messages            | 50          | Only to connections |
 
 ### Data Captured
 
@@ -286,7 +296,7 @@ Authorization: Bearer <token>
 ```json
 {
   "error": "Error message",
-  "errors": ["Additional details"]  // For validation errors
+  "errors": ["Additional details"] // For validation errors
 }
 ```
 
@@ -374,30 +384,32 @@ Control features via `data/feature-flags.json`:
 Create these tables in your Airtable base:
 
 #### Leads Table
-| Field | Type | Notes |
-|-------|------|-------|
-| FirstName | Single line text | Required |
-| LastName | Single line text | Required |
-| Email | Email | |
-| Phone | Phone | |
-| LinkedInUrl | URL | |
-| CompanyName | Single line text | |
-| Status | Single select | new, contacted, qualified, etc. |
-| Temperature | Single select | cold, warm, hot |
-| ScoreData | Long text | JSON |
-| Tags | Long text | Comma-separated |
-| CreatedAt | Date | ISO string |
+
+| Field       | Type             | Notes                           |
+| ----------- | ---------------- | ------------------------------- |
+| FirstName   | Single line text | Required                        |
+| LastName    | Single line text | Required                        |
+| Email       | Email            |                                 |
+| Phone       | Phone            |                                 |
+| LinkedInUrl | URL              |                                 |
+| CompanyName | Single line text |                                 |
+| Status      | Single select    | new, contacted, qualified, etc. |
+| Temperature | Single select    | cold, warm, hot                 |
+| ScoreData   | Long text        | JSON                            |
+| Tags        | Long text        | Comma-separated                 |
+| CreatedAt   | Date             | ISO string                      |
 
 #### Sequences Table
-| Field | Type | Notes |
-|-------|------|-------|
-| Name | Single line text | Required |
-| Description | Long text | |
-| Status | Single select | draft, active, paused, etc. |
-| Schedule | Long text | JSON |
-| Metrics | Long text | JSON |
-| CreatedAt | Date | |
-| CreatedBy | Single line text | |
+
+| Field       | Type             | Notes                       |
+| ----------- | ---------------- | --------------------------- |
+| Name        | Single line text | Required                    |
+| Description | Long text        |                             |
+| Status      | Single select    | draft, active, paused, etc. |
+| Schedule    | Long text        | JSON                        |
+| Metrics     | Long text        | JSON                        |
+| CreatedAt   | Date             |                             |
+| CreatedBy   | Single line text |                             |
 
 ---
 

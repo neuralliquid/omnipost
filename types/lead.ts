@@ -67,10 +67,23 @@ export interface CompanyInfo {
  */
 export interface LeadInteraction {
   id: string;
-  type: 'email_sent' | 'email_opened' | 'email_clicked' | 'email_replied' |
-        'linkedin_message' | 'linkedin_connection' | 'linkedin_view' |
-        'call' | 'meeting' | 'note' | 'form_submission' | 'content_view' |
-        'survey_response' | 'status_change' | 'tag_added' | 'tag_removed';
+  type:
+    | 'email_sent'
+    | 'email_opened'
+    | 'email_clicked'
+    | 'email_replied'
+    | 'linkedin_message'
+    | 'linkedin_connection'
+    | 'linkedin_view'
+    | 'call'
+    | 'meeting'
+    | 'note'
+    | 'form_submission'
+    | 'content_view'
+    | 'survey_response'
+    | 'status_change'
+    | 'tag_added'
+    | 'tag_removed';
   description: string;
   metadata?: Record<string, unknown>;
   createdAt: string;
@@ -81,18 +94,18 @@ export interface LeadInteraction {
  * Lead scoring breakdown
  */
 export interface LeadScoreBreakdown {
-  demographic: number;      // Based on job title, company size, industry
-  behavioral: number;       // Based on interactions and engagement
-  engagement: number;       // Based on content engagement, email opens, etc.
-  recency: number;          // Based on last interaction date
-  custom: number;           // Custom scoring rules
+  demographic: number; // Based on job title, company size, industry
+  behavioral: number; // Based on interactions and engagement
+  engagement: number; // Based on content engagement, email opens, etc.
+  recency: number; // Based on last interaction date
+  custom: number; // Custom scoring rules
 }
 
 /**
  * Lead score with calculation details
  */
 export interface LeadScore {
-  total: number;            // Total score (0-100)
+  total: number; // Total score (0-100)
   breakdown: LeadScoreBreakdown;
   grade: 'A' | 'B' | 'C' | 'D' | 'F';
   lastCalculated: string;
@@ -130,7 +143,7 @@ export interface Lead {
   firstName: string;
   lastName: string;
   fullName: string; // Computed: firstName + lastName
-  title?: string;   // Job title
+  title?: string; // Job title
 
   // Contact
   contact: ContactInfo;

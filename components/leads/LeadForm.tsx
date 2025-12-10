@@ -57,7 +57,7 @@ const SOURCE_OPTIONS: { value: LeadSource; label: string }[] = [
   { value: 'other', label: 'Other' },
 ];
 
-const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
+const _STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
   { value: 'new', label: 'New' },
   { value: 'contacted', label: 'Contacted' },
   { value: 'qualified', label: 'Qualified' },
@@ -68,7 +68,7 @@ const STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
   { value: 'nurturing', label: 'Nurturing' },
 ];
 
-const TEMPERATURE_OPTIONS: { value: LeadTemperature; label: string }[] = [
+const _TEMPERATURE_OPTIONS: { value: LeadTemperature; label: string }[] = [
   { value: 'cold', label: 'Cold' },
   { value: 'warm', label: 'Warm' },
   { value: 'hot', label: 'Hot' },
@@ -82,12 +82,7 @@ const COMPANY_SIZE_OPTIONS = [
   { value: '500+', label: '500+ employees' },
 ];
 
-export const LeadForm: React.FC<LeadFormProps> = ({
-  lead,
-  onSubmit,
-  onCancel,
-  loading,
-}) => {
+export const LeadForm: React.FC<LeadFormProps> = ({ lead, onSubmit, onCancel, loading }) => {
   const [formData, setFormData] = useState({
     firstName: lead?.firstName || '',
     lastName: lead?.lastName || '',
@@ -110,9 +105,12 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
+  // Type alias for form element change events (HTMLSelectElement requires eslint exception)
+  type FormChangeEvent = React.ChangeEvent<
+    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement // eslint-disable-line no-undef
+  >;
+
+  const handleChange = (e: FormChangeEvent) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
     if (errors[name]) {
@@ -159,17 +157,24 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         twitterHandle: formData.twitterHandle.trim() || undefined,
         website: formData.website.trim() || undefined,
       },
-      company: formData.companyName ? {
-        name: formData.companyName.trim(),
-        industry: formData.companyIndustry.trim() || undefined,
-        size: formData.companySize || undefined,
-        website: formData.companyWebsite.trim() || undefined,
-        location: formData.companyLocation.trim() || undefined,
-      } : undefined,
+      company: formData.companyName
+        ? {
+            name: formData.companyName.trim(),
+            industry: formData.companyIndustry.trim() || undefined,
+            size: formData.companySize || undefined,
+            website: formData.companyWebsite.trim() || undefined,
+            location: formData.companyLocation.trim() || undefined,
+          }
+        : undefined,
       source: formData.source,
       sourceDetails: formData.sourceDetails.trim() || undefined,
       notes: formData.notes.trim() || undefined,
-      tags: formData.tags ? formData.tags.split(',').map(t => t.trim()).filter(Boolean) : undefined,
+      tags: formData.tags
+        ? formData.tags
+            .split(',')
+            .map(t => t.trim())
+            .filter(Boolean)
+        : undefined,
     };
 
     await onSubmit(data);
@@ -215,7 +220,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="title" className={styles.label}>Job Title</label>
+          <label htmlFor="title" className={styles.label}>
+            Job Title
+          </label>
           <input
             type="text"
             id="title"
@@ -229,7 +236,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label htmlFor="email" className={styles.label}>Email</label>
+            <label htmlFor="email" className={styles.label}>
+              Email
+            </label>
             <input
               type="email"
               id="email"
@@ -243,7 +252,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="phone" className={styles.label}>Phone</label>
+            <label htmlFor="phone" className={styles.label}>
+              Phone
+            </label>
             <input
               type="tel"
               id="phone"
@@ -258,7 +269,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label htmlFor="linkedinUrl" className={styles.label}>LinkedIn URL</label>
+            <label htmlFor="linkedinUrl" className={styles.label}>
+              LinkedIn URL
+            </label>
             <input
               type="url"
               id="linkedinUrl"
@@ -268,11 +281,15 @@ export const LeadForm: React.FC<LeadFormProps> = ({
               className={`${styles.input} ${errors.linkedinUrl ? styles.inputError : ''}`}
               placeholder="https://linkedin.com/in/johndoe"
             />
-            {errors.linkedinUrl && <span className={styles.errorMessage}>{errors.linkedinUrl}</span>}
+            {errors.linkedinUrl && (
+              <span className={styles.errorMessage}>{errors.linkedinUrl}</span>
+            )}
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="twitterHandle" className={styles.label}>Twitter Handle</label>
+            <label htmlFor="twitterHandle" className={styles.label}>
+              Twitter Handle
+            </label>
             <input
               type="text"
               id="twitterHandle"
@@ -291,7 +308,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label htmlFor="companyName" className={styles.label}>Company Name</label>
+            <label htmlFor="companyName" className={styles.label}>
+              Company Name
+            </label>
             <input
               type="text"
               id="companyName"
@@ -304,7 +323,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="companyIndustry" className={styles.label}>Industry</label>
+            <label htmlFor="companyIndustry" className={styles.label}>
+              Industry
+            </label>
             <input
               type="text"
               id="companyIndustry"
@@ -319,7 +340,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
 
         <div className={styles.formRow}>
           <div className={styles.formGroup}>
-            <label htmlFor="companySize" className={styles.label}>Company Size</label>
+            <label htmlFor="companySize" className={styles.label}>
+              Company Size
+            </label>
             <select
               id="companySize"
               name="companySize"
@@ -329,13 +352,17 @@ export const LeadForm: React.FC<LeadFormProps> = ({
             >
               <option value="">Select size...</option>
               {COMPANY_SIZE_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="companyLocation" className={styles.label}>Location</label>
+            <label htmlFor="companyLocation" className={styles.label}>
+              Location
+            </label>
             <input
               type="text"
               id="companyLocation"
@@ -349,7 +376,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="companyWebsite" className={styles.label}>Company Website</label>
+          <label htmlFor="companyWebsite" className={styles.label}>
+            Company Website
+          </label>
           <input
             type="url"
             id="companyWebsite"
@@ -378,13 +407,17 @@ export const LeadForm: React.FC<LeadFormProps> = ({
               className={styles.select}
             >
               {SOURCE_OPTIONS.map(opt => (
-                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
             </select>
           </div>
 
           <div className={styles.formGroup}>
-            <label htmlFor="sourceDetails" className={styles.label}>Source Details</label>
+            <label htmlFor="sourceDetails" className={styles.label}>
+              Source Details
+            </label>
             <input
               type="text"
               id="sourceDetails"
@@ -398,7 +431,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="tags" className={styles.label}>Tags</label>
+          <label htmlFor="tags" className={styles.label}>
+            Tags
+          </label>
           <input
             type="text"
             id="tags"
@@ -412,7 +447,9 @@ export const LeadForm: React.FC<LeadFormProps> = ({
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="notes" className={styles.label}>Notes</label>
+          <label htmlFor="notes" className={styles.label}>
+            Notes
+          </label>
           <textarea
             id="notes"
             name="notes"
@@ -426,19 +463,10 @@ export const LeadForm: React.FC<LeadFormProps> = ({
       </div>
 
       <div className={styles.formActions}>
-        <button
-          type="button"
-          onClick={onCancel}
-          className={styles.cancelButton}
-          disabled={loading}
-        >
+        <button type="button" onClick={onCancel} className={styles.cancelButton} disabled={loading}>
           Cancel
         </button>
-        <button
-          type="submit"
-          className={styles.submitButton}
-          disabled={loading}
-        >
+        <button type="submit" className={styles.submitButton} disabled={loading}>
           {loading ? 'Saving...' : lead ? 'Update Lead' : 'Create Lead'}
         </button>
       </div>

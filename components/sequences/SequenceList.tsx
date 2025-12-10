@@ -18,11 +18,7 @@ interface SequenceListProps {
 
 type SequenceStatus = 'all' | 'draft' | 'active' | 'paused' | 'completed' | 'archived';
 
-export const SequenceList: React.FC<SequenceListProps> = ({
-  onCreateNew,
-  onEdit,
-  onView,
-}) => {
+export const SequenceList: React.FC<SequenceListProps> = ({ onCreateNew, onEdit, onView }) => {
   const [sequences, setSequences] = useState<Sequence[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -121,7 +117,7 @@ export const SequenceList: React.FC<SequenceListProps> = ({
   };
 
   const handleDelete = async (sequence: Sequence) => {
-    if (!confirm(`Are you sure you want to delete "${sequence.name}"?`)) {
+    if (!globalThis.confirm(`Are you sure you want to delete "${sequence.name}"?`)) {
       return;
     }
 
@@ -178,11 +174,7 @@ export const SequenceList: React.FC<SequenceListProps> = ({
       <div className={styles.listHeader}>
         <h2 className={styles.listTitle}>Outreach Sequences</h2>
         {onCreateNew && (
-          <button
-            type="button"
-            onClick={onCreateNew}
-            className={styles.createButton}
-          >
+          <button type="button" onClick={onCreateNew} className={styles.createButton}>
             + New Sequence
           </button>
         )}
@@ -212,12 +204,12 @@ export const SequenceList: React.FC<SequenceListProps> = ({
           type="text"
           placeholder="Search sequences..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           className={styles.searchInput}
         />
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as SequenceStatus)}
+          onChange={e => setStatusFilter(e.target.value as SequenceStatus)}
           className={styles.filterSelect}
         >
           <option value="all">All Status</option>
@@ -238,11 +230,7 @@ export const SequenceList: React.FC<SequenceListProps> = ({
               : 'Create your first outreach sequence to get started'}
           </p>
           {!searchQuery && statusFilter === 'all' && onCreateNew && (
-            <button
-              type="button"
-              onClick={onCreateNew}
-              className={styles.createButton}
-            >
+            <button type="button" onClick={onCreateNew} className={styles.createButton}>
               Create Sequence
             </button>
           )}

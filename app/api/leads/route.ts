@@ -36,10 +36,7 @@ export const GET = withErrorHandling(async (request: Request) => {
   const filter: LeadFilter = {};
 
   filter.status = parseEnumFilter(searchParams.get('status'), VALID_LEAD_STATUSES);
-  filter.temperature = parseEnumFilter(
-    searchParams.get('temperature'),
-    VALID_LEAD_TEMPERATURES
-  );
+  filter.temperature = parseEnumFilter(searchParams.get('temperature'), VALID_LEAD_TEMPERATURES);
   filter.source = parseEnumFilter(searchParams.get('source'), VALID_LEAD_SOURCES);
 
   const tags = searchParams.get('tags');
@@ -64,7 +61,9 @@ export const GET = withErrorHandling(async (request: Request) => {
   const page = Number.parseInt(searchParams.get('page') || '1', 10);
   const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
   const sortField = searchParams.get('sortField') || 'CreatedAt';
-  const sortDirection = (searchParams.get('sortDirection') || 'desc') as 'asc' | 'desc';
+  const sortDirectionParam = searchParams.get('sortDirection') || 'desc';
+  // Safely validate sortDirection to only allow 'asc' or 'desc'
+  const sortDirection: 'asc' | 'desc' = sortDirectionParam === 'asc' ? 'asc' : 'desc';
 
   const result = await leadsClient.queryLeads(filter, {
     page,
@@ -90,11 +89,7 @@ export const POST = withErrorHandling(async (request: Request) => {
   const body = await request.json();
 
   // Validate required fields
-  const requiredError = validateRequiredFields(body, [
-    'firstName',
-    'lastName',
-    'source',
-  ]);
+  const requiredError = validateRequiredFields(body, ['firstName', 'lastName', 'source']);
   if (requiredError) return requiredError;
 
   // Validate source

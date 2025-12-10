@@ -1,5 +1,4 @@
 import Airtable, { FieldSet, Record as AirtableRecord } from 'airtable';
-import { generateSecureId } from '../utils/id';
 import {
   Form,
   FormStatus,
@@ -7,7 +6,6 @@ import {
   FormSubmission,
   CreateFormInput,
   UpdateFormInput,
-  FormMetrics,
   createDefaultTheme,
   createEmptyFormMetrics,
   generateEmbedCode,
@@ -52,7 +50,8 @@ export class FormsClient {
 
   constructor(baseUrl?: string) {
     // Use provided URL, environment variable, or fall back to default
-    this.baseUrl = baseUrl || process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000';
+    this.baseUrl =
+      baseUrl || process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || 'http://localhost:3000';
     this.initialize();
   }
 
@@ -71,7 +70,9 @@ export class FormsClient {
       );
       this.formsTable = this.base(process.env.AIRTABLE_FORMS_TABLE || 'Forms');
       this.fieldsTable = this.base(process.env.AIRTABLE_FORM_FIELDS_TABLE || 'FormFields');
-      this.submissionsTable = this.base(process.env.AIRTABLE_SUBMISSIONS_TABLE || 'FormSubmissions');
+      this.submissionsTable = this.base(
+        process.env.AIRTABLE_SUBMISSIONS_TABLE || 'FormSubmissions'
+      );
       this.initialized = true;
       return true;
     } catch (error) {
@@ -102,13 +103,13 @@ export class FormsClient {
       status: (data.Status as FormStatus) || 'draft',
       fields: fields,
       pages: data.Pages ? JSON.parse(data.Pages as string) : undefined,
-      isMultiPage: data.IsMultiPage as boolean ?? false,
+      isMultiPage: (data.IsMultiPage as boolean) ?? false,
       theme: data.Theme ? JSON.parse(data.Theme as string) : createDefaultTheme(),
-      showProgressBar: data.ShowProgressBar as boolean ?? true,
-      showPageNumbers: data.ShowPageNumbers as boolean ?? true,
-      allowMultipleSubmissions: data.AllowMultipleSubmissions as boolean ?? false,
-      requireAuthentication: data.RequireAuthentication as boolean ?? false,
-      captchaEnabled: data.CaptchaEnabled as boolean ?? false,
+      showProgressBar: (data.ShowProgressBar as boolean) ?? true,
+      showPageNumbers: (data.ShowPageNumbers as boolean) ?? true,
+      allowMultipleSubmissions: (data.AllowMultipleSubmissions as boolean) ?? false,
+      requireAuthentication: (data.RequireAuthentication as boolean) ?? false,
+      captchaEnabled: (data.CaptchaEnabled as boolean) ?? false,
       expiresAt: data.ExpiresAt as string | undefined,
       submissionLimit: data.SubmissionLimit as number | undefined,
       completionSettings: data.CompletionSettings
@@ -120,15 +121,13 @@ export class FormsClient {
       integrations: data.Integrations
         ? JSON.parse(data.Integrations as string)
         : { createLead: true, leadSource: 'form' },
-      metrics: data.Metrics
-        ? JSON.parse(data.Metrics as string)
-        : createEmptyFormMetrics(),
+      metrics: data.Metrics ? JSON.parse(data.Metrics as string) : createEmptyFormMetrics(),
       publicUrl: `${this.baseUrl}/forms/${formId}`,
       embedCode: generateEmbedCode(formId, this.baseUrl),
       tags: data.Tags ? (data.Tags as string).split(',').filter(Boolean) : [],
-      createdAt: data.CreatedAt as string || new Date().toISOString(),
-      updatedAt: data.UpdatedAt as string || new Date().toISOString(),
-      createdBy: data.CreatedBy as string || '',
+      createdAt: (data.CreatedAt as string) || new Date().toISOString(),
+      updatedAt: (data.UpdatedAt as string) || new Date().toISOString(),
+      createdBy: (data.CreatedBy as string) || '',
     };
   }
 
@@ -145,17 +144,19 @@ export class FormsClient {
       placeholder: data.Placeholder as string | undefined,
       helpText: data.HelpText as string | undefined,
       defaultValue: data.DefaultValue ? JSON.parse(data.DefaultValue as string) : undefined,
-      order: data.Order as number || 0,
+      order: (data.Order as number) || 0,
       options: data.Options ? JSON.parse(data.Options as string) : undefined,
       ratingConfig: data.RatingConfig ? JSON.parse(data.RatingConfig as string) : undefined,
       npsConfig: data.NPSConfig ? JSON.parse(data.NPSConfig as string) : undefined,
       matrixConfig: data.MatrixConfig ? JSON.parse(data.MatrixConfig as string) : undefined,
       fileConfig: data.FileConfig ? JSON.parse(data.FileConfig as string) : undefined,
       validation: data.Validation ? JSON.parse(data.Validation as string) : { required: false },
-      conditionalLogic: data.ConditionalLogic ? JSON.parse(data.ConditionalLogic as string) : undefined,
+      conditionalLogic: data.ConditionalLogic
+        ? JSON.parse(data.ConditionalLogic as string)
+        : undefined,
       leadField: data.LeadField as string | undefined,
-      createdAt: data.CreatedAt as string || new Date().toISOString(),
-      updatedAt: data.UpdatedAt as string || new Date().toISOString(),
+      createdAt: (data.CreatedAt as string) || new Date().toISOString(),
+      updatedAt: (data.UpdatedAt as string) || new Date().toISOString(),
     };
   }
 
@@ -173,11 +174,11 @@ export class FormsClient {
       maxScore: data.MaxScore as number | undefined,
       passed: data.Passed as boolean | undefined,
       leadId: data.LeadId as string | undefined,
-      startedAt: data.StartedAt as string || new Date().toISOString(),
-      completedAt: data.CompletedAt as string || new Date().toISOString(),
-      duration: data.Duration as number || 0,
-      isPartial: data.IsPartial as boolean ?? false,
-      isSpam: data.IsSpam as boolean ?? false,
+      startedAt: (data.StartedAt as string) || new Date().toISOString(),
+      completedAt: (data.CompletedAt as string) || new Date().toISOString(),
+      duration: (data.Duration as number) || 0,
+      isPartial: (data.IsPartial as boolean) ?? false,
+      isSpam: (data.IsSpam as boolean) ?? false,
     };
   }
 
@@ -201,9 +202,18 @@ export class FormsClient {
         Type: input.type,
         Status: 'draft',
         Theme: JSON.stringify(input.theme || createDefaultTheme()),
-        Integrations: JSON.stringify(input.integrations || { createLead: true, leadSource: 'form' }),
-        CompletionSettings: JSON.stringify({ showMessage: true, message: 'Thank you for your submission!' }),
-        NotificationSettings: JSON.stringify({ notifyOnSubmission: false, notificationEmails: [], includeResponses: false }),
+        Integrations: JSON.stringify(
+          input.integrations || { createLead: true, leadSource: 'form' }
+        ),
+        CompletionSettings: JSON.stringify({
+          showMessage: true,
+          message: 'Thank you for your submission!',
+        }),
+        NotificationSettings: JSON.stringify({
+          notifyOnSubmission: false,
+          notificationEmails: [],
+          includeResponses: false,
+        }),
         Metrics: JSON.stringify(createEmptyFormMetrics()),
         Tags: input.tags?.join(',') || '',
         IsMultiPage: false,
@@ -285,8 +295,10 @@ export class FormsClient {
     if (input.description !== undefined) fields.Description = input.description;
     if (input.status !== undefined) fields.Status = input.status;
     if (input.theme !== undefined) fields.Theme = JSON.stringify(input.theme);
-    if (input.completionSettings !== undefined) fields.CompletionSettings = JSON.stringify(input.completionSettings);
-    if (input.notificationSettings !== undefined) fields.NotificationSettings = JSON.stringify(input.notificationSettings);
+    if (input.completionSettings !== undefined)
+      fields.CompletionSettings = JSON.stringify(input.completionSettings);
+    if (input.notificationSettings !== undefined)
+      fields.NotificationSettings = JSON.stringify(input.notificationSettings);
     if (input.integrations !== undefined) fields.Integrations = JSON.stringify(input.integrations);
     if (input.tags !== undefined) fields.Tags = input.tags.join(',');
 
@@ -295,7 +307,9 @@ export class FormsClient {
       return (await this.getForm(id))!;
     } catch (error: unknown) {
       console.error('Error updating form:', error);
-      throw new Error(`Failed to update form: ${error instanceof Error ? error.message : String(error)}`);
+      throw new Error(
+        `Failed to update form: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
   }
 
@@ -353,9 +367,8 @@ export class FormsClient {
       };
 
       if (conditions.length > 0) {
-        selectOptions.filterByFormula = conditions.length === 1
-          ? conditions[0]
-          : `AND(${conditions.join(', ')})`;
+        selectOptions.filterByFormula =
+          conditions.length === 1 ? conditions[0] : `AND(${conditions.join(', ')})`;
       }
 
       const records = await this.formsTable!.select(selectOptions as any).all();
@@ -438,10 +451,13 @@ export class FormsClient {
   /**
    * Get submissions for a form
    */
-  public async getSubmissions(formId: string, options?: {
-    page?: number;
-    pageSize?: number;
-  }): Promise<SubmissionQueryResponse> {
+  public async getSubmissions(
+    formId: string,
+    options?: {
+      page?: number;
+      pageSize?: number;
+    }
+  ): Promise<SubmissionQueryResponse> {
     if (!this.isInitialized()) {
       throw new Error('Forms client not initialized');
     }
@@ -484,9 +500,8 @@ export class FormsClient {
 
       const metrics = { ...form.metrics };
       metrics.submissions++;
-      metrics.completionRate = metrics.starts > 0
-        ? (metrics.submissions / metrics.starts) * 100
-        : 0;
+      metrics.completionRate =
+        metrics.starts > 0 ? (metrics.submissions / metrics.starts) * 100 : 0;
 
       await this.formsTable!.update(formId, {
         Metrics: JSON.stringify(metrics),

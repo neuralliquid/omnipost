@@ -11,7 +11,13 @@ import type { SequenceEnrollment } from '@/types/sequence';
 
 // Valid enrollment statuses
 const VALID_STATUSES: SequenceEnrollment['status'][] = [
-  'active', 'paused', 'completed', 'replied', 'bounced', 'unsubscribed', 'stopped'
+  'active',
+  'paused',
+  'completed',
+  'replied',
+  'bounced',
+  'unsubscribed',
+  'stopped',
 ];
 
 interface RouteParams {
@@ -44,9 +50,12 @@ export async function GET(request: Request, { params }: RouteParams) {
 
     // Validate status if provided
     if (status && !VALID_STATUSES.includes(status)) {
-      return NextResponse.json({
-        error: `status must be one of: ${VALID_STATUSES.join(', ')}`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `status must be one of: ${VALID_STATUSES.join(', ')}`,
+        },
+        { status: 400 }
+      );
     }
 
     const result = await sequencesClient.queryEnrollments({
@@ -64,6 +73,62 @@ export async function GET(request: Request, { params }: RouteParams) {
     console.error('Error fetching enrollments:', error);
     return NextResponse.json({ error: 'Failed to fetch enrollments' }, { status: 500 });
   }
+}
+
+/**
+ * Handle single lead enrollment
+ */
+async function handleSingleEnrollment(
+  sequenceId: string,
+  leadId: string,
+  userId: string,
+  startAt?: string
+): Promise<NextResponse> {
+  try {
+    const enrollment = await sequencesClient.enrollLead(sequenceId, leadId, userId, startAt);
+    return NextResponse.json({ enrollment }, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Failed to enroll lead';
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+}
+
+/**
+ * Handle bulk lead enrollment
+ */
+async function handleBulkEnrollment(
+  sequenceId: string,
+  leadIds: string[],
+  userId: string,
+  startAt?: string,
+  skipDuplicates: boolean = true
+): Promise<NextResponse> {
+  if (leadIds.length === 0) {
+    return NextResponse.json({ error: 'leadIds must not be empty' }, { status: 400 });
+  }
+
+  if (leadIds.length > 100) {
+    return NextResponse.json({ error: 'Maximum 100 leads per bulk enrollment' }, { status: 400 });
+  }
+
+  const result = await sequencesClient.bulkEnroll(
+    {
+      sequenceId,
+      leadIds,
+      startAt,
+      skipDuplicates,
+    },
+    userId
+  );
+
+  return NextResponse.json(
+    {
+      enrolled: result.enrolled,
+      skipped: result.skipped,
+      errors: result.errors,
+    },
+    { status: 201 }
+  );
 }
 
 /**
@@ -91,59 +156,38 @@ export async function POST(request: Request, { params }: RouteParams) {
 
     // Check if sequence is active or draft
     if (!['active', 'draft'].includes(sequence.status)) {
-      return NextResponse.json({
-        error: `Cannot enroll leads in a ${sequence.status} sequence`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `Cannot enroll leads in a ${sequence.status} sequence`,
+        },
+        { status: 400 }
+      );
     }
 
     const body = await request.json();
 
     // Single lead enrollment
     if (body.leadId) {
-      try {
-        const enrollment = await sequencesClient.enrollLead(
-          id,
-          body.leadId,
-          currentUserId,
-          body.startAt
-        );
-        return NextResponse.json({ enrollment }, { status: 201 });
-      } catch (error) {
-        const message = error instanceof Error ? error.message : 'Failed to enroll lead';
-        return NextResponse.json({ error: message }, { status: 400 });
-      }
+      return await handleSingleEnrollment(id, body.leadId, currentUserId, body.startAt);
     }
 
     // Bulk enrollment
     if (body.leadIds && Array.isArray(body.leadIds)) {
-      if (body.leadIds.length === 0) {
-        return NextResponse.json({ error: 'leadIds must not be empty' }, { status: 400 });
-      }
-
-      if (body.leadIds.length > 100) {
-        return NextResponse.json({ error: 'Maximum 100 leads per bulk enrollment' }, { status: 400 });
-      }
-
-      const result = await sequencesClient.bulkEnroll(
-        {
-          sequenceId: id,
-          leadIds: body.leadIds,
-          startAt: body.startAt,
-          skipDuplicates: body.skipDuplicates ?? true,
-        },
-        currentUserId
+      return await handleBulkEnrollment(
+        id,
+        body.leadIds,
+        currentUserId,
+        body.startAt,
+        body.skipDuplicates ?? true
       );
-
-      return NextResponse.json({
-        enrolled: result.enrolled,
-        skipped: result.skipped,
-        errors: result.errors,
-      }, { status: 201 });
     }
 
-    return NextResponse.json({
-      error: 'Either leadId or leadIds is required'
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: 'Either leadId or leadIds is required',
+      },
+      { status: 400 }
+    );
   } catch (error) {
     console.error('Error enrolling leads:', error);
     const message = error instanceof Error ? error.message : 'Failed to enroll leads';

@@ -3,12 +3,7 @@
  * Calculates lead scores based on demographic, behavioral, and engagement data
  */
 
-import type {
-  Lead,
-  LeadScore,
-  LeadScoreBreakdown,
-  LeadInteraction,
-} from '../../types/lead';
+import type { Lead, LeadScore, LeadScoreBreakdown, LeadInteraction } from '../../types/lead';
 import { calculateScoreGrade } from '../../types/lead';
 
 /**
@@ -187,12 +182,24 @@ export class LeadScorer {
     // Email interactions (capped)
     score += Math.min(config.emailSent * 2, (counts['email_sent'] || 0) * config.emailSent);
     score += Math.min(config.emailOpened * 3, (counts['email_opened'] || 0) * config.emailOpened);
-    score += Math.min(config.emailClicked * 2, (counts['email_clicked'] || 0) * config.emailClicked);
-    score += Math.min(config.emailReplied * 2, (counts['email_replied'] || 0) * config.emailReplied);
+    score += Math.min(
+      config.emailClicked * 2,
+      (counts['email_clicked'] || 0) * config.emailClicked
+    );
+    score += Math.min(
+      config.emailReplied * 2,
+      (counts['email_replied'] || 0) * config.emailReplied
+    );
 
     // LinkedIn interactions
-    score += Math.min(config.linkedinConnection, (counts['linkedin_connection'] || 0) * config.linkedinConnection);
-    score += Math.min(config.linkedinMessage * 2, (counts['linkedin_message'] || 0) * config.linkedinMessage);
+    score += Math.min(
+      config.linkedinConnection,
+      (counts['linkedin_connection'] || 0) * config.linkedinConnection
+    );
+    score += Math.min(
+      config.linkedinMessage * 2,
+      (counts['linkedin_message'] || 0) * config.linkedinMessage
+    );
     // LinkedIn reply is high value
     if (counts['linkedin_view'] && interactions.some(i => i.type === 'linkedin_message')) {
       score += config.linkedinReplied;
@@ -203,7 +210,10 @@ export class LeadScorer {
     score += Math.min(config.meeting * 2, (counts['meeting'] || 0) * config.meeting);
 
     // Form submissions
-    score += Math.min(config.formSubmission, (counts['form_submission'] || 0) * config.formSubmission);
+    score += Math.min(
+      config.formSubmission,
+      (counts['form_submission'] || 0) * config.formSubmission
+    );
 
     return Math.min(30, score);
   }
@@ -220,10 +230,7 @@ export class LeadScorer {
     const surveyResponses = interactions.filter(i => i.type === 'survey_response').length;
 
     // Content views (capped)
-    score += Math.min(
-      config.maxContentViews,
-      contentViews * config.contentView
-    );
+    score += Math.min(config.maxContentViews, contentViews * config.contentView);
 
     // Survey responses
     score += Math.min(config.surveyResponse, surveyResponses * config.surveyResponse);
@@ -314,8 +321,8 @@ export class LeadScorer {
     }
 
     // No email engagement
-    const hasEmailEngagement = interactions.some(
-      i => ['email_opened', 'email_clicked', 'email_replied'].includes(i.type)
+    const hasEmailEngagement = interactions.some(i =>
+      ['email_opened', 'email_clicked', 'email_replied'].includes(i.type)
     );
     if (!hasEmailEngagement && interactions.some(i => i.type === 'email_sent')) {
       suggestions.push('Email sent but no engagement - consider different approach');
@@ -340,8 +347,7 @@ export class LeadScorer {
     // - Recent activity (recency score > 15)
     // - Has responded (behavioral > 20)
     return (
-      score.grade === 'A' ||
-      (score.breakdown.recency >= 15 && score.breakdown.behavioral >= 20)
+      score.grade === 'A' || (score.breakdown.recency >= 15 && score.breakdown.behavioral >= 20)
     );
   }
 
@@ -349,7 +355,7 @@ export class LeadScorer {
    * Determine if lead is warm
    */
   public isWarmLead(score: LeadScore): boolean {
-    return score.grade === 'B' || score.grade === 'C' && score.breakdown.recency >= 10;
+    return score.grade === 'B' || (score.grade === 'C' && score.breakdown.recency >= 10);
   }
 }
 

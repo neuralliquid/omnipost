@@ -35,11 +35,7 @@ export const VALID_LEAD_SOURCES: readonly LeadSource[] = [
   'other',
 ] as const;
 
-export const VALID_LEAD_TEMPERATURES: readonly LeadTemperature[] = [
-  'cold',
-  'warm',
-  'hot',
-] as const;
+export const VALID_LEAD_TEMPERATURES: readonly LeadTemperature[] = ['cold', 'warm', 'hot'] as const;
 
 // ============ Sequence Constants ============
 

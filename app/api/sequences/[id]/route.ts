@@ -8,11 +8,7 @@
 import { NextResponse } from 'next/server';
 import { sequencesClient } from '@/lib/data/sequences';
 import { VALID_SEQUENCE_STATUSES } from '@/app/api/_utils/constants';
-import {
-  requireAuth,
-  validateEnumField,
-  withErrorHandling,
-} from '@/app/api/_utils/middleware';
+import { requireAuth, validateEnumField, withErrorHandling } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 
 interface RouteParams {

@@ -7,7 +7,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
-import { checkRateLimitOrRespond, ErrorResponses, SuccessResponses } from '@/app/api/_utils/responses';
+import {
+  checkRateLimitOrRespond,
+  ErrorResponses,
+  SuccessResponses,
+} from '@/app/api/_utils/responses';
 import { validateFormSubmission } from '@/app/api/_utils/validation';
 import { formsClient } from '@/lib/data/forms';
 import { leadsClient } from '@/lib/data/leads';
@@ -25,7 +29,11 @@ interface RouteParams {
  */
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/submissions', RateLimitPresets.GENERAL);
+    const rateLimitResponse = checkRateLimitOrRespond(
+      request,
+      '/api/forms/[id]/submissions',
+      RateLimitPresets.GENERAL
+    );
     if (rateLimitResponse) return rateLimitResponse;
 
     if (!(await isAuthenticated())) {
@@ -80,7 +88,8 @@ function validateFormAcceptsSubmissions(form: Form): NextResponse | null {
  */
 function extractSubmissionMetadata(request: NextRequest) {
   return {
-    ipAddress: request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined,
+    ipAddress:
+      request.headers.get('x-forwarded-for') ?? request.headers.get('x-real-ip') ?? undefined,
     userAgent: request.headers.get('user-agent') ?? undefined,
     referrer: request.headers.get('referer') ?? undefined,
   };
@@ -132,7 +141,11 @@ async function createLeadFromSubmission(
  */
 export async function POST(request: NextRequest, { params }: RouteParams) {
   try {
-    const rateLimitResponse = checkRateLimitOrRespond(request, '/api/forms/[id]/submissions/post', RateLimitPresets.PUBLIC_API);
+    const rateLimitResponse = checkRateLimitOrRespond(
+      request,
+      '/api/forms/[id]/submissions/post',
+      RateLimitPresets.PUBLIC_API
+    );
     if (rateLimitResponse) return rateLimitResponse;
 
     const { id } = await params;
@@ -188,7 +201,10 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 /**
  * Extract lead data from form responses based on field mappings
  */
-function extractLeadData(form: Awaited<ReturnType<typeof formsClient.getForm>>, responses: Record<string, unknown>): CreateLeadInput | null {
+function extractLeadData(
+  form: Awaited<ReturnType<typeof formsClient.getForm>>,
+  responses: Record<string, unknown>
+): CreateLeadInput | null {
   if (!form) return null;
 
   const leadData: Partial<CreateLeadInput> = {

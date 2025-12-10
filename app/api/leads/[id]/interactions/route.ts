@@ -11,10 +11,22 @@ import type { LeadInteraction } from '@/types/lead';
 
 // Valid interaction types
 const VALID_INTERACTION_TYPES: LeadInteraction['type'][] = [
-  'email_sent', 'email_opened', 'email_clicked', 'email_replied',
-  'linkedin_message', 'linkedin_connection', 'linkedin_view',
-  'call', 'meeting', 'note', 'form_submission', 'content_view',
-  'survey_response', 'status_change', 'tag_added', 'tag_removed'
+  'email_sent',
+  'email_opened',
+  'email_clicked',
+  'email_replied',
+  'linkedin_message',
+  'linkedin_connection',
+  'linkedin_view',
+  'call',
+  'meeting',
+  'note',
+  'form_submission',
+  'content_view',
+  'survey_response',
+  'status_change',
+  'tag_added',
+  'tag_removed',
 ];
 
 interface RouteParams {
@@ -78,9 +90,12 @@ export async function POST(request: Request, { params }: RouteParams) {
     }
 
     if (!VALID_INTERACTION_TYPES.includes(body.type)) {
-      return NextResponse.json({
-        error: `type must be one of: ${VALID_INTERACTION_TYPES.join(', ')}`
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: `type must be one of: ${VALID_INTERACTION_TYPES.join(', ')}`,
+        },
+        { status: 400 }
+      );
     }
 
     if (!body.description?.trim()) {
