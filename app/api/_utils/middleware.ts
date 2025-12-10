@@ -116,14 +116,18 @@ export function validateArrayField(
  * Try-catch wrapper for API route handlers
  * Automatically handles errors and logs them
  */
-export function withErrorHandling<T = never>(
-  handler: T extends never
-    ? (request: Request) => Promise<NextResponse>
-    : (request: Request, context: T) => Promise<NextResponse>
-): T extends never
-  ? (request: Request) => Promise<NextResponse>
-  : (request: Request, context: T) => Promise<NextResponse> {
-  return (async (request: Request, context?: T): Promise<NextResponse> => {
+export function withErrorHandling<T>(
+  handler: (request: Request, context: T) => Promise<NextResponse>
+): (request: Request, context: T) => Promise<NextResponse>;
+export function withErrorHandling(
+  handler: (request: Request) => Promise<NextResponse>
+): (request: Request) => Promise<NextResponse>;
+export function withErrorHandling<T = unknown>(
+  handler:
+    | ((request: Request, context: T) => Promise<NextResponse>)
+    | ((request: Request) => Promise<NextResponse>)
+) {
+  return async (request: Request, context?: T): Promise<NextResponse> => {
     try {
       if (context !== undefined) {
         return await (handler as (request: Request, context: T) => Promise<NextResponse>)(
@@ -137,9 +141,7 @@ export function withErrorHandling<T = never>(
       const message = error instanceof Error ? error.message : 'An error occurred';
       return NextResponse.json({ error: message }, { status: 500 });
     }
-  }) as T extends never
-    ? (request: Request) => Promise<NextResponse>
-    : (request: Request, context: T) => Promise<NextResponse>;
+  };
 }
 
 /**
