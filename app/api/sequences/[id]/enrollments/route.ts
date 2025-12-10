@@ -39,8 +39,8 @@ export async function GET(request: Request, { params }: RouteParams) {
     const { searchParams } = new URL(request.url);
 
     const status = searchParams.get('status') as SequenceEnrollment['status'] | null;
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+    const page = Number.parseInt(searchParams.get('page') || '1', 10);
+    const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
 
     // Validate status if provided
     if (status && !VALID_STATUSES.includes(status)) {

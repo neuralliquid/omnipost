@@ -179,7 +179,7 @@ export function validateNumber(
   max?: number
 ): string | null {
   const numValue = Number(value);
-  if (isNaN(numValue)) {
+  if (Number.isNaN(numValue)) {
     return `${label} must be a valid number`;
   }
 
@@ -266,10 +266,10 @@ export function parsePaginationParams(
   searchParams: URLSearchParams,
   maxPageSize: number = 100
 ): { page: number; pageSize: number } {
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+  const page = Math.max(1, Number.parseInt(searchParams.get('page') || '1', 10));
   const pageSize = Math.min(
     maxPageSize,
-    Math.max(1, parseInt(searchParams.get('pageSize') || '20', 10))
+    Math.max(1, Number.parseInt(searchParams.get('pageSize') || '20', 10))
   );
   return { page, pageSize };
 }

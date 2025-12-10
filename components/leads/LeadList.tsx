@@ -160,7 +160,7 @@ export const LeadList: React.FC<LeadListProps> = ({
             type="number"
             placeholder="Min Score"
             value={filter.scoreMin || ''}
-            onChange={e => handleFilterChange('scoreMin', e.target.value ? parseInt(e.target.value) : undefined)}
+            onChange={e => handleFilterChange('scoreMin', e.target.value ? Number.parseInt(e.target.value, 10) : undefined)}
             className={styles.filterInput}
             min={0}
             max={100}
@@ -178,7 +178,7 @@ export const LeadList: React.FC<LeadListProps> = ({
       {selectedLeads.size > 0 && onBulkAction && (
         <div className={styles.bulkActionsBar}>
           <span className={styles.selectedCount}>
-            {selectedLeads.size} lead{selectedLeads.size !== 1 ? 's' : ''} selected
+            {selectedLeads.size} lead{selectedLeads.size === 1 ? '' : 's'} selected
           </span>
           <div className={styles.bulkActions}>
             <button
@@ -221,7 +221,7 @@ export const LeadList: React.FC<LeadListProps> = ({
           Select All
         </label>
         <span className={styles.leadCount}>
-          {leads.length} lead{leads.length !== 1 ? 's' : ''}
+          {leads.length} lead{leads.length === 1 ? '' : 's'}
         </span>
       </div>
 

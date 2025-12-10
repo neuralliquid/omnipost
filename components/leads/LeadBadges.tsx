@@ -145,7 +145,7 @@ const SOURCE_ICONS: Record<string, string> = {
 
 export const SourceBadge: React.FC<SourceBadgeProps> = ({ source }) => {
   const icon = SOURCE_ICONS[source] || '📌';
-  const label = source.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+  const label = source.replaceAll('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
 
   return (
     <span className={styles.sourceBadge} title={`Source: ${label}`}>

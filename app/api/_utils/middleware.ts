@@ -5,8 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthenticated, getCurrentUserId } from './auth';
-import { checkRateLimitOrRespond } from './responses';
-import { ErrorResponses } from './responses';
+import { checkRateLimitOrRespond, ErrorResponses } from './responses';
 import { RateLimitPresets } from './rateLimit';
 import { validateEmail as validateEmailUtil } from './validation';
 

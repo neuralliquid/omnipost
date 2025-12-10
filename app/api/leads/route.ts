@@ -21,7 +21,6 @@ import {
   withErrorHandling,
   parseEnumFilter,
 } from '@/app/api/_utils/middleware';
-import { ErrorResponses } from '@/app/api/_utils/responses';
 
 /**
  * GET /api/leads
@@ -53,17 +52,17 @@ export const GET = withErrorHandling(async (request: Request) => {
   if (search) filter.search = search;
 
   const scoreMin = searchParams.get('scoreMin');
-  if (scoreMin) filter.scoreMin = parseInt(scoreMin, 10);
+  if (scoreMin) filter.scoreMin = Number.parseInt(scoreMin, 10);
 
   const scoreMax = searchParams.get('scoreMax');
-  if (scoreMax) filter.scoreMax = parseInt(scoreMax, 10);
+  if (scoreMax) filter.scoreMax = Number.parseInt(scoreMax, 10);
 
   const inSequence = searchParams.get('inSequence');
   if (inSequence) filter.inSequence = inSequence;
 
   // Pagination
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const pageSize = parseInt(searchParams.get('pageSize') || '20', 10);
+  const page = Number.parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
   const sortField = searchParams.get('sortField') || 'CreatedAt';
   const sortDirection = (searchParams.get('sortDirection') || 'desc') as 'asc' | 'desc';
 
