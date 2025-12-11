@@ -24,11 +24,13 @@ strict-peer-dependencies=false
 ### The Problem
 
 pnpm's default behavior uses an isolated module structure (`.pnpm` directory) that:
+
 - Uses symlinks to share packages between projects
 - Creates a nested dependency graph optimized for disk space
 - Prevents access to undeclared dependencies
 
 While this is excellent for local development and disk space efficiency, it causes issues with Azure App Service:
+
 - Azure's Node.js runtime doesn't properly resolve pnpm's symlinked structure
 - Module resolution fails for indirect dependencies (e.g., `styled-jsx/package.json`)
 - Container crashes during startup with "Cannot find module" errors
@@ -36,6 +38,7 @@ While this is excellent for local development and disk space efficiency, it caus
 ### The Solution
 
 Using `node-linker=hoisted` creates a traditional flat `node_modules` directory:
+
 - All dependencies are placed directly in `node_modules/`
 - No symlinks - actual files are copied
 - Compatible with Azure App Service and other cloud platforms
@@ -44,12 +47,14 @@ Using `node-linker=hoisted` creates a traditional flat `node_modules` directory:
 ## Trade-offs
 
 ### Advantages
+
 ✅ Compatible with Azure App Service and most cloud platforms
 ✅ Standard Node.js module resolution
 ✅ No symlink issues
 ✅ Easier to debug module resolution issues
 
 ### Disadvantages
+
 ❌ Uses more disk space (dependencies are copied, not linked)
 ❌ Slower installs compared to pnpm's default mode
 ❌ Allows access to undeclared dependencies (phantom dependencies)

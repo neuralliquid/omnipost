@@ -47,6 +47,7 @@ Explicitly set `appCommandLine: 'node server.js'` in the Bicep template (`infra/
 ### Changes Made
 
 1. **.npmrc** (NEW):
+
    ```ini
    node-linker=hoisted
    auto-install-peers=true
@@ -66,12 +67,14 @@ Explicitly set `appCommandLine: 'node server.js'` in the Bicep template (`infra/
 ### Why This Works
 
 **Hoisted node_modules:**
+
 - pnpm's default `.pnpm` structure uses symlinks and a complex nested layout
 - Azure's Node.js runtime expects a flat `node_modules` directory
 - `node-linker=hoisted` creates a traditional flat structure compatible with Azure
 - All dependencies (including `styled-jsx`) are now directly resolvable
 
 **Explicit startup command:**
+
 - Next.js standalone mode creates a minimal `server.js` with embedded dependencies
 - The `server.js` is designed to be run directly with `node server.js`
 - Setting `appCommandLine` explicitly overrides Azure's default behavior

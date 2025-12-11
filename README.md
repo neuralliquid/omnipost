@@ -787,6 +787,7 @@ pnpm build
 ```
 
 **What was the issue?**
+
 - pnpm's default isolated module structure wasn't compatible with Azure
 - The `.npmrc` file now configures hoisted node_modules for Azure compatibility
 - See [AZURE_DEPLOYMENT_FIX.md](./AZURE_DEPLOYMENT_FIX.md) for detailed explanation
@@ -805,6 +806,7 @@ az webapp restart --name <app-name> \
 ```
 
 For more details, see:
+
 - [Azure Deployment Fix Documentation](./AZURE_DEPLOYMENT_FIX.md)
 - [pnpm Configuration Guide](./docs/PNPM_CONFIGURATION.md)
 
