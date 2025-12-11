@@ -1,6 +1,6 @@
 {
-  "siteName": "Content Workflow Platform",
-  "siteDescription": "A comprehensive platform for content production workflow and platform analysis",
+  "siteName": "OmniPost",
+  "siteDescription": "AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.",
   "siteUrl": "https://yoursite.com",
   "analytics": {
     "enabledInDevelopment": false,
@@ -10,6 +10,10 @@
     {
       "name": "Home",
       "path": "/"
+    },
+    {
+      "name": "Series",
+      "path": "/series"
     },
     {
       "name": "Workflow",
@@ -28,16 +32,12 @@
       "path": "/automation"
     },
     {
-      "name": "Human Review",
-      "path": "/human-review"
+      "name": "Review",
+      "path": "/review"
     },
     {
-      "name": "Series",
-      "path": "/series"
-    },
-    {
-      "name": "Performance Dashboard",
-      "path": "/performance-dashboard"
+      "name": "Dashboard",
+      "path": "/dashboard"
     }
   ],
   "social": {
