@@ -1,31 +1,55 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import styles from '@/styles/Header.module.css';
+import siteConfig from '../../data/siteConfig.json';
 
 const Header: React.FC = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const pathname = usePathname();
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
   return (
-    <header>
-      <nav>
-        <ul>
-          <li>
-            <Link href="/">Home</Link>
-          </li>
-          <li>
-            <Link href="/series">Series</Link>
-          </li>
-          <li>
-            <Link href="/workflow">Workflow</Link>
-          </li>
-          <li>
-            <Link href="/platform-analysis">Platform Analysis</Link>
-          </li>
-          <li>
-            <Link href="/content-adaptation">Content Adaptation</Link>
-          </li>
-          <li>
-            <Link href="/automation">Automation</Link>
-          </li>
-        </ul>
-      </nav>
+    <header className={styles.header}>
+      <div className={styles.headerContainer}>
+        <div className={styles.logoContainer}>
+          <Link href="/" className={styles.logoLink}>
+            <span className={styles.logoText}>{siteConfig.siteName}</span>
+          </Link>
+        </div>
+
+        <button
+          className={styles.mobileMenuButton}
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+          aria-expanded={menuOpen}
+        >
+          <span className={styles.menuIcon}></span>
+          <span className={styles.menuIcon}></span>
+          <span className={styles.menuIcon}></span>
+        </button>
+
+        <nav className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}>
+          <ul className={styles.navList}>
+            {siteConfig.navigation.map(item => (
+              <li key={`nav-${item.path}`} className={styles.navItem}>
+                <Link
+                  href={item.path}
+                  className={`${styles.navLink} ${pathname === item.path ? styles.activeLink : ''}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {item.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </div>
     </header>
   );
 };
