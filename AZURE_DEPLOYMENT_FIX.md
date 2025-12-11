@@ -2,17 +2,37 @@
 
 ## Problem Summary
 
-**Issue**: Azure Web App container was terminating during startup with 503 errors.
+**Issue**: Azure Web App container was terminating during startup with module resolution errors.
 
 **Symptoms**:
 
-- Health endpoint returned 503 Service Unavailable
-- Container terminated after ~38 seconds during startup probe
+- Container crash with error: `Error: Cannot find module 'styled-jsx/package.json'`
+- Container terminated during startup probe
 - Azure logs showed: "Site container terminated during site startup"
-- Deployment succeeded but app never started
+- Module not found errors for Next.js dependencies
 
-## Root Cause
+## Root Causes & Solutions
 
+### Issue 1: Module Resolution (styled-jsx)
+
+**Root Cause:**
+pnpm's default isolated module structure (`.pnpm` directory) is not compatible with Azure App Service's Node.js module resolution. When Next.js tries to resolve dependencies like `styled-jsx/package.json`, it fails because Azure's runtime doesn't understand pnpm's hoisted structure.
+
+**Solution:**
+Added `.npmrc` configuration to use hoisted node_modules structure:
+
+```ini
+# .npmrc
+node-linker=hoisted
+auto-install-peers=true
+strict-peer-dependencies=false
+```
+
+This ensures all dependencies are placed in a flat `node_modules` directory that Azure can resolve.
+
+### Issue 2: Startup Command
+
+**Root Cause:**
 Azure App Service on Linux with `NODE|20-lts` runtime was using the default Node.js startup behavior:
 
 1. When `appCommandLine` is empty (or not set), Azure runs `npm start`
@@ -21,24 +41,37 @@ Azure App Service on Linux with `NODE|20-lts` runtime was using the default Node
 4. Running `next start` fails because the `next` command is not available
 5. Container crashes immediately on startup
 
-## Solution
-
+**Solution:**
 Explicitly set `appCommandLine: 'node server.js'` in the Bicep template (`infra/main.bicep`).
 
 ### Changes Made
 
-1. **infra/main.bicep** (Lines 88, 182):
+1. **.npmrc** (NEW):
+   ```ini
+   node-linker=hoisted
+   auto-install-peers=true
+   strict-peer-dependencies=false
+   ```
+
+2. **infra/main.bicep** (Lines 88, 182):
 
    ```bicep
    appCommandLine: 'node server.js' // Explicit startup command for Next.js standalone mode
    ```
 
-2. **Documentation Updates**:
+3. **Documentation Updates**:
    - `docs/DEPLOYMENT.md`: Added troubleshooting section
    - `infra/README.md`: Documented the change
 
 ### Why This Works
 
+**Hoisted node_modules:**
+- pnpm's default `.pnpm` structure uses symlinks and a complex nested layout
+- Azure's Node.js runtime expects a flat `node_modules` directory
+- `node-linker=hoisted` creates a traditional flat structure compatible with Azure
+- All dependencies (including `styled-jsx`) are now directly resolvable
+
+**Explicit startup command:**
 - Next.js standalone mode creates a minimal `server.js` with embedded dependencies
 - The `server.js` is designed to be run directly with `node server.js`
 - Setting `appCommandLine` explicitly overrides Azure's default behavior
