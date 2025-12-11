@@ -764,6 +764,54 @@ nvm use  # Reads from .nvmrc
 
 </details>
 
+<details>
+<summary><b>☁️ Azure deployment failures</b></summary>
+
+**Error**: "Cannot find module 'styled-jsx/package.json'" or container startup failures
+
+**Solutions**:
+
+This has been fixed in the repository. Ensure you have the latest code:
+
+```bash
+# Pull latest changes
+git pull origin main
+
+# Verify .npmrc exists
+cat .npmrc
+# Should contain: node-linker=hoisted
+
+# Rebuild and redeploy
+pnpm install
+pnpm build
+```
+
+**What was the issue?**
+
+- pnpm's default isolated module structure wasn't compatible with Azure
+- The `.npmrc` file now configures hoisted node_modules for Azure compatibility
+- See [AZURE_DEPLOYMENT_FIX.md](./AZURE_DEPLOYMENT_FIX.md) for detailed explanation
+
+**Manual Azure fix (if needed):**
+
+```bash
+# Set startup command via Azure CLI
+az webapp config set --name <app-name> \
+  --resource-group <resource-group> \
+  --startup-file "node server.js"
+
+# Restart the app
+az webapp restart --name <app-name> \
+  --resource-group <resource-group>
+```
+
+For more details, see:
+
+- [Azure Deployment Fix Documentation](./AZURE_DEPLOYMENT_FIX.md)
+- [pnpm Configuration Guide](./docs/PNPM_CONFIGURATION.md)
+
+</details>
+
 ### 🆘 Still Having Issues?
 
 If you're still experiencing problems:
