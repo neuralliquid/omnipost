@@ -96,7 +96,7 @@ jobs:
           du -sh deploy/
 
       - name: Zip artifact for deployment
-        run: cd deploy && zip -r ../node-app.zip ./*
+        run: cd deploy && zip -r ../node-app.zip .
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
