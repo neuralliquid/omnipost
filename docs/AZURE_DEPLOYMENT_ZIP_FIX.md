@@ -10,6 +10,7 @@ Try building your app with 'next build' before starting the production server.
 ```
 
 ### Azure Logs
+
 ```
 2025-12-11T01:07:50.4392628Z Error: Could not find a production build in the './.next' directory.
 2025-12-11T01:07:50.4392982Z     at ignore-listed frames
@@ -23,6 +24,7 @@ Try building your app with 'next build' before starting the production server.
 The GitHub Actions workflow that builds and deploys the application was using an incorrect `zip` command that **excluded hidden files and directories** (files/folders starting with a dot).
 
 ### The Problem Command
+
 ```bash
 cd deploy && zip -r ../node-app.zip ./*
 ```
@@ -51,27 +53,32 @@ When the server starts, it expects to find the `.next` directory with all the bu
 ## The Fix
 
 ### Changed File
+
 `.github/workflows/azure-webapps-node.yml` - Line 99
 
 ### Before
+
 ```yaml
 - name: Zip artifact for deployment
   run: cd deploy && zip -r ../node-app.zip ./*
 ```
 
 ### After
+
 ```yaml
 - name: Zip artifact for deployment
   run: cd deploy && zip -r ../node-app.zip .
 ```
 
 ### What Changed
+
 - **Before**: `zip -r ../node-app.zip ./*` - Only zips visible files/folders
 - **After**: `zip -r ../node-app.zip .` - Zips **everything** in the current directory, including hidden files
 
 ## Verification
 
 ### Local Testing
+
 The fix was verified locally by:
 
 1. Building the app: `pnpm run build`
@@ -84,23 +91,27 @@ The fix was verified locally by:
    cp -r data deploy/data
    ```
 3. Testing both zip methods:
+
    ```bash
    # WRONG - excludes .next
    cd deploy && zip -r ../node-app-wrong.zip ./*
-   
+
    # CORRECT - includes .next
    cd deploy && zip -r ../node-app-correct.zip .
    ```
+
 4. Extracting and verifying:
+
    ```bash
    # Wrong version: No .next directory
    unzip node-app-wrong.zip
    ls -la | grep .next  # Nothing found
-   
+
    # Correct version: .next directory present
    unzip node-app-correct.zip
    ls -la | grep .next  # drwxrwxr-x .next
    ```
+
 5. Testing the server:
    ```bash
    cd /path/to/extracted
@@ -112,12 +123,14 @@ The fix was verified locally by:
 ## Impact
 
 ### Before Fix
+
 - ❌ Deployment fails
 - ❌ Container terminates during startup
 - ❌ Application inaccessible
 - ❌ Azure logs show: "Could not find a production build"
 
 ### After Fix
+
 - ✅ `.next` directory included in deployment package
 - ✅ Server starts successfully
 - ✅ Application accessible via Azure Web App URL
@@ -126,6 +139,7 @@ The fix was verified locally by:
 ## Additional Changes
 
 ### .gitignore Updates
+
 Added deployment artifacts to `.gitignore` to prevent accidental commits:
 
 ```gitignore
@@ -137,6 +151,7 @@ node-app.zip
 ## Deployment Instructions
 
 ### Automatic Deployment
+
 The fix will be applied automatically on the next deployment:
 
 1. **Merge this PR** to the main branch
@@ -150,6 +165,7 @@ The fix will be applied automatically on the next deployment:
    ```
 
 ### Manual Verification
+
 After deployment, check Azure logs:
 
 ```bash
@@ -158,6 +174,7 @@ az webapp log tail --name nl-dev-omnipost-app-euw \
 ```
 
 Expected output:
+
 ```
 ▲ Next.js 16.0.8
    - Local:         http://localhost:8080
