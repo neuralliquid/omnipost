@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from '@/styles/WorkflowStage.module.css';
 
 interface StepCardProps {
   title: string;
@@ -11,7 +12,7 @@ interface StepCardProps {
  */
 const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
   return (
-    <div className="step-card">
+    <div className={styles.stepCard}>
       <h4>{title}</h4>
       <ul>
         {items.map(item => (
@@ -19,7 +20,7 @@ const StepCard: React.FC<StepCardProps> = ({ title, items, tip }) => {
         ))}
       </ul>
       {tip && (
-        <div className="tip">
+        <div className={styles.tip}>
           <strong>Pro Tip:</strong> {tip}
         </div>
       )}
@@ -50,12 +51,12 @@ const WorkflowStage: React.FC<WorkflowStageProps> = ({
   const displayTitle = title ?? stageTitle;
 
   return (
-    <div className="workflow-stage">
-      <div className="stage-header">
-        {displayNumber && <div className="stage-number">{displayNumber}</div>}
-        {displayTitle && <h3 className="stage-title">{displayTitle}</h3>}
+    <div className={styles.workflowStage}>
+      <div className={styles.stageHeader}>
+        {displayNumber && <div className={styles.stageNumber}>{displayNumber}</div>}
+        {displayTitle && <h3 className={styles.stageTitle}>{displayTitle}</h3>}
       </div>
-      <div className="stage-steps">
+      <div className={styles.stageSteps}>
         {steps.map(step => (
           <StepCard
             key={`step-${step.title.substring(0, 30).replace(/[^a-zA-Z0-9]/g, '-')}`}

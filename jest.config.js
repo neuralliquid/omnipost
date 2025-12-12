@@ -33,8 +33,8 @@ const customJestConfig = {
     ],
   },
 
-  // Transform ES modules
-  transformIgnorePatterns: ['node_modules/(?!(node-fetch)/)'],
+  // Transform ES modules (including Upstash Redis dependencies)
+  transformIgnorePatterns: ['node_modules/(?!(node-fetch|@upstash|uncrypto)/)'],
 
   // Ignore paths
   testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
