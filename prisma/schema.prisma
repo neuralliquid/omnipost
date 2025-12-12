@@ -1,0 +1,269 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// ============================================
+// Prisma + SQLite JSON Handling Note
+// ============================================
+// This schema uses SQLite for local development. While SQLite has native JSON
+// functions, Prisma does not support the Json type for SQLite and maps it to
+// String instead. Therefore, JSON payloads (tags, metadata, details, fields)
+// are stored as String columns and must be JSON.parse()/JSON.stringify() in code.
+// String-based enums are also used for status/type fields since Prisma enums
+// are not supported with SQLite.
+//
+// PostgreSQL Migration Steps:
+// Before migrating, update this schema:
+// 1. Change String columns for JSON (tags, metadata, details, fields) to Prisma's Json type
+// 2. Define proper Prisma enums for status fields (e.g., enum LeadStatus { new contacted ... })
+// 3. Change datasource provider from "sqlite" to "postgresql"
+// 4. Update DATABASE_URL environment variable to PostgreSQL connection string
+//
+// Running migrations:
+// - Local development: npx prisma migrate dev --name "switch-to-postgres"
+// - Production/CI: npx prisma migrate deploy (after committing migration files)
+// ============================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// User model for authentication
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  email        String?  @unique
+  passwordHash String   // bcrypt hashed password
+  role         String   @default("user")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  campaigns Campaign[]
+  auditLogs AuditLog[]
+}
+
+// Campaign model for content campaigns
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  status      String   @default("draft") // draft, scheduled, active, paused, completed
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userId   String
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contents Content[]
+  posts    ScheduledPost[]
+
+  // Series relation
+  seriesId String?
+  series   Series? @relation(fields: [seriesId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+}
+
+// Content model for campaign content items
+model Content {
+  id          String   @id @default(cuid())
+  title       String
+  body        String
+  contentType String   @default("post") // post, article, thread
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  campaignId  String
+  campaign    Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  adaptations PlatformAdaptation[]
+
+  @@index([campaignId])
+}
+
+// Platform adaptation for content
+model PlatformAdaptation {
+  id         String   @id @default(cuid())
+  platformId String   // linkedin, twitter, etc.
+  adaptedContent String
+  status     String   @default("pending") // pending, scheduled, published, failed
+  publishedUrl String?
+  publishedAt DateTime?
+  error      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  contentId String
+  content   Content @relation(fields: [contentId], references: [id], onDelete: Cascade)
+
+  @@index([contentId])
+  @@index([platformId])
+}
+
+// Scheduled post model
+model ScheduledPost {
+  id          String   @id @default(cuid())
+  platformId  String
+  scheduledAt DateTime
+  status      String   @default("scheduled") // scheduled, processing, published, failed, cancelled
+  publishedAt DateTime?
+  error       String?
+  retryCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  campaignId String
+  campaign   Campaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+// Series model for content series
+model Series {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  campaigns Campaign[]
+}
+
+// Lead model for lead management
+model Lead {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  company   String?
+  phone     String?
+  source    String?
+  status    String   @default("new") // new, contacted, qualified, converted, lost
+  score     Int      @default(0)
+  tags      String?  // JSON array stored as string
+  metadata  String?  // JSON object stored as string
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  interactions LeadInteraction[]
+
+  @@index([email])
+  @@index([status])
+}
+
+// Lead interaction model
+model LeadInteraction {
+  id          String   @id @default(cuid())
+  type        String   // email, call, meeting, note
+  description String?
+  metadata    String?  // JSON object stored as string
+  createdAt   DateTime @default(now())
+
+  // Relations
+  leadId String
+  lead   Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+}
+
+// Audit log for tracking actions
+// ============================================
+// PII Retention Policy
+// ============================================
+// Fields ipAddress and userAgent contain potential PII and are subject to:
+// - Retention: 90 days from createdAt (configurable via AUDIT_LOG_RETENTION_DAYS env var)
+// - Anonymization: After TTL, ipAddress is hashed (SHA-256) and userAgent is truncated
+// - Access Control: Only admin/compliance roles may query raw PII fields
+//
+// Cleanup Job: Run via scheduled task (cron: "0 3 * * *" - daily at 3 AM UTC)
+// - Behavior: Records older than TTL have ipAddress hashed and userAgent set to "[ANONYMIZED]"
+// - Alternative: Set AUDIT_LOG_DELETE_AFTER_TTL=true to delete instead of anonymize
+// - Implementation: See lib/jobs/audit-log-cleanup.ts (or implement as API route/cron job)
+// - The createdAt index supports efficient date-range queries for cleanup
+// ============================================
+model AuditLog {
+  id         String   @id @default(cuid())
+  action     String
+  entity     String?  // Optional: campaign, content, lead, etc. (not required for API-only logs)
+  entityId   String?
+  details    String?  // JSON object stored as string
+  // HTTP request audit fields (used by app/api/_utils/audit.ts)
+  path       String?  // Request path (e.g., /api/auth)
+  method     String?  // HTTP method (GET, POST, etc.)
+  body       String?  // JSON stringified request body (sanitized)
+  result     String?  // Result status (success, failure, etc.)
+  statusCode Int?     // HTTP status code
+  // PII fields (subject to retention policy above)
+  ipAddress  String?  // PII: subject to retention policy (see above)
+  userAgent  String?  // PII: subject to retention policy (see above)
+  createdAt  DateTime @default(now())
+
+  // Relations
+  userId String?
+  user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt]) // Used for retention policy cleanup queries
+}
+
+// Notification model
+model Notification {
+  id        String   @id @default(cuid())
+  type      String   // email, slack, sms
+  recipient String
+  subject   String?
+  message   String
+  status    String   @default("pending") // pending, sent, failed
+  sentAt    DateTime?
+  error     String?
+  createdAt DateTime @default(now())
+
+  @@index([type])
+  @@index([status])
+}
+
+// Form model for form builder
+model Form {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  fields      String   // JSON array stored as string
+  settings    String?  // JSON object stored as string
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  submissions FormSubmission[]
+
+  @@index([isActive])
+}
+
+// Form submission model
+model FormSubmission {
+  id        String   @id @default(cuid())
+  data      String   // JSON object stored as string
+  metadata  String?  // JSON object stored as string
+  createdAt DateTime @default(now())
+
+  // Relations
+  formId String
+  form   Form @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+}

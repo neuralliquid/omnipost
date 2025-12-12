@@ -54,28 +54,64 @@ type DOMPurifyType = {
 
 // Lazy load DOMPurify only on client-side
 let DOMPurify: DOMPurifyType = null;
+let domPurifyPromise: Promise<DOMPurifyType> | null = null;
+
+/**
+ * Ensures DOMPurify is loaded on client-side (async version)
+ * Returns null on server-side or if loading fails
+ */
+async function ensureDOMPurify(): Promise<DOMPurifyType> {
+  // Server-side: always return null
+  if (globalThis.window === undefined) {
+    return null;
+  }
+
+  // Already loaded
+  if (DOMPurify) {
+    return DOMPurify;
+  }
+
+  // Start loading if not already, and await the result
+  if (!domPurifyPromise) {
+    domPurifyPromise = import('dompurify')
+      .then(module => {
+        DOMPurify = module.default;
+        return DOMPurify;
+      })
+      .catch(error => {
+        console.error('[Sanitize] Failed to load DOMPurify:', error);
+        return null;
+      });
+  }
+
+  // Wait for loading to complete
+  return domPurifyPromise;
+}
+
+// Preload DOMPurify on client-side initialization
 if (typeof globalThis.window !== 'undefined') {
-  // Client-side only - use IIFE for async initialization
-  (async () => {
-    DOMPurify = await import('dompurify').then(module => module.default);
-  })();
+  ensureDOMPurify();
 }
 
 /**
- * Sanitizes HTML content to prevent XSS attacks
+ * Sanitizes HTML content to prevent XSS attacks (async version)
+ * Uses DOMPurify on client-side, falls back to stripHtmlTags on server-side
  * @param input - Raw HTML string
  * @param options - DOMPurify configuration options
  * @returns Sanitized HTML string
  */
-export function sanitizeHtml(
+export async function sanitizeHtmlAsync(
   input: string,
   options?: {
     allowedTags?: string[];
     allowedAttributes?: string[];
   }
-): string {
-  // Server-side: strip all HTML tags for safety
-  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
+): Promise<string> {
+  // Wait for DOMPurify to load (returns null on server)
+  const purifier = await ensureDOMPurify();
+
+  // Use fallback if DOMPurify not available
+  if (!purifier) {
     return stripHtmlTags(input);
   }
 
@@ -86,22 +122,26 @@ export function sanitizeHtml(
     KEEP_CONTENT: true,
   };
 
-  return DOMPurify.sanitize(input, config);
+  return purifier.sanitize(input, config);
 }
 
 /**
- * Sanitizes plain text by stripping all HTML tags
+ * Sanitizes plain text by stripping all HTML tags (async version)
+ * Uses DOMPurify on client-side, falls back to stripHtmlTags on server-side
  * @param input - Raw text that may contain HTML
  * @returns Plain text with HTML removed
  */
-export function sanitizeText(input: string): string {
-  // Server-side: use simple regex stripping
-  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
+export async function sanitizeTextAsync(input: string): Promise<string> {
+  // Wait for DOMPurify to load (returns null on server)
+  const purifier = await ensureDOMPurify();
+
+  // Use fallback if DOMPurify not available
+  if (!purifier) {
     return stripHtmlTags(input);
   }
 
   // Client-side: use DOMPurify
-  return DOMPurify.sanitize(input, {
+  return purifier.sanitize(input, {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
     KEEP_CONTENT: true,
@@ -109,7 +149,30 @@ export function sanitizeText(input: string): string {
 }
 
 /**
+ * Synchronous sanitization using fallback only
+ * Use this when async is not possible (e.g., in sync Zod transforms)
+ * Always uses the server-side stripHtmlTags implementation
+ * @param input - Raw text that may contain HTML
+ * @returns Plain text with HTML removed
+ */
+export function sanitizeText(input: string): string {
+  return stripHtmlTags(input);
+}
+
+/**
+ * Synchronous HTML sanitization using fallback only
+ * Use this when async is not possible
+ * Always uses the server-side stripHtmlTags implementation
+ * @param input - Raw HTML string
+ * @returns Sanitized string with HTML removed
+ */
+export function sanitizeHtml(input: string): string {
+  return stripHtmlTags(input);
+}
+
+/**
  * Zod schema for validating text input
+ * Uses synchronous sanitization (stripHtmlTags) which is safe for server-side
  */
 export const textInputSchema = z.object({
   rawInput: z
@@ -188,6 +251,28 @@ export function validateAndSanitize<T extends z.ZodType>(
 ): { success: true; data: z.infer<T> } | { success: false; errors: string[] } {
   try {
     const result = schema.parse(data);
+    return { success: true, data: result };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = error.errors.map(e => `${e.path.join('.')}: ${e.message}`);
+      return { success: false, errors };
+    }
+    return { success: false, errors: ['Validation failed'] };
+  }
+}
+
+/**
+ * Async version of validateAndSanitize for schemas that use async transforms
+ * @param schema - Zod schema to validate against
+ * @param data - Raw input data
+ * @returns Validation result with sanitized data or errors
+ */
+export async function validateAndSanitizeAsync<T extends z.ZodType>(
+  schema: T,
+  data: unknown
+): Promise<{ success: true; data: z.infer<T> } | { success: false; errors: string[] }> {
+  try {
+    const result = await schema.parseAsync(data);
     return { success: true, data: result };
   } catch (error) {
     if (error instanceof z.ZodError) {

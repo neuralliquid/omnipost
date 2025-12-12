@@ -1,5 +1,7 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import styles from '@/styles/AuditTrail.module.css';
 
 interface Log {
   timestamp: string;
@@ -10,31 +12,53 @@ interface Log {
 const AuditTrail: React.FC = () => {
   const [logs, setLogs] = useState<Log[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchLogs = async () => {
       try {
-        const response = await axios.get<Log[]>('/api/audit-logs');
-        setLogs(response.data);
+        const response = await fetch('/api/audit');
+        if (!response.ok) {
+          throw new Error('Failed to fetch audit logs');
+        }
+        const data = await response.json();
+        setLogs(data);
       } catch (err) {
         setError((err as Error).message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     fetchLogs();
   }, []);
 
+  if (isLoading) {
+    return (
+      <div className={styles.auditTrail}>
+        <h2 className={styles.title}>Audit Trail</h2>
+        <p className={styles.emptyState}>Loading...</p>
+      </div>
+    );
+  }
+
   return (
-    <div>
-      <h2>Audit Trail</h2>
-      {error && <p>Error: {error}</p>}
-      <ul>
-        {logs.map(log => (
-          <li key={`log-${log.timestamp}-${log.action}-${log.user}`}>
-            <strong>{log.timestamp}:</strong> {log.action} by {log.user}
-          </li>
-        ))}
-      </ul>
+    <div className={styles.auditTrail}>
+      <h2 className={styles.title}>Audit Trail</h2>
+      {error && <p className={styles.error}>Error: {error}</p>}
+      {logs.length === 0 && !error ? (
+        <p className={styles.emptyState}>No audit logs available</p>
+      ) : (
+        <ul className={styles.logList}>
+          {logs.map(log => (
+            <li key={`log-${log.timestamp}-${log.action}-${log.user}`} className={styles.logItem}>
+              <span className={styles.timestamp}>{log.timestamp}</span>
+              <span className={styles.action}>{log.action}</span>
+              <span className={styles.user}>by {log.user}</span>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

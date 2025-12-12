@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/Header.module.css';
-import siteConfig from '../../data/siteConfig.json';
+import { siteConfig } from '../../data/siteConfig';
 
 const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -14,12 +14,15 @@ const Header: React.FC = () => {
     setMenuOpen(!menuOpen);
   };
 
+  // Get navigation items (already validated by siteConfig)
+  const navigationItems = siteConfig.navigation;
+
   return (
     <header className={styles.header}>
       <div className={styles.headerContainer}>
         <div className={styles.logoContainer}>
           <Link href="/" className={styles.logoLink}>
-            <span className={styles.logoText}>{siteConfig.siteName}</span>
+            <span className={styles.logoText}>{siteConfig.siteName || 'Site'}</span>
           </Link>
         </div>
 
@@ -36,7 +39,7 @@ const Header: React.FC = () => {
 
         <nav className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}>
           <ul className={styles.navList}>
-            {siteConfig.navigation.map(item => (
+            {navigationItems.map(item => (
               <li key={`nav-${item.path}`} className={styles.navItem}>
                 <Link
                   href={item.path}
