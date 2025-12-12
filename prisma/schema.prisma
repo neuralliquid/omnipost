@@ -181,14 +181,28 @@ model LeadInteraction {
 }
 
 // Audit log for tracking actions
+// ============================================
+// PII Retention Policy
+// ============================================
+// Fields ipAddress and userAgent contain potential PII and are subject to:
+// - Retention: 90 days from createdAt (configurable via AUDIT_LOG_RETENTION_DAYS env var)
+// - Anonymization: After TTL, ipAddress is hashed (SHA-256) and userAgent is truncated
+// - Access Control: Only admin/compliance roles may query raw PII fields
+//
+// Cleanup Job: Run via scheduled task (cron: "0 3 * * *" - daily at 3 AM UTC)
+// - Behavior: Records older than TTL have ipAddress hashed and userAgent set to "[ANONYMIZED]"
+// - Alternative: Set AUDIT_LOG_DELETE_AFTER_TTL=true to delete instead of anonymize
+// - Implementation: See lib/jobs/audit-log-cleanup.ts (or implement as API route/cron job)
+// - The createdAt index supports efficient date-range queries for cleanup
+// ============================================
 model AuditLog {
   id        String   @id @default(cuid())
   action    String
   entity    String   // campaign, content, lead, etc.
   entityId  String?
   details   String?  // JSON object stored as string
-  ipAddress String?
-  userAgent String?
+  ipAddress String?  // PII: subject to retention policy (see above)
+  userAgent String?  // PII: subject to retention policy (see above)
   createdAt DateTime @default(now())
 
   // Relations
@@ -197,7 +211,7 @@ model AuditLog {
 
   @@index([userId])
   @@index([entity])
-  @@index([createdAt])
+  @@index([createdAt]) // Used for retention policy cleanup queries
 }
 
 // Notification model

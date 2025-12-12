@@ -83,9 +83,7 @@ export async function createLogEntry(
 /**
  * Type guard to check if prisma client has auditLog.create capability
  */
-function hasPrismaAuditLog(
-  client: unknown
-): client is {
+function hasPrismaAuditLog(client: unknown): client is {
   auditLog: { create: (args: { data: Record<string, unknown> }) => Promise<unknown> };
 } {
   if (typeof client !== 'object' || client === null) {

@@ -98,8 +98,13 @@ export const NotificationSystem: React.FC = () => {
       }
 
       // Re-fetch the notifications list to get canonical data with IDs
-      // This ensures we have the complete Notification object from the server
-      await fetchNotifications();
+      // Check the result - only clear error and return true if refresh succeeded
+      const refreshSuccess = await fetchNotifications();
+      if (!refreshSuccess) {
+        // fetchNotifications already set the error, keep it and return false
+        // so the UI reflects the refresh failure
+        return false;
+      }
 
       setError(null);
       return true;
