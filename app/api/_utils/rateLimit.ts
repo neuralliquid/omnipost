@@ -6,11 +6,15 @@
  * - DDoS attacks
  * - Cost exploitation (AI API abuse)
  *
- * Uses in-memory storage for simplicity. For production with multiple
- * instances, consider Redis or Upstash Rate Limit.
+ * Supports two backends:
+ * 1. Upstash Redis (recommended for production) - when UPSTASH_REDIS_REST_URL is set
+ * 2. In-memory (development/single instance) - fallback when Redis not configured
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+
+// Dynamic import types for Upstash (avoids ESM issues in Jest)
+type UpstashRatelimit = InstanceType<typeof import('@upstash/ratelimit').Ratelimit>;
 
 interface RateLimitConfig {
   /**
@@ -34,45 +38,122 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-/**
- * In-memory store for rate limiting
- *
- * PRODUCTION WARNING: This in-memory implementation has limitations:
- * - Not shared across multiple server instances (load balanced environments)
- * - Rate limit state is lost on server restart
- * - Memory usage grows with number of unique IPs
- *
- * For production, use Redis or Upstash Rate Limit:
- *
- * import { Ratelimit } from "@upstash/ratelimit";
- * import { Redis } from "@upstash/redis";
- *
- * const ratelimit = new Ratelimit({
- *   redis: Redis.fromEnv(),
- *   limiter: Ratelimit.slidingWindow(10, "10 s"),
- *   analytics: true,
- * });
- */
-const rateLimitStore = new Map<string, RateLimitEntry>();
+// Check if Upstash Redis is configured
+const isUpstashConfigured = !!(
+  process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN
+);
 
-// Log warning in production if using in-memory rate limiting
-if (process.env.NODE_ENV === 'production' && !process.env.UPSTASH_REDIS_REST_URL) {
-  console.warn(
-    '[Rate Limit] Using in-memory rate limiting. For production deployments with multiple instances, configure UPSTASH_REDIS_REST_URL for distributed rate limiting.'
-  );
+// Lazy-loaded Upstash rate limiters (avoids ESM import issues in Jest)
+let upstashLimiters: Map<string, UpstashRatelimit> | null = null;
+let upstashInitialized = false;
+
+/**
+ * Initialize Upstash rate limiters lazily
+ */
+async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
+  if (upstashInitialized) return upstashLimiters;
+  upstashInitialized = true;
+
+  if (!isUpstashConfigured) {
+    // Log warning in production if using in-memory rate limiting
+    if (process.env.NODE_ENV === 'production') {
+      console.warn(
+        '[Rate Limit] Using in-memory rate limiting. For production deployments with multiple instances, configure UPSTASH_REDIS_REST_URL for distributed rate limiting.'
+      );
+    }
+    return null;
+  }
+
+  try {
+    // Dynamic import to avoid Jest ESM issues
+    const { Ratelimit } = await import('@upstash/ratelimit');
+    const { Redis } = await import('@upstash/redis');
+
+    const redis = Redis.fromEnv();
+    upstashLimiters = new Map();
+
+    // Pre-create rate limiters for each preset
+    // AUTH: 5 requests per 15 minutes
+    upstashLimiters.set(
+      'AUTH',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(5, '15 m'),
+        analytics: true,
+        prefix: 'ratelimit:auth',
+      })
+    );
+
+    // AI_SERVICE: 10 requests per minute
+    upstashLimiters.set(
+      'AI_SERVICE',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(10, '1 m'),
+        analytics: true,
+        prefix: 'ratelimit:ai',
+      })
+    );
+
+    // GENERAL: 100 requests per 15 minutes
+    upstashLimiters.set(
+      'GENERAL',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(100, '15 m'),
+        analytics: true,
+        prefix: 'ratelimit:general',
+      })
+    );
+
+    // ADMIN: 50 requests per hour
+    upstashLimiters.set(
+      'ADMIN',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(50, '1 h'),
+        analytics: true,
+        prefix: 'ratelimit:admin',
+      })
+    );
+
+    // PUBLIC_API: 20 requests per minute
+    upstashLimiters.set(
+      'PUBLIC_API',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(20, '1 m'),
+        analytics: true,
+        prefix: 'ratelimit:public',
+      })
+    );
+
+    console.log('[Rate Limit] Using Upstash Redis for distributed rate limiting');
+    return upstashLimiters;
+  } catch (error) {
+    console.warn('[Rate Limit] Failed to initialize Upstash, falling back to in-memory:', error);
+    return null;
+  }
 }
 
 /**
- * Clean up expired entries periodically (every 60 seconds)
+ * In-memory store for rate limiting (fallback when Redis not available)
  */
-setInterval(() => {
-  const now = Date.now();
-  for (const [key, entry] of rateLimitStore.entries()) {
-    if (entry.resetTime < now) {
-      rateLimitStore.delete(key);
+const rateLimitStore = new Map<string, RateLimitEntry>();
+
+/**
+ * Clean up expired entries periodically (every 60 seconds) - only for in-memory
+ */
+if (!isUpstashConfigured) {
+  setInterval(() => {
+    const now = Date.now();
+    for (const [key, entry] of rateLimitStore.entries()) {
+      if (entry.resetTime < now) {
+        rateLimitStore.delete(key);
+      }
     }
-  }
-}, 60_000);
+  }, 60_000);
+}
 
 /**
  * Get a unique key for rate limiting based on IP and endpoint
@@ -87,9 +168,18 @@ function getRateLimitKey(request: NextRequest, endpoint: string): string {
 }
 
 /**
- * Check if request should be rate limited
+ * Get client IP for Upstash
  */
-export function checkRateLimit(
+function getClientIp(request: NextRequest): string {
+  const forwarded = request.headers.get('x-forwarded-for');
+  const realIp = request.headers.get('x-real-ip');
+  return forwarded?.split(',')[0] || realIp || 'unknown';
+}
+
+/**
+ * Check if request should be rate limited (in-memory version)
+ */
+function checkRateLimitInMemory(
   request: NextRequest,
   endpoint: string,
   config: RateLimitConfig
@@ -134,13 +224,67 @@ export function checkRateLimit(
 }
 
 /**
+ * Check if request should be rate limited (Upstash version)
+ */
+async function checkRateLimitUpstash(
+  request: NextRequest,
+  presetName: string
+): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  // Lazy-initialize Upstash
+  const limiters = await initUpstash();
+  const limiter = limiters?.get(presetName);
+  if (!limiter) {
+    // Fallback to allowing if limiter not found
+    return { allowed: true, remaining: 999, resetTime: Date.now() + 60000 };
+  }
+
+  const ip = getClientIp(request);
+  const { success, remaining, reset } = await limiter.limit(ip);
+
+  return {
+    allowed: success,
+    remaining,
+    resetTime: reset,
+  };
+}
+
+/**
+ * Check if request should be rate limited
+ */
+export async function checkRateLimit(
+  request: NextRequest,
+  endpoint: string,
+  config: RateLimitConfig,
+  presetName?: string
+): Promise<{ allowed: boolean; remaining: number; resetTime: number }> {
+  // Use Upstash if configured and preset name provided
+  if (isUpstashConfigured && presetName) {
+    return checkRateLimitUpstash(request, presetName);
+  }
+
+  // Fall back to in-memory
+  return checkRateLimitInMemory(request, endpoint, config);
+}
+
+/**
+ * Synchronous check for backward compatibility (in-memory only)
+ */
+export function checkRateLimitSync(
+  request: NextRequest,
+  endpoint: string,
+  config: RateLimitConfig
+): { allowed: boolean; remaining: number; resetTime: number } {
+  return checkRateLimitInMemory(request, endpoint, config);
+}
+
+/**
  * Rate limit middleware wrapper for API routes
  */
 export function withRateLimit<
   T extends (request: NextRequest, ...args: unknown[]) => Promise<Response>,
->(handler: T, endpoint: string, config: RateLimitConfig): T {
+>(handler: T, endpoint: string, config: RateLimitConfig, presetName?: string): T {
   return (async (request: NextRequest, ...args: unknown[]) => {
-    const result = checkRateLimit(request, endpoint, config);
+    const result = await checkRateLimit(request, endpoint, config, presetName);
 
     if (!result.allowed) {
       const retryAfter = Math.ceil((result.resetTime - Date.now()) / 1000);
@@ -229,3 +373,10 @@ export const RateLimitPresets = {
     message: 'Too many requests. Please try again in a minute.',
   },
 };
+
+/**
+ * Check if Upstash is being used
+ */
+export function isUsingUpstash(): boolean {
+  return isUpstashConfigured;
+}

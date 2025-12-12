@@ -1,6 +1,12 @@
 // Test setup file
 import { jest } from '@jest/globals';
 
+// Set test environment variables for authentication
+process.env.TEST_USER_USERNAME = 'admin';
+process.env.TEST_USER_PASSWORD = 'admin123';
+process.env.TEST_USER_ROLE = 'admin';
+process.env.JWT_SECRET = 'test-jwt-secret-for-testing-only';
+
 // Mock Next.js headers function
 jest.mock('next/headers', () => ({
   headers: jest.fn(() => ({
