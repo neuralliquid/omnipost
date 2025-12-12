@@ -60,14 +60,28 @@ async function validateAuthAndFeature() {
 
 
 /**
- * Logs an error and returns an error response
+ * Extracts a safe error message without sensitive data.
+ * Axios errors can contain request config with headers/auth - we only extract the message.
+ */
+function getSafeErrorMessage(error: unknown): string {
+  if (error instanceof Error) {
+    // For axios errors, only use the message (not the full error object)
+    // which could contain request config, headers, or auth data
+    return error.message;
+  }
+  return 'Unknown error';
+}
+
+/**
+ * Logs an error and returns an error response.
+ * Uses safe error extraction to avoid logging sensitive request data.
  */
 async function handleError(error: unknown, action: string, message: string) {
-  console.error(`${action} error:`, error);
+  // Log only the safe error message, not the full error object
+  const errorMessage = getSafeErrorMessage(error);
+  console.error(`${action} error:`, errorMessage);
 
-  const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-  // Log failure
+  // Log failure with redacted error info
   const logEntry = await createLogEntry(`${action}_FAILURE`, {
     error: errorMessage,
   });
@@ -144,6 +158,11 @@ export const PUT = withRateLimit(
     // Check authentication
     if (!(await isAuthenticated())) {
       return Errors.unauthorized('Authentication required to approve summary');
+    }
+
+    // Check feature flag (approval requires summarization to be enabled)
+    if (!featureFlags.summarization) {
+      return Errors.forbidden('Summarization feature is disabled');
     }
 
     try {

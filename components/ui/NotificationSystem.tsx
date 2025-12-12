@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent, useCallback } from 'react';
 import styles from '@/styles/NotificationSystem.module.css';
 
 interface Notification {
@@ -9,30 +9,76 @@ interface Notification {
   message: string;
 }
 
+/**
+ * Validates that the API response is a valid Notification array
+ */
+function isNotificationArray(data: unknown): data is Notification[] {
+  if (!Array.isArray(data)) return false;
+  return data.every(
+    item =>
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as Notification).id === 'string' &&
+      typeof (item as Notification).type === 'string' &&
+      typeof (item as Notification).message === 'string'
+  );
+}
+
 export const NotificationSystem: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+
+  /**
+   * Fetches notifications from the API
+   */
+  const fetchNotifications = useCallback(async (signal?: AbortSignal): Promise<boolean> => {
+    try {
+      const response = await fetch('/api/notifications', { signal });
+      if (!response.ok) {
+        throw new Error('Failed to fetch notifications');
+      }
+      const data: unknown = await response.json();
+
+      // Validate response shape before setting state
+      if (!isNotificationArray(data)) {
+        throw new Error('Invalid response format from notifications API');
+      }
+
+      setNotifications(data);
+      setError(null);
+      return true;
+    } catch (err) {
+      // Don't set error state if request was aborted
+      if (err instanceof Error && err.name === 'AbortError') {
+        return false;
+      }
+      setError(err instanceof Error ? err.message : 'Unknown error');
+      return false;
+    }
+  }, []);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await fetch('/api/notifications');
-        if (!response.ok) {
-          throw new Error('Failed to fetch notifications');
-        }
-        const data = await response.json();
-        setNotifications(data);
-      } catch (err) {
-        setError((err as Error).message);
-      } finally {
+    const abortController = new AbortController();
+
+    const loadNotifications = async () => {
+      setIsLoading(true);
+      await fetchNotifications(abortController.signal);
+      // Only set loading false if not aborted
+      if (!abortController.signal.aborted) {
         setIsLoading(false);
       }
     };
 
-    fetchNotifications();
-  }, []);
+    loadNotifications();
+
+    // Cleanup: abort fetch on unmount
+    return () => {
+      abortController.abort();
+    };
+  }, [fetchNotifications]);
 
   const sendNotification = async (
     type: string,
@@ -50,24 +96,48 @@ export const NotificationSystem: React.FC = () => {
       if (!response.ok) {
         throw new Error('Failed to send notification');
       }
-      const data = await response.json();
-      // Use functional updater to ensure we have the latest state
-      setNotifications(prev => [...prev, data]);
+
+      // Re-fetch the notifications list to get canonical data with IDs
+      // This ensures we have the complete Notification object from the server
+      await fetchNotifications();
+
       setError(null);
       return true;
     } catch (err) {
-      setError((err as Error).message);
+      setError(err instanceof Error ? err.message : 'Unknown error');
       return false;
     }
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setValidationError(null);
+
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const type = formData.get('type') as string;
-    const recipient = formData.get('recipient') as string;
-    const message = formData.get('message') as string;
+
+    // Extract and validate form values
+    const typeValue = formData.get('type');
+    const recipientValue = formData.get('recipient');
+    const messageValue = formData.get('message');
+
+    // Validate that values are strings (not null or File)
+    if (typeof typeValue !== 'string' || !typeValue.trim()) {
+      setValidationError('Type is required');
+      return;
+    }
+    if (typeof recipientValue !== 'string' || !recipientValue.trim()) {
+      setValidationError('Recipient is required');
+      return;
+    }
+    if (typeof messageValue !== 'string' || !messageValue.trim()) {
+      setValidationError('Message is required');
+      return;
+    }
+
+    const type = typeValue.trim();
+    const recipient = recipientValue.trim();
+    const message = messageValue.trim();
 
     setIsSubmitting(true);
     try {
@@ -94,6 +164,9 @@ export const NotificationSystem: React.FC = () => {
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Send Notification</h3>
         <form onSubmit={handleSubmit} className={styles.form}>
+          {validationError && (
+            <p className={styles.error}>{validationError}</p>
+          )}
           <div className={styles.formGroup}>
             <label htmlFor="type" className={styles.label}>
               Type
