@@ -149,6 +149,36 @@ async function createLeadFromSubmission(
 }
 
 /**
+ * Handle lead creation and collect any errors/warnings
+ */
+async function handleLeadCreation(
+  form: Form,
+  responses: Record<string, unknown>,
+  submissionId: string
+): Promise<{ leadId?: string; warnings: string[] }> {
+  const warnings: string[] = [];
+  let leadId: string | undefined;
+
+  if (!form.integrations.createLead) {
+    return { leadId, warnings };
+  }
+
+  try {
+    const leadResult = await createLeadFromSubmission(form, responses, submissionId);
+    leadId = leadResult.leadId;
+    if (leadResult.enrollmentError) {
+      warnings.push(leadResult.enrollmentError);
+    }
+  } catch (leadError) {
+    const errorMessage = leadError instanceof Error ? leadError.message : 'Unknown error';
+    console.error('Error creating lead from form submission:', leadError);
+    warnings.push(`Failed to create lead: ${errorMessage}`);
+  }
+
+  return { leadId, warnings };
+}
+
+/**
  * POST /api/forms/[id]/submissions
  * Create a new submission (public endpoint for form submissions)
  */
@@ -190,27 +220,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const submission = await formsClient.createSubmission(id, responses, metadata, body.startedAt);
 
     // Create lead if integration is enabled
-    let leadId: string | undefined;
-    let leadCreationError: string | undefined;
-    let enrollmentError: string | undefined;
-
-    if (form.integrations.createLead) {
-      try {
-        const leadResult = await createLeadFromSubmission(form, responses, submission.id);
-        leadId = leadResult.leadId;
-        enrollmentError = leadResult.enrollmentError;
-      } catch (leadError) {
-        const errorMessage =
-          leadError instanceof Error ? leadError.message : 'Unknown error';
-        console.error('Error creating lead from form submission:', leadError);
-        leadCreationError = `Failed to create lead: ${errorMessage}`;
-      }
-    }
-
-    // Build response with any warnings
-    const warnings: string[] = [];
-    if (leadCreationError) warnings.push(leadCreationError);
-    if (enrollmentError) warnings.push(enrollmentError);
+    const { leadId, warnings } = await handleLeadCreation(form, responses, submission.id);
 
     return SuccessResponses.created({
       success: true,

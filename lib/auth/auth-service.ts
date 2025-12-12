@@ -223,7 +223,7 @@ export class AuthService {
         const dbUser = await prismaClient.user.findUnique({
           where: { username },
         });
-        if (dbUser && dbUser.passwordHash) {
+        if (dbUser?.passwordHash) {
           // In production, use bcrypt to compare passwords
           // const bcrypt = await import('bcrypt');
           // return bcrypt.compare(password, dbUser.passwordHash);

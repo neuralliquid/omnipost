@@ -106,11 +106,11 @@ const NotificationSystem: React.FC = () => {
 
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Notifications</h3>
-        {isLoading ? (
-          <p className={styles.emptyState}>Loading...</p>
-        ) : notifications.length === 0 ? (
+        {isLoading && <p className={styles.emptyState}>Loading...</p>}
+        {!isLoading && notifications.length === 0 && (
           <p className={styles.emptyState}>No notifications yet</p>
-        ) : (
+        )}
+        {!isLoading && notifications.length > 0 && (
           <ul className={styles.notificationList}>
             {notifications.map((notification, index) => (
               <li

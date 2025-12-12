@@ -62,7 +62,7 @@ let domPurifyLoading: Promise<DOMPurifyType> | null = null;
  */
 function ensureDOMPurify(): DOMPurifyType {
   // Server-side: always return null
-  if (typeof globalThis.window === 'undefined') {
+  if (globalThis.window === undefined) {
     return null;
   }
 
@@ -72,17 +72,15 @@ function ensureDOMPurify(): DOMPurifyType {
   }
 
   // Start loading if not already
-  if (!domPurifyLoading) {
-    domPurifyLoading = import('dompurify')
-      .then(module => {
-        DOMPurify = module.default;
-        return DOMPurify;
-      })
-      .catch(error => {
-        console.error('[Sanitize] Failed to load DOMPurify:', error);
-        return null;
-      });
-  }
+  domPurifyLoading ??= import('dompurify')
+    .then(module => {
+      DOMPurify = module.default;
+      return DOMPurify;
+    })
+    .catch(error => {
+      console.error('[Sanitize] Failed to load DOMPurify:', error);
+      return null;
+    });
 
   // Return null for now, will use fallback
   // DOMPurify will be available for subsequent calls

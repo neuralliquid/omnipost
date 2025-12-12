@@ -6,7 +6,7 @@
  */
 
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
-import http from 'http';
+import http from 'node:http';
 
 // Check if fetch is available (Node.js 18+)
 const hasFetch = typeof globalThis.fetch === 'function';

@@ -14,8 +14,8 @@ const Header: React.FC = () => {
     setMenuOpen(!menuOpen);
   };
 
-  // Safely get navigation items with fallback to empty array
-  const navigationItems: NavigationItem[] = siteConfig.navigation ?? [];
+  // Get navigation items (already validated by siteConfig)
+  const navigationItems = siteConfig.navigation;
 
   return (
     <header className={styles.header}>

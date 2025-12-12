@@ -82,15 +82,18 @@ function validateNavigation(navigation: unknown): NavigationItem[] {
     return [];
   }
 
-  const validItems = navigation.filter((item, index) => {
-    const isValid = isValidNavigationItem(item);
-    if (!isValid) {
+  const validItems: NavigationItem[] = [];
+
+  for (let index = 0; index < navigation.length; index++) {
+    const item = navigation[index];
+    if (isValidNavigationItem(item)) {
+      validItems.push(item);
+    } else {
       console.warn(`[SiteConfig] Invalid navigation item at index ${index}:`, item);
     }
-    return isValid;
-  });
+  }
 
-  return validItems as NavigationItem[];
+  return validItems;
 }
 
 /**
