@@ -1,5 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
+import styles from '@/styles/LoadingState.module.css';
 
 interface LoadingStateProps {
   message?: string;
@@ -10,12 +11,13 @@ interface LoadingStateProps {
  * Shared component for displaying a loading state
  */
 const LoadingState: React.FC<LoadingStateProps> = ({ message = 'Loading...', className }) => {
+  const combinedClassName = className ? `${styles.loading} ${className}` : styles.loading;
   return (
-    <div className={className || 'loading'}>
-      <div className="loading-spinner">
+    <div className={combinedClassName}>
+      <div className={styles.loadingSpinner}>
         <Image src="/images/loading-spinner.svg" alt="Loading" width={50} height={50} priority />
       </div>
-      <p>{message}</p>
+      <p className={styles.message}>{message}</p>
     </div>
   );
 };

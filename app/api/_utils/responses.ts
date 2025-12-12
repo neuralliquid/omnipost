@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { checkRateLimit, RateLimitPresets } from './rateLimit';
+import { checkRateLimitSync, RateLimitPresets } from './rateLimit';
 
 type RateLimitPreset = (typeof RateLimitPresets)[keyof typeof RateLimitPresets];
 
@@ -39,7 +39,7 @@ export function checkRateLimitOrRespond(
   endpoint: string,
   preset: RateLimitPreset
 ): NextResponse | null {
-  const result = checkRateLimit(request, endpoint, preset);
+  const result = checkRateLimitSync(request, endpoint, preset);
   if (!result.allowed) {
     return rateLimitExceededResponse(result.resetTime, preset);
   }

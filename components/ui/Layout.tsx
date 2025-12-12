@@ -3,7 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Header from './Header';
 import Footer from './Footer';
-import styles from '../styles/Layout.module.css';
+import styles from '@/styles/Layout.module.css';
 import siteConfig from '../../data/siteConfig.json';
 
 interface LayoutProps {

@@ -1,5 +1,6 @@
 import React from 'react';
 import Head from 'next/head';
+import styles from '@/styles/MainLayout.module.css';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children, title, description })
         <title>{title}</title>
         <meta name="description" content={description || title} />
       </Head>
-      <div className="container">{children}</div>
+      <div className={styles.container}>{children}</div>
     </>
   );
 };
