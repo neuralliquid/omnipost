@@ -39,7 +39,7 @@ const Header: React.FC = () => {
 
         <nav className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}>
           <ul className={styles.navList}>
-            {navigationItems.map((item) => (
+            {siteConfig.navigation.map(item => (
               <li key={`nav-${item.path}`} className={styles.navItem}>
                 <Link
                   href={item.path}
