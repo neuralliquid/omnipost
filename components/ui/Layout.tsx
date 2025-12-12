@@ -3,9 +3,7 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import Header from './Header';
 import Footer from './Footer';
-// Shared layout styles used by both components/ui/Layout.tsx and components/layouts/Layout.tsx
-// Using MainLayout.module.css as the canonical name for shared layout styling across the app
-import styles from '@/styles/MainLayout.module.css';
+import styles from '@/styles/Layout.module.css';
 import siteConfig from '../../data/siteConfig.json';
 
 interface LayoutProps {
