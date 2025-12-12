@@ -164,9 +164,7 @@ export const NotificationSystem: React.FC = () => {
       <div className={styles.section}>
         <h3 className={styles.sectionTitle}>Send Notification</h3>
         <form onSubmit={handleSubmit} className={styles.form}>
-          {validationError && (
-            <p className={styles.error}>{validationError}</p>
-          )}
+          {validationError && <p className={styles.error}>{validationError}</p>}
           <div className={styles.formGroup}>
             <label htmlFor="type" className={styles.label}>
               Type

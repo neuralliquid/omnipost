@@ -33,21 +33,12 @@ describeIfFetch('Integration API Flow', () => {
   // ============================================
 
   const AuthLoginSchema = z.object({
-    username: z
-      .string()
-      .min(1, 'Username is required')
-      .max(100, 'Username too long'),
-    password: z
-      .string()
-      .min(1, 'Password is required')
-      .max(200, 'Password too long'),
+    username: z.string().min(1, 'Username is required').max(100, 'Username too long'),
+    password: z.string().min(1, 'Password is required').max(200, 'Password too long'),
   });
 
   const FeatureFlagUpdateSchema = z.object({
-    feature: z
-      .string()
-      .min(1, 'Feature name is required')
-      .max(50, 'Feature name too long'),
+    feature: z.string().min(1, 'Feature name is required').max(50, 'Feature name too long'),
     enabled: z.boolean({
       required_error: 'Enabled field is required',
       invalid_type_error: 'Enabled must be a boolean',
@@ -55,10 +46,7 @@ describeIfFetch('Integration API Flow', () => {
   });
 
   const PlatformInputSchema = z.object({
-    name: z
-      .string()
-      .min(1, 'Platform name is required')
-      .max(100, 'Platform name too long'),
+    name: z.string().min(1, 'Platform name is required').max(100, 'Platform name too long'),
     type: z.enum(['social', 'blog', 'newsletter', 'video', 'podcast', 'custom']),
     enabled: z.boolean().optional().default(true),
   });
@@ -71,7 +59,10 @@ describeIfFetch('Integration API Flow', () => {
   const RATE_LIMIT_MAX = 10;
   const RATE_LIMIT_WINDOW_MS = 60000;
 
-  const checkRateLimit = (endpoint: string, ip: string): { allowed: boolean; remaining: number } => {
+  const checkRateLimit = (
+    endpoint: string,
+    ip: string
+  ): { allowed: boolean; remaining: number } => {
     const key = `${endpoint}:${ip}`;
     const now = Date.now();
     const entry = rateLimitStore.get(key);
@@ -97,7 +88,8 @@ describeIfFetch('Integration API Flow', () => {
   // Audit Logging Stub
   // ============================================
 
-  const auditLogs: Array<{ action: string; details: Record<string, unknown>; timestamp: Date }> = [];
+  const auditLogs: Array<{ action: string; details: Record<string, unknown>; timestamp: Date }> =
+    [];
 
   const logAudit = (action: string, details: Record<string, unknown> = {}) => {
     auditLogs.push({ action, details, timestamp: new Date() });
@@ -121,7 +113,9 @@ describeIfFetch('Integration API Flow', () => {
     });
   };
 
-  const parseJsonBody = (body: string): { success: true; data: unknown } | { success: false; error: string } => {
+  const parseJsonBody = (
+    body: string
+  ): { success: true; data: unknown } | { success: false; error: string } => {
     if (!body) {
       return { success: false, error: 'Request body is required' };
     }
@@ -144,7 +138,12 @@ describeIfFetch('Integration API Flow', () => {
     return { success: false, errors };
   };
 
-  const sendError = (res: http.ServerResponse, status: number, error: string, details?: string[]) => {
+  const sendError = (
+    res: http.ServerResponse,
+    status: number,
+    error: string,
+    details?: string[]
+  ) => {
     res.writeHead(status, { 'Content-Type': 'application/json' });
     const body: { error: string; details?: string[] } = { error };
     if (details && details.length > 0) {
@@ -159,9 +158,11 @@ describeIfFetch('Integration API Flow', () => {
   };
 
   const getClientIp = (req: http.IncomingMessage): string => {
-    return (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
-           req.socket.remoteAddress ||
-           '127.0.0.1';
+    return (
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      '127.0.0.1'
+    );
   };
 
   const extractBearerToken = (req: http.IncomingMessage): string | null => {
@@ -340,10 +341,14 @@ describeIfFetch('Integration API Flow', () => {
       const platform = validation.data;
       logAudit('CREATE_PLATFORM', { name: platform.name });
 
-      return sendSuccess(res, {
-        id: 3,
-        ...platform,
-      }, 201);
+      return sendSuccess(
+        res,
+        {
+          id: 3,
+          ...platform,
+        },
+        201
+      );
     } else {
       return sendError(res, 405, 'Method not allowed');
     }

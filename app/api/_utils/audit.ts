@@ -85,7 +85,9 @@ export async function createLogEntry(
  */
 function hasPrismaAuditLog(
   client: unknown
-): client is { auditLog: { create: (args: { data: Record<string, unknown> }) => Promise<unknown> } } {
+): client is {
+  auditLog: { create: (args: { data: Record<string, unknown> }) => Promise<unknown> };
+} {
   if (typeof client !== 'object' || client === null) {
     return false;
   }

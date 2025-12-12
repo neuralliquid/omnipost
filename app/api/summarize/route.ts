@@ -58,7 +58,6 @@ async function validateAuthAndFeature() {
   return null;
 }
 
-
 /**
  * Extracts a safe error message without sensitive data.
  * Axios errors can contain request config with headers/auth - we only extract the message.

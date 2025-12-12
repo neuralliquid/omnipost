@@ -51,8 +51,7 @@ function createPrismaClient(): PrismaClientType | null {
  * In development, the client is stored in globalThis to survive hot-reloads.
  * Returns null if Prisma isn't set up yet.
  */
-export const prisma: PrismaClientType | null =
-  globalForPrisma.prisma ?? createPrismaClient();
+export const prisma: PrismaClientType | null = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production' && prisma) {
   globalForPrisma.prisma = prisma;

@@ -106,12 +106,9 @@ function validateAnalytics(analytics: unknown): AnalyticsConfig {
 
   const config = analytics as Record<string, unknown>;
   return {
-    enabledInDevelopment: typeof config.enabledInDevelopment === 'boolean'
-      ? config.enabledInDevelopment
-      : false,
-    googleAnalyticsId: typeof config.googleAnalyticsId === 'string'
-      ? config.googleAnalyticsId
-      : '',
+    enabledInDevelopment:
+      typeof config.enabledInDevelopment === 'boolean' ? config.enabledInDevelopment : false,
+    googleAnalyticsId: typeof config.googleAnalyticsId === 'string' ? config.googleAnalyticsId : '',
   };
 }
 
@@ -151,15 +148,15 @@ function validateSiteConfig(config: unknown): SiteConfig {
   const rawConf = config as Record<string, unknown>;
 
   return {
-    siteName: typeof rawConf.siteName === 'string' && rawConf.siteName.length > 0
-      ? rawConf.siteName
-      : defaultConfig.siteName,
-    siteDescription: typeof rawConf.siteDescription === 'string'
-      ? rawConf.siteDescription
-      : defaultConfig.siteDescription,
-    siteUrl: typeof rawConf.siteUrl === 'string'
-      ? rawConf.siteUrl
-      : defaultConfig.siteUrl,
+    siteName:
+      typeof rawConf.siteName === 'string' && rawConf.siteName.length > 0
+        ? rawConf.siteName
+        : defaultConfig.siteName,
+    siteDescription:
+      typeof rawConf.siteDescription === 'string'
+        ? rawConf.siteDescription
+        : defaultConfig.siteDescription,
+    siteUrl: typeof rawConf.siteUrl === 'string' ? rawConf.siteUrl : defaultConfig.siteUrl,
     analytics: validateAnalytics(rawConf.analytics),
     navigation: validateNavigation(rawConf.navigation),
     social: validateSocial(rawConf.social),

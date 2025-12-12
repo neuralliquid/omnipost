@@ -239,7 +239,9 @@ export class AuthService {
               return false;
             }
             // In development only, warn and deny (no plaintext fallback)
-            console.warn('[Auth] bcryptjs unavailable - install bcryptjs for password verification');
+            console.warn(
+              '[Auth] bcryptjs unavailable - install bcryptjs for password verification'
+            );
             return false;
           }
         }

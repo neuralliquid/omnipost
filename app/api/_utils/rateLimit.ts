@@ -147,7 +147,10 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
     return upstashLimiters;
   } catch (error) {
     // Use safe error message to prevent sensitive data leaks
-    console.warn('[Rate Limit] Failed to initialize Upstash, falling back to in-memory:', safeErrorMessage(error));
+    console.warn(
+      '[Rate Limit] Failed to initialize Upstash, falling back to in-memory:',
+      safeErrorMessage(error)
+    );
     return null;
   }
 }
@@ -373,9 +376,8 @@ export function withRateLimit<
 >(handler: T, endpoint: string, config: RateLimitConfig, presetName?: string): T {
   // Resolve the effective config: use preset if provided, otherwise use passed config
   // This ensures headers and messages are consistent with the preset being enforced
-  const effectiveConfig = presetName && RateLimitPresets[presetName]
-    ? RateLimitPresets[presetName]
-    : config;
+  const effectiveConfig =
+    presetName && RateLimitPresets[presetName] ? RateLimitPresets[presetName] : config;
 
   return (async (request: NextRequest, ...args: unknown[]) => {
     const result = await checkRateLimit(request, endpoint, effectiveConfig, presetName);

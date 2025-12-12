@@ -18,9 +18,7 @@ describe('ErrorMessage', () => {
   });
 
   it('applies custom className when provided', () => {
-    const { container } = render(
-      <ErrorMessage message="Test error" className="custom-class" />
-    );
+    const { container } = render(<ErrorMessage message="Test error" className="custom-class" />);
     expect(container.firstChild).toHaveClass('custom-class');
   });
 

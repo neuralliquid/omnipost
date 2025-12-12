@@ -59,7 +59,9 @@ const PlatformInputSchema = z.object({
   config: z
     .record(z.unknown())
     .optional()
-    .transform(c => (c ? Object.fromEntries(Object.entries(c).map(([k, v]) => [k, v])) : undefined)),
+    .transform(c =>
+      c ? Object.fromEntries(Object.entries(c).map(([k, v]) => [k, v])) : undefined
+    ),
 });
 
 type PlatformInput = z.infer<typeof PlatformInputSchema>;
