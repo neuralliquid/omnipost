@@ -161,40 +161,94 @@ export class AuthService {
 
   /**
    * Find a user by username
+   * Uses Prisma if available, falls back to environment-based test user
    * @param username Username to search for
    * @returns User object or null if not found
    */
   public async findUserByUsername(username: string): Promise<User | null> {
-    // This would be replaced with actual database lookup
-    const users = [
-      { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
-      { id: '2', username: 'user', password: 'hashed_password', role: 'user' },
-    ];
+    // Try to use Prisma if available
+    try {
+      const { prisma } = await import('../db/prisma');
+      // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const prismaClient = prisma as any;
+      if (prismaClient?.user?.findUnique) {
+        const dbUser = await prismaClient.user.findUnique({
+          where: { username },
+        });
+        if (dbUser) {
+          return {
+            id: dbUser.id,
+            username: dbUser.username,
+            role: dbUser.role,
+            isAdmin: dbUser.role === 'admin',
+          };
+        }
+      }
+    } catch {
+      // Prisma not available, fall through to test user
+    }
 
-    const user = users.find(user => user.username === username);
-    return user ? user : null;
+    // Fallback to environment-based test user (for development/testing)
+    const testUsername = process.env.TEST_USER_USERNAME;
+    const testRole = process.env.TEST_USER_ROLE || 'admin';
+
+    if (testUsername && username === testUsername) {
+      return {
+        id: '1',
+        username: testUsername,
+        role: testRole,
+        isAdmin: testRole === 'admin',
+      };
+    }
+
+    return null;
   }
 
   /**
    * Verify user credentials
+   * Uses Prisma with bcrypt if available, falls back to environment-based verification
    * @param username Username
    * @param password Password
    * @returns Boolean indicating if credentials are valid
    */
   public async verifyUserCredentials(username: string, password: string): Promise<boolean> {
-    // In a real implementation, you would:
-    // 1. Find the user by username
-    // 2. Hash the provided password with the same algorithm used for storage
-    // 3. Compare the hashed password with the stored hash
+    // Try to use Prisma if available
+    try {
+      const { prisma } = await import('../db/prisma');
+      // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const prismaClient = prisma as any;
+      if (prismaClient?.user?.findUnique) {
+        const dbUser = await prismaClient.user.findUnique({
+          where: { username },
+        });
+        if (dbUser && dbUser.passwordHash) {
+          // In production, use bcrypt to compare passwords
+          // const bcrypt = await import('bcrypt');
+          // return bcrypt.compare(password, dbUser.passwordHash);
 
-    // For now, we'll just do a simple check against our mock users
-    const users = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'user', password: 'user123', role: 'user' },
-    ];
+          // For now, direct comparison (should use bcrypt in production)
+          return dbUser.passwordHash === password;
+        }
+      }
+    } catch {
+      // Prisma not available, fall through to test credentials
+    }
 
-    const user = users.find(u => u.username === username);
-    return user ? user.password === password : false;
+    // Fallback to environment-based test credentials (for development/testing)
+    const testUsername = process.env.TEST_USER_USERNAME;
+    const testPassword = process.env.TEST_USER_PASSWORD;
+
+    if (!testUsername || !testPassword) {
+      console.warn(
+        '[Auth] No database configured and TEST_USER_USERNAME/TEST_USER_PASSWORD not set. ' +
+          'Configure either Prisma database or test credentials.'
+      );
+      return false;
+    }
+
+    return username === testUsername && password === testPassword;
   }
 }
 

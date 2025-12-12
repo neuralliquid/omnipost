@@ -6,7 +6,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { Lead, CreateLeadInput, LeadSource, LeadStatus, LeadTemperature } from '@/types/lead';
+import type { Lead, CreateLeadInput, LeadSource } from '@/types/lead';
 import styles from '@/styles/Leads.module.css';
 
 /**
@@ -55,23 +55,6 @@ const SOURCE_OPTIONS: { value: LeadSource; label: string }[] = [
   { value: 'import', label: 'Import' },
   { value: 'manual', label: 'Manual Entry' },
   { value: 'other', label: 'Other' },
-];
-
-const _STATUS_OPTIONS: { value: LeadStatus; label: string }[] = [
-  { value: 'new', label: 'New' },
-  { value: 'contacted', label: 'Contacted' },
-  { value: 'qualified', label: 'Qualified' },
-  { value: 'proposal', label: 'Proposal' },
-  { value: 'negotiation', label: 'Negotiation' },
-  { value: 'won', label: 'Won' },
-  { value: 'lost', label: 'Lost' },
-  { value: 'nurturing', label: 'Nurturing' },
-];
-
-const _TEMPERATURE_OPTIONS: { value: LeadTemperature; label: string }[] = [
-  { value: 'cold', label: 'Cold' },
-  { value: 'warm', label: 'Warm' },
-  { value: 'hot', label: 'Hot' },
 ];
 
 const COMPANY_SIZE_OPTIONS = [

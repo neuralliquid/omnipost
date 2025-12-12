@@ -82,34 +82,36 @@ export async function createLogEntry(
 
 /**
  * Logs an API action to the audit trail
+ * Uses Prisma database when available, falls back to console logging
  * @param entry The log entry to record
  */
 export async function logToAuditTrail(entry: LogEntry): Promise<void> {
-  // Determine environment from NODE_ENV
-  const isProd = process.env.NODE_ENV === 'production';
-
-  if (isProd) {
-    // In production, we might:
-    // 1. Store in database
-    // TODO: Implement database logging
-
-    // 2. Send to a logging service
-    try {
-      // Placeholder for actual logging service integration
-      await fetch('/api/internal/audit-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(entry),
+  // Try to log to database if Prisma is available
+  try {
+    const { prisma } = await import('../../../lib/db/prisma');
+    // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const prismaClient = prisma as any;
+    if (prismaClient?.auditLog?.create) {
+      await prismaClient.auditLog.create({
+        data: {
+          action: entry.action,
+          userId: entry.user !== 'anonymous' ? entry.user : null,
+          path: entry.path,
+          method: entry.method,
+          body: entry.body ? JSON.stringify(entry.body) : null,
+          result: entry.result,
+          statusCode: entry.statusCode,
+        },
       });
-    } catch (error) {
-      // Fallback to console in case of service failure
-      console.error('[AUDIT SERVICE ERROR]', error);
-      console.error('[AUDIT FALLBACK]', JSON.stringify(entry));
+      return; // Successfully logged to database
     }
-  } else {
-    // In development/test, just log to console
-    console.error('[AUDIT]', JSON.stringify(entry));
+  } catch {
+    // Prisma not available or error, fall through to console logging
   }
+
+  // Fallback to console logging
+  console.log('[AUDIT]', JSON.stringify(entry));
 }
 
 interface ResultWithStatus {

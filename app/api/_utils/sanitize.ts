@@ -54,15 +54,49 @@ type DOMPurifyType = {
 
 // Lazy load DOMPurify only on client-side
 let DOMPurify: DOMPurifyType = null;
+let domPurifyLoading: Promise<DOMPurifyType> | null = null;
+
+/**
+ * Ensures DOMPurify is loaded on client-side
+ * Returns null immediately on server-side
+ */
+function ensureDOMPurify(): DOMPurifyType {
+  // Server-side: always return null
+  if (typeof globalThis.window === 'undefined') {
+    return null;
+  }
+
+  // Already loaded
+  if (DOMPurify) {
+    return DOMPurify;
+  }
+
+  // Start loading if not already
+  if (!domPurifyLoading) {
+    domPurifyLoading = import('dompurify')
+      .then(module => {
+        DOMPurify = module.default;
+        return DOMPurify;
+      })
+      .catch(error => {
+        console.error('[Sanitize] Failed to load DOMPurify:', error);
+        return null;
+      });
+  }
+
+  // Return null for now, will use fallback
+  // DOMPurify will be available for subsequent calls
+  return null;
+}
+
+// Start loading on client-side immediately
 if (typeof globalThis.window !== 'undefined') {
-  // Client-side only - use IIFE for async initialization
-  (async () => {
-    DOMPurify = await import('dompurify').then(module => module.default);
-  })();
+  ensureDOMPurify();
 }
 
 /**
  * Sanitizes HTML content to prevent XSS attacks
+ * Uses DOMPurify on client-side, falls back to stripHtmlTags on server-side
  * @param input - Raw HTML string
  * @param options - DOMPurify configuration options
  * @returns Sanitized HTML string
@@ -74,8 +108,11 @@ export function sanitizeHtml(
     allowedAttributes?: string[];
   }
 ): string {
-  // Server-side: strip all HTML tags for safety
-  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
+  // Try to get DOMPurify (will be null on server or if not yet loaded)
+  const purifier = ensureDOMPurify();
+
+  // Use fallback if DOMPurify not available
+  if (!purifier) {
     return stripHtmlTags(input);
   }
 
@@ -86,22 +123,26 @@ export function sanitizeHtml(
     KEEP_CONTENT: true,
   };
 
-  return DOMPurify.sanitize(input, config);
+  return purifier.sanitize(input, config);
 }
 
 /**
  * Sanitizes plain text by stripping all HTML tags
+ * Uses DOMPurify on client-side, falls back to stripHtmlTags on server-side
  * @param input - Raw text that may contain HTML
  * @returns Plain text with HTML removed
  */
 export function sanitizeText(input: string): string {
-  // Server-side: use simple regex stripping
-  if (typeof globalThis.window === 'undefined' || !DOMPurify) {
+  // Try to get DOMPurify (will be null on server or if not yet loaded)
+  const purifier = ensureDOMPurify();
+
+  // Use fallback if DOMPurify not available
+  if (!purifier) {
     return stripHtmlTags(input);
   }
 
   // Client-side: use DOMPurify
-  return DOMPurify.sanitize(input, {
+  return purifier.sanitize(input, {
     ALLOWED_TAGS: [],
     ALLOWED_ATTR: [],
     KEEP_CONTENT: true,

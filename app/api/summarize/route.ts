@@ -11,10 +11,16 @@ import featureFlags from '../../../lib/featureFlags';
 
 // Helper function to get API configuration
 const getApiConfig = () => {
-  return {
-    summarizationUrl: process.env.SUMMARIZATION_API_URL || 'https://api.summarization.ai/summarize',
-    approvalUrl: process.env.APPROVAL_API_URL || 'https://api.summarization.ai/approve',
-  } as const;
+  const summarizationUrl = process.env.SUMMARIZATION_API_URL;
+  const approvalUrl = process.env.APPROVAL_API_URL;
+
+  if (!summarizationUrl || !approvalUrl) {
+    throw new Error(
+      'Missing required environment variables: SUMMARIZATION_API_URL and APPROVAL_API_URL must be configured'
+    );
+  }
+
+  return { summarizationUrl, approvalUrl } as const;
 };
 
 /**
@@ -124,7 +130,7 @@ export const POST = withRateLimit(
 // Approve summary endpoint
 export const PUT = withErrorHandling(async (request: Request) => {
   // Check authentication
-  if (!isAuthenticated()) {
+  if (!(await isAuthenticated())) {
     return Errors.unauthorized('Authentication required to approve summary');
   }
 

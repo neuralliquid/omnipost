@@ -96,15 +96,23 @@ function extractSubmissionMetadata(request: NextRequest) {
 }
 
 /**
+ * Result of lead creation from form submission
+ */
+interface LeadCreationResult {
+  leadId?: string;
+  enrollmentError?: string;
+}
+
+/**
  * Create lead from form submission and handle sequence enrollment
  */
 async function createLeadFromSubmission(
   form: Form,
   responses: Record<string, unknown>,
   submissionId: string
-): Promise<string | undefined> {
+): Promise<LeadCreationResult> {
   const leadData = extractLeadData(form, responses);
-  if (!leadData) return undefined;
+  if (!leadData) return {};
 
   const createdBy = (await isAuthenticated()) ? await getCurrentUserId() : 'form_submission';
   const lead = await leadsClient.createLead(leadData, createdBy || 'form_submission');
@@ -119,6 +127,8 @@ async function createLeadFromSubmission(
     },
   });
 
+  const result: LeadCreationResult = { leadId: lead.id };
+
   // Enroll in sequence if configured
   if (form.integrations.enrollInSequence) {
     try {
@@ -128,11 +138,14 @@ async function createLeadFromSubmission(
         createdBy || 'form_submission'
       );
     } catch (enrollError) {
+      const errorMessage =
+        enrollError instanceof Error ? enrollError.message : 'Unknown enrollment error';
       console.error('Error enrolling lead in sequence:', enrollError);
+      result.enrollmentError = `Failed to enroll in sequence: ${errorMessage}`;
     }
   }
 
-  return lead.id;
+  return result;
 }
 
 /**
@@ -178,13 +191,26 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     // Create lead if integration is enabled
     let leadId: string | undefined;
+    let leadCreationError: string | undefined;
+    let enrollmentError: string | undefined;
+
     if (form.integrations.createLead) {
       try {
-        leadId = await createLeadFromSubmission(form, responses, submission.id);
+        const leadResult = await createLeadFromSubmission(form, responses, submission.id);
+        leadId = leadResult.leadId;
+        enrollmentError = leadResult.enrollmentError;
       } catch (leadError) {
+        const errorMessage =
+          leadError instanceof Error ? leadError.message : 'Unknown error';
         console.error('Error creating lead from form submission:', leadError);
+        leadCreationError = `Failed to create lead: ${errorMessage}`;
       }
     }
+
+    // Build response with any warnings
+    const warnings: string[] = [];
+    if (leadCreationError) warnings.push(leadCreationError);
+    if (enrollmentError) warnings.push(enrollmentError);
 
     return SuccessResponses.created({
       success: true,
@@ -192,6 +218,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
       leadId,
       message: form.completionSettings.message || 'Thank you for your submission!',
       redirectUrl: form.completionSettings.redirectUrl,
+      ...(warnings.length > 0 && { warnings }),
     });
   } catch (error) {
     return ErrorResponses.internalError('Error creating submission:', error);

@@ -113,7 +113,7 @@ export function useReviewProcess() {
         summary,
         image,
       });
-      console.error('Content approved:', response.data);
+      console.log('Content approved:', response.data);
       setCurrentStep('approved');
     } catch (err) {
       handleError(err);

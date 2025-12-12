@@ -17,15 +17,22 @@ import { getScheduler } from '@/lib/scheduler';
  */
 export async function POST(request: Request) {
   try {
-    // Optional: Verify cron secret for production
+    // Verify cron secret - mandatory in production
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
 
+    // In production, CRON_SECRET must be configured
+    if (process.env.NODE_ENV === 'production' && !cronSecret) {
+      console.error('[Scheduler] CRON_SECRET not configured in production');
+      return NextResponse.json(
+        { error: 'Server misconfiguration: CRON_SECRET required' },
+        { status: 500 }
+      );
+    }
+
+    // Validate authorization
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      // In production, require authentication
-      if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-      }
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const scheduler = getScheduler();
@@ -39,7 +46,7 @@ export async function POST(request: Request) {
     };
 
     // Log for monitoring
-    console.warn('[Scheduler] Process results:', summary);
+    console.log('[Scheduler] Process results:', summary);
 
     return NextResponse.json({
       message: `Processed ${summary.processed} jobs`,
