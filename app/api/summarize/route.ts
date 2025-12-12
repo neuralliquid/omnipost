@@ -78,7 +78,8 @@ function getSafeErrorMessage(error: unknown): string {
 async function handleError(error: unknown, action: string, message: string) {
   // Log only the safe error message, not the full error object
   const errorMessage = getSafeErrorMessage(error);
-  console.error(`${action} error:`, errorMessage);
+  // Use separate arguments to avoid format string injection (Codacy security rule)
+  console.error('[%s] error:', action, errorMessage);
 
   // Log failure with redacted error info
   const logEntry = await createLogEntry(`${action}_FAILURE`, {

@@ -89,7 +89,8 @@ function validateNavigation(navigation: unknown): NavigationItem[] {
     if (isValidNavigationItem(item)) {
       validItems.push(item);
     } else {
-      console.warn(`[SiteConfig] Invalid navigation item at index ${index}:`, item);
+      // Use format specifier to avoid format string injection (Codacy security rule)
+      console.warn('[SiteConfig] Invalid navigation item at index %d:', index, item);
     }
   }
 

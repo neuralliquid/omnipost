@@ -70,6 +70,8 @@ export default [
         Event: 'readonly',
         File: 'readonly',
         FileReader: 'readonly',
+        AbortController: 'readonly',
+        AbortSignal: 'readonly',
         // Jest/Testing
         describe: 'readonly',
         it: 'readonly',
