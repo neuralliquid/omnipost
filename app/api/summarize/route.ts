@@ -127,37 +127,41 @@ export const POST = withRateLimit(
   RateLimitPresets.AI_SERVICE
 );
 
-// Approve summary endpoint
-export const PUT = withErrorHandling(async (request: Request) => {
-  // Check authentication
-  if (!(await isAuthenticated())) {
-    return Errors.unauthorized('Authentication required to approve summary');
-  }
+// Approve summary endpoint with rate limiting
+export const PUT = withRateLimit(
+  withErrorHandling(async (request: Request) => {
+    // Check authentication
+    if (!(await isAuthenticated())) {
+      return Errors.unauthorized('Authentication required to approve summary');
+    }
 
-  try {
-    const body = await request.json();
-    const { summary } = body;
+    try {
+      const body = await request.json();
+      const { summary } = body;
 
-    // Validate input
-    const inputError = validateInput(summary, 'Summary');
-    if (inputError) return inputError;
+      // Validate input
+      const inputError = validateInput(summary, 'Summary');
+      if (inputError) return inputError;
 
-    // Log the approve summary request
-    const requestLogEntry = await createLogEntry('APPROVE_SUMMARY', {
-      summaryLength: summary.length,
-    });
-    await logToAuditTrail(requestLogEntry);
+      // Log the approve summary request
+      const requestLogEntry = await createLogEntry('APPROVE_SUMMARY', {
+        summaryLength: summary.length,
+      });
+      await logToAuditTrail(requestLogEntry);
 
-    // Call the approval API
-    const response = await callApprovalApi(summary);
+      // Call the approval API
+      const response = await callApprovalApi(summary);
 
-    // Log successful approval
-    const successLogEntry = await createLogEntry('APPROVE_SUMMARY_SUCCESS');
-    await logToAuditTrail(successLogEntry);
+      // Log successful approval
+      const successLogEntry = await createLogEntry('APPROVE_SUMMARY_SUCCESS');
+      await logToAuditTrail(successLogEntry);
 
-    // Return the approval result
-    return NextResponse.json(response.data);
-  } catch (error) {
-    return handleError(error, 'APPROVE_SUMMARY', 'approve summary');
-  }
-});
+      // Return the approval result
+      return NextResponse.json(response.data);
+    } catch (error) {
+      return handleError(error, 'APPROVE_SUMMARY', 'approve summary');
+    }
+  }),
+  '/api/summarize/approve',
+  RateLimitPresets.AI_SERVICE
+);

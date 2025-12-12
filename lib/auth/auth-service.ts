@@ -208,11 +208,14 @@ export class AuthService {
   /**
    * Verify user credentials
    * Uses Prisma with bcrypt if available, falls back to environment-based verification
+   * SECURITY: In production, only bcrypt comparison is allowed for database users
    * @param username Username
    * @param password Password
    * @returns Boolean indicating if credentials are valid
    */
   public async verifyUserCredentials(username: string, password: string): Promise<boolean> {
+    const isProduction = process.env.NODE_ENV === 'production';
+
     // Try to use Prisma if available
     try {
       const { prisma } = await import('../db/prisma');
@@ -224,19 +227,34 @@ export class AuthService {
           where: { username },
         });
         if (dbUser?.passwordHash) {
-          // In production, use bcrypt to compare passwords
-          // const bcrypt = await import('bcrypt');
-          // return bcrypt.compare(password, dbUser.passwordHash);
-
-          // For now, direct comparison (should use bcrypt in production)
-          return dbUser.passwordHash === password;
+          // Use bcryptjs to compare passwords securely
+          try {
+            const bcrypt = await import('bcryptjs');
+            return await bcrypt.compare(password, dbUser.passwordHash);
+          } catch (bcryptError) {
+            console.error('[Auth] Failed to load or use bcryptjs:', bcryptError);
+            // In production, never allow plaintext fallback
+            if (isProduction) {
+              console.error('[Auth] bcryptjs unavailable in production - denying access');
+              return false;
+            }
+            // In development only, warn and deny (no plaintext fallback)
+            console.warn('[Auth] bcryptjs unavailable - install bcryptjs for password verification');
+            return false;
+          }
         }
       }
     } catch {
       // Prisma not available, fall through to test credentials
     }
 
-    // Fallback to environment-based test credentials (for development/testing)
+    // Fallback to environment-based test credentials (for development/testing ONLY)
+    // This fallback is disabled in production for security
+    if (isProduction) {
+      console.warn('[Auth] Test credentials fallback disabled in production');
+      return false;
+    }
+
     const testUsername = process.env.TEST_USER_USERNAME;
     const testPassword = process.env.TEST_USER_PASSWORD;
 

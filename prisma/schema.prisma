@@ -1,6 +1,21 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
+// ============================================
+// SQLite Workaround Note
+// ============================================
+// This schema uses SQLite for local development. JSON payloads (tags, metadata,
+// details, fields) are stored as plain strings because SQLite lacks native JSON.
+// String-based enums are also used for status/type fields.
+//
+// PostgreSQL Migration Steps:
+// 1. Change datasource provider from "sqlite" to "postgresql"
+// 2. Update DATABASE_URL to PostgreSQL connection string
+// 3. Change String columns for JSON (tags, metadata, details, fields) to Json type
+// 4. Define proper Prisma enums for status fields (e.g., enum LeadStatus { new contacted ... })
+// 5. Run: npx prisma migrate dev --name "switch-to-postgres"
+// ============================================
+
 generator client {
   provider = "prisma-client-js"
 }

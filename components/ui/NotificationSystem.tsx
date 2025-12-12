@@ -4,14 +4,16 @@ import React, { useState, useEffect, FormEvent } from 'react';
 import styles from '@/styles/NotificationSystem.module.css';
 
 interface Notification {
+  id: string;
   type: string;
   message: string;
 }
 
-const NotificationSystem: React.FC = () => {
+export const NotificationSystem: React.FC = () => {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -32,7 +34,7 @@ const NotificationSystem: React.FC = () => {
     fetchNotifications();
   }, []);
 
-  const sendNotification = async (type: string, message: string) => {
+  const sendNotification = async (type: string, message: string): Promise<boolean> => {
     try {
       const response = await fetch('/api/notifications', {
         method: 'POST',
@@ -45,21 +47,32 @@ const NotificationSystem: React.FC = () => {
         throw new Error('Failed to send notification');
       }
       const data = await response.json();
-      setNotifications([...notifications, data]);
+      // Use functional updater to ensure we have the latest state
+      setNotifications(prev => [...prev, data]);
       setError(null);
+      return true;
     } catch (err) {
       setError((err as Error).message);
+      return false;
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
     const formData = new FormData(form);
     const type = formData.get('type') as string;
     const message = formData.get('message') as string;
-    sendNotification(type, message);
-    form.reset();
+
+    setIsSubmitting(true);
+    try {
+      const success = await sendNotification(type, message);
+      if (success) {
+        form.reset();
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const getTypeClass = (type: string): string => {
@@ -98,8 +111,8 @@ const NotificationSystem: React.FC = () => {
               placeholder="Enter your notification message..."
             />
           </div>
-          <button type="submit" className={styles.submitButton}>
-            Send
+          <button type="submit" className={styles.submitButton} disabled={isSubmitting}>
+            {isSubmitting ? 'Sending...' : 'Send'}
           </button>
         </form>
       </div>
@@ -112,11 +125,8 @@ const NotificationSystem: React.FC = () => {
         )}
         {!isLoading && notifications.length > 0 && (
           <ul className={styles.notificationList}>
-            {notifications.map((notification, index) => (
-              <li
-                key={`notif-${notification.type}-${index}`}
-                className={styles.notificationItem}
-              >
+            {notifications.map(notification => (
+              <li key={notification.id} className={styles.notificationItem}>
                 <span className={getTypeClass(notification.type)}>{notification.type}</span>
                 <span className={styles.notificationMessage}>{notification.message}</span>
               </li>

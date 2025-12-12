@@ -11,8 +11,9 @@ interface LoadingStateProps {
  * Shared component for displaying a loading state
  */
 const LoadingState: React.FC<LoadingStateProps> = ({ message = 'Loading...', className }) => {
+  const combinedClassName = className ? `${styles.loading} ${className}` : styles.loading;
   return (
-    <div className={className || styles.loading}>
+    <div className={combinedClassName}>
       <div className={styles.loadingSpinner}>
         <Image src="/images/loading-spinner.svg" alt="Loading" width={50} height={50} priority />
       </div>

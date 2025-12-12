@@ -46,11 +46,19 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
   };
 
   if (loading) {
-    return <div className={styles.loading}>Loading platforms...</div>;
+    return (
+      <div className={styles.loading} role="status" aria-live="polite">
+        Loading platforms...
+      </div>
+    );
   }
 
   if (error) {
-    return <div className={styles.error}>Error: {error}</div>;
+    return (
+      <div className={styles.error} role="alert">
+        Error loading platforms.
+      </div>
+    );
   }
 
   if (platforms.length === 0) {
@@ -68,6 +76,7 @@ const PlatformSelector: React.FC<PlatformSelectorProps> = ({ onSelect, selectedP
             className={`${styles.platformButton} ${
               selectedPlatformId === platform.id ? styles.platformButtonSelected : ''
             }`}
+            aria-pressed={selectedPlatformId === platform.id}
             onClick={() => handlePlatformSelect(platform)}
           >
             <div className={styles.platformContent}>
