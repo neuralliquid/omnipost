@@ -196,21 +196,28 @@ model LeadInteraction {
 // - The createdAt index supports efficient date-range queries for cleanup
 // ============================================
 model AuditLog {
-  id        String   @id @default(cuid())
-  action    String
-  entity    String   // campaign, content, lead, etc.
-  entityId  String?
-  details   String?  // JSON object stored as string
-  ipAddress String?  // PII: subject to retention policy (see above)
-  userAgent String?  // PII: subject to retention policy (see above)
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  action     String
+  entity     String?  // Optional: campaign, content, lead, etc. (not required for API-only logs)
+  entityId   String?
+  details    String?  // JSON object stored as string
+  // HTTP request audit fields (used by app/api/_utils/audit.ts)
+  path       String?  // Request path (e.g., /api/auth)
+  method     String?  // HTTP method (GET, POST, etc.)
+  body       String?  // JSON stringified request body (sanitized)
+  result     String?  // Result status (success, failure, etc.)
+  statusCode Int?     // HTTP status code
+  // PII fields (subject to retention policy above)
+  ipAddress  String?  // PII: subject to retention policy (see above)
+  userAgent  String?  // PII: subject to retention policy (see above)
+  createdAt  DateTime @default(now())
 
   // Relations
   userId String?
   user   User?  @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
-  @@index([entity])
+  @@index([action])
   @@index([createdAt]) // Used for retention policy cleanup queries
 }
 
