@@ -166,10 +166,21 @@ describeIfFetch('Integration API Flow', () => {
 
   const extractBearerToken = (req: http.IncomingMessage): string | null => {
     const authHeader = req.headers['authorization'];
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+
+    // Normalize header: handle string | string[] | undefined
+    let auth: string | undefined;
+    if (Array.isArray(authHeader)) {
+      auth = authHeader[0];
+    } else if (typeof authHeader === 'string') {
+      auth = authHeader;
+    }
+
+    // Return null if missing or not a Bearer token
+    if (typeof auth !== 'string' || !auth.startsWith('Bearer ')) {
       return null;
     }
-    return authHeader.slice(7);
+
+    return auth.slice(7);
   };
 
   // Simple token validation (in production would verify JWT)
