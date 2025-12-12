@@ -3,14 +3,34 @@ import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../_utils/audit';
 import { isAuthenticated } from '../_utils/auth';
 import { Errors, withErrorHandling } from '../_utils/errors';
-import { summarizeTextSchema, validateAndSanitize } from '../_utils/sanitize';
+import { summarizeTextSchema, validateAndSanitize, sanitizeText } from '../_utils/sanitize';
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
+import { z } from 'zod';
 
 // Import feature flags from utils
 import featureFlags from '../../../lib/featureFlags';
 
-// Helper function to get API configuration
-const getApiConfig = () => {
+/**
+ * Zod schema for validating approval request input
+ */
+const ApprovalRequestSchema = z.object({
+  summary: z
+    .string()
+    .min(1, 'Summary cannot be empty')
+    .max(100_000, 'Summary too large (max 100,000 characters)')
+    .transform(val => sanitizeText(val)),
+});
+
+/**
+ * Retrieves API configuration from environment variables.
+ *
+ * This function loads the summarization and approval API URLs from environment
+ * variables. Both URLs must be configured for the summarization feature to work.
+ *
+ * @returns Object containing summarizationUrl and approvalUrl
+ * @throws {Error} If SUMMARIZATION_API_URL or APPROVAL_API_URL environment variables are not set
+ */
+function getApiConfig(): { summarizationUrl: string; approvalUrl: string } {
   const summarizationUrl = process.env.SUMMARIZATION_API_URL;
   const approvalUrl = process.env.APPROVAL_API_URL;
 
@@ -20,8 +40,8 @@ const getApiConfig = () => {
     );
   }
 
-  return { summarizationUrl, approvalUrl } as const;
-};
+  return { summarizationUrl, approvalUrl };
+}
 
 /**
  * Validates authentication and feature flag
@@ -38,15 +58,6 @@ async function validateAuthAndFeature() {
   return null;
 }
 
-/**
- * Validates the input text
- */
-function validateInput(text: unknown, fieldName: string) {
-  if (typeof text !== 'string' || !text.trim()) {
-    return Errors.badRequest(`${fieldName} is required and must be a non-empty string`);
-  }
-  return null;
-}
 
 /**
  * Logs an error and returns an error response
@@ -137,11 +148,14 @@ export const PUT = withRateLimit(
 
     try {
       const body = await request.json();
-      const { summary } = body;
 
-      // Validate input
-      const inputError = validateInput(summary, 'Summary');
-      if (inputError) return inputError;
+      // Validate and sanitize input using Zod schema
+      const validation = validateAndSanitize(ApprovalRequestSchema, body);
+      if (!validation.success) {
+        return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
+      }
+
+      const { summary } = validation.data;
 
       // Log the approve summary request
       const requestLogEntry = await createLogEntry('APPROVE_SUMMARY', {

@@ -34,14 +34,18 @@ export const NotificationSystem: React.FC = () => {
     fetchNotifications();
   }, []);
 
-  const sendNotification = async (type: string, message: string): Promise<boolean> => {
+  const sendNotification = async (
+    type: string,
+    recipient: string,
+    message: string
+  ): Promise<boolean> => {
     try {
       const response = await fetch('/api/notifications', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ type, message }),
+        body: JSON.stringify({ type, recipient, message }),
       });
       if (!response.ok) {
         throw new Error('Failed to send notification');
@@ -62,11 +66,12 @@ export const NotificationSystem: React.FC = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const type = formData.get('type') as string;
+    const recipient = formData.get('recipient') as string;
     const message = formData.get('message') as string;
 
     setIsSubmitting(true);
     try {
-      const success = await sendNotification(type, message);
+      const success = await sendNotification(type, recipient, message);
       if (success) {
         form.reset();
       }
@@ -98,6 +103,19 @@ export const NotificationSystem: React.FC = () => {
               <option value="slack">Slack</option>
               <option value="sms">SMS</option>
             </select>
+          </div>
+          <div className={styles.formGroup}>
+            <label htmlFor="recipient" className={styles.label}>
+              Recipient
+            </label>
+            <input
+              type="text"
+              id="recipient"
+              name="recipient"
+              required
+              className={styles.input}
+              placeholder="Email address or phone number..."
+            />
           </div>
           <div className={styles.formGroup}>
             <label htmlFor="message" className={styles.label}>

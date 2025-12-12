@@ -2,6 +2,8 @@ import React from 'react';
 import Head from 'next/head';
 import Header from '../ui/Header';
 import Footer from '../ui/Footer';
+// Shared layout styles used by both components/layouts/Layout.tsx and components/ui/Layout.tsx
+// Using MainLayout.module.css as the canonical name for shared layout styling across the app
 import styles from '@/styles/MainLayout.module.css';
 
 interface LayoutProps {
