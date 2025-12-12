@@ -3,6 +3,8 @@
  *
  * These tests use Node.js built-in http module and global fetch (Node 18+)
  * to avoid ESM import issues with node-fetch.
+ *
+ * @jest-environment node
  */
 
 import { afterAll, beforeAll, describe, expect, test } from '@jest/globals';
