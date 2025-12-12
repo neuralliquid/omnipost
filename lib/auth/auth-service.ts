@@ -163,16 +163,30 @@ export class AuthService {
    * Find a user by username
    * @param username Username to search for
    * @returns User object or null if not found
+   *
+   * NOTE: This is a placeholder implementation.
+   * In production, replace with actual database lookup (e.g., Prisma, Drizzle).
    */
   public async findUserByUsername(username: string): Promise<User | null> {
-    // This would be replaced with actual database lookup
-    const users = [
-      { id: '1', username: 'admin', password: 'hashed_password', role: 'admin' },
-      { id: '2', username: 'user', password: 'hashed_password', role: 'user' },
-    ];
+    // TODO: Replace with actual database lookup
+    // Example with Prisma:
+    // const user = await prisma.user.findUnique({ where: { username } });
+    // return user;
 
-    const user = users.find(user => user.username === username);
-    return user ? user : null;
+    // For development, check environment variables for test users
+    const testUsername = process.env.TEST_USER_USERNAME;
+    const testUserRole = process.env.TEST_USER_ROLE || 'user';
+
+    if (testUsername && username === testUsername) {
+      return {
+        id: 'test-user-1',
+        username: testUsername,
+        role: testUserRole,
+      };
+    }
+
+    // No user found - in production this would query the database
+    return null;
   }
 
   /**
@@ -180,21 +194,28 @@ export class AuthService {
    * @param username Username
    * @param password Password
    * @returns Boolean indicating if credentials are valid
+   *
+   * NOTE: This is a placeholder implementation.
+   * In production, use proper password hashing (bcrypt, argon2) and database lookup.
    */
   public async verifyUserCredentials(username: string, password: string): Promise<boolean> {
-    // In a real implementation, you would:
-    // 1. Find the user by username
-    // 2. Hash the provided password with the same algorithm used for storage
-    // 3. Compare the hashed password with the stored hash
+    // TODO: Replace with actual database lookup and password verification
+    // Example with bcrypt:
+    // const user = await this.findUserByUsername(username);
+    // if (!user) return false;
+    // return bcrypt.compare(password, user.passwordHash);
 
-    // For now, we'll just do a simple check against our mock users
-    const users = [
-      { username: 'admin', password: 'admin123', role: 'admin' },
-      { username: 'user', password: 'user123', role: 'user' },
-    ];
+    // For development/testing only - credentials from environment variables
+    const testUsername = process.env.TEST_USER_USERNAME;
+    const testPassword = process.env.TEST_USER_PASSWORD;
 
-    const user = users.find(u => u.username === username);
-    return user ? user.password === password : false;
+    if (!testUsername || !testPassword) {
+      // No test credentials configured - authentication disabled
+      console.warn('No authentication credentials configured. Set TEST_USER_USERNAME and TEST_USER_PASSWORD environment variables for development.');
+      return false;
+    }
+
+    return username === testUsername && password === testPassword;
   }
 }
 

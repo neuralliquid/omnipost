@@ -34,11 +34,33 @@ interface RateLimitEntry {
   resetTime: number;
 }
 
-// In-memory store for rate limiting
-// NOTE: For production multi-instance deployments, replace with Redis or Upstash Rate Limit
-// Example: import { Ratelimit } from "@upstash/ratelimit";
-// const ratelimit = new Ratelimit({ redis: Redis.fromEnv(), limiter: Ratelimit.slidingWindow(10, "10 s") });
+/**
+ * In-memory store for rate limiting
+ *
+ * PRODUCTION WARNING: This in-memory implementation has limitations:
+ * - Not shared across multiple server instances (load balanced environments)
+ * - Rate limit state is lost on server restart
+ * - Memory usage grows with number of unique IPs
+ *
+ * For production, use Redis or Upstash Rate Limit:
+ *
+ * import { Ratelimit } from "@upstash/ratelimit";
+ * import { Redis } from "@upstash/redis";
+ *
+ * const ratelimit = new Ratelimit({
+ *   redis: Redis.fromEnv(),
+ *   limiter: Ratelimit.slidingWindow(10, "10 s"),
+ *   analytics: true,
+ * });
+ */
 const rateLimitStore = new Map<string, RateLimitEntry>();
+
+// Log warning in production if using in-memory rate limiting
+if (process.env.NODE_ENV === 'production' && !process.env.UPSTASH_REDIS_REST_URL) {
+  console.warn(
+    '[Rate Limit] Using in-memory rate limiting. For production deployments with multiple instances, configure UPSTASH_REDIS_REST_URL for distributed rate limiting.'
+  );
+}
 
 /**
  * Clean up expired entries periodically (every 60 seconds)

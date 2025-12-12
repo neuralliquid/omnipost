@@ -292,15 +292,27 @@ export interface UseCampaignReturn {
 
 /**
  * Main campaign hook
+ *
+ * Uses localStorage for persistence. The hook handles SSR/hydration safely
+ * by only loading data after the component has mounted on the client.
  */
 export function useCampaign(): UseCampaignReturn {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [selectedCampaignId, setSelectedCampaignId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
 
-  // Load campaigns on mount
+  // Mark as mounted after first render (client-side only)
   useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  // Load campaigns on mount (client-side only)
+  useEffect(() => {
+    // Skip on server and until mounted to prevent hydration mismatch
+    if (!hasMounted) return;
+
     setIsLoading(true);
     try {
       const loaded = loadCampaigns();
@@ -313,14 +325,14 @@ export function useCampaign(): UseCampaignReturn {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [hasMounted]);
 
-  // Save campaigns when changed
+  // Save campaigns when changed (client-side only)
   useEffect(() => {
-    if (!isLoading) {
-      saveCampaigns(campaigns);
-    }
-  }, [campaigns, isLoading]);
+    // Only save after initial load is complete
+    if (!hasMounted || isLoading) return;
+    saveCampaigns(campaigns);
+  }, [campaigns, isLoading, hasMounted]);
 
   // Get selected campaign
   const selectedCampaign = campaigns.find(c => c.id === selectedCampaignId) || null;
