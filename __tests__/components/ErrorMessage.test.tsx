@@ -26,7 +26,8 @@ describe('ErrorMessage', () => {
 
   it('uses default errorMessage class when no className provided', () => {
     const { container } = render(<ErrorMessage message="Test error" />);
-    // The default class from CSS module will be applied
-    expect(container.firstChild).toBeInTheDocument();
+    // Verify that a CSS module class is applied (non-empty className)
+    const element = container.firstChild as HTMLElement;
+    expect(element.className.trim().length).toBeGreaterThan(0);
   });
 });

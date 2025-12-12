@@ -81,6 +81,28 @@ export async function createLogEntry(
 }
 
 /**
+ * Type guard to check if prisma client has auditLog.create capability
+ */
+function hasPrismaAuditLog(
+  client: unknown
+): client is { auditLog: { create: (args: { data: Record<string, unknown> }) => Promise<unknown> } } {
+  if (typeof client !== 'object' || client === null) {
+    return false;
+  }
+  if (!('auditLog' in client)) {
+    return false;
+  }
+  const auditLog = (client as Record<string, unknown>).auditLog;
+  if (typeof auditLog !== 'object' || auditLog === null) {
+    return false;
+  }
+  if (!('create' in auditLog)) {
+    return false;
+  }
+  return typeof (auditLog as Record<string, unknown>).create === 'function';
+}
+
+/**
  * Logs an API action to the audit trail
  * Uses Prisma database when available, falls back to console logging
  * @param entry The log entry to record
@@ -89,14 +111,12 @@ export async function logToAuditTrail(entry: LogEntry): Promise<void> {
   // Try to log to database if Prisma is available
   try {
     const { prisma } = await import('../../../lib/db/prisma');
-    // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const prismaClient = prisma as any;
-    if (prismaClient?.auditLog?.create) {
+    const prismaClient: unknown = prisma;
+    if (hasPrismaAuditLog(prismaClient)) {
       await prismaClient.auditLog.create({
         data: {
           action: entry.action,
-          userId: entry.user !== 'anonymous' ? entry.user : null,
+          userId: entry.user === 'anonymous' ? null : entry.user,
           path: entry.path,
           method: entry.method,
           body: entry.body ? JSON.stringify(entry.body) : null,

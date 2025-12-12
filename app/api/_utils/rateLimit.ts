@@ -223,6 +223,9 @@ function checkRateLimitInMemory(
   };
 }
 
+// Default window for restrictive fallback (15 minutes)
+const DEFAULT_WINDOW_MS = 15 * 60 * 1000;
+
 /**
  * Check if request should be rate limited (Upstash version)
  */
@@ -233,12 +236,22 @@ async function checkRateLimitUpstash(
   // Lazy-initialize Upstash
   const limiters = await initUpstash();
   const limiter = limiters?.get(presetName);
+  const ip = getClientIp(request);
+
   if (!limiter) {
-    // Fallback to allowing if limiter not found
-    return { allowed: true, remaining: 999, resetTime: Date.now() + 60000 };
+    // Log error for missing limiter configuration (possible typo in presetName)
+    console.error(
+      `[Rate Limit] No limiter found for preset "${presetName}" (IP: ${ip}). ` +
+        'This may indicate a configuration error. Denying request as a safety measure.'
+    );
+    // Return restrictive default to preserve rate limiting protection
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime: Date.now() + DEFAULT_WINDOW_MS,
+    };
   }
 
-  const ip = getClientIp(request);
   const { success, remaining, reset } = await limiter.limit(ip);
 
   return {
