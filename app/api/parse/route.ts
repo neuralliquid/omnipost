@@ -36,22 +36,12 @@ function validateEnvironmentVariables(): boolean {
   return true;
 }
 
-// Helper to validate all required feature flags
+// BUG-07 Fix: Only validate feature flags actually required for text parsing
+// Previously required all flags (scraping, notion, openai, telegram) which are not needed for parse
 function validateFeatureFlags(): string | null {
-  const requiredFlags = [
-    { flag: featureFlags.textParser?.enabled, name: 'Text parser' },
-    { flag: featureFlags.trigger.cron.enabled, name: 'CRON trigger' },
-    { flag: featureFlags.trigger.rss.enabled, name: 'RSS trigger' },
-    { flag: featureFlags.scraping.enabled, name: 'Scraping' },
-    { flag: featureFlags.storage.notion.enabled, name: 'Notion storage' },
-    { flag: featureFlags.writing.openai.enabled, name: 'OpenAI writing' },
-    { flag: featureFlags.distribution.telegram.enabled, name: 'Telegram distribution' },
-  ];
-
-  for (const { flag, name } of requiredFlags) {
-    if (!flag) {
-      return `${name} feature is disabled`;
-    }
+  // Only check textParser flag - it's the only feature this endpoint requires
+  if (!featureFlags.textParser?.enabled) {
+    return 'Text parser feature is disabled';
   }
 
   return null;

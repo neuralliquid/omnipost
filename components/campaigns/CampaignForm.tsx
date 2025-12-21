@@ -202,10 +202,12 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                   formData.platforms?.includes(platform.slug) ? styles.selected : ''
                 }`}
               >
+                {/* A11Y-02 Fix: Added aria-label for screen readers */}
                 <input
                   type="checkbox"
                   checked={formData.platforms?.includes(platform.slug) || false}
                   onChange={() => togglePlatform(platform.slug)}
+                  aria-label={`Select platform: ${platform.name}`}
                 />
                 <span
                   className={styles.platformLogo}
@@ -248,11 +250,14 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                     formData.seriesIds?.includes(s.id) ? styles.selected : ''
                   }`}
                 >
+                  {/* A11Y-01 Fix: Use visually-hidden class instead of display:none
+                      to maintain keyboard accessibility for screen readers */}
                   <input
                     type="checkbox"
                     checked={formData.seriesIds?.includes(s.id) || false}
                     onChange={() => toggleSeries(s.id)}
-                    style={{ display: 'none' }}
+                    className="visually-hidden"
+                    aria-label={`Select series: ${s.title}`}
                   />
                   <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path

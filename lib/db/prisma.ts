@@ -29,7 +29,7 @@ const globalForPrisma = globalThis as unknown as {
 function createPrismaClient(): PrismaClientType | null {
   try {
     // Dynamic import to avoid build errors when Prisma isn't set up
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
+
     const { PrismaClient } = require('@prisma/client');
     return new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],

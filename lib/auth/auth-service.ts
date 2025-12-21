@@ -78,9 +78,19 @@ export class AuthService {
 
       const decoded = jwt.verify(token, this.getJwtSecret()) as TokenPayload;
 
+      // BUG-08 Fix: Add null check before accessing decoded properties
+      if (!decoded || typeof decoded !== 'object') {
+        return null;
+      }
+
       // Check if token has expired
       const now = Math.floor(Date.now() / 1000);
       if (decoded.exp && decoded.exp < now) {
+        return null;
+      }
+
+      // BUG-08 Fix: Validate required fields exist before returning
+      if (!decoded.id || !decoded.username || !decoded.role) {
         return null;
       }
 
