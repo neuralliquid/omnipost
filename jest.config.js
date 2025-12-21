@@ -37,7 +37,11 @@ const customJestConfig = {
   transformIgnorePatterns: ['node_modules/(?!(node-fetch|@upstash|uncrypto)/)'],
 
   // Ignore paths
-  testPathIgnorePatterns: ['<rootDir>/node_modules/', '<rootDir>/.next/'],
+  testPathIgnorePatterns: [
+    '<rootDir>/node_modules/',
+    '<rootDir>/.next/',
+    '<rootDir>/__tests__/a11y/a11y-setup.ts',
+  ],
 
   // Collect coverage from these directories
   collectCoverageFrom: [

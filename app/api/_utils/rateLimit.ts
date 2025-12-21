@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { evictOldestFromMap } from '@/lib/utils/bounded-store';
 
 // Dynamic import types for Upstash (avoids ESM issues in Jest)
 type UpstashRatelimit = InstanceType<typeof import('@upstash/ratelimit').Ratelimit>;
@@ -156,14 +157,33 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
 }
 
 /**
- * In-memory store for rate limiting (fallback when Redis not available)
+ * PERF-03/MEM-02 Fix: In-memory store for rate limiting with bounded size
+ * Uses a Map with LRU-style eviction to prevent unbounded memory growth
  */
 const rateLimitStore = new Map<string, RateLimitEntry>();
+
+/**
+ * PERF-03 Fix: Maximum number of entries in the rate limit store
+ * This prevents memory exhaustion from attackers generating unique IPs
+ */
+const MAX_RATE_LIMIT_ENTRIES = 10000;
 
 /**
  * Last cleanup timestamp for opportunistic cleanup (avoids setInterval in serverless)
  */
 let lastCleanup = 0;
+
+/**
+ * PERF-03/MEM-02 Fix: Evict oldest entries when store reaches max size
+ * Uses shared utility with FIFO eviction strategy (Map preserves insertion order)
+ */
+function evictOldestEntries(targetSize: number): void {
+  const removed = evictOldestFromMap(rateLimitStore, targetSize);
+
+  if (removed > 0 && process.env.NODE_ENV !== 'production') {
+    console.debug(`[Rate Limit] Evicted ${removed} oldest entries to maintain max size`);
+  }
+}
 
 /**
  * Get a unique key for rate limiting based on IP and endpoint
@@ -187,8 +207,46 @@ function getClientIp(request: NextRequest): string {
 }
 
 /**
+ * BUG-06 Fix: Flag to prevent concurrent cleanup operations
+ * This ensures atomic cleanup even in async contexts
+ */
+let cleanupInProgress = false;
+
+/**
+ * BUG-06 Fix: Atomic cleanup function that prevents concurrent executions
+ * Collects keys to delete first, then deletes in a separate pass
+ */
+function performCleanup(now: number): void {
+  if (cleanupInProgress) return;
+  cleanupInProgress = true;
+
+  try {
+    // Collect expired keys first (read phase)
+    const expiredKeys: string[] = [];
+    for (const [entryKey, entry] of rateLimitStore.entries()) {
+      if (entry.resetTime < now) {
+        expiredKeys.push(entryKey);
+      }
+    }
+
+    // Delete collected keys (write phase)
+    for (const key of expiredKeys) {
+      rateLimitStore.delete(key);
+    }
+
+    // Enforce max size if needed
+    if (rateLimitStore.size > MAX_RATE_LIMIT_ENTRIES) {
+      evictOldestEntries(MAX_RATE_LIMIT_ENTRIES);
+    }
+  } finally {
+    cleanupInProgress = false;
+  }
+}
+
+/**
  * Check if request should be rate limited (in-memory version)
  * Includes opportunistic cleanup of expired entries (no setInterval needed)
+ * BUG-06 Fix: Uses atomic patterns to prevent race conditions
  */
 function checkRateLimitInMemory(
   request: NextRequest,
@@ -198,22 +256,29 @@ function checkRateLimitInMemory(
   const key = getRateLimitKey(request, endpoint);
   const now = Date.now();
 
-  // Opportunistic cleanup: every 60 seconds, clean expired entries
-  // This avoids using setInterval which keeps serverless/edge functions alive
+  // PERF-03 Fix: Opportunistic cleanup with size enforcement
+  // Every 60 seconds, clean expired entries and enforce max size
+  // BUG-06 Fix: Now uses atomic cleanup function
   if (now - lastCleanup > 60_000) {
     lastCleanup = now;
-    for (const [entryKey, entry] of rateLimitStore.entries()) {
-      if (entry.resetTime < now) {
-        rateLimitStore.delete(entryKey);
-      }
-    }
+    performCleanup(now);
   }
 
+  // PERF-03 Fix: Immediate size check before adding new entry
+  // This prevents unbounded growth between cleanup cycles
+  if (rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
+    // Evict 10% of entries to make room
+    evictOldestEntries(Math.floor(MAX_RATE_LIMIT_ENTRIES * 0.9));
+  }
+
+  // BUG-06 Fix: Atomic get-and-update pattern
+  // Get current entry and prepare the update in one logical operation
   const entry = rateLimitStore.get(key);
 
   // No entry or expired entry - allow and create new entry
   if (!entry || entry.resetTime < now) {
     const resetTime = now + config.windowMs;
+    // BUG-06 Fix: Create new entry object to avoid mutation issues
     rateLimitStore.set(key, {
       count: 1,
       resetTime,
@@ -227,12 +292,16 @@ function checkRateLimitInMemory(
 
   // Entry exists and not expired
   if (entry.count < config.maxRequests) {
-    // Under limit - increment and allow
-    entry.count++;
-    rateLimitStore.set(key, entry);
+    // BUG-06 Fix: Create new entry object instead of mutating
+    // This prevents issues if the same entry is accessed concurrently
+    const newEntry = {
+      count: entry.count + 1,
+      resetTime: entry.resetTime,
+    };
+    rateLimitStore.set(key, newEntry);
     return {
       allowed: true,
-      remaining: config.maxRequests - entry.count,
+      remaining: config.maxRequests - newEntry.count,
       resetTime: entry.resetTime,
     };
   }

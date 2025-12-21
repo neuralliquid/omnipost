@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { apiClient } from '../../lib/api-client';
+// BUG-02 Fix: Import sanitization utility to prevent XSS
+import { sanitizeText } from '../../app/api/_utils/sanitize';
 
 interface ContentItem {
   id: string;
@@ -31,8 +33,17 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       // Use the API client to track content
       const result = await apiClient.trackContent(page, pageSize, filter);
 
-      if (result?.data) {
-        setContent(result.data);
+      // BUG-02 Fix: Enhanced structure validation before accessing data
+      if (result?.data && Array.isArray(result.data)) {
+        // Validate each item has required fields
+        const validatedContent = result.data.filter(
+          (item: unknown): item is ContentItem =>
+            typeof item === 'object' &&
+            item !== null &&
+            'id' in item &&
+            typeof (item as ContentItem).id === 'string'
+        );
+        setContent(validatedContent);
         setHasMore(result.pagination?.hasMorePages || false);
       } else {
         setError('Invalid response format');
@@ -163,16 +174,23 @@ const ContentManager: React.FC<ContentManagerProps> = ({ initialPageSize = 10 })
       ) : (
         <div>
           <div className="space-y-4">
-            {content.map(item => (
-              <div key={item.id} className="p-4 border rounded-lg">
-                <p className="whitespace-pre-wrap">{item.Content}</p>
-                {item.createdTime && (
-                  <p className="text-sm text-gray-500 mt-2">
-                    Created: {new Date(item.createdTime).toLocaleString()}
-                  </p>
-                )}
-              </div>
-            ))}
+            {content.map(item => {
+              // BUG-02 Fix: Sanitize content to prevent XSS attacks
+              const sanitizedContent = sanitizeText(item.Content || '');
+              // BUG-02 Fix: Add null check for createdTime before Date parsing
+              const formattedDate = item.createdTime
+                ? new Date(item.createdTime).toLocaleString()
+                : null;
+
+              return (
+                <div key={item.id} className="p-4 border rounded-lg">
+                  <p className="whitespace-pre-wrap">{sanitizedContent}</p>
+                  {formattedDate && (
+                    <p className="text-sm text-gray-500 mt-2">Created: {formattedDate}</p>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           {/* Pagination controls */}

@@ -408,8 +408,24 @@
   background: #f5f3ff;
 }
 
+/* A11Y-01 Fix: Use visually-hidden approach instead of display:none
+   to maintain keyboard accessibility for screen readers */
 .platformOption input {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Design-04 Fix: Show focus indicator when checkbox is focused */
+.platformOption:has(input:focus-visible) {
+  outline: 2px solid #2c3e50;
+  outline-offset: 2px;
 }
 
 .platformLogo {
@@ -438,6 +454,13 @@
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Design-04 Fix: Show focus indicator when series checkbox is focused */
+.seriesOption:has(input:focus-visible) {
+  outline: 2px solid #2c3e50;
+  outline-offset: 2px;
 }
 
 .seriesOption:hover {
