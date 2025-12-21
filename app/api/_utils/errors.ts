@@ -89,17 +89,34 @@ export function withErrorHandling<TContext = unknown>(
         return Errors.badRequest('Validation error', validationError.details);
       }
 
-      // Default to internal server error
-      const errorMessage =
+      // BUG-05 Fix: Don't expose internal error details in production
+      // Only log error details server-side, send generic message to client
+      const isProduction = process.env.NODE_ENV === 'production';
+
+      // Extract error message for logging purposes
+      const internalErrorMessage =
         error && typeof error === 'object' && 'message' in error
           ? String((error as { message: unknown }).message)
           : 'An unexpected error occurred';
-      const errorCause =
-        error && typeof error === 'object' && 'cause' in error
-          ? (error as { cause: unknown }).cause
-          : undefined;
 
-      return Errors.internalServerError(errorMessage, errorCause);
+      // Log detailed error for debugging (server-side only)
+      console.error('Internal error details:', {
+        message: internalErrorMessage,
+        stack: error instanceof Error ? error.stack : undefined,
+        cause:
+          error && typeof error === 'object' && 'cause' in error
+            ? (error as { cause: unknown }).cause
+            : undefined,
+      });
+
+      // Return sanitized error response - no stack traces or internal details exposed
+      if (isProduction) {
+        // In production, return generic message without details
+        return Errors.internalServerError('An unexpected error occurred');
+      } else {
+        // In development, include error message but not stack trace
+        return Errors.internalServerError(internalErrorMessage);
+      }
     }
   };
 }

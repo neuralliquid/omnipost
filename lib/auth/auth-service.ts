@@ -15,8 +15,12 @@ export interface TokenPayload extends JwtPayload {
   role: string;
 }
 
-// In-memory token blacklist (replace with Redis or another database in production)
+// MEM-01 Fix: In-memory token blacklist with bounded size
+// In production, replace with Redis or another database for horizontal scaling
 const tokenBlacklist = new Map<string, number>();
+
+// MEM-01 Fix: Maximum number of blacklisted tokens to prevent memory exhaustion
+const MAX_BLACKLIST_SIZE = 10000;
 
 /**
  * Authentication service for handling JWT operations and user authentication
@@ -89,17 +93,18 @@ export class AuthService {
 
   /**
    * Get user from request (using cookies or authorization header)
+   * BUG-03 Fix: Made async to properly handle Next.js 14+ async cookies() and headers()
    * @returns User object or null if not authenticated
    */
-  public getCurrentUser(): User | null {
+  public async getCurrentUser(): Promise<User | null> {
     try {
-      // Try to get token from cookies first
-      const cookieStore = cookies();
-      const tokenFromCookie = (cookieStore as any).get?.('auth-token')?.value;
+      // BUG-03 Fix: Properly await cookies() and headers() which return Promises in Next.js 14+
+      const cookieStore = await cookies();
+      const tokenFromCookie = cookieStore.get('auth-token')?.value;
 
       // If no cookie, try to get from authorization header
-      const headersList = headers();
-      const authHeader = (headersList as any).get?.('authorization');
+      const headersList = await headers();
+      const authHeader = headersList.get('authorization');
       const tokenFromHeader = authHeader ? authHeader.replace('Bearer ', '') : null;
 
       // Use whichever token is available
@@ -137,14 +142,27 @@ export class AuthService {
 
   /**
    * Add a token to the blacklist
+   * MEM-01 Fix: Now enforces maximum size to prevent memory exhaustion
    * @param token JWT token
    * @param expiryTime Time in seconds until token expiration
    */
   public addToTokenBlacklist(token: string, expiryTime: number): void {
-    tokenBlacklist.set(token, Date.now() + expiryTime * 1000);
-
-    // Clean up expired tokens from blacklist
+    // MEM-01 Fix: Clean up before adding to prevent unbounded growth
     this.cleanupBlacklist();
+
+    // MEM-01 Fix: If still at max size after cleanup, evict oldest entries
+    if (tokenBlacklist.size >= MAX_BLACKLIST_SIZE) {
+      // Evict 10% of entries (oldest first, Map preserves insertion order)
+      const entriesToRemove = Math.ceil(MAX_BLACKLIST_SIZE * 0.1);
+      let removed = 0;
+      for (const key of tokenBlacklist.keys()) {
+        if (removed >= entriesToRemove) break;
+        tokenBlacklist.delete(key);
+        removed++;
+      }
+    }
+
+    tokenBlacklist.set(token, Date.now() + expiryTime * 1000);
   }
 
   /**

@@ -156,14 +156,41 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
 }
 
 /**
- * In-memory store for rate limiting (fallback when Redis not available)
+ * PERF-03/MEM-02 Fix: In-memory store for rate limiting with bounded size
+ * Uses a Map with LRU-style eviction to prevent unbounded memory growth
  */
 const rateLimitStore = new Map<string, RateLimitEntry>();
+
+/**
+ * PERF-03 Fix: Maximum number of entries in the rate limit store
+ * This prevents memory exhaustion from attackers generating unique IPs
+ */
+const MAX_RATE_LIMIT_ENTRIES = 10000;
 
 /**
  * Last cleanup timestamp for opportunistic cleanup (avoids setInterval in serverless)
  */
 let lastCleanup = 0;
+
+/**
+ * PERF-03/MEM-02 Fix: Evict oldest entries when store reaches max size
+ * Uses a simple FIFO eviction strategy (Map preserves insertion order)
+ */
+function evictOldestEntries(targetSize: number): void {
+  const entriesToRemove = rateLimitStore.size - targetSize;
+  if (entriesToRemove <= 0) return;
+
+  let removed = 0;
+  for (const key of rateLimitStore.keys()) {
+    if (removed >= entriesToRemove) break;
+    rateLimitStore.delete(key);
+    removed++;
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    console.debug(`[Rate Limit] Evicted ${removed} oldest entries to maintain max size`);
+  }
+}
 
 /**
  * Get a unique key for rate limiting based on IP and endpoint
@@ -198,15 +225,27 @@ function checkRateLimitInMemory(
   const key = getRateLimitKey(request, endpoint);
   const now = Date.now();
 
-  // Opportunistic cleanup: every 60 seconds, clean expired entries
-  // This avoids using setInterval which keeps serverless/edge functions alive
+  // PERF-03 Fix: Opportunistic cleanup with size enforcement
+  // Every 60 seconds, clean expired entries and enforce max size
   if (now - lastCleanup > 60_000) {
     lastCleanup = now;
+    // First, remove expired entries
     for (const [entryKey, entry] of rateLimitStore.entries()) {
       if (entry.resetTime < now) {
         rateLimitStore.delete(entryKey);
       }
     }
+    // Then, if still over limit, evict oldest entries
+    if (rateLimitStore.size > MAX_RATE_LIMIT_ENTRIES) {
+      evictOldestEntries(MAX_RATE_LIMIT_ENTRIES);
+    }
+  }
+
+  // PERF-03 Fix: Immediate size check before adding new entry
+  // This prevents unbounded growth between cleanup cycles
+  if (rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
+    // Evict 10% of entries to make room
+    evictOldestEntries(Math.floor(MAX_RATE_LIMIT_ENTRIES * 0.9));
   }
 
   const entry = rateLimitStore.get(key);

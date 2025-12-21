@@ -109,11 +109,17 @@ export function useReviewProcess() {
   const approveContent = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.post<ApproveApiResponse>('/api/approve-content', {
-        summary,
-        image,
+      // BUG-01 Fix: Updated endpoint from /api/approve-content to /api/queue/approve
+      // The approve endpoint expects a queue array format
+      await axios.post<ApproveApiResponse>('/api/queue/approve', {
+        queue: [
+          {
+            platform: { name: 'default' },
+            content: { summary, image },
+          },
+        ],
       });
-      console.log('Content approved:', response.data);
+      // BUG-01 Fix: Removed console.log that exposed response data in production
       setCurrentStep('approved');
     } catch (err) {
       handleError(err);
