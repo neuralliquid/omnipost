@@ -8,8 +8,9 @@
 import { AuthService } from '@/lib/auth/auth-service';
 import jwt from 'jsonwebtoken';
 
-// Mock JWT_SECRET for testing
-process.env.JWT_SECRET = 'test-secret-key-for-unit-tests';
+// Mock JWT_SECRET for testing - use environment variable or generate a test-only key
+// This avoids hard-coded credentials in test files
+process.env.JWT_SECRET = process.env.JWT_SECRET || `test-jwt-secret-${Date.now()}`;
 
 describe('AuthService', () => {
   let authService: AuthService;
