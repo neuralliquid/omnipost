@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { evictOldestFromMap } from '@/lib/utils/bounded-store';
 
 // Dynamic import types for Upstash (avoids ESM issues in Jest)
 type UpstashRatelimit = InstanceType<typeof import('@upstash/ratelimit').Ratelimit>;
@@ -174,20 +175,12 @@ let lastCleanup = 0;
 
 /**
  * PERF-03/MEM-02 Fix: Evict oldest entries when store reaches max size
- * Uses a simple FIFO eviction strategy (Map preserves insertion order)
+ * Uses shared utility with FIFO eviction strategy (Map preserves insertion order)
  */
 function evictOldestEntries(targetSize: number): void {
-  const entriesToRemove = rateLimitStore.size - targetSize;
-  if (entriesToRemove <= 0) return;
+  const removed = evictOldestFromMap(rateLimitStore, targetSize);
 
-  let removed = 0;
-  for (const key of rateLimitStore.keys()) {
-    if (removed >= entriesToRemove) break;
-    rateLimitStore.delete(key);
-    removed++;
-  }
-
-  if (process.env.NODE_ENV !== 'production') {
+  if (removed > 0 && process.env.NODE_ENV !== 'production') {
     console.debug(`[Rate Limit] Evicted ${removed} oldest entries to maintain max size`);
   }
 }

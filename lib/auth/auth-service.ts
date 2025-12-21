@@ -1,5 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { cookies, headers } from 'next/headers';
+import { enforceMapSize } from '../utils/bounded-store';
 
 // User interfaces
 export interface User {
@@ -161,16 +162,8 @@ export class AuthService {
     this.cleanupBlacklist();
 
     // MEM-01 Fix: If still at max size after cleanup, evict oldest entries
-    if (tokenBlacklist.size >= MAX_BLACKLIST_SIZE) {
-      // Evict 10% of entries (oldest first, Map preserves insertion order)
-      const entriesToRemove = Math.ceil(MAX_BLACKLIST_SIZE * 0.1);
-      let removed = 0;
-      for (const key of tokenBlacklist.keys()) {
-        if (removed >= entriesToRemove) break;
-        tokenBlacklist.delete(key);
-        removed++;
-      }
-    }
+    // Uses shared utility to avoid code duplication
+    enforceMapSize(tokenBlacklist, MAX_BLACKLIST_SIZE, 0.1);
 
     tokenBlacklist.set(token, Date.now() + expiryTime * 1000);
   }
