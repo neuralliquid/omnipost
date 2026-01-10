@@ -658,4 +658,207 @@
   .seriesCard {
     padding: var(--spacing-md, 1rem);
   }
+
+  .platformSettingsGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ==========================================================================
+   Platform Adaptations Section
+   ========================================================================== */
+
+.platformSection {
+  margin-top: var(--spacing-lg, 1.5rem);
+  padding-top: var(--spacing-lg, 1.5rem);
+  border-top: 1px solid var(--color-border, #e2e8f0);
+}
+
+.platformHeader {
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.platformTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-secondary, #2c3e50);
+  margin: 0;
+}
+
+.platformCount {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  background-color: var(--color-primary, #4a6491);
+  color: var(--color-text-inverse, #ffffff);
+  padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+  border-radius: var(--radius-full, 9999px);
+}
+
+.platformHint {
+  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-sm, 0.875rem);
+  margin: var(--spacing-xs, 0.25rem) 0 0 0;
+}
+
+.platformList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 0.5rem);
+}
+
+.platformItem {
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: var(--radius-md, 8px);
+  background-color: var(--color-bg-secondary, #f8fafc);
+  transition: border-color var(--transition-base, 200ms ease);
+}
+
+.platformItem.platformEnabled {
+  border-color: var(--color-primary-200, rgba(74, 100, 145, 0.3));
+  background-color: var(--color-bg-primary, #ffffff);
+}
+
+.platformItemHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md, 1rem);
+}
+
+.platformCheckbox {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  cursor: pointer;
+}
+
+.platformCheckbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary, #4a6491);
+  cursor: pointer;
+}
+
+.platformName {
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.platformExpandButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-muted, #718096);
+  border-radius: var(--radius-md, 8px);
+  transition: background-color var(--transition-base, 200ms ease);
+}
+
+.platformExpandButton:hover {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+}
+
+.platformExpandButton svg {
+  width: 20px;
+  height: 20px;
+  transition: transform var(--transition-base, 200ms ease);
+}
+
+.platformExpandButton .expandedIcon {
+  transform: rotate(180deg);
+}
+
+.platformSettings {
+  padding: 0 var(--spacing-md, 1rem) var(--spacing-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem);
+  border-top: 1px solid var(--color-border-light, #edf2f7);
+  margin-top: calc(-1 * var(--spacing-sm, 0.5rem));
+  padding-top: var(--spacing-md, 1rem);
+}
+
+.platformSettingsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 1rem);
+}
+
+.platformToggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-md, 1rem);
+}
+
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-primary, #1a1a2e);
+  cursor: pointer;
+}
+
+.toggleLabel input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--color-primary, #4a6491);
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   Platform Badges in Series Card
+   ========================================================================== */
+
+.platformBadges {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 0.5rem);
+  margin-bottom: var(--spacing-md, 1rem);
+  padding-bottom: var(--spacing-md, 1rem);
+  border-bottom: 1px solid var(--color-border-light, #edf2f7);
+}
+
+.platformBadgesLabel {
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-muted, #718096);
+  white-space: nowrap;
+  padding-top: 2px;
+}
+
+.platformBadgesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.platformBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+  background-color: var(--color-primary-100, rgba(74, 100, 145, 0.1));
+  color: var(--color-primary, #4a6491);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+/* Responsive adjustments for platform section */
+@media (max-width: 768px) {
+  .platformSettingsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .platformToggles {
+    flex-direction: column;
+    gap: var(--spacing-sm, 0.5rem);
+  }
 }

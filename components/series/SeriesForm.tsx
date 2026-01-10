@@ -2,6 +2,8 @@
 
 import React, { useState, useCallback } from 'react';
 import { Button, FormField } from '@/components/ui';
+import { platforms } from '@/lib/config/platforms';
+import { PlatformAdaptation, defaultPlatformAdaptation } from '@/types/series';
 import styles from '@/styles/Series.module.css';
 
 interface SeriesFormData {
@@ -11,6 +13,7 @@ interface SeriesFormData {
   targetAudience?: string;
   estimatedArticles?: number;
   publishFrequency?: 'weekly' | 'biweekly' | 'monthly' | 'quarterly';
+  platformAdaptations?: PlatformAdaptation[];
 }
 
 interface SeriesFormProps {
@@ -25,6 +28,23 @@ interface FormErrors {
 }
 
 const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEditing = false }) => {
+  // Initialize platform adaptations with defaults for all platforms
+  const getInitialAdaptations = (): PlatformAdaptation[] => {
+    if (initialData?.platformAdaptations) {
+      // Merge with any new platforms that might have been added
+      const existingIds = new Set(initialData.platformAdaptations.map(a => a.platformId));
+      const newAdaptations = platforms
+        .filter(p => !existingIds.has(p.slug))
+        .map(p => ({ ...defaultPlatformAdaptation, platformId: p.slug, enabled: false }));
+      return [...initialData.platformAdaptations, ...newAdaptations];
+    }
+    return platforms.map(p => ({
+      ...defaultPlatformAdaptation,
+      platformId: p.slug,
+      enabled: false,
+    }));
+  };
+
   const [formData, setFormData] = useState<SeriesFormData>({
     title: initialData?.title || '',
     description: initialData?.description || '',
@@ -32,10 +52,12 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
     targetAudience: initialData?.targetAudience || '',
     estimatedArticles: initialData?.estimatedArticles,
     publishFrequency: initialData?.publishFrequency,
+    platformAdaptations: getInitialAdaptations(),
   });
   const [topicInput, setTopicInput] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [expandedPlatform, setExpandedPlatform] = useState<string | null>(null);
 
   const validateForm = useCallback((): boolean => {
     const newErrors: FormErrors = {};
@@ -95,6 +117,38 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
     }
   };
 
+  const togglePlatform = (platformId: string) => {
+    setFormData(prev => ({
+      ...prev,
+      platformAdaptations: prev.platformAdaptations?.map(adaptation =>
+        adaptation.platformId === platformId
+          ? { ...adaptation, enabled: !adaptation.enabled }
+          : adaptation
+      ),
+    }));
+  };
+
+  const updatePlatformAdaptation = (
+    platformId: string,
+    field: keyof PlatformAdaptation,
+    value: PlatformAdaptation[keyof PlatformAdaptation]
+  ) => {
+    setFormData(prev => ({
+      ...prev,
+      platformAdaptations: prev.platformAdaptations?.map(adaptation =>
+        adaptation.platformId === platformId ? { ...adaptation, [field]: value } : adaptation
+      ),
+    }));
+  };
+
+  const toggleExpandPlatform = (platformId: string) => {
+    setExpandedPlatform(prev => (prev === platformId ? null : platformId));
+  };
+
+  const getPlatformName = (platformId: string): string => {
+    return platforms.find(p => p.slug === platformId)?.name || platformId;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -118,12 +172,17 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
           targetAudience: '',
           estimatedArticles: undefined,
           publishFrequency: undefined,
+          platformAdaptations: getInitialAdaptations(),
         });
+        setExpandedPlatform(null);
       }
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  const enabledPlatformsCount =
+    formData.platformAdaptations?.filter(a => a.enabled).length || 0;
 
   return (
     <form onSubmit={handleSubmit} className={styles.form} noValidate>
@@ -226,6 +285,197 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
             ))}
           </div>
         )}
+      </div>
+
+      {/* Platform Adaptations Section */}
+      <div className={styles.platformSection}>
+        <div className={styles.platformHeader}>
+          <h3 className={styles.platformTitle}>
+            Platform Adaptations
+            {enabledPlatformsCount > 0 && (
+              <span className={styles.platformCount}>{enabledPlatformsCount} selected</span>
+            )}
+          </h3>
+          <p className={styles.platformHint}>
+            Select platforms and customize how content is adapted for each
+          </p>
+        </div>
+
+        <div className={styles.platformList}>
+          {formData.platformAdaptations?.map(adaptation => {
+            const platform = platforms.find(p => p.slug === adaptation.platformId);
+            const isExpanded = expandedPlatform === adaptation.platformId;
+
+            return (
+              <div
+                key={adaptation.platformId}
+                className={`${styles.platformItem} ${adaptation.enabled ? styles.platformEnabled : ''}`}
+              >
+                <div className={styles.platformItemHeader}>
+                  <label className={styles.platformCheckbox}>
+                    <input
+                      type="checkbox"
+                      checked={adaptation.enabled}
+                      onChange={() => togglePlatform(adaptation.platformId)}
+                      disabled={isSubmitting}
+                    />
+                    <span className={styles.platformName}>{platform?.name}</span>
+                  </label>
+
+                  {adaptation.enabled && (
+                    <button
+                      type="button"
+                      className={styles.platformExpandButton}
+                      onClick={() => toggleExpandPlatform(adaptation.platformId)}
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${platform?.name} settings`}
+                    >
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        className={isExpanded ? styles.expandedIcon : ''}
+                        aria-hidden="true"
+                      >
+                        <polyline points="6 9 12 15 18 9" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+
+                {adaptation.enabled && isExpanded && (
+                  <div className={styles.platformSettings}>
+                    <div className={styles.platformSettingsGrid}>
+                      <FormField
+                        as="select"
+                        label="Tone"
+                        name={`tone-${adaptation.platformId}`}
+                        value={adaptation.tone || 'professional'}
+                        onChange={e =>
+                          updatePlatformAdaptation(
+                            adaptation.platformId,
+                            'tone',
+                            e.target.value as PlatformAdaptation['tone']
+                          )
+                        }
+                        disabled={isSubmitting}
+                      >
+                        <option value="professional">Professional</option>
+                        <option value="casual">Casual</option>
+                        <option value="technical">Technical</option>
+                        <option value="conversational">Conversational</option>
+                      </FormField>
+
+                      <FormField
+                        as="select"
+                        label="Format"
+                        name={`format-${adaptation.platformId}`}
+                        value={adaptation.format || 'medium'}
+                        onChange={e =>
+                          updatePlatformAdaptation(
+                            adaptation.platformId,
+                            'format',
+                            e.target.value as PlatformAdaptation['format']
+                          )
+                        }
+                        disabled={isSubmitting}
+                      >
+                        <option value="short">Short</option>
+                        <option value="medium">Medium</option>
+                        <option value="long">Long-form</option>
+                        <option value="thread">Thread</option>
+                      </FormField>
+
+                      <FormField
+                        as="select"
+                        label="Media"
+                        name={`media-${adaptation.platformId}`}
+                        value={adaptation.mediaPreference || 'with-image'}
+                        onChange={e =>
+                          updatePlatformAdaptation(
+                            adaptation.platformId,
+                            'mediaPreference',
+                            e.target.value as PlatformAdaptation['mediaPreference']
+                          )
+                        }
+                        disabled={isSubmitting}
+                      >
+                        <option value="text-only">Text only</option>
+                        <option value="with-image">With image</option>
+                        <option value="with-video">With video</option>
+                        <option value="carousel">Carousel</option>
+                      </FormField>
+                    </div>
+
+                    <div className={styles.platformToggles}>
+                      <label className={styles.toggleLabel}>
+                        <input
+                          type="checkbox"
+                          checked={adaptation.includeHashtags ?? true}
+                          onChange={e =>
+                            updatePlatformAdaptation(
+                              adaptation.platformId,
+                              'includeHashtags',
+                              e.target.checked
+                            )
+                          }
+                          disabled={isSubmitting}
+                        />
+                        <span>Include hashtags</span>
+                      </label>
+
+                      <label className={styles.toggleLabel}>
+                        <input
+                          type="checkbox"
+                          checked={adaptation.includeCTA ?? true}
+                          onChange={e =>
+                            updatePlatformAdaptation(
+                              adaptation.platformId,
+                              'includeCTA',
+                              e.target.checked
+                            )
+                          }
+                          disabled={isSubmitting}
+                        />
+                        <span>Include call-to-action</span>
+                      </label>
+                    </div>
+
+                    {adaptation.includeCTA && (
+                      <FormField
+                        label="CTA Text"
+                        name={`cta-${adaptation.platformId}`}
+                        type="text"
+                        value={adaptation.ctaText || ''}
+                        onChange={e =>
+                          updatePlatformAdaptation(adaptation.platformId, 'ctaText', e.target.value)
+                        }
+                        placeholder="e.g., Learn more at..."
+                        optional
+                        disabled={isSubmitting}
+                      />
+                    )}
+
+                    <FormField
+                      as="textarea"
+                      label="Platform Notes"
+                      name={`notes-${adaptation.platformId}`}
+                      value={adaptation.notes || ''}
+                      onChange={e =>
+                        updatePlatformAdaptation(adaptation.platformId, 'notes', e.target.value)
+                      }
+                      placeholder="Any specific notes for this platform..."
+                      optional
+                      rows={2}
+                      disabled={isSubmitting}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       <div className={styles.formActions}>
