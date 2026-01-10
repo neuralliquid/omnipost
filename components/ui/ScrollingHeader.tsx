@@ -216,14 +216,12 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
                       {/* Desktop dropdown menu */}
                       <ul
                         className={`${styles.dropdownMenu} ${openDropdown === item.name ? styles.dropdownOpen : ''}`}
-                        role="menu"
                       >
                         {item.children.map(child => (
-                          <li key={`dropdown-${child.path}`} role="none">
+                          <li key={`dropdown-${child.path}`}>
                             <Link
                               href={child.path}
                               className={`${styles.dropdownLink} ${pathname === child.path ? styles.activeDropdownLink : ''}`}
-                              role="menuitem"
                               onClick={() => {
                                 setMenuOpen(false);
                                 setOpenDropdown(null);
