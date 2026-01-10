@@ -181,8 +181,7 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
     }
   };
 
-  const enabledPlatformsCount =
-    formData.platformAdaptations?.filter(a => a.enabled).length || 0;
+  const enabledPlatformsCount = formData.platformAdaptations?.filter(a => a.enabled).length || 0;
 
   return (
     <form onSubmit={handleSubmit} className={styles.form} noValidate>
