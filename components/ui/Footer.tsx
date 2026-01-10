@@ -1,7 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import styles from '@/styles/Footer.module.css';
-import siteConfig from '../../data/siteConfig.json';
+import { siteConfig } from '../../data/siteConfig';
 
 const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
               {Object.entries(siteConfig.social).map(([platform, handle]) => (
                 <li key={platform}>
                   <a
-                    href={`https://${platform}.com/${handle}`}
+                    href={`https://${platform}.com/${encodeURIComponent(handle)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.socialLink}
