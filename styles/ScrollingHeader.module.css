@@ -1,0 +1,326 @@
+/* ==========================================================================
+   Scrolling Header Component Styles
+   ========================================================================== */
+
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-fixed, 200);
+  background-color: var(--color-bg-primary, #ffffff);
+  transition:
+    transform var(--transition-slow, 300ms ease),
+    background-color var(--transition-base, 200ms ease),
+    box-shadow var(--transition-base, 200ms ease);
+}
+
+.header.scrolled {
+  box-shadow: var(--shadow-header, 0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.header.hidden {
+  transform: translateY(-100%);
+}
+
+.header.transparent {
+  background-color: transparent;
+}
+
+.header.transparent .logoText,
+.header.transparent .navLink {
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.header.transparent .menuIcon {
+  background-color: var(--color-text-inverse, #ffffff);
+}
+
+.header.menuActive {
+  transform: translateY(0) !important;
+}
+
+/* ==========================================================================
+   Header Container
+   ========================================================================== */
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 var(--spacing-lg, 1.5rem);
+  height: var(--header-height, 64px);
+  max-width: var(--max-width-content, 1200px);
+  margin: 0 auto;
+}
+
+/* ==========================================================================
+   Logo
+   ========================================================================== */
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logoLink {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  text-decoration: none;
+  color: var(--color-secondary, #2c3e50);
+  transition: opacity var(--transition-base, 200ms ease);
+}
+
+.logoLink:hover {
+  opacity: 0.8;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--color-primary, #4a6491), var(--color-secondary, #2c3e50));
+  color: var(--color-text-inverse, #ffffff);
+  border-radius: var(--radius-md, 8px);
+  font-weight: var(--font-weight-bold, 700);
+  font-size: var(--font-size-lg, 1.125rem);
+}
+
+.logoText {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-bold, 700);
+  color: var(--color-secondary, #2c3e50);
+  transition: color var(--transition-base, 200ms ease);
+}
+
+/* ==========================================================================
+   Navigation
+   ========================================================================== */
+
+.navigation {
+  display: flex;
+}
+
+.navList {
+  display: flex;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--spacing-xs, 0.25rem);
+}
+
+.navItem {
+  display: flex;
+}
+
+.navLink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-secondary, #4a5568);
+  text-decoration: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+  transition:
+    color var(--transition-base, 200ms ease),
+    background-color var(--transition-base, 200ms ease);
+}
+
+.navLink:hover {
+  color: var(--color-primary, #4a6491);
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+}
+
+.activeLink {
+  color: var(--color-primary, #4a6491);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.activeIndicator {
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background-color: var(--color-primary, #4a6491);
+  border-radius: var(--radius-full, 9999px);
+}
+
+/* ==========================================================================
+   Mobile Menu Button
+   ========================================================================== */
+
+.mobileMenuButton {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--spacing-sm, 0.5rem);
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  transition: background-color var(--transition-base, 200ms ease);
+}
+
+.mobileMenuButton:hover {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+}
+
+.menuIcon {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background-color: var(--color-secondary, #2c3e50);
+  transition:
+    transform var(--transition-base, 200ms ease),
+    opacity var(--transition-base, 200ms ease);
+  border-radius: var(--radius-full, 9999px);
+}
+
+.mobileMenuButton.active .menuIcon:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mobileMenuButton.active .menuIcon:nth-child(2) {
+  opacity: 0;
+}
+
+.mobileMenuButton.active .menuIcon:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ==========================================================================
+   Progress Bar
+   ========================================================================== */
+
+.progressBar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  background-color: var(--color-primary, #4a6491);
+  transform-origin: left;
+  transition: transform var(--transition-fast, 150ms ease);
+}
+
+/* ==========================================================================
+   Header Spacer
+   ========================================================================== */
+
+.headerSpacer {
+  height: var(--header-height, 64px);
+}
+
+/* ==========================================================================
+   Mobile Overlay
+   ========================================================================== */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: calc(var(--z-fixed, 200) - 1);
+  animation: fadeIn var(--transition-base, 200ms ease) forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   Responsive - Mobile
+   ========================================================================== */
+
+@media (max-width: 768px) {
+  .headerContainer {
+    padding: 0 var(--spacing-md, 1rem);
+  }
+
+  .mobileMenuButton {
+    display: flex;
+  }
+
+  .navigation {
+    position: fixed;
+    top: var(--header-height, 64px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-bg-primary, #ffffff);
+    transform: translateX(100%);
+    transition: transform var(--transition-slow, 300ms ease);
+    overflow-y: auto;
+    z-index: var(--z-fixed, 200);
+  }
+
+  .navigation.menuOpen {
+    transform: translateX(0);
+  }
+
+  .navList {
+    flex-direction: column;
+    padding: var(--spacing-lg, 1.5rem);
+    gap: var(--spacing-xs, 0.25rem);
+  }
+
+  .navItem {
+    width: 100%;
+  }
+
+  .navLink {
+    display: flex;
+    padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
+    width: 100%;
+    font-size: var(--font-size-base, 1rem);
+    border-radius: var(--radius-lg, 12px);
+  }
+
+  .navLink:hover {
+    background-color: var(--color-bg-tertiary, #f3f4f6);
+  }
+
+  .activeIndicator {
+    position: static;
+    transform: none;
+    width: 4px;
+    height: 20px;
+    margin-left: auto;
+  }
+
+  .headerSpacer {
+    height: var(--header-height, 56px);
+  }
+}
+
+/* ==========================================================================
+   Responsive - Large Screens
+   ========================================================================== */
+
+@media (min-width: 1400px) {
+  .headerContainer {
+    max-width: 1400px;
+  }
+
+  .navLink {
+    padding: var(--spacing-sm, 0.5rem) var(--spacing-lg, 1.5rem);
+  }
+}

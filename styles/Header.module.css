@@ -1,17 +1,22 @@
+/* ==========================================================================
+   Header Component Styles (Legacy)
+   Note: Use ScrollingHeader for new implementations
+   ========================================================================== */
+
 .header {
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-bg-primary, #ffffff);
+  box-shadow: var(--shadow-header, 0 2px 8px rgba(0, 0, 0, 0.08));
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: var(--z-sticky, 100);
 }
 
 .headerContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
-  max-width: 1200px;
+  padding: var(--spacing-md, 1rem);
+  max-width: var(--max-width-content, 1200px);
   margin: 0 auto;
 }
 
@@ -23,14 +28,19 @@
 .logoLink {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm, 0.5rem);
   text-decoration: none;
-  color: #2c3e50;
+  color: var(--color-secondary, #2c3e50);
+  transition: opacity var(--transition-base, 200ms ease);
+}
+
+.logoLink:hover {
+  opacity: 0.8;
 }
 
 .logoText {
-  font-size: 1.2rem;
-  font-weight: bold;
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-bold, 700);
 }
 
 .navigation {
@@ -42,7 +52,7 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: 1.5rem;
+  gap: var(--spacing-xs, 0.25rem);
 }
 
 .navItem {
@@ -50,31 +60,38 @@
 }
 
 .navLink {
-  color: #2c3e50;
+  color: var(--color-text-secondary, #4a5568);
   text-decoration: none;
-  font-size: 1rem;
-  padding: 0.5rem 0;
-  transition: color 0.2s;
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+  transition:
+    color var(--transition-base, 200ms ease),
+    background-color var(--transition-base, 200ms ease);
   position: relative;
 }
 
 .navLink:hover {
-  color: #4a6491;
+  color: var(--color-primary, #4a6491);
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
 }
 
 .activeLink {
-  color: #4a6491;
-  font-weight: 600;
+  color: var(--color-primary, #4a6491);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 .activeLink::after {
   content: '';
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background-color: #4a6491;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 3px;
+  background-color: var(--color-primary, #4a6491);
+  border-radius: var(--radius-full, 9999px);
 }
 
 .mobileMenuButton {
@@ -82,17 +99,28 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: var(--spacing-sm, 0.5rem);
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 5px;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md, 8px);
+  transition: background-color var(--transition-base, 200ms ease);
+}
+
+.mobileMenuButton:hover {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
 }
 
 .menuIcon {
   display: block;
-  width: 24px;
+  width: 22px;
   height: 2px;
-  background-color: #2c3e50;
-  transition: all 0.3s;
+  background-color: var(--color-secondary, #2c3e50);
+  transition: all var(--transition-slow, 300ms ease);
+  border-radius: var(--radius-full, 9999px);
 }
 
 @media (max-width: 768px) {
@@ -102,24 +130,26 @@
 
   .navigation {
     position: fixed;
-    top: 70px;
+    top: var(--header-height, 64px);
     left: 0;
     right: 0;
-    background-color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--color-bg-primary, #ffffff);
+    box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
     height: 0;
     overflow: hidden;
-    transition: height 0.3s ease;
+    transition: height var(--transition-slow, 300ms ease);
+    z-index: var(--z-fixed, 200);
   }
 
   .menuOpen {
     height: auto;
-    padding: 1rem;
+    padding: var(--spacing-md, 1rem);
   }
 
   .navList {
     flex-direction: column;
     width: 100%;
+    gap: var(--spacing-xs, 0.25rem);
   }
 
   .navItem {
@@ -128,7 +158,13 @@
 
   .navLink {
     display: block;
-    padding: 0.75rem 0;
+    padding: var(--spacing-md, 1rem) var(--spacing-lg, 1.5rem);
     width: 100%;
+    font-size: var(--font-size-base, 1rem);
+    border-radius: var(--radius-lg, 12px);
+  }
+
+  .activeLink::after {
+    display: none;
   }
 }
