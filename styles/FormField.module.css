@@ -63,7 +63,7 @@
   color: var(--color-text-muted, #718096);
 }
 
-.input:hover:not(:disabled):not(:focus) {
+.input:hover:not(:disabled, :focus) {
   border-color: var(--color-border-dark, #cbd5e0);
 }
 
