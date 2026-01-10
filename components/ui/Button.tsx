@@ -87,10 +87,16 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
   );
 
   if (props.as === 'a') {
-    const { as, href, onClick, ...anchorProps } = restProps as Omit<
-      ButtonAsAnchorProps,
-      keyof BaseButtonProps | 'className' | 'disabled'
-    > & { as?: 'a'; href: string; onClick?: React.MouseEventHandler<HTMLAnchorElement> };
+    const {
+      as: _as,
+      href,
+      onClick,
+      ...anchorProps
+    } = restProps as Omit<ButtonAsAnchorProps, keyof BaseButtonProps | 'className' | 'disabled'> & {
+      as?: 'a';
+      href: string;
+      onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+    };
 
     const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
       if (isDisabled) {
@@ -117,7 +123,7 @@ const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((p
   }
 
   const {
-    as,
+    as: _as,
     type = 'button',
     ...buttonProps
   } = restProps as Omit<ButtonAsButtonProps, keyof BaseButtonProps | 'className' | 'disabled'> & {
