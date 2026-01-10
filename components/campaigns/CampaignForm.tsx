@@ -125,11 +125,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
       <div className={styles.formGrid}>
         {/* Campaign Name */}
-        <FormField
-          label="Campaign Name"
-          required
-          error={errors.name}
-        >
+        <FormField label="Campaign Name" required error={errors.name}>
           <input
             name="name"
             type="text"
@@ -141,10 +137,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
         </FormField>
 
         {/* Tags */}
-        <FormField
-          label="Tags"
-          hint="Press Enter to add a tag"
-        >
+        <FormField label="Tags" hint="Press Enter to add a tag">
           <input
             type="text"
             value={tagInput}
@@ -172,9 +165,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
         {/* Description */}
         <div className={styles.formGroupFull}>
-          <FormField
-            label="Description"
-          >
+          <FormField label="Description">
             <textarea
               name="description"
               value={formData.description}
@@ -188,15 +179,8 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
         {/* Platform Selection */}
         <div className={styles.formGroupFull}>
-          <FormField
-            label="Target Platforms"
-            required
-            error={errors.platforms}
-          >
-            <fieldset
-              className={styles.platformSelection}
-              aria-label="Target platforms"
-            >
+          <FormField label="Target Platforms" required error={errors.platforms}>
+            <fieldset className={styles.platformSelection} aria-label="Target platforms">
               <legend className="sr-only">Select target platforms</legend>
               {availablePlatforms.map(platform => (
                 <label
@@ -238,10 +222,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
               label="Link to Content Series"
               hint="Connect this campaign to your content series"
             >
-              <fieldset
-                className={styles.seriesSelection}
-                aria-label="Content series"
-              >
+              <fieldset className={styles.seriesSelection} aria-label="Content series">
                 <legend className="sr-only">Select content series</legend>
                 {series.map(s => (
                   <label
@@ -257,7 +238,13 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
                       className="visually-hidden"
                       aria-label={`Select series: ${s.title}`}
                     />
-                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -283,12 +270,7 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
       </div>
 
       <div className={styles.formActions}>
-        <Button
-          type="button"
-          variant="secondary"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
+        <Button type="button" variant="secondary" onClick={onCancel} disabled={isLoading}>
           Cancel
         </Button>
         <Button
@@ -296,7 +278,14 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
           variant="primary"
           loading={isLoading}
           leftIcon={
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <path d="M20 6L9 17l-5-5" />
             </svg>
           }

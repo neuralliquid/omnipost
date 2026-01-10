@@ -24,11 +24,7 @@ interface FormErrors {
   description?: string;
 }
 
-const SeriesForm: React.FC<SeriesFormProps> = ({
-  onAddSeries,
-  initialData,
-  isEditing = false,
-}) => {
+const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEditing = false }) => {
   const [formData, setFormData] = useState<SeriesFormData>({
     title: initialData?.title || '',
     description: initialData?.description || '',

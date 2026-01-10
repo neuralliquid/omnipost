@@ -69,7 +69,8 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
           </div>
           <h2 className={styles.errorTitle}>Something went wrong</h2>
           <p className={styles.errorMessage}>
-            We encountered an unexpected error. Please try again or contact support if the problem persists.
+            We encountered an unexpected error. Please try again or contact support if the problem
+            persists.
           </p>
           {process.env.NODE_ENV === 'development' && this.state.error && (
             <details className={styles.errorDetails}>
@@ -85,10 +86,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             <button onClick={this.handleRetry} className={styles.retryButton}>
               Try Again
             </button>
-            <button
-              onClick={() => window.location.reload()}
-              className={styles.reloadButton}
-            >
+            <button onClick={() => window.location.reload()} className={styles.reloadButton}>
               Reload Page
             </button>
           </div>
@@ -109,7 +107,7 @@ export function withErrorBoundary<P extends object>(
   WrappedComponent: React.ComponentType<P>,
   fallback?: ReactNode
 ): React.FC<P> {
-  const WithErrorBoundary: React.FC<P> = (props) => (
+  const WithErrorBoundary: React.FC<P> = props => (
     <ErrorBoundary fallback={fallback}>
       <WrappedComponent {...props} />
     </ErrorBoundary>

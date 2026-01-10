@@ -82,7 +82,11 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, var(--color-primary, #4a6491), var(--color-secondary, #2c3e50));
+  background: linear-gradient(
+    135deg,
+    var(--color-primary, #4a6491),
+    var(--color-secondary, #2c3e50)
+  );
   color: var(--color-text-inverse, #ffffff);
   border-radius: var(--radius-md, 8px);
   font-weight: var(--font-weight-bold, 700);

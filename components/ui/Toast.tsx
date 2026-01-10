@@ -71,11 +71,7 @@ const ToastItem: React.FC<ToastItemProps> = ({ toast, onRemove }) => {
   }, [toast.id, toast.duration, onRemove]);
 
   return (
-    <div
-      className={`${styles.toast} ${styles[toast.type]}`}
-      role="alert"
-      aria-live="polite"
-    >
+    <div className={`${styles.toast} ${styles[toast.type]}`} role="alert" aria-live="polite">
       <span className={styles.icon}>{icons[toast.type]}</span>
       <p className={styles.message}>{toast.message}</p>
       <button
@@ -122,9 +118,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   );
 
   return (
-    <ToastContext.Provider
-      value={{ toasts, addToast, removeToast, success, error, warning, info }}
-    >
+    <ToastContext.Provider value={{ toasts, addToast, removeToast, success, error, warning, info }}>
       {children}
       <div className={styles.container} aria-label="Notifications">
         {toasts.map(toast => (

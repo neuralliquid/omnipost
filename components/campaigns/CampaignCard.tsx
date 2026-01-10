@@ -12,13 +12,14 @@ import { Button, StatusBadge } from '@/components/ui';
 import styles from '@/styles/Campaign.module.css';
 
 // Map campaign status to StatusBadge status
-const statusMap: Record<CampaignStatus, 'draft' | 'scheduled' | 'active' | 'paused' | 'completed'> = {
-  draft: 'draft',
-  scheduled: 'scheduled',
-  active: 'active',
-  paused: 'paused',
-  completed: 'completed',
-};
+const statusMap: Record<CampaignStatus, 'draft' | 'scheduled' | 'active' | 'paused' | 'completed'> =
+  {
+    draft: 'draft',
+    scheduled: 'scheduled',
+    active: 'active',
+    paused: 'paused',
+    completed: 'completed',
+  };
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -151,12 +152,7 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       </div>
 
       <div className={styles.campaignActions}>
-        <Button
-          as="a"
-          href={`/campaigns/${campaign.id}`}
-          variant="secondary"
-          size="sm"
-        >
+        <Button as="a" href={`/campaigns/${campaign.id}`} variant="secondary" size="sm">
           View Details
         </Button>
         {onDuplicate ? (

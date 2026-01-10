@@ -21,10 +21,7 @@ interface StatusBadgeProps {
   className?: string;
 }
 
-const statusConfig: Record<
-  string,
-  { label: string; icon: JSX.Element; colorClass: string }
-> = {
+const statusConfig: Record<string, { label: string; icon: JSX.Element; colorClass: string }> = {
   draft: {
     label: 'Draft',
     colorClass: 'gray',

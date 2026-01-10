@@ -10,7 +10,15 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/layouts/Layout';
 import { CampaignForm } from '@/components/campaigns';
-import { Button, LoadingSpinner, EmptyState, StatusBadge, FormField, Card, CardBody } from '@/components/ui';
+import {
+  Button,
+  LoadingSpinner,
+  EmptyState,
+  StatusBadge,
+  FormField,
+  Card,
+  CardBody,
+} from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useSeries } from '@/hooks/useSeries';
 import { Campaign, CampaignContentType, UpdateCampaignInput } from '@/types/campaign';
@@ -205,7 +213,12 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               onClick={() => setIsEditing(true)}
               leftIcon={
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
                 </svg>
               }
             >
@@ -216,7 +229,12 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               onClick={handleDelete}
               leftIcon={
                 <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
                 </svg>
               }
             >
@@ -340,8 +358,19 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                   size="sm"
                   onClick={() => setShowAddContent(true)}
                   leftIcon={
-                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
                     </svg>
                   }
                 >
@@ -387,7 +416,11 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                     />
                   </FormField>
                   <div className={styles.formActions}>
-                    <Button type="button" variant="secondary" onClick={() => setShowAddContent(false)}>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={() => setShowAddContent(false)}
+                    >
                       Cancel
                     </Button>
                     <Button type="submit" variant="primary">
@@ -400,8 +433,19 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               {campaign.contentItems.length === 0 ? (
                 <EmptyState
                   icon={
-                    <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    <svg
+                      width="48"
+                      height="48"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
                     </svg>
                   }
                   title="No content yet"

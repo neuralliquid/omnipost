@@ -22,7 +22,10 @@ interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ children, variant = 'default', padding = 'md', className = '', as = 'div', ...props }, ref) => {
+  (
+    { children, variant = 'default', padding = 'md', className = '', as = 'div', ...props },
+    ref
+  ) => {
     const Component = as;
     const cardClasses = [styles.card, styles[variant], styles[`padding-${padding}`], className]
       .filter(Boolean)

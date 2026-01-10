@@ -13,21 +13,18 @@ interface BaseFieldProps {
 }
 
 interface InputFieldProps
-  extends BaseFieldProps,
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
+  extends BaseFieldProps, Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
   as?: 'input';
 }
 
 interface TextareaFieldProps
-  extends BaseFieldProps,
-    Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'> {
+  extends BaseFieldProps, Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'className'> {
   as: 'textarea';
   rows?: number;
 }
 
 interface SelectFieldProps
-  extends BaseFieldProps,
-    Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'className'> {
+  extends BaseFieldProps, Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'className'> {
   as: 'select';
   children: React.ReactNode;
 }
@@ -88,7 +85,10 @@ const FormField = forwardRef<
     }
 
     if (as === 'select') {
-      const { children, ...selectProps } = restProps as Omit<SelectFieldProps, keyof BaseFieldProps>;
+      const { children, ...selectProps } = restProps as Omit<
+        SelectFieldProps,
+        keyof BaseFieldProps
+      >;
       return (
         <select ref={ref as React.Ref<HTMLSelectElement>} {...commonProps} {...selectProps}>
           {children}
@@ -97,9 +97,7 @@ const FormField = forwardRef<
     }
 
     const inputProps = restProps as Omit<InputFieldProps, keyof BaseFieldProps>;
-    return (
-      <input ref={ref as React.Ref<HTMLInputElement>} {...commonProps} {...inputProps} />
-    );
+    return <input ref={ref as React.Ref<HTMLInputElement>} {...commonProps} {...inputProps} />;
   };
 
   return (

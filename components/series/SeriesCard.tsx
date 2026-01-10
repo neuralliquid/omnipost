@@ -78,11 +78,7 @@ const SeriesCard: React.FC<SeriesCardProps> = ({ series, index, onEdit, onDelete
           </div>
 
           <div className={styles.seriesActions}>
-            <button
-              type="button"
-              onClick={handleCancelEdit}
-              className={styles.secondaryButton}
-            >
+            <button type="button" onClick={handleCancelEdit} className={styles.secondaryButton}>
               Cancel
             </button>
             <button type="submit" className={styles.primaryButton}>
