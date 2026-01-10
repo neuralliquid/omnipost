@@ -5,10 +5,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { CreateCampaignInput, Campaign } from '@/types/campaign';
 import { platforms as availablePlatforms } from '@/lib/config/platforms';
 import { useSeries } from '@/hooks/useSeries';
+import { Button, FormField } from '@/components/ui';
 import styles from '@/styles/Campaign.module.css';
 
 // Platform brand colors
@@ -44,20 +45,22 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
   const [tagInput, setTagInput] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const validateForm = (): boolean => {
+  const validateForm = useCallback((): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.name.trim()) {
       newErrors.name = 'Campaign name is required';
+    } else if (formData.name.trim().length < 3) {
+      newErrors.name = 'Campaign name must be at least 3 characters';
     }
 
-    if (formData.platforms?.length === 0) {
+    if (!formData.platforms || formData.platforms.length === 0) {
       newErrors.platforms = 'Select at least one platform';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [formData.name, formData.platforms]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -122,29 +125,27 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
 
       <div className={styles.formGrid}>
         {/* Campaign Name */}
-        <div className={styles.formGroup}>
-          <label htmlFor="name" className={styles.formLabel}>
-            Campaign Name *
-          </label>
+        <FormField
+          label="Campaign Name"
+          required
+          error={errors.name}
+        >
           <input
-            id="name"
             name="name"
             type="text"
             value={formData.name}
             onChange={handleInputChange}
-            className={styles.formInput}
+            className={`${styles.formInput} ${errors.name ? styles.inputError : ''}`}
             placeholder="e.g., Q1 Product Launch"
           />
-          {errors.name ? <span className={styles.errorMessage}>{errors.name}</span> : null}
-        </div>
+        </FormField>
 
         {/* Tags */}
-        <div className={styles.formGroup}>
-          <label htmlFor="tags" className={styles.formLabel}>
-            Tags (press Enter to add)
-          </label>
+        <FormField
+          label="Tags"
+          hint="Press Enter to add a tag"
+        >
           <input
-            id="tags"
             type="text"
             value={tagInput}
             onChange={e => setTagInput(e.target.value)}
@@ -167,137 +168,141 @@ export const CampaignForm: React.FC<CampaignFormProps> = ({
               ))}
             </div>
           ) : null}
-        </div>
+        </FormField>
 
         {/* Description */}
-        <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-          <label htmlFor="description" className={styles.formLabel}>
-            Description
-          </label>
-          <textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleInputChange}
-            className={styles.formTextarea}
-            placeholder="Describe your campaign goals and strategy..."
-          />
+        <div className={styles.formGroupFull}>
+          <FormField
+            label="Description"
+          >
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleInputChange}
+              className={styles.formTextarea}
+              placeholder="Describe your campaign goals and strategy..."
+              rows={4}
+            />
+          </FormField>
         </div>
 
         {/* Platform Selection */}
-        <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-          <label className={styles.formLabel} htmlFor="platform-selection">
-            Target Platforms *
-          </label>
-          <fieldset
-            id="platform-selection"
-            className={styles.platformSelection}
-            aria-label="Target platforms"
+        <div className={styles.formGroupFull}>
+          <FormField
+            label="Target Platforms"
+            required
+            error={errors.platforms}
           >
-            <legend className="sr-only">Select target platforms</legend>
-            {availablePlatforms.map(platform => (
-              <label
-                key={platform.slug}
-                className={`${styles.platformOption} ${
-                  formData.platforms?.includes(platform.slug) ? styles.selected : ''
-                }`}
-              >
-                {/* A11Y-02 Fix: Added aria-label for screen readers */}
-                <input
-                  type="checkbox"
-                  checked={formData.platforms?.includes(platform.slug) || false}
-                  onChange={() => togglePlatform(platform.slug)}
-                  aria-label={`Select platform: ${platform.name}`}
-                />
-                <span
-                  className={styles.platformLogo}
-                  style={{
-                    backgroundColor: PLATFORM_COLORS[platform.slug] || '#e2e8f0',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'white',
-                    fontWeight: 'bold',
-                  }}
+            <fieldset
+              className={styles.platformSelection}
+              aria-label="Target platforms"
+            >
+              <legend className="sr-only">Select target platforms</legend>
+              {availablePlatforms.map(platform => (
+                <label
+                  key={platform.slug}
+                  className={`${styles.platformOption} ${
+                    formData.platforms?.includes(platform.slug) ? styles.selected : ''
+                  }`}
                 >
-                  {platform.name.charAt(0)}
-                </span>
-                <span className={styles.platformName}>{platform.name}</span>
-              </label>
-            ))}
-          </fieldset>
-          {errors.platforms ? (
-            <span className={styles.errorMessage}>{errors.platforms}</span>
-          ) : null}
+                  <input
+                    type="checkbox"
+                    checked={formData.platforms?.includes(platform.slug) || false}
+                    onChange={() => togglePlatform(platform.slug)}
+                    aria-label={`Select platform: ${platform.name}`}
+                  />
+                  <span
+                    className={styles.platformLogo}
+                    style={{
+                      backgroundColor: PLATFORM_COLORS[platform.slug] || '#e2e8f0',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: 'white',
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {platform.name.charAt(0)}
+                  </span>
+                  <span className={styles.platformName}>{platform.name}</span>
+                </label>
+              ))}
+            </fieldset>
+          </FormField>
         </div>
 
         {/* Series Selection */}
         {series.length > 0 ? (
-          <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
-            <label className={styles.formLabel} htmlFor="series-selection">
-              Link to Content Series (optional)
-            </label>
-            <fieldset
-              id="series-selection"
-              className={styles.seriesSelection}
-              aria-label="Content series"
+          <div className={styles.formGroupFull}>
+            <FormField
+              label="Link to Content Series"
+              hint="Connect this campaign to your content series"
             >
-              <legend className="sr-only">Select content series</legend>
-              {series.map(s => (
-                <label
-                  key={s.id}
-                  className={`${styles.seriesOption} ${
-                    formData.seriesIds?.includes(s.id) ? styles.selected : ''
-                  }`}
-                >
-                  {/* A11Y-01 Fix: Use visually-hidden class instead of display:none
-                      to maintain keyboard accessibility for screen readers */}
-                  <input
-                    type="checkbox"
-                    checked={formData.seriesIds?.includes(s.id) || false}
-                    onChange={() => toggleSeries(s.id)}
-                    className="visually-hidden"
-                    aria-label={`Select series: ${s.title}`}
-                  />
-                  <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+              <fieldset
+                className={styles.seriesSelection}
+                aria-label="Content series"
+              >
+                <legend className="sr-only">Select content series</legend>
+                {series.map(s => (
+                  <label
+                    key={s.id}
+                    className={`${styles.seriesOption} ${
+                      formData.seriesIds?.includes(s.id) ? styles.selected : ''
+                    }`}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={formData.seriesIds?.includes(s.id) || false}
+                      onChange={() => toggleSeries(s.id)}
+                      className="visually-hidden"
+                      aria-label={`Select series: ${s.title}`}
                     />
-                  </svg>
-                  <div>
-                    <div style={{ fontWeight: 500 }}>{s.title}</div>
-                    {s.description ? (
-                      <div style={{ fontSize: '0.75rem', color: '#666' }}>
-                        {s.description.substring(0, 50)}
-                        {s.description.length > 50 ? '...' : ''}
-                      </div>
-                    ) : null}
-                  </div>
-                </label>
-              ))}
-            </fieldset>
+                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                      />
+                    </svg>
+                    <div>
+                      <div className={styles.seriesTitle}>{s.title}</div>
+                      {s.description ? (
+                        <div className={styles.seriesDescription}>
+                          {s.description.substring(0, 50)}
+                          {s.description.length > 50 ? '...' : ''}
+                        </div>
+                      ) : null}
+                    </div>
+                  </label>
+                ))}
+              </fieldset>
+            </FormField>
           </div>
         ) : null}
       </div>
 
       <div className={styles.formActions}>
-        <button
+        <Button
           type="button"
+          variant="secondary"
           onClick={onCancel}
-          className={styles.secondaryButton}
           disabled={isLoading}
         >
           Cancel
-        </button>
-        <button type="submit" className={styles.primaryButton} disabled={isLoading}>
-          {(() => {
-            if (isLoading) return 'Saving...';
-            return initialData ? 'Update Campaign' : 'Create Campaign';
-          })()}
-        </button>
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          loading={isLoading}
+          leftIcon={
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          }
+        >
+          {initialData ? 'Update Campaign' : 'Create Campaign'}
+        </Button>
       </div>
     </form>
   );

@@ -11,6 +11,38 @@
 }
 
 /* ==========================================================================
+   Skip to Content Link (Accessibility)
+   Hidden until focused, appears at top of page when tabbed to
+   ========================================================================== */
+
+.skipLink {
+  position: absolute;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: var(--z-tooltip, 500);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-lg, 1.5rem);
+  background-color: var(--color-primary, #4a6491);
+  color: var(--color-text-inverse, #ffffff);
+  font-weight: var(--font-weight-semibold, 600);
+  font-size: var(--font-size-sm, 0.875rem);
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-md, 8px) var(--radius-md, 8px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  transition: top var(--transition-fast, 150ms ease);
+}
+
+.skipLink:focus {
+  top: 0;
+  outline: none;
+}
+
+.skipLink:focus-visible {
+  outline: 2px solid var(--color-primary-dark, #3a5481);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
    Container
    ========================================================================== */
 

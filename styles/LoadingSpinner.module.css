@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Loading Spinner Component Styles
+   ========================================================================== */
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md, 1rem);
+}
+
+.fullScreen {
+  position: fixed;
+  inset: 0;
+  background-color: var(--color-bg-secondary, #f9fafb);
+  z-index: var(--z-modal, 400);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(2px);
+  z-index: var(--z-modal-backdrop, 300);
+}
+
+/* ==========================================================================
+   Spinner
+   ========================================================================== */
+
+.spinner {
+  animation: rotate 1s linear infinite;
+  color: var(--color-primary, #4a6491);
+}
+
+.track {
+  opacity: 0.2;
+}
+
+.indicator {
+  opacity: 1;
+}
+
+/* ==========================================================================
+   Sizes
+   ========================================================================== */
+
+.sm {
+  width: 16px;
+  height: 16px;
+}
+
+.md {
+  width: 24px;
+  height: 24px;
+}
+
+.lg {
+  width: 36px;
+  height: 36px;
+}
+
+.xl {
+  width: 48px;
+  height: 48px;
+}
+
+/* ==========================================================================
+   Label
+   ========================================================================== */
+
+.label {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #4a5568);
+}
+
+/* ==========================================================================
+   Animation
+   ========================================================================== */
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

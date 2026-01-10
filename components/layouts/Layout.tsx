@@ -15,8 +15,19 @@ interface LayoutProps {
 }
 
 /**
+ * Skip to content link for keyboard navigation
+ * Hidden until focused, appears at top of page when tabbed to
+ */
+const SkipToContent: React.FC = () => (
+  <a href="#main-content" className={styles.skipLink}>
+    Skip to main content
+  </a>
+);
+
+/**
  * Shared layout component for consistent page structure
  * Uses ScrollingHeader with hide-on-scroll behavior and SharedFooter
+ * Includes skip-to-content link for accessibility
  */
 const Layout: React.FC<LayoutProps> = ({
   children,
@@ -36,9 +47,12 @@ const Layout: React.FC<LayoutProps> = ({
         <meta property="og:description" content={description || title} />
       </Head>
 
+      <SkipToContent />
       <ScrollingHeader transparent={transparentHeader} />
 
-      <main className={styles.mainContent}>{children}</main>
+      <main id="main-content" className={styles.mainContent} tabIndex={-1}>
+        {children}
+      </main>
 
       <SharedFooter />
     </div>

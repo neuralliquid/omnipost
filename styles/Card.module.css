@@ -1,0 +1,156 @@
+/* ==========================================================================
+   Shared Card Component Styles
+   ========================================================================== */
+
+.card {
+  background-color: var(--color-bg-card, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  border: 1px solid var(--color-border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Variants
+   ========================================================================== */
+
+.default {
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+}
+
+.interactive {
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.05));
+  transition:
+    transform var(--transition-base, 200ms ease),
+    box-shadow var(--transition-base, 200ms ease),
+    border-color var(--transition-base, 200ms ease);
+  cursor: pointer;
+}
+
+.interactive:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg, 0 10px 15px rgba(0, 0, 0, 0.1));
+  border-color: var(--color-primary-200, rgba(74, 100, 145, 0.2));
+}
+
+.interactive:active {
+  transform: translateY(-1px);
+}
+
+.outlined {
+  box-shadow: none;
+  border: 2px solid var(--color-border, #e2e8f0);
+}
+
+/* ==========================================================================
+   Padding Variants
+   ========================================================================== */
+
+.padding-none {
+  padding: 0;
+}
+
+.padding-sm {
+  padding: var(--spacing-md, 1rem);
+}
+
+.padding-md {
+  padding: var(--spacing-lg, 1.5rem);
+}
+
+.padding-lg {
+  padding: var(--spacing-xl, 2rem);
+}
+
+/* ==========================================================================
+   Card Header
+   ========================================================================== */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-md, 1rem);
+  padding-bottom: var(--spacing-md, 1rem);
+  border-bottom: 1px solid var(--color-border-light, #edf2f7);
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.headerContent {
+  flex: 1;
+  min-width: 0;
+}
+
+.title {
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-secondary, #2c3e50);
+  margin: 0;
+  line-height: var(--line-height-tight, 1.25);
+}
+
+.subtitle {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-secondary, #4a5568);
+  margin: var(--spacing-xs, 0.25rem) 0 0 0;
+  line-height: var(--line-height-normal, 1.5);
+}
+
+.headerAction {
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   Card Body
+   ========================================================================== */
+
+.body {
+  flex: 1;
+}
+
+/* ==========================================================================
+   Card Footer
+   ========================================================================== */
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 0.5rem);
+  padding-top: var(--spacing-md, 1rem);
+  border-top: 1px solid var(--color-border-light, #edf2f7);
+  margin-top: var(--spacing-md, 1rem);
+}
+
+.align-left {
+  justify-content: flex-start;
+}
+
+.align-center {
+  justify-content: center;
+}
+
+.align-right {
+  justify-content: flex-end;
+}
+
+.align-between {
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .padding-lg {
+    padding: var(--spacing-lg, 1.5rem);
+  }
+
+  .padding-md {
+    padding: var(--spacing-md, 1rem);
+  }
+
+  .footer {
+    flex-wrap: wrap;
+  }
+}

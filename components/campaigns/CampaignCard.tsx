@@ -7,9 +7,18 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Campaign } from '@/types/campaign';
-import { CampaignStatusBadge } from './CampaignStatus';
+import { Campaign, CampaignStatus } from '@/types/campaign';
+import { Button, StatusBadge } from '@/components/ui';
 import styles from '@/styles/Campaign.module.css';
+
+// Map campaign status to StatusBadge status
+const statusMap: Record<CampaignStatus, 'draft' | 'scheduled' | 'active' | 'paused' | 'completed'> = {
+  draft: 'draft',
+  scheduled: 'scheduled',
+  active: 'active',
+  paused: 'paused',
+  completed: 'completed',
+};
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -48,12 +57,12 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
   };
 
   return (
-    <div className={styles.campaignCard}>
+    <article className={styles.campaignCard}>
       <div className={styles.campaignHeader}>
         <Link href={`/campaigns/${campaign.id}`} className={styles.campaignTitle}>
           {campaign.name}
         </Link>
-        <CampaignStatusBadge status={campaign.status} />
+        <StatusBadge status={statusMap[campaign.status]} size="sm" />
       </div>
 
       {campaign.description ? (
@@ -142,43 +151,54 @@ export const CampaignCard: React.FC<CampaignCardProps> = ({
       </div>
 
       <div className={styles.campaignActions}>
-        <Link href={`/campaigns/${campaign.id}`} className={styles.secondaryButton}>
+        <Button
+          as="a"
+          href={`/campaigns/${campaign.id}`}
+          variant="secondary"
+          size="sm"
+        >
           View Details
-        </Link>
+        </Button>
         {onDuplicate ? (
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleDuplicate}
-            className={styles.iconButton}
+            aria-label="Duplicate campaign"
             title="Duplicate campaign"
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-              />
-            </svg>
-          </button>
+            leftIcon={
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+            }
+          />
         ) : null}
         {onDelete ? (
-          <button
+          <Button
+            variant="danger"
+            size="sm"
             onClick={handleDelete}
-            className={`${styles.iconButton} ${styles.dangerButton}`}
+            aria-label="Delete campaign"
             title="Delete campaign"
-          >
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-          </button>
+            leftIcon={
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            }
+          />
         ) : null}
       </div>
-    </div>
+    </article>
   );
 };
 

@@ -472,6 +472,21 @@
   background: #f5f3ff;
 }
 
+.seriesTitle {
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.seriesDescription {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+  margin-top: 0.125rem;
+}
+
+.inputError {
+  border-color: var(--color-error, #ef4444) !important;
+}
+
 /* Empty State */
 .emptyState {
   text-align: center;

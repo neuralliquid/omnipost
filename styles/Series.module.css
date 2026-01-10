@@ -84,6 +84,22 @@
   font-size: var(--font-size-sm, 0.875rem);
 }
 
+.formLabel {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.25rem);
+  font-weight: var(--font-weight-medium, 500);
+  color: var(--color-text-primary, #1a1a2e);
+  font-size: var(--font-size-sm, 0.875rem);
+  margin-bottom: var(--spacing-sm, 0.5rem);
+}
+
+.optional {
+  font-weight: var(--font-weight-normal, 400);
+  color: var(--color-text-muted, #718096);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
 .formRow {
   display: grid;
   grid-template-columns: 1fr 1fr;
