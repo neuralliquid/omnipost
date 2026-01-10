@@ -24,14 +24,74 @@
   margin-bottom: 2rem;
 }
 
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-3xl, 4rem) var(--spacing-xl, 2rem);
+  gap: var(--spacing-md, 1rem);
+}
+
+.loadingText {
+  color: var(--color-text-secondary, #666);
+  font-size: var(--font-size-base, 1rem);
+  margin: 0;
+}
+
 /* Header Actions */
 .headerActions {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 1.5rem;
   flex-wrap: wrap;
   gap: 1rem;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 1rem);
+  margin-top: var(--spacing-sm, 0.5rem);
+}
+
+.lastUpdated {
+  color: var(--color-text-secondary, #666);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.actionButtons {
+  display: flex;
+  gap: var(--spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+}
+
+/* Section Header */
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md, 1rem);
+}
+
+.sectionHeader h3 {
+  margin: 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+/* Add Content Form */
+.addContentForm {
+  padding: var(--spacing-lg, 1.5rem);
+  background: var(--color-bg-secondary, #f9fafb);
+  border-radius: var(--radius-md, 8px);
+  margin-bottom: var(--spacing-md, 1rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 1rem);
 }
 
 .filterGroup {
@@ -470,6 +530,21 @@
 .seriesOption.selected {
   border-color: var(--color-primary, #4f46e5);
   background: #f5f3ff;
+}
+
+.seriesTitle {
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.seriesDescription {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary, #666);
+  margin-top: 0.125rem;
+}
+
+.inputError {
+  border-color: var(--color-error, #ef4444) !important;
 }
 
 /* Empty State */

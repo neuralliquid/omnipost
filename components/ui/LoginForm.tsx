@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useState } from 'react';
 import { apiClient } from '../../lib/api-client';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import styles from '@/styles/LoginForm.module.css';
 
 interface User {

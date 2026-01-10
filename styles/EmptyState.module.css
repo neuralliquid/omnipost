@@ -1,0 +1,99 @@
+/* ==========================================================================
+   Empty State Component Styles
+   ========================================================================== */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--spacing-3xl, 4rem) var(--spacing-xl, 2rem);
+  background-color: var(--color-bg-card, #ffffff);
+  border: 2px dashed var(--color-border, #e2e8f0);
+  border-radius: var(--radius-lg, 12px);
+}
+
+/* ==========================================================================
+   Icon
+   ========================================================================== */
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: var(--spacing-lg, 1.5rem);
+  color: var(--color-text-muted, #718096);
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+  border-radius: var(--radius-full, 9999px);
+}
+
+.iconWrapper svg {
+  width: 32px;
+  height: 32px;
+}
+
+/* ==========================================================================
+   Content
+   ========================================================================== */
+
+.title {
+  font-size: var(--font-size-xl, 1.25rem);
+  font-weight: var(--font-weight-semibold, 600);
+  color: var(--color-secondary, #2c3e50);
+  margin: 0 0 var(--spacing-sm, 0.5rem) 0;
+}
+
+.description {
+  font-size: var(--font-size-sm, 0.875rem);
+  color: var(--color-text-muted, #718096);
+  margin: 0 0 var(--spacing-lg, 1.5rem) 0;
+  max-width: 360px;
+  line-height: var(--line-height-relaxed, 1.625);
+}
+
+/* ==========================================================================
+   Actions
+   ========================================================================== */
+
+.actions {
+  display: flex;
+  gap: var(--spacing-sm, 0.5rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+
+@media (max-width: 480px) {
+  .container {
+    padding: var(--spacing-xl, 2rem) var(--spacing-md, 1rem);
+  }
+
+  .iconWrapper {
+    width: 56px;
+    height: 56px;
+  }
+
+  .iconWrapper svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .title {
+    font-size: var(--font-size-lg, 1.125rem);
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actions > * {
+    width: 100%;
+  }
+}

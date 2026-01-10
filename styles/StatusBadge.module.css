@@ -1,0 +1,86 @@
+/* ==========================================================================
+   Status Badge Component Styles
+   ========================================================================== */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.25rem);
+  border-radius: var(--radius-full, 9999px);
+  font-weight: var(--font-weight-medium, 500);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   Sizes
+   ========================================================================== */
+
+.sm {
+  padding: 2px var(--spacing-sm, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.sm .icon svg {
+  width: 10px;
+  height: 10px;
+}
+
+.md {
+  padding: var(--spacing-xs, 0.25rem) var(--spacing-sm, 0.5rem);
+  font-size: var(--font-size-xs, 0.75rem);
+}
+
+.md .icon svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ==========================================================================
+   Icon
+   ========================================================================== */
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.label {
+  line-height: 1;
+}
+
+/* ==========================================================================
+   Color Variants
+   ========================================================================== */
+
+.gray {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+  color: var(--color-text-secondary, #4a5568);
+}
+
+.blue {
+  background-color: var(--color-info-light, #dbeafe);
+  color: #1e40af;
+}
+
+.green {
+  background-color: var(--color-success-light, #d1fae5);
+  color: #047857;
+}
+
+.yellow {
+  background-color: var(--color-warning-light, #fef3c7);
+  color: #b45309;
+}
+
+.red {
+  background-color: var(--color-error-light, #fee2e2);
+  color: #b91c1c;
+}
+
+.purple {
+  background-color: #ede9fe;
+  color: #6d28d9;
+}

@@ -1,36 +1,30 @@
 /**
  * Campaign Status Badge Component
- * Displays the current status of a campaign with appropriate styling
+ * Re-exports the shared StatusBadge for backward compatibility
  */
 
 import React from 'react';
 import { CampaignStatus as CampaignStatusType } from '@/types/campaign';
-import styles from '@/styles/Campaign.module.css';
+import { StatusBadge } from '@/components/ui';
 
 interface CampaignStatusProps {
   status: CampaignStatusType;
   size?: 'small' | 'medium' | 'large';
 }
 
-const statusConfig: Record<CampaignStatusType, { label: string; className: string }> = {
-  draft: { label: 'Draft', className: styles.statusDraft },
-  scheduled: { label: 'Scheduled', className: styles.statusScheduled },
-  active: { label: 'Active', className: styles.statusActive },
-  paused: { label: 'Paused', className: styles.statusPaused },
-  completed: { label: 'Completed', className: styles.statusCompleted },
+// Map size prop to StatusBadge size (StatusBadge only supports sm | md)
+const sizeMap: Record<string, 'sm' | 'md'> = {
+  small: 'sm',
+  medium: 'md',
+  large: 'md', // large maps to md since StatusBadge doesn't support lg
 };
 
+/**
+ * CampaignStatusBadge - Wrapper around shared StatusBadge for campaign-specific use
+ * Maintained for backward compatibility with existing code
+ */
 export const CampaignStatusBadge: React.FC<CampaignStatusProps> = ({ status, size = 'medium' }) => {
-  const config = statusConfig[status];
-
-  return (
-    <span
-      className={`${styles.statusBadge} ${config.className}`}
-      style={size === 'small' ? { fontSize: '0.625rem', padding: '0.125rem 0.5rem' } : undefined}
-    >
-      {config.label}
-    </span>
-  );
+  return <StatusBadge status={status} size={sizeMap[size]} />;
 };
 
 export default CampaignStatusBadge;

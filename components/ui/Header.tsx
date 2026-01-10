@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/Header.module.css';
@@ -9,10 +9,37 @@ import { siteConfig } from '../../data/siteConfig';
 const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const menuRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    menuButtonRef.current?.focus();
+  }, []);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  // Handle escape key to close menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && menuOpen) {
+        closeMenu();
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus the first link in the menu when opened
+      const firstLink = menuRef.current?.querySelector('a');
+      firstLink?.focus();
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen, closeMenu]);
 
   // Get navigation items (already validated by siteConfig)
   const navigationItems = siteConfig.navigation;
@@ -27,17 +54,23 @@ const Header: React.FC = () => {
         </div>
 
         <button
+          ref={menuButtonRef}
           className={styles.mobileMenuButton}
           onClick={toggleMenu}
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
+          aria-controls="main-navigation"
         >
           <span className={styles.menuIcon}></span>
           <span className={styles.menuIcon}></span>
           <span className={styles.menuIcon}></span>
         </button>
 
-        <nav className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}>
+        <nav
+          ref={menuRef}
+          id="main-navigation"
+          className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}
+        >
           <ul className={styles.navList}>
             {navigationItems.map(item => (
               <li key={`nav-${item.path}`} className={styles.navItem}>

@@ -9,7 +9,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/layouts/Layout';
-import { CampaignStatusBadge, CampaignForm } from '@/components/campaigns';
+import { CampaignForm } from '@/components/campaigns';
+import { Button, LoadingSpinner, EmptyState, StatusBadge, FormField } from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useSeries } from '@/hooks/useSeries';
 import { Campaign, CampaignContentType, UpdateCampaignInput } from '@/types/campaign';
@@ -54,8 +55,9 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     return (
       <Layout title="Loading Campaign" description="">
         <div className={styles.container}>
-          <div className={styles.emptyState}>
-            <p>Loading campaign...</p>
+          <div className={styles.loadingContainer}>
+            <LoadingSpinner size="lg" />
+            <p className={styles.loadingText}>Loading campaign...</p>
           </div>
         </div>
       </Layout>
@@ -66,13 +68,15 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     return (
       <Layout title="Campaign Not Found" description="">
         <div className={styles.container}>
-          <div className={styles.emptyState}>
-            <h2>Campaign not found</h2>
-            <p>The campaign you're looking for doesn't exist or has been deleted.</p>
-            <Link href="/campaigns" className={styles.primaryButton}>
-              Back to Campaigns
-            </Link>
-          </div>
+          <EmptyState
+            variant="error"
+            title="Campaign not found"
+            description="The campaign you're looking for doesn't exist or has been deleted."
+            action={{
+              label: 'Back to Campaigns',
+              onClick: () => router.push('/campaigns'),
+            }}
+          />
         </div>
       </Layout>
     );
@@ -178,11 +182,9 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
             <h1 className={styles.pageTitle} style={{ marginTop: '1rem' }}>
               {campaign.name}
             </h1>
-            <div
-              style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginTop: '0.5rem' }}
-            >
-              <CampaignStatusBadge status={campaign.status} />
-              <span style={{ color: '#666', fontSize: '0.875rem' }}>
+            <div className={styles.statusRow}>
+              <StatusBadge status={campaign.status} />
+              <span className={styles.lastUpdated}>
                 Last updated:{' '}
                 {new Date(campaign.updatedAt).toLocaleDateString('en-US', {
                   month: 'long',
@@ -192,21 +194,44 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               </span>
             </div>
           </div>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div className={styles.actionButtons}>
             {showStatusActionButton ? (
-              <button onClick={handleStatusAction} className={styles.secondaryButton}>
+              <Button variant="secondary" onClick={handleStatusAction}>
                 {getStatusActionLabel()}
-              </button>
+              </Button>
             ) : null}
-            <button onClick={() => setIsEditing(true)} className={styles.secondaryButton}>
+            <Button
+              variant="secondary"
+              onClick={() => setIsEditing(true)}
+              leftIcon={
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              }
+            >
               Edit
-            </button>
-            <button
+            </Button>
+            <Button
+              variant="danger"
               onClick={handleDelete}
-              className={`${styles.secondaryButton} ${styles.dangerButton}`}
+              leftIcon={
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              }
             >
               Delete
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -318,49 +343,46 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
 
             {/* Content Items */}
             <div className={styles.campaignCard}>
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginBottom: '1rem',
-                }}
-              >
+              <div className={styles.sectionHeader}>
                 <h3>Campaign Content</h3>
-                <button onClick={() => setShowAddContent(true)} className={styles.secondaryButton}>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowAddContent(true)}
+                  leftIcon={
+                    <svg
+                      width="16"
+                      height="16"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                  }
+                >
                   Add Content
-                </button>
+                </Button>
               </div>
 
               {showAddContent ? (
-                <form
-                  onSubmit={handleAddContent}
-                  style={{
-                    padding: '1rem',
-                    background: '#f9fafb',
-                    borderRadius: '8px',
-                    marginBottom: '1rem',
-                  }}
-                >
-                  <div className={styles.formGroup}>
-                    <label htmlFor="content-title" className={styles.formLabel}>
-                      Title
-                    </label>
+                <form onSubmit={handleAddContent} className={styles.addContentForm}>
+                  <FormField label="Title" required>
                     <input
-                      id="content-title"
                       type="text"
                       value={newContent.title}
                       onChange={e => setNewContent(prev => ({ ...prev, title: e.target.value }))}
                       className={styles.formInput}
                       placeholder="Content title"
                     />
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="content-type" className={styles.formLabel}>
-                      Content Type
-                    </label>
+                  </FormField>
+                  <FormField label="Content Type">
                     <select
-                      id="content-type"
                       value={newContent.type}
                       onChange={e =>
                         setNewContent(prev => ({
@@ -375,46 +397,52 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                       <option value="thread">Thread</option>
                       <option value="announcement">Announcement</option>
                     </select>
-                  </div>
-                  <div className={styles.formGroup}>
-                    <label htmlFor="content-body" className={styles.formLabel}>
-                      Body
-                    </label>
+                  </FormField>
+                  <FormField label="Body" required>
                     <textarea
-                      id="content-body"
                       value={newContent.body}
                       onChange={e => setNewContent(prev => ({ ...prev, body: e.target.value }))}
                       className={styles.formTextarea}
                       placeholder="Write your content..."
+                      rows={4}
                     />
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end' }}>
-                    <button
+                  </FormField>
+                  <div className={styles.formActions}>
+                    <Button
                       type="button"
+                      variant="secondary"
                       onClick={() => setShowAddContent(false)}
-                      className={styles.secondaryButton}
                     >
                       Cancel
-                    </button>
-                    <button type="submit" className={styles.primaryButton}>
+                    </Button>
+                    <Button type="submit" variant="primary">
                       Add Content
-                    </button>
+                    </Button>
                   </div>
                 </form>
               ) : null}
 
               {campaign.contentItems.length === 0 ? (
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '2rem',
-                    color: '#666',
-                    background: '#f9fafb',
-                    borderRadius: '8px',
-                  }}
-                >
-                  <p>No content added yet. Add content to start building your campaign.</p>
-                </div>
+                <EmptyState
+                  icon={
+                    <svg
+                      width="48"
+                      height="48"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={1.5}
+                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                      />
+                    </svg>
+                  }
+                  title="No content yet"
+                  description="Add content to start building your campaign."
+                />
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {campaign.contentItems.map(item => (
