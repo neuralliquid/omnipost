@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/ScrollingHeader.module.css';
-import { siteConfig } from '../../data/siteConfig';
+import { siteConfig, NavigationItem } from '../../data/siteConfig';
 
 interface ScrollingHeaderProps {
   transparent?: boolean;
@@ -15,9 +15,12 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [expandedMobile, setExpandedMobile] = useState<string | null>(null);
   const lastScrollYRef = useRef(0);
   const menuRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const dropdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
   const closeMenu = useCallback(() => {
@@ -58,6 +61,15 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (dropdownTimeoutRef.current) {
+        clearTimeout(dropdownTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Handle escape key to close menu
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -81,7 +93,37 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
   // Close mobile menu when route changes
   useEffect(() => {
     setMenuOpen(false);
+    setOpenDropdown(null);
+    setExpandedMobile(null);
   }, [pathname]);
+
+  // Handle dropdown hover with delay for better UX
+  const handleDropdownEnter = (name: string) => {
+    if (dropdownTimeoutRef.current) {
+      clearTimeout(dropdownTimeoutRef.current);
+    }
+    setOpenDropdown(name);
+  };
+
+  const handleDropdownLeave = () => {
+    dropdownTimeoutRef.current = setTimeout(() => {
+      setOpenDropdown(null);
+    }, 150);
+  };
+
+  // Toggle mobile submenu
+  const toggleMobileSubmenu = (name: string) => {
+    setExpandedMobile(expandedMobile === name ? null : name);
+  };
+
+  // Check if a nav item or its children is active
+  const isNavItemActive = (item: NavigationItem): boolean => {
+    if (pathname === item.path) return true;
+    if (item.children) {
+      return item.children.some(child => pathname === child.path);
+    }
+    return false;
+  };
 
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
@@ -143,15 +185,81 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
           >
             <ul className={styles.navList}>
               {navigationItems.map(item => (
-                <li key={`nav-${item.path}`} className={styles.navItem}>
-                  <Link
-                    href={item.path}
-                    className={`${styles.navLink} ${pathname === item.path ? styles.activeLink : ''}`}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {item.name}
-                    {pathname === item.path && <span className={styles.activeIndicator}></span>}
-                  </Link>
+                <li
+                  key={`nav-${item.path}`}
+                  className={`${styles.navItem} ${item.children ? styles.hasDropdown : ''}`}
+                  onMouseEnter={() => item.children && handleDropdownEnter(item.name)}
+                  onMouseLeave={handleDropdownLeave}
+                >
+                  {item.children ? (
+                    <>
+                      {/* Desktop dropdown trigger */}
+                      <button
+                        className={`${styles.navLink} ${styles.dropdownTrigger} ${isNavItemActive(item) ? styles.activeLink : ''}`}
+                        aria-expanded={openDropdown === item.name}
+                        aria-haspopup="true"
+                        onClick={() => toggleMobileSubmenu(item.name)}
+                      >
+                        {item.name}
+                        <svg
+                          className={`${styles.dropdownIcon} ${openDropdown === item.name || expandedMobile === item.name ? styles.rotated : ''}`}
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M6 9l6 6 6-6" />
+                        </svg>
+                        {isNavItemActive(item) && <span className={styles.activeIndicator}></span>}
+                      </button>
+
+                      {/* Desktop dropdown menu */}
+                      <ul
+                        className={`${styles.dropdownMenu} ${openDropdown === item.name ? styles.dropdownOpen : ''}`}
+                      >
+                        {item.children.map(child => (
+                          <li key={`dropdown-${child.path}`}>
+                            <Link
+                              href={child.path}
+                              className={`${styles.dropdownLink} ${pathname === child.path ? styles.activeDropdownLink : ''}`}
+                              onClick={() => {
+                                setMenuOpen(false);
+                                setOpenDropdown(null);
+                              }}
+                            >
+                              {child.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {/* Mobile expanded submenu */}
+                      <ul
+                        className={`${styles.mobileSubmenu} ${expandedMobile === item.name ? styles.mobileSubmenuOpen : ''}`}
+                      >
+                        {item.children.map(child => (
+                          <li key={`mobile-${child.path}`}>
+                            <Link
+                              href={child.path}
+                              className={`${styles.mobileSubmenuLink} ${pathname === child.path ? styles.activeDropdownLink : ''}`}
+                              onClick={() => setMenuOpen(false)}
+                            >
+                              {child.name}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  ) : (
+                    <Link
+                      href={item.path}
+                      className={`${styles.navLink} ${pathname === item.path ? styles.activeLink : ''}`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.name}
+                      {pathname === item.path && <span className={styles.activeIndicator}></span>}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

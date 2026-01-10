@@ -157,6 +157,109 @@
 }
 
 /* ==========================================================================
+   Dropdown Navigation
+   ========================================================================== */
+
+.hasDropdown {
+  position: relative;
+}
+
+.dropdownTrigger {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 0.25rem);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.dropdownIcon {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-base, 200ms ease);
+  flex-shrink: 0;
+}
+
+.dropdownIcon.rotated {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  min-width: 200px;
+  background-color: var(--color-bg-primary, #ffffff);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(
+    --shadow-xl,
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04)
+  );
+  padding: var(--spacing-sm, 0.5rem);
+  list-style: none;
+  margin: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--transition-base, 200ms ease),
+    visibility var(--transition-base, 200ms ease),
+    transform var(--transition-base, 200ms ease);
+  transform: translateX(-50%) translateY(-8px);
+  z-index: calc(var(--z-fixed, 200) + 10);
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.dropdownMenu.dropdownOpen {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.dropdownLink {
+  display: block;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  color: var(--color-text-secondary, #4a5568);
+  text-decoration: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: var(--radius-md, 8px);
+  transition:
+    color var(--transition-base, 200ms ease),
+    background-color var(--transition-base, 200ms ease);
+  white-space: nowrap;
+}
+
+.dropdownLink:hover {
+  color: var(--color-primary, #4a6491);
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+}
+
+.activeDropdownLink {
+  color: var(--color-primary, #4a6491);
+  font-weight: var(--font-weight-semibold, 600);
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+}
+
+/* Mobile submenu - hidden on desktop */
+.mobileSubmenu {
+  display: none;
+}
+
+.mobileSubmenuLink {
+  display: block;
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem) var(--spacing-sm, 0.5rem)
+    var(--spacing-2xl, 3rem);
+  color: var(--color-text-secondary, #4a5568);
+  text-decoration: none;
+  font-size: var(--font-size-sm, 0.875rem);
+  border-radius: var(--radius-md, 8px);
+  transition:
+    color var(--transition-base, 200ms ease),
+    background-color var(--transition-base, 200ms ease);
+}
+
+/* ==========================================================================
    Mobile Menu Button
    ========================================================================== */
 
@@ -312,6 +415,52 @@
 
   .headerSpacer {
     height: var(--header-height, 56px);
+  }
+
+  /* Hide desktop dropdown on mobile */
+  .dropdownMenu {
+    display: none;
+  }
+
+  /* Show mobile submenu */
+  .mobileSubmenu {
+    display: block;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transition-slow, 300ms ease);
+  }
+
+  .mobileSubmenu.mobileSubmenuOpen {
+    max-height: 300px;
+  }
+
+  .mobileSubmenuLink {
+    display: block;
+    padding: var(--spacing-sm, 0.5rem) var(--spacing-lg, 1.5rem) var(--spacing-sm, 0.5rem)
+      var(--spacing-3xl, 4rem);
+    color: var(--color-text-secondary, #4a5568);
+    text-decoration: none;
+    font-size: var(--font-size-sm, 0.875rem);
+    border-radius: var(--radius-md, 8px);
+    transition:
+      color var(--transition-base, 200ms ease),
+      background-color var(--transition-base, 200ms ease);
+  }
+
+  .mobileSubmenuLink:hover {
+    background-color: var(--color-bg-tertiary, #f3f4f6);
+    color: var(--color-primary, #4a6491);
+  }
+
+  .dropdownTrigger {
+    justify-content: space-between;
+  }
+
+  .dropdownIcon {
+    margin-left: auto;
   }
 }
 

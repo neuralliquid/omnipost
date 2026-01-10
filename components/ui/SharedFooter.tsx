@@ -1,12 +1,53 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import styles from '@/styles/SharedFooter.module.css';
-import siteConfig from '../../data/siteConfig.json';
+import { siteConfig, NavigationItem } from '../../data/siteConfig';
+
+// Reusable arrow icon for footer links
+const ArrowIcon: React.FC = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 18l6-6-6-6" />
+  </svg>
+);
+
+// Reusable footer link column component
+interface FooterLinkColumnProps {
+  title: string;
+  items: NavigationItem[];
+  keyPrefix: string;
+}
+
+const FooterLinkColumn: React.FC<FooterLinkColumnProps> = ({ title, items, keyPrefix }) => (
+  <div className={styles.footerColumn}>
+    <h3 className={styles.columnTitle}>{title}</h3>
+    <ul className={styles.footerLinks}>
+      {items.map(item => (
+        <li key={`${keyPrefix}-${item.path}`}>
+          <Link href={item.path} className={styles.footerLink}>
+            <span className={styles.linkArrow}>
+              <ArrowIcon />
+            </span>
+            {item.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
 const SharedFooter: React.FC = () => {
   const currentYear = new Date().getFullYear();
+  const [showBackToTop, setShowBackToTop] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const socialIcons: Record<string, JSX.Element> = {
     twitter: (
@@ -32,56 +73,46 @@ const SharedFooter: React.FC = () => {
       linkedin: 'https://linkedin.com/in/',
       github: 'https://github.com/',
     };
-    const defaultUrl = 'https://' + platform + '.com/';
-    const baseUrl = baseUrls[platform] || defaultUrl;
-    return baseUrl + handle;
+    return (baseUrls[platform] || `https://${platform}.com/`) + handle;
   };
+
+  // Flatten navigation items for footer (expand children)
+  const getAllNavItems = (): NavigationItem[] => {
+    const items: NavigationItem[] = [];
+    siteConfig.navigation.forEach(item => {
+      if (item.children && item.children.length > 0) {
+        items.push(...item.children);
+      } else {
+        items.push(item);
+      }
+    });
+    return items;
+  };
+
+  const allNavItems = getAllNavItems();
+  const midpoint = Math.ceil(allNavItems.length / 2);
 
   return (
     <footer className={styles.footer}>
+      {/* Top decorative bar */}
+      <div className={styles.topBar} />
+
       <div className={styles.footerContainer}>
         {/* Main Footer Content */}
         <div className={styles.footerGrid}>
           {/* Brand Column */}
           <div className={styles.brandColumn}>
             <Link href="/" className={styles.brandLink}>
-              <span className={styles.brandIcon}>O</span>
+              <span className={styles.brandIcon}>
+                <svg viewBox="0 0 24 24" fill="currentColor" className={styles.brandIconSvg}>
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                </svg>
+              </span>
               <span className={styles.brandName}>{siteConfig.siteName}</span>
             </Link>
             <p className={styles.brandDescription}>{siteConfig.siteDescription}</p>
-          </div>
 
-          {/* Navigation Column */}
-          <div className={styles.footerColumn}>
-            <h3 className={styles.columnTitle}>Navigation</h3>
-            <ul className={styles.footerLinks}>
-              {siteConfig.navigation.slice(0, 4).map(item => (
-                <li key={`footer-nav-${item.path}`}>
-                  <Link href={item.path} className={styles.footerLink}>
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Tools Column */}
-          <div className={styles.footerColumn}>
-            <h3 className={styles.columnTitle}>Tools</h3>
-            <ul className={styles.footerLinks}>
-              {siteConfig.navigation.slice(4).map(item => (
-                <li key={`footer-tools-${item.path}`}>
-                  <Link href={item.path} className={styles.footerLink}>
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Connect Column */}
-          <div className={styles.footerColumn}>
-            <h3 className={styles.columnTitle}>Connect</h3>
+            {/* Social links inline with brand */}
             <div className={styles.socialLinks}>
               {Object.entries(siteConfig.social).map(([platform, handle]) => (
                 <a
@@ -101,6 +132,39 @@ const SharedFooter: React.FC = () => {
               ))}
             </div>
           </div>
+
+          {/* Navigation Link Columns */}
+          <FooterLinkColumn
+            title="Quick Links"
+            items={allNavItems.slice(0, midpoint)}
+            keyPrefix="footer-1"
+          />
+          <FooterLinkColumn
+            title="Resources"
+            items={allNavItems.slice(midpoint)}
+            keyPrefix="footer-2"
+          />
+
+          {/* Newsletter / Contact Column */}
+          <div className={styles.footerColumn}>
+            <h3 className={styles.columnTitle}>Stay Updated</h3>
+            <p className={styles.newsletterText}>
+              Get the latest updates on content workflow best practices.
+            </p>
+            <form className={styles.newsletterForm} onSubmit={e => e.preventDefault()}>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className={styles.newsletterInput}
+                aria-label="Email for newsletter"
+              />
+              <button type="submit" className={styles.newsletterButton}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                </svg>
+              </button>
+            </form>
+          </div>
         </div>
 
         {/* Footer Bottom */}
@@ -110,11 +174,15 @@ const SharedFooter: React.FC = () => {
           </p>
           <div className={styles.footerMeta}>
             <Link href="/privacy" className={styles.metaLink}>
-              Privacy
+              Privacy Policy
             </Link>
-            <span className={styles.metaDivider}>|</span>
+            <span className={styles.metaDivider} aria-hidden="true" />
             <Link href="/terms" className={styles.metaLink}>
-              Terms
+              Terms of Service
+            </Link>
+            <span className={styles.metaDivider} aria-hidden="true" />
+            <Link href="/contact" className={styles.metaLink}>
+              Contact
             </Link>
           </div>
         </div>
@@ -122,7 +190,7 @@ const SharedFooter: React.FC = () => {
 
       {/* Back to top button */}
       <button
-        className={styles.backToTop}
+        className={`${styles.backToTop} ${showBackToTop ? styles.backToTopVisible : ''}`}
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
         aria-label="Back to top"
       >

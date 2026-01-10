@@ -13,6 +13,7 @@ import rawConfig from './siteConfig.json';
 export interface NavigationItem {
   name: string;
   path: string;
+  children?: NavigationItem[];
 }
 
 /**
@@ -63,14 +64,31 @@ const defaultConfig: SiteConfig = {
  * Validates a navigation item
  */
 function isValidNavigationItem(item: unknown): item is NavigationItem {
-  return (
-    typeof item === 'object' &&
-    item !== null &&
-    typeof (item as NavigationItem).name === 'string' &&
-    typeof (item as NavigationItem).path === 'string' &&
-    (item as NavigationItem).name.length > 0 &&
-    (item as NavigationItem).path.length > 0
-  );
+  if (
+    typeof item !== 'object' ||
+    item === null ||
+    typeof (item as NavigationItem).name !== 'string' ||
+    typeof (item as NavigationItem).path !== 'string' ||
+    (item as NavigationItem).name.length === 0 ||
+    (item as NavigationItem).path.length === 0
+  ) {
+    return false;
+  }
+
+  // Validate children if present
+  const navItem = item as NavigationItem;
+  if (navItem.children !== undefined) {
+    if (!Array.isArray(navItem.children)) {
+      return false;
+    }
+    for (const child of navItem.children) {
+      if (!isValidNavigationItem(child)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
 }
 
 /**
