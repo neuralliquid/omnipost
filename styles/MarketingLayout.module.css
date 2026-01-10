@@ -1,0 +1,13 @@
+/* ==========================================================================
+   Marketing Layout Styles
+   ========================================================================== */
+
+.layoutContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+}

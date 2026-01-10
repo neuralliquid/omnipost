@@ -12,28 +12,28 @@
       "path": "/"
     },
     {
-      "name": "Series",
-      "path": "/series"
+      "name": "Content",
+      "path": "/series",
+      "children": [
+        { "name": "Series", "path": "/series" },
+        { "name": "Workflow", "path": "/workflow" }
+      ]
     },
     {
-      "name": "Workflow",
-      "path": "/workflow"
+      "name": "Analysis",
+      "path": "/platform-analysis",
+      "children": [
+        { "name": "Platform Analysis", "path": "/platform-analysis" },
+        { "name": "Content Adaptation", "path": "/content-adaptation" }
+      ]
     },
     {
-      "name": "Platform Analysis",
-      "path": "/platform-analysis"
-    },
-    {
-      "name": "Content Adaptation",
-      "path": "/content-adaptation"
-    },
-    {
-      "name": "Automation",
-      "path": "/automation"
-    },
-    {
-      "name": "Review",
-      "path": "/review"
+      "name": "Tools",
+      "path": "/automation",
+      "children": [
+        { "name": "Automation", "path": "/automation" },
+        { "name": "Review", "path": "/review" }
+      ]
     },
     {
       "name": "Dashboard",
