@@ -5,6 +5,38 @@ import Link from 'next/link';
 import styles from '@/styles/SharedFooter.module.css';
 import { siteConfig, NavigationItem } from '../../data/siteConfig';
 
+// Reusable arrow icon for footer links
+const ArrowIcon: React.FC = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M9 18l6-6-6-6" />
+  </svg>
+);
+
+// Reusable footer link column component
+interface FooterLinkColumnProps {
+  title: string;
+  items: NavigationItem[];
+  keyPrefix: string;
+}
+
+const FooterLinkColumn: React.FC<FooterLinkColumnProps> = ({ title, items, keyPrefix }) => (
+  <div className={styles.footerColumn}>
+    <h3 className={styles.columnTitle}>{title}</h3>
+    <ul className={styles.footerLinks}>
+      {items.map(item => (
+        <li key={`${keyPrefix}-${item.path}`}>
+          <Link href={item.path} className={styles.footerLink}>
+            <span className={styles.linkArrow}>
+              <ArrowIcon />
+            </span>
+            {item.name}
+          </Link>
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 const SharedFooter: React.FC = () => {
   const currentYear = new Date().getFullYear();
   const [showBackToTop, setShowBackToTop] = useState(false);
@@ -41,9 +73,7 @@ const SharedFooter: React.FC = () => {
       linkedin: 'https://linkedin.com/in/',
       github: 'https://github.com/',
     };
-    const defaultUrl = 'https://' + platform + '.com/';
-    const baseUrl = baseUrls[platform] || defaultUrl;
-    return baseUrl + handle;
+    return (baseUrls[platform] || `https://${platform}.com/`) + handle;
   };
 
   // Flatten navigation items for footer (expand children)
@@ -61,8 +91,6 @@ const SharedFooter: React.FC = () => {
 
   const allNavItems = getAllNavItems();
   const midpoint = Math.ceil(allNavItems.length / 2);
-  const firstColumnItems = allNavItems.slice(0, midpoint);
-  const secondColumnItems = allNavItems.slice(midpoint);
 
   return (
     <footer className={styles.footer}>
@@ -105,43 +133,17 @@ const SharedFooter: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links Column 1 */}
-          <div className={styles.footerColumn}>
-            <h3 className={styles.columnTitle}>Quick Links</h3>
-            <ul className={styles.footerLinks}>
-              {firstColumnItems.map(item => (
-                <li key={`footer-1-${item.path}`}>
-                  <Link href={item.path} className={styles.footerLink}>
-                    <span className={styles.linkArrow}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </span>
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Quick Links Column 2 */}
-          <div className={styles.footerColumn}>
-            <h3 className={styles.columnTitle}>Resources</h3>
-            <ul className={styles.footerLinks}>
-              {secondColumnItems.map(item => (
-                <li key={`footer-2-${item.path}`}>
-                  <Link href={item.path} className={styles.footerLink}>
-                    <span className={styles.linkArrow}>
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M9 18l6-6-6-6" />
-                      </svg>
-                    </span>
-                    {item.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Navigation Link Columns */}
+          <FooterLinkColumn
+            title="Quick Links"
+            items={allNavItems.slice(0, midpoint)}
+            keyPrefix="footer-1"
+          />
+          <FooterLinkColumn
+            title="Resources"
+            items={allNavItems.slice(midpoint)}
+            keyPrefix="footer-2"
+          />
 
           {/* Newsletter / Contact Column */}
           <div className={styles.footerColumn}>
