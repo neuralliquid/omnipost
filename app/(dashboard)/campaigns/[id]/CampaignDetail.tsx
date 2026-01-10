@@ -69,18 +69,13 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
       <Layout title="Campaign Not Found" description="">
         <div className={styles.container}>
           <EmptyState
-            icon={
-              <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            }
+            variant="error"
             title="Campaign not found"
             description="The campaign you're looking for doesn't exist or has been deleted."
-            action={
-              <Button as="a" href="/campaigns" variant="primary">
-                Back to Campaigns
-              </Button>
-            }
+            action={{
+              label: 'Back to Campaigns',
+              onClick: () => router.push('/campaigns'),
+            }}
           />
         </div>
       </Layout>

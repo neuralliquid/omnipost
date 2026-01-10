@@ -12,11 +12,11 @@ interface CampaignStatusProps {
   size?: 'small' | 'medium' | 'large';
 }
 
-// Map size prop to StatusBadge size
-const sizeMap: Record<string, 'sm' | 'md' | 'lg'> = {
+// Map size prop to StatusBadge size (StatusBadge only supports sm | md)
+const sizeMap: Record<string, 'sm' | 'md'> = {
   small: 'sm',
   medium: 'md',
-  large: 'lg',
+  large: 'md', // large maps to md since StatusBadge doesn't support lg
 };
 
 /**
