@@ -65,9 +65,9 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
     setFormData(prev => ({ ...prev, [name]: value }));
 
     // Clear error when user starts typing
-    if (errors[name as keyof FormErrors]) {
-      setErrors(prev => ({ ...prev, [name]: undefined }));
-    }
+    if (name === 'title' && errors.title) setErrors(prev => ({ ...prev, title: undefined }));
+    if (name === 'description' && errors.description)
+      setErrors(prev => ({ ...prev, description: undefined }));
   };
 
   const handleAddTopic = () => {
