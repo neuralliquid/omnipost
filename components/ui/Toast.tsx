@@ -24,7 +24,10 @@ interface ToastContextValue {
 
 const ToastContext = createContext<ToastContextValue | null>(null);
 
-const generateId = () => Math.random().toString(36).substring(2, 9);
+// Counter-based ID generation for toast notifications
+// This is safe because toast IDs are only used for React keys and local state management
+let toastCounter = 0;
+const generateId = () => `toast_${Date.now()}_${++toastCounter}`;
 
 const icons: Record<ToastType, JSX.Element> = {
   success: (
