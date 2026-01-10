@@ -9,6 +9,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Layout from '@/components/layouts/Layout';
 import { CampaignCard, CampaignForm, EmptyState } from '@/components/campaigns';
+import { Button, LoadingSpinner } from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
 import { Campaign, CampaignStatus, CreateCampaignInput } from '@/types/campaign';
 import styles from '@/styles/Campaign.module.css';
@@ -43,7 +44,12 @@ function CampaignContent({
   onDuplicate: (id: string) => Campaign | null;
 }>) {
   if (isLoading) {
-    return <div className={styles.loadingState}>Loading campaigns...</div>;
+    return (
+      <div className={styles.loadingContainer}>
+        <LoadingSpinner size="lg" />
+        <p className={styles.loadingText}>Loading campaigns...</p>
+      </div>
+    );
   }
 
   if (campaigns.length === 0) {
@@ -54,9 +60,9 @@ function CampaignContent({
     return (
       <div className={styles.emptyState}>
         <p>No campaigns match the selected filter.</p>
-        <button onClick={onClearFilter} className={styles.secondaryButton}>
+        <Button variant="secondary" onClick={onClearFilter}>
           Clear Filter
-        </button>
+        </Button>
       </div>
     );
   }
@@ -119,17 +125,22 @@ export default function CampaignList() {
                 </button>
               ))}
             </div>
-            <button onClick={() => setShowForm(true)} className={styles.primaryButton}>
-              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
+            <Button
+              variant="primary"
+              onClick={() => setShowForm(true)}
+              leftIcon={
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+              }
+            >
               New Campaign
-            </button>
+            </Button>
           </div>
         ) : null}
 
