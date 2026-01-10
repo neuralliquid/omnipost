@@ -210,8 +210,8 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
         </div>
         {formData.topics && formData.topics.length > 0 && (
           <div className={styles.topicsList}>
-            {formData.topics.map((topic, index) => (
-              <span key={`topic-${index}`} className={styles.topicTag}>
+            {formData.topics.map(topic => (
+              <span key={topic} className={styles.topicTag}>
                 {topic}
                 <button
                   type="button"

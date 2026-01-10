@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import styles from '@/styles/Toast.module.css';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -120,8 +120,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     [addToast]
   );
 
+  const contextValue = useMemo(
+    () => ({ toasts, addToast, removeToast, success, error, warning, info }),
+    [toasts, addToast, removeToast, success, error, warning, info]
+  );
+
   return (
-    <ToastContext.Provider value={{ toasts, addToast, removeToast, success, error, warning, info }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       <div className={styles.container} aria-label="Notifications">
         {toasts.map(toast => (

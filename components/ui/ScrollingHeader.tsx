@@ -171,7 +171,14 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
       <div className={styles.headerSpacer} />
 
       {/* Mobile menu overlay */}
-      {menuOpen && <div className={styles.overlay} onClick={() => setMenuOpen(false)} />}
+      {menuOpen && (
+        <button
+          type="button"
+          className={styles.overlay}
+          onClick={() => setMenuOpen(false)}
+          aria-label="Close menu"
+        />
+      )}
     </>
   );
 };

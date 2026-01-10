@@ -30,7 +30,9 @@ export default function SeriesContent() {
 
   const handleDeleteSeries = (index: number) => {
     if (
-      window.confirm('Are you sure you want to delete this series? This action cannot be undone.')
+      globalThis.confirm(
+        'Are you sure you want to delete this series? This action cannot be undone.'
+      )
     ) {
       deleteSeries(index);
     }

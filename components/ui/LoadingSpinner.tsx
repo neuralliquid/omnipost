@@ -32,7 +32,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   const spinnerClasses = [styles.spinner, styles[size]].join(' ');
 
   return (
-    <div className={wrapperClasses} role="status" aria-live="polite">
+    <output className={wrapperClasses} aria-live="polite">
       <svg className={spinnerClasses} viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle
           className={styles.track}
@@ -51,7 +51,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         />
       </svg>
       {label && <span className={styles.label}>{label}</span>}
-    </div>
+    </output>
   );
 };
 

@@ -88,7 +88,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             <button onClick={this.handleRetry} className={styles.retryButton}>
               Try Again
             </button>
-            <button onClick={() => window.location.reload()} className={styles.reloadButton}>
+            <button onClick={() => globalThis.location.reload()} className={styles.reloadButton}>
               Reload Page
             </button>
           </div>

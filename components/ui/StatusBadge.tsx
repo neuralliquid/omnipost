@@ -15,7 +15,7 @@ type StatusType =
   | 'in-progress';
 
 interface StatusBadgeProps {
-  status: StatusType | string;
+  status: StatusType;
   showIcon?: boolean;
   size?: 'sm' | 'md';
   className?: string;

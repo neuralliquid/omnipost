@@ -32,7 +32,9 @@ const SharedFooter: React.FC = () => {
       linkedin: 'https://linkedin.com/in/',
       github: 'https://github.com/',
     };
-    return `${baseUrls[platform] || `https://${platform}.com/`}${handle}`;
+    const defaultUrl = 'https://' + platform + '.com/';
+    const baseUrl = baseUrls[platform] || defaultUrl;
+    return baseUrl + handle;
   };
 
   return (

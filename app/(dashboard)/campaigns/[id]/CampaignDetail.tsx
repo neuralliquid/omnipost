@@ -10,15 +10,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Layout from '@/components/layouts/Layout';
 import { CampaignForm } from '@/components/campaigns';
-import {
-  Button,
-  LoadingSpinner,
-  EmptyState,
-  StatusBadge,
-  FormField,
-  Card,
-  CardBody,
-} from '@/components/ui';
+import { Button, LoadingSpinner, EmptyState, StatusBadge, FormField } from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useSeries } from '@/hooks/useSeries';
 import { Campaign, CampaignContentType, UpdateCampaignInput } from '@/types/campaign';
