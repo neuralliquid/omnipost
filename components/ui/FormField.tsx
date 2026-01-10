@@ -53,7 +53,10 @@ const FormField = forwardRef<
   const hintId = `${fieldId}-hint`;
 
   const hasError = Boolean(error);
-  const describedBy = [error ? errorId : null, hint ? hintId : null].filter(Boolean).join(' ');
+  // Only include hintId when hint is actually rendered (hint exists AND no error)
+  const describedBy = [hasError ? errorId : null, hint && !hasError ? hintId : null]
+    .filter(Boolean)
+    .join(' ');
 
   const fieldClasses = [styles.field, hasError ? styles.fieldError : '', className]
     .filter(Boolean)

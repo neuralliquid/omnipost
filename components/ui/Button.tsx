@@ -6,7 +6,7 @@ import styles from '@/styles/Button.module.css';
 export type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'ghost' | 'success';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface BaseButtonProps {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -14,9 +14,24 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   fullWidth?: boolean;
-  as?: 'button' | 'a';
-  href?: string;
 }
+
+interface ButtonAsButtonProps
+  extends BaseButtonProps, Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, 'className'> {
+  as?: 'button';
+  href?: never;
+  className?: string;
+}
+
+interface ButtonAsAnchorProps
+  extends BaseButtonProps, Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'className'> {
+  as: 'a';
+  href: string;
+  disabled?: boolean;
+  className?: string;
+}
+
+type ButtonProps = ButtonAsButtonProps | ButtonAsAnchorProps;
 
 const LoadingSpinner = () => (
   <svg
@@ -34,75 +49,95 @@ const LoadingSpinner = () => (
   </svg>
 );
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  (
-    {
-      children,
-      variant = 'primary',
-      size = 'md',
-      loading = false,
-      loadingText,
-      leftIcon,
-      rightIcon,
-      fullWidth = false,
-      disabled,
-      className = '',
-      as = 'button',
-      href,
-      type = 'button',
-      ...props
-    },
-    ref
-  ) => {
-    const isDisabled = disabled || loading;
+const Button = forwardRef<HTMLButtonElement | HTMLAnchorElement, ButtonProps>((props, ref) => {
+  const {
+    children,
+    variant = 'primary',
+    size = 'md',
+    loading = false,
+    loadingText,
+    leftIcon,
+    rightIcon,
+    fullWidth = false,
+    disabled,
+    className = '',
+    ...restProps
+  } = props;
 
-    const buttonClasses = [
-      styles.button,
-      styles[variant],
-      styles[size],
-      fullWidth ? styles.fullWidth : '',
-      loading ? styles.loading : '',
-      className,
-    ]
-      .filter(Boolean)
-      .join(' ');
+  const isDisabled = disabled || loading;
 
-    const content = (
-      <>
-        {loading && <LoadingSpinner />}
-        {!loading && leftIcon && <span className={styles.iconLeft}>{leftIcon}</span>}
-        <span className={styles.text}>{loading && loadingText ? loadingText : children}</span>
-        {!loading && rightIcon && <span className={styles.iconRight}>{rightIcon}</span>}
-      </>
-    );
+  const buttonClasses = [
+    styles.button,
+    styles[variant],
+    styles[size],
+    fullWidth ? styles.fullWidth : '',
+    loading ? styles.loading : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-    if (as === 'a' && href) {
-      return (
-        <a
-          href={href}
-          className={buttonClasses}
-          aria-disabled={isDisabled}
-          {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
-        >
-          {content}
-        </a>
-      );
-    }
+  const content = (
+    <>
+      {loading && <LoadingSpinner />}
+      {!loading && leftIcon && <span className={styles.iconLeft}>{leftIcon}</span>}
+      <span className={styles.text}>{loading && loadingText ? loadingText : children}</span>
+      {!loading && rightIcon && <span className={styles.iconRight}>{rightIcon}</span>}
+    </>
+  );
+
+  if (props.as === 'a') {
+    const { as, href, onClick, ...anchorProps } = restProps as Omit<
+      ButtonAsAnchorProps,
+      keyof BaseButtonProps | 'className' | 'disabled'
+    > & { as?: 'a'; href: string; onClick?: React.MouseEventHandler<HTMLAnchorElement> };
+
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (isDisabled) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+      onClick?.(e);
+    };
 
     return (
-      <button
-        ref={ref}
-        type={type}
+      <a
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
         className={buttonClasses}
-        disabled={isDisabled}
-        aria-busy={loading}
-        {...props}
+        aria-disabled={isDisabled}
+        tabIndex={isDisabled ? -1 : undefined}
+        onClick={handleClick}
+        {...anchorProps}
       >
         {content}
-      </button>
+      </a>
     );
   }
-);
+
+  const {
+    as,
+    type = 'button',
+    ...buttonProps
+  } = restProps as Omit<ButtonAsButtonProps, keyof BaseButtonProps | 'className' | 'disabled'> & {
+    as?: 'button';
+    type?: 'button' | 'submit' | 'reset';
+  };
+
+  return (
+    <button
+      ref={ref as React.Ref<HTMLButtonElement>}
+      type={type}
+      className={buttonClasses}
+      disabled={isDisabled}
+      aria-busy={loading}
+      {...buttonProps}
+    >
+      {content}
+    </button>
+  );
+});
 
 Button.displayName = 'Button';
 

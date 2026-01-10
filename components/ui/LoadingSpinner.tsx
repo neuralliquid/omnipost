@@ -51,9 +51,9 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         />
       </svg>
       {label && <span className={styles.label}>{label}</span>}
-      <span className="sr-only">{label}</span>
     </div>
   );
 };
 
+export { LoadingSpinner };
 export default LoadingSpinner;

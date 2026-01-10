@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import styles from '@/styles/ScrollingHeader.module.css';
@@ -14,12 +14,22 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const lastScrollYRef = useRef(0);
+  const menuRef = useRef<HTMLElement>(null);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
   const pathname = usePathname();
 
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    menuButtonRef.current?.focus();
+  }, []);
+
+  // Stable scroll handler using ref instead of state dependency
   const handleScroll = useCallback(() => {
     const currentScrollY = window.scrollY;
     const scrollThreshold = 50;
+    const lastScrollY = lastScrollYRef.current;
 
     // Determine if header should be visible based on scroll direction
     if (currentScrollY > lastScrollY && currentScrollY > 100) {
@@ -32,13 +42,41 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
 
     // Determine if header should have background
     setScrolled(currentScrollY > scrollThreshold);
-    setLastScrollY(currentScrollY);
-  }, [lastScrollY]);
+
+    // Calculate progress safely
+    const scrollHeight = document.documentElement?.scrollHeight ?? 0;
+    const clientHeight = window.innerHeight ?? 0;
+    const maxScroll = scrollHeight - clientHeight;
+    const newProgress = maxScroll > 0 ? Math.min(currentScrollY / maxScroll, 1) : 0;
+    setProgress(newProgress);
+
+    lastScrollYRef.current = currentScrollY;
+  }, []);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
+
+  // Handle escape key to close menu
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && menuOpen) {
+        closeMenu();
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      // Focus the first link in the menu when opened
+      const firstLink = menuRef.current?.querySelector('a');
+      firstLink?.focus();
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [menuOpen, closeMenu]);
 
   // Close mobile menu when route changes
   useEffect(() => {
@@ -85,17 +123,24 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
           </div>
 
           <button
+            ref={menuButtonRef}
             className={`${styles.mobileMenuButton} ${menuOpen ? styles.active : ''}`}
             onClick={toggleMenu}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={menuOpen}
+            aria-controls="scrolling-header-navigation"
           >
             <span className={styles.menuIcon}></span>
             <span className={styles.menuIcon}></span>
             <span className={styles.menuIcon}></span>
           </button>
 
-          <nav className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}>
+          <nav
+            ref={menuRef}
+            id="scrolling-header-navigation"
+            aria-label="Main navigation"
+            className={`${styles.navigation} ${menuOpen ? styles.menuOpen : ''}`}
+          >
             <ul className={styles.navList}>
               {navigationItems.map(item => (
                 <li key={`nav-${item.path}`} className={styles.navItem}>
@@ -117,7 +162,7 @@ const ScrollingHeader: React.FC<ScrollingHeaderProps> = ({ transparent = false }
         <div
           className={styles.progressBar}
           style={{
-            transform: `scaleX(${Math.min(lastScrollY / (document.documentElement?.scrollHeight - window.innerHeight || 1), 1)})`,
+            transform: `scaleX(${progress})`,
           }}
         />
       </header>

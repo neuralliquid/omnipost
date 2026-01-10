@@ -36,10 +36,12 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    // Log error to console in development
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    // Only log to console in development to avoid noisy logs in production
+    if (process.env.NODE_ENV === 'development') {
+      console.error('ErrorBoundary caught an error:', error, errorInfo);
+    }
 
-    // Call optional error handler
+    // Call optional error handler for production error reporting
     this.props.onError?.(error, errorInfo);
   }
 
@@ -98,6 +100,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   }
 }
 
+export { ErrorBoundary };
 export default ErrorBoundary;
 
 /**

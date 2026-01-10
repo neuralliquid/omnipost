@@ -184,11 +184,12 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
       </div>
 
       <div className={styles.formGroup}>
-        <label className={styles.formLabel}>
+        <label htmlFor="topics-input" className={styles.formLabel}>
           Topics <span className={styles.optional}>(optional)</span>
         </label>
         <div className={styles.topicInputGroup}>
           <input
+            id="topics-input"
             type="text"
             value={topicInput}
             onChange={e => setTopicInput(e.target.value)}
