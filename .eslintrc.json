@@ -5,6 +5,19 @@
     "es2021": true,
     "node": true
   },
+  "globals": {
+    "HTMLButtonElement": "readonly",
+    "HTMLAnchorElement": "readonly",
+    "HTMLDivElement": "readonly",
+    "HTMLInputElement": "readonly",
+    "HTMLTextAreaElement": "readonly",
+    "HTMLSelectElement": "readonly",
+    "HTMLFormElement": "readonly",
+    "HTMLElement": "readonly",
+    "KeyboardEvent": "readonly",
+    "MouseEvent": "readonly",
+    "Event": "readonly"
+  },
   "rules": {
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": [

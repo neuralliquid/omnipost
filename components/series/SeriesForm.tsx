@@ -145,10 +145,6 @@ const SeriesForm: React.FC<SeriesFormProps> = ({ onAddSeries, initialData, isEdi
     setExpandedPlatform(prev => (prev === platformId ? null : platformId));
   };
 
-  const getPlatformName = (platformId: string): string => {
-    return platforms.find(p => p.slug === platformId)?.name || platformId;
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
