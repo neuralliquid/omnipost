@@ -93,10 +93,7 @@ const Header: React.FC = () => {
             ))}
             <li className={styles.navItem}>
               {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className={styles.authButton}
-                >
+                <button onClick={handleLogout} className={styles.authButton}>
                   Logout ({user?.username})
                 </button>
               ) : (
