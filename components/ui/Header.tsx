@@ -2,15 +2,23 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import styles from '@/styles/Header.module.css';
 import { siteConfig } from '../../data/siteConfig';
+import { useAuth } from '../providers/AuthProvider';
 
 const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const menuRef = useRef<HTMLElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const { user, isAuthenticated, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    router.push('/');
+  };
 
   const closeMenu = useCallback(() => {
     setMenuOpen(false);
@@ -83,6 +91,21 @@ const Header: React.FC = () => {
                 </Link>
               </li>
             ))}
+            <li className={styles.navItem}>
+              {isAuthenticated ? (
+                <button onClick={handleLogout} className={styles.authButton}>
+                  Logout ({user?.username})
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  className={`${styles.navLink} ${styles.loginLink}`}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  Login
+                </Link>
+              )}
+            </li>
           </ul>
         </nav>
       </div>

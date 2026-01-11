@@ -13,6 +13,7 @@ import { CampaignForm } from '@/components/campaigns';
 import { Button, LoadingSpinner, EmptyState, StatusBadge, FormField } from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
 import { useSeries } from '@/hooks/useSeries';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Campaign, CampaignContentType, UpdateCampaignInput } from '@/types/campaign';
 import styles from '@/styles/Campaign.module.css';
 
@@ -37,6 +38,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
   } = useCampaign();
 
   const { series } = useSeries();
+  const { isAuthenticated } = useAuth();
   const [campaign, setCampaign] = useState<Campaign | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
   const [showAddContent, setShowAddContent] = useState(false);
@@ -239,45 +241,47 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
               </span>
             </div>
           </div>
-          <div className={styles.actionButtons}>
-            {showStatusActionButton ? (
-              <Button variant="secondary" onClick={handleStatusAction}>
-                {getStatusActionLabel()}
+          {isAuthenticated && (
+            <div className={styles.actionButtons}>
+              {showStatusActionButton ? (
+                <Button variant="secondary" onClick={handleStatusAction}>
+                  {getStatusActionLabel()}
+                </Button>
+              ) : null}
+              <Button
+                variant="secondary"
+                onClick={() => setIsEditing(true)}
+                leftIcon={
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    />
+                  </svg>
+                }
+              >
+                Edit
               </Button>
-            ) : null}
-            <Button
-              variant="secondary"
-              onClick={() => setIsEditing(true)}
-              leftIcon={
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  />
-                </svg>
-              }
-            >
-              Edit
-            </Button>
-            <Button
-              variant="danger"
-              onClick={handleDelete}
-              leftIcon={
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              }
-            >
-              Delete
-            </Button>
-          </div>
+              <Button
+                variant="danger"
+                onClick={handleDelete}
+                leftIcon={
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    />
+                  </svg>
+                }
+              >
+                Delete
+              </Button>
+            </div>
+          )}
         </div>
 
         {campaign.description ? (
@@ -390,29 +394,31 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
             <div className={styles.campaignCard}>
               <div className={styles.sectionHeader}>
                 <h3>Campaign Content</h3>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowAddContent(true)}
-                  leftIcon={
-                    <svg
-                      width="16"
-                      height="16"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 4v16m8-8H4"
-                      />
-                    </svg>
-                  }
-                >
-                  Add Content
-                </Button>
+                {isAuthenticated && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowAddContent(true)}
+                    leftIcon={
+                      <svg
+                        width="16"
+                        height="16"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    }
+                  >
+                    Add Content
+                  </Button>
+                )}
               </div>
 
               {showAddContent ? (
@@ -582,36 +588,38 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                               {item.type.replace('-', ' ')}
                             </span>
                           </div>
-                          <div style={{ display: 'flex', gap: '0.5rem' }}>
-                            <button
-                              onClick={() => handleStartEditContent(item)}
-                              className={styles.iconButton}
-                              title="Edit content"
-                            >
-                              <svg
-                                width="16"
-                                height="16"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                                aria-hidden="true"
+                          {isAuthenticated && (
+                            <div style={{ display: 'flex', gap: '0.5rem' }}>
+                              <button
+                                onClick={() => handleStartEditContent(item)}
+                                className={styles.iconButton}
+                                title="Edit content"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleRemoveContent(item.id)}
-                              className={`${styles.iconButton} ${styles.dangerButton}`}
-                              title="Remove content"
-                            >
-                              ×
-                            </button>
-                          </div>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleRemoveContent(item.id)}
+                                className={`${styles.iconButton} ${styles.dangerButton}`}
+                                title="Remove content"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <p
                           style={{

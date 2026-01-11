@@ -6,6 +6,7 @@
 import type { Metadata, Viewport } from 'next';
 import '../styles/globals.css';
 import { SeedDataProvider } from '@/components/providers/SeedDataProvider';
+import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/ui';
 
 // Font configuration using CSS custom properties
@@ -81,11 +82,13 @@ export default function RootLayout({ children }: { readonly children: React.Reac
 
         {/* Main content area with providers */}
         <ToastProvider>
-          <SeedDataProvider>
-            <div id="main-content" className="relative flex min-h-screen flex-col">
-              {children}
-            </div>
-          </SeedDataProvider>
+          <AuthProvider>
+            <SeedDataProvider>
+              <div id="main-content" className="relative flex min-h-screen flex-col">
+                {children}
+              </div>
+            </SeedDataProvider>
+          </AuthProvider>
         </ToastProvider>
       </body>
     </html>

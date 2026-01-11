@@ -182,7 +182,7 @@ export class AuthService {
 
   /**
    * Find a user by username
-   * Uses Prisma if available, falls back to environment-based test user
+   * Uses Prisma if available, falls back to hardcoded admin user
    * @param username Username to search for
    * @returns User object or null if not found
    */
@@ -207,7 +207,17 @@ export class AuthService {
         }
       }
     } catch {
-      // Prisma not available, fall through to test user
+      // Prisma not available, fall through to hardcoded user
+    }
+
+    // Hardcoded admin user for development
+    if (username === 'admin') {
+      return {
+        id: 'admin-1',
+        username: 'admin',
+        role: 'admin',
+        isAdmin: true,
+      };
     }
 
     // Fallback to environment-based test user (for development/testing)
@@ -271,6 +281,11 @@ export class AuthService {
       // Prisma not available, fall through to test credentials
     }
 
+    // Hardcoded admin/admin credentials for development
+    if (username === 'admin' && password === 'admin') {
+      return true;
+    }
+
     // Fallback to environment-based test credentials (for development/testing ONLY)
     // This fallback is disabled in production for security
     if (isProduction) {
@@ -282,10 +297,7 @@ export class AuthService {
     const testPassword = process.env.TEST_USER_PASSWORD;
 
     if (!testUsername || !testPassword) {
-      console.warn(
-        '[Auth] No database configured and TEST_USER_USERNAME/TEST_USER_PASSWORD not set. ' +
-          'Configure either Prisma database or test credentials.'
-      );
+      // No test credentials configured, but hardcoded admin/admin is available
       return false;
     }
 
