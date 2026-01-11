@@ -12,11 +12,7 @@ import {
   EngagementAction,
   Platform,
 } from './types';
-import {
-  random,
-  weightedChoice,
-  shouldOccur,
-} from './random-utils';
+import { random, weightedChoice, shouldOccur } from './random-utils';
 
 /**
  * Master Behavior Matrix
@@ -164,19 +160,19 @@ export const BEHAVIOR_MATRIX: BehaviorWeight[] = [
     subBehaviors: [
       {
         name: 'their_there_theyre',
-        description: 'Confuse their/there/they\'re',
+        description: "Confuse their/there/they're",
         weight: 0.3,
         category: 'typing_error',
       },
       {
         name: 'your_youre',
-        description: 'Confuse your/you\'re',
+        description: "Confuse your/you're",
         weight: 0.25,
         category: 'typing_error',
       },
       {
         name: 'its_its',
-        description: 'Confuse its/it\'s',
+        description: "Confuse its/it's",
         weight: 0.2,
         category: 'typing_error',
       },
@@ -350,7 +346,7 @@ export const BEHAVIOR_MATRIX: BehaviorWeight[] = [
   },
   {
     name: 'check_profile',
-    description: 'Check author\'s profile before engaging',
+    description: "Check author's profile before engaging",
     weight: 0.1,
     category: 'action_pattern',
   },
@@ -424,7 +420,7 @@ export const BEHAVIOR_MATRIX: BehaviorWeight[] = [
       },
       {
         name: 'abandon_before_submit',
-        description: 'Type full comment but don\'t submit',
+        description: "Type full comment but don't submit",
         weight: 0.25,
         category: 'abandonment',
       },
@@ -740,9 +736,7 @@ export function applyModifiers(
  * Select a behavior based on weighted probability
  * Uses non-cryptographic PRNG - see random-utils.ts for security rationale
  */
-export function selectWeightedBehavior<T extends { weight: number }>(
-  options: T[]
-): T | null {
+export function selectWeightedBehavior<T extends { weight: number }>(options: T[]): T | null {
   return weightedChoice(options);
 }
 
@@ -758,7 +752,7 @@ export function shouldBehaviorOccur(weight: number): boolean {
  * Get behaviors by category
  */
 export function getBehaviorsByCategory(category: BehaviorCategory): BehaviorWeight[] {
-  return BEHAVIOR_MATRIX.filter((b) => b.category === category);
+  return BEHAVIOR_MATRIX.filter(b => b.category === category);
 }
 
 /**
@@ -768,7 +762,7 @@ export function getBehaviorByName(name: string): BehaviorWeight | undefined {
   for (const behavior of BEHAVIOR_MATRIX) {
     if (behavior.name === name) return behavior;
     if (behavior.subBehaviors) {
-      const sub = behavior.subBehaviors.find((sb) => sb.name === name);
+      const sub = behavior.subBehaviors.find(sb => sb.name === name);
       if (sub) return sub;
     }
   }

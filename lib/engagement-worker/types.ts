@@ -198,7 +198,13 @@ export interface EngagementTask {
   updatedAt: string;
 }
 
-export type TaskStatus = 'pending' | 'scheduled' | 'executing' | 'completed' | 'failed' | 'abandoned';
+export type TaskStatus =
+  | 'pending'
+  | 'scheduled'
+  | 'executing'
+  | 'completed'
+  | 'failed'
+  | 'abandoned';
 
 /**
  * Behavior modifiers that can be applied to tasks
@@ -366,4 +372,4 @@ export interface WorkerStats {
   errorsIntroduced: number;
   errorsCorrected: number;
   actionsAbandoned: number;
-};
+}

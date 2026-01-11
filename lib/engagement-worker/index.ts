@@ -64,11 +64,7 @@
  */
 
 // Main worker
-export {
-  EngagementWorker,
-  getEngagementWorker,
-  createEngagementWorker,
-} from './engagement-worker';
+export { EngagementWorker, getEngagementWorker, createEngagementWorker } from './engagement-worker';
 
 // Account management
 export {

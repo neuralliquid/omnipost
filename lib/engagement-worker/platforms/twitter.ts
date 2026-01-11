@@ -54,10 +54,7 @@ export class TwitterAdapter {
   /**
    * Make a fetch request with timeout
    */
-  private async fetchWithTimeout(
-    url: string,
-    options: RequestInit
-  ): Promise<Response> {
+  private async fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.fetchTimeoutMs);
 
@@ -310,10 +307,7 @@ export class TwitterAdapter {
   /**
    * Like a tweet via API
    */
-  private async likeTweet(
-    account: SocialAccount,
-    tweetId: string
-  ): Promise<TwitterLikeResponse> {
+  private async likeTweet(account: SocialAccount, tweetId: string): Promise<TwitterLikeResponse> {
     const userId = await this.getUserId(account);
 
     const response = await this.fetchWithTimeout(`${this.baseUrl}/users/${userId}/likes`, {
@@ -518,7 +512,7 @@ export class TwitterAdapter {
       error: {
         code: err.code || 'TWITTER_ERROR',
         message: err.message || 'Unknown error',
-        retryable: err.retryable ?? (err.status === 429),
+        retryable: err.retryable ?? err.status === 429,
       },
     };
   }
@@ -527,7 +521,7 @@ export class TwitterAdapter {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**

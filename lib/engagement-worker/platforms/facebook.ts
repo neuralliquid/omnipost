@@ -72,10 +72,7 @@ export class FacebookAdapter {
   /**
    * Make a fetch request with timeout
    */
-  private async fetchWithTimeout(
-    url: string,
-    options: RequestInit
-  ): Promise<Response> {
+  private async fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), this.fetchTimeoutMs);
 
@@ -168,9 +165,7 @@ export class FacebookAdapter {
 
       // Maybe change to a different reaction
       if (reactionChanges.changes.length > 0 && shouldOccur(0.3)) {
-        reaction = reactionChanges.changes[
-          reactionChanges.changes.length - 1
-        ] as FacebookReaction;
+        reaction = reactionChanges.changes[reactionChanges.changes.length - 1] as FacebookReaction;
       }
     }
 
@@ -470,9 +465,7 @@ export class FacebookAdapter {
       return new Error(`Facebook API error: ${response.status} ${response.statusText}`);
     }
 
-    const error = new Error(
-      errorData.error?.message || 'Facebook API error'
-    ) as Error & {
+    const error = new Error(errorData.error?.message || 'Facebook API error') as Error & {
       code: string;
       status: number;
       retryable: boolean;
@@ -565,7 +558,7 @@ export class FacebookAdapter {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**

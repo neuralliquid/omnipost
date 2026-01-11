@@ -25,13 +25,7 @@ import {
   applyModifiers,
   getBehaviorByName,
 } from './behavior-matrix';
-import {
-  random,
-  randomInRange,
-  shouldOccur,
-  randomLetter,
-  randomChoice,
-} from './random-utils';
+import { random, randomInRange, shouldOccur, randomLetter, randomChoice } from './random-utils';
 
 /**
  * Human Simulator
@@ -42,10 +36,7 @@ export class HumanSimulator {
   private readonly modifiers: Partial<BehaviorModifiers>;
   private events: BehavioralEvent[] = [];
 
-  constructor(
-    profile: BehaviorProfile,
-    modifiers: Partial<BehaviorModifiers> = {}
-  ) {
+  constructor(profile: BehaviorProfile, modifiers: Partial<BehaviorModifiers> = {}) {
     this.profile = profile;
     this.modifiers = modifiers;
   }
@@ -82,7 +73,11 @@ export class HumanSimulator {
     const naturalDelayBehavior = getBehaviorByName('natural_delay');
     if (!naturalDelayBehavior) return 1000;
 
-    const weight = getAdjustedWeight(naturalDelayBehavior.weight, naturalDelayBehavior, this.profile);
+    const weight = getAdjustedWeight(
+      naturalDelayBehavior.weight,
+      naturalDelayBehavior,
+      this.profile
+    );
     const adjusted = applyModifiers(weight, 'timing', this.modifiers);
 
     if (!shouldBehaviorOccur(adjusted)) {
@@ -227,7 +222,7 @@ export class HumanSimulator {
 
     this.recordEvent('submitted', {
       finalLength: currentText.length,
-      errorCount: errors.filter((e) => !e.corrected).length,
+      errorCount: errors.filter(e => !e.corrected).length,
     });
 
     return {
@@ -285,9 +280,7 @@ export class HumanSimulator {
    */
   async simulateHesitation(): Promise<{ hesitated: boolean; duration: number }> {
     const behavior = getBehaviorByName('second_thoughts');
-    const weight = behavior
-      ? getAdjustedWeight(behavior.weight, behavior, this.profile)
-      : 0.08;
+    const weight = behavior ? getAdjustedWeight(behavior.weight, behavior, this.profile) : 0.08;
 
     if (shouldBehaviorOccur(weight)) {
       const duration = this.randomInRange(2000, 8000);
@@ -318,7 +311,7 @@ export class HumanSimulator {
       before_submit: 'abandon_before_submit',
     };
 
-    const relevantSub = subBehaviors.find((sb) => sb.name === stageMapping[stage]);
+    const relevantSub = subBehaviors.find(sb => sb.name === stageMapping[stage]);
     if (relevantSub && shouldBehaviorOccur(relevantSub.weight)) {
       this.recordEvent('abandoned', { stage });
       return true;
@@ -332,9 +325,7 @@ export class HumanSimulator {
    */
   simulateReactionChanges(): { changed: boolean; changes: string[] } {
     const behavior = getBehaviorByName('multiple_reaction_changes');
-    const weight = behavior
-      ? getAdjustedWeight(behavior.weight, behavior, this.profile)
-      : 0.08;
+    const weight = behavior ? getAdjustedWeight(behavior.weight, behavior, this.profile) : 0.08;
 
     if (shouldBehaviorOccur(weight)) {
       const reactions = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];

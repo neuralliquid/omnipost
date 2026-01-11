@@ -61,7 +61,7 @@ class InMemoryTaskQueue implements TaskQueue {
 
   getPending(limit?: number): EngagementTask[] {
     const pending = Array.from(this.tasks.values())
-      .filter((t) => t.status === 'pending' || t.status === 'scheduled')
+      .filter(t => t.status === 'pending' || t.status === 'scheduled')
       .sort((a, b) => {
         // Priority first
         const priorityOrder = { high: 0, normal: 1, low: 2 };
@@ -81,11 +81,11 @@ class InMemoryTaskQueue implements TaskQueue {
   }
 
   getByAccount(accountId: string): EngagementTask[] {
-    return Array.from(this.tasks.values()).filter((t) => t.accountId === accountId);
+    return Array.from(this.tasks.values()).filter(t => t.accountId === accountId);
   }
 
   getByStatus(status: TaskStatus): EngagementTask[] {
-    return Array.from(this.tasks.values()).filter((t) => t.status === status);
+    return Array.from(this.tasks.values()).filter(t => t.status === status);
   }
 }
 
@@ -219,10 +219,8 @@ export class EngagementWorker {
   /**
    * Add multiple tasks
    */
-  addTasks(
-    tasks: Omit<EngagementTask, 'id' | 'createdAt' | 'updatedAt' | 'attempts'>[]
-  ): string[] {
-    return tasks.map((task) => this.addTask(task));
+  addTasks(tasks: Omit<EngagementTask, 'id' | 'createdAt' | 'updatedAt' | 'attempts'>[]): string[] {
+    return tasks.map(task => this.addTask(task));
   }
 
   /**
@@ -259,22 +257,19 @@ export class EngagementWorker {
     return {
       status: this.status,
       startedAt: this.startedAt,
-      uptime: this.startedAt
-        ? Date.now() - new Date(this.startedAt).getTime()
-        : 0,
+      uptime: this.startedAt ? Date.now() - new Date(this.startedAt).getTime() : 0,
 
       actionsToday: this.stats.actionsToday,
       actionsThisHour: this.stats.actionsThisHour,
       totalActions: this.stats.totalActions,
 
-      successRate: this.stats.totalActions > 0
-        ? this.stats.successCount / this.stats.totalActions
-        : 0,
-      failureRate: this.stats.totalActions > 0
-        ? this.stats.failureCount / this.stats.totalActions
-        : 0,
+      successRate:
+        this.stats.totalActions > 0 ? this.stats.successCount / this.stats.totalActions : 0,
+      failureRate:
+        this.stats.totalActions > 0 ? this.stats.failureCount / this.stats.totalActions : 0,
 
-      pendingTasks: this.taskQueue.getByStatus('pending').length +
+      pendingTasks:
+        this.taskQueue.getByStatus('pending').length +
         this.taskQueue.getByStatus('scheduled').length,
       processingTasks: this.activeTasks.size,
       completedToday: this.stats.successCount,
@@ -359,10 +354,7 @@ export class EngagementWorker {
 
     try {
       // Create simulator with account's behavior profile
-      const simulator = new HumanSimulator(
-        account.behaviorProfile,
-        task.behaviorOverrides
-      );
+      const simulator = new HumanSimulator(account.behaviorProfile, task.behaviorOverrides);
 
       // Check if good time to engage
       const timing = simulator.isGoodTimeToEngage();
@@ -476,12 +468,8 @@ export class EngagementWorker {
 
     // Track errors introduced
     if (result.execution.errorsIntroduced) {
-      const uncorrectedErrors = result.execution.errorsIntroduced.filter(
-        (e) => !e.corrected
-      ).length;
-      const correctedErrors = result.execution.errorsIntroduced.filter(
-        (e) => e.corrected
-      ).length;
+      const uncorrectedErrors = result.execution.errorsIntroduced.filter(e => !e.corrected).length;
+      const correctedErrors = result.execution.errorsIntroduced.filter(e => e.corrected).length;
 
       this.stats.errorsIntroduced += uncorrectedErrors;
       this.stats.errorsCorrected += correctedErrors;
@@ -544,7 +532,7 @@ export class EngagementWorker {
    * Delay helper
    */
   private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
@@ -561,9 +549,7 @@ let engagementWorker: EngagementWorker | null = null;
 /**
  * Get or create the engagement worker instance
  */
-export function getEngagementWorker(
-  config?: Partial<EngagementWorkerConfig>
-): EngagementWorker {
+export function getEngagementWorker(config?: Partial<EngagementWorkerConfig>): EngagementWorker {
   if (!engagementWorker) {
     engagementWorker = new EngagementWorker(config);
   } else if (config) {
@@ -575,8 +561,6 @@ export function getEngagementWorker(
 /**
  * Create a new engagement worker instance (for testing)
  */
-export function createEngagementWorker(
-  config?: Partial<EngagementWorkerConfig>
-): EngagementWorker {
+export function createEngagementWorker(config?: Partial<EngagementWorkerConfig>): EngagementWorker {
   return new EngagementWorker(config);
 }

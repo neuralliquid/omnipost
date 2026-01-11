@@ -3,12 +3,7 @@
  * Manages multiple social media accounts for engagement automation
  */
 
-import {
-  SocialAccount,
-  AccountStatus,
-  Platform,
-  BehaviorProfile,
-} from './types';
+import { SocialAccount, AccountStatus, Platform, BehaviorProfile } from './types';
 import { createDefaultProfile } from './human-simulator';
 
 /**
@@ -96,9 +91,7 @@ export class AccountManager {
    * Get accounts by platform
    */
   getAccountsByPlatform(platform: Platform): SocialAccount[] {
-    return Array.from(this.accounts.values()).filter(
-      (account) => account.platform === platform
-    );
+    return Array.from(this.accounts.values()).filter(account => account.platform === platform);
   }
 
   /**
@@ -106,7 +99,7 @@ export class AccountManager {
    */
   getActiveAccounts(platform: Platform): SocialAccount[] {
     return this.getAccountsByPlatform(platform).filter(
-      (account) => account.isEnabled && account.status === 'active'
+      account => account.isEnabled && account.status === 'active'
     );
   }
 
@@ -316,19 +309,22 @@ export class AccountManager {
 
     return {
       total: accounts.length,
-      active: accounts.filter((a) => a.status === 'active' && a.isEnabled).length,
-      paused: accounts.filter((a) => !a.isEnabled).length,
-      rateLimited: accounts.filter((a) => a.status === 'rate_limited').length,
-      suspended: accounts.filter((a) => a.status === 'suspended').length,
-      error: accounts.filter((a) => a.status === 'error').length,
+      active: accounts.filter(a => a.status === 'active' && a.isEnabled).length,
+      paused: accounts.filter(a => !a.isEnabled).length,
+      rateLimited: accounts.filter(a => a.status === 'rate_limited').length,
+      suspended: accounts.filter(a => a.status === 'suspended').length,
+      error: accounts.filter(a => a.status === 'error').length,
       byPlatform: {
-        twitter: accounts.filter((a) => a.platform === 'twitter').length,
-        facebook: accounts.filter((a) => a.platform === 'facebook').length,
+        twitter: accounts.filter(a => a.platform === 'twitter').length,
+        facebook: accounts.filter(a => a.platform === 'facebook').length,
       },
       totalActions: accounts.reduce((sum, a) => sum + a.stats.totalActions, 0),
       successRate:
         accounts.reduce((sum, a) => sum + a.stats.successfulActions, 0) /
-          Math.max(accounts.reduce((sum, a) => sum + a.stats.totalActions, 0), 1) || 0,
+          Math.max(
+            accounts.reduce((sum, a) => sum + a.stats.totalActions, 0),
+            1
+          ) || 0,
     };
   }
 
@@ -350,10 +346,7 @@ export class AccountManager {
   /**
    * Update account behavior profile
    */
-  updateBehaviorProfile(
-    accountId: string,
-    profile: Partial<BehaviorProfile>
-  ): boolean {
+  updateBehaviorProfile(accountId: string, profile: Partial<BehaviorProfile>): boolean {
     const account = this.accounts.get(accountId);
     if (!account) return false;
 
@@ -366,7 +359,7 @@ export class AccountManager {
    * Export accounts (without sensitive credentials)
    */
   exportAccounts(): ExportedAccount[] {
-    return Array.from(this.accounts.values()).map((account) => ({
+    return Array.from(this.accounts.values()).map(account => ({
       id: account.id,
       platform: account.platform,
       name: account.name,
