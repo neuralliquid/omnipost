@@ -46,6 +46,30 @@ interface TwitterError {
  */
 export class TwitterAdapter {
   private readonly baseUrl = 'https://api.twitter.com/2';
+  private readonly fetchTimeoutMs = 30000; // 30 second timeout
+  private readonly userIdCache: Map<string, { id: string; expiresAt: number }> = new Map();
+  private readonly cacheExpiryMs = 3600000; // 1 hour cache
+
+  /**
+   * Make a fetch request with timeout
+   */
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.fetchTimeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      return response;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 
   /**
    * Execute an engagement action
@@ -291,7 +315,7 @@ export class TwitterAdapter {
   ): Promise<TwitterLikeResponse> {
     const userId = await this.getUserId(account);
 
-    const response = await fetch(`${this.baseUrl}/users/${userId}/likes`, {
+    const response = await this.fetchWithTimeout(`${this.baseUrl}/users/${userId}/likes`, {
       method: 'POST',
       headers: this.getHeaders(account),
       body: JSON.stringify({ tweet_id: tweetId }),
@@ -314,7 +338,7 @@ export class TwitterAdapter {
   ): Promise<TwitterRetweetResponse> {
     const userId = await this.getUserId(account);
 
-    const response = await fetch(`${this.baseUrl}/users/${userId}/retweets`, {
+    const response = await this.fetchWithTimeout(`${this.baseUrl}/users/${userId}/retweets`, {
       method: 'POST',
       headers: this.getHeaders(account),
       body: JSON.stringify({ tweet_id: tweetId }),
@@ -336,7 +360,7 @@ export class TwitterAdapter {
     tweetId: string,
     text: string
   ): Promise<TwitterTweetResponse> {
-    const response = await fetch(`${this.baseUrl}/tweets`, {
+    const response = await this.fetchWithTimeout(`${this.baseUrl}/tweets`, {
       method: 'POST',
       headers: this.getHeaders(account),
       body: JSON.stringify({
@@ -356,11 +380,19 @@ export class TwitterAdapter {
   }
 
   /**
-   * Get authenticated user's ID
+   * Get authenticated user's ID with caching
    */
   private async getUserId(account: SocialAccount): Promise<string> {
-    // In a real implementation, this would be cached or stored with the account
-    const response = await fetch(`${this.baseUrl}/users/me`, {
+    const cacheKey = account.id;
+
+    // Check cache
+    const cached = this.userIdCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.id;
+    }
+
+    // Fetch from API
+    const response = await this.fetchWithTimeout(`${this.baseUrl}/users/me`, {
       headers: this.getHeaders(account),
     });
 
@@ -369,7 +401,22 @@ export class TwitterAdapter {
     }
 
     const data = await response.json();
-    return data.data.id;
+    const userId = data.data.id;
+
+    // Cache the result
+    this.userIdCache.set(cacheKey, {
+      id: userId,
+      expiresAt: Date.now() + this.cacheExpiryMs,
+    });
+
+    return userId;
+  }
+
+  /**
+   * Clear user ID cache for an account (call when credentials change)
+   */
+  clearUserIdCache(accountId: string): void {
+    this.userIdCache.delete(accountId);
   }
 
   /**
@@ -470,7 +517,7 @@ export class TwitterAdapter {
       error: {
         code: err.code || 'TWITTER_ERROR',
         message: err.message || 'Unknown error',
-        retryable: err.retryable ?? err.status === 429 ?? false,
+        retryable: err.retryable ?? (err.status === 429),
       },
     };
   }

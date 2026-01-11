@@ -243,8 +243,8 @@ export class HumanSimulator {
     const inPeakHours = this.profile.peakHours.includes(hour);
 
     // Get base time weight
-    const timeWeight = parseFloat(TIME_OF_DAY_WEIGHTS[hour.toString()] as unknown as string) || 0.5;
-    const dayWeight = DAY_OF_WEEK_WEIGHTS[day] || 0.8;
+    const timeWeight = TIME_OF_DAY_WEIGHTS[hour.toString()] ?? 0.5;
+    const dayWeight = DAY_OF_WEEK_WEIGHTS[day] ?? 0.8;
 
     // Combine weights
     let totalWeight = timeWeight * dayWeight;

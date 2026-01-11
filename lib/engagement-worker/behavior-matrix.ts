@@ -689,11 +689,13 @@ export function getAdjustedWeight(
 
 /**
  * Apply behavior modifiers to a weight
+ * @param behaviorName - Optional behavior name for more specific abandonment handling
  */
 export function applyModifiers(
   weight: number,
   category: BehaviorCategory,
-  modifiers: Partial<BehaviorModifiers>
+  modifiers: Partial<BehaviorModifiers>,
+  behaviorName?: string
 ): number {
   let adjusted = weight;
 
@@ -706,11 +708,23 @@ export function applyModifiers(
   }
 
   if (category === 'abandonment') {
-    if (modifiers.abandonMidwayProbability !== undefined) {
-      adjusted = modifiers.abandonMidwayProbability;
-    }
-    if (modifiers.secondThoughtsProbability !== undefined) {
-      adjusted = modifiers.secondThoughtsProbability;
+    // Apply specific abandonment modifier based on behavior name
+    if (behaviorName === 'abandon_action' || behaviorName?.startsWith('abandon_')) {
+      if (modifiers.abandonMidwayProbability !== undefined) {
+        adjusted = modifiers.abandonMidwayProbability;
+      }
+    } else if (behaviorName === 'second_thoughts') {
+      if (modifiers.secondThoughtsProbability !== undefined) {
+        adjusted = modifiers.secondThoughtsProbability;
+      }
+    } else {
+      // For generic abandonment category, combine both modifiers multiplicatively
+      if (modifiers.abandonMidwayProbability !== undefined) {
+        adjusted *= modifiers.abandonMidwayProbability / weight || 1;
+      }
+      if (modifiers.secondThoughtsProbability !== undefined) {
+        adjusted *= modifiers.secondThoughtsProbability / weight || 1;
+      }
     }
   }
 

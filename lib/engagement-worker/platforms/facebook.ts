@@ -56,6 +56,38 @@ const REACTION_MAP: Record<FacebookReaction, string> = {
  */
 export class FacebookAdapter {
   private readonly baseUrl = 'https://graph.facebook.com/v18.0';
+  private readonly fetchTimeoutMs = 30000; // 30 second timeout
+
+  /**
+   * Get authorization headers for API requests
+   */
+  private getHeaders(account: SocialAccount): Record<string, string> {
+    return {
+      Authorization: `Bearer ${account.credentials.accessToken}`,
+      'Content-Type': 'application/json',
+    };
+  }
+
+  /**
+   * Make a fetch request with timeout
+   */
+  private async fetchWithTimeout(
+    url: string,
+    options: RequestInit
+  ): Promise<Response> {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), this.fetchTimeoutMs);
+
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
+      return response;
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  }
 
   /**
    * Execute an engagement action
@@ -348,13 +380,13 @@ export class FacebookAdapter {
     reaction: FacebookReaction
   ): Promise<FacebookReactionResponse> {
     const url = `${this.baseUrl}/${postId}/reactions`;
-    const params = new URLSearchParams({
-      access_token: account.credentials.accessToken,
-      type: REACTION_MAP[reaction],
-    });
 
-    const response = await fetch(`${url}?${params}`, {
+    const response = await this.fetchWithTimeout(url, {
       method: 'POST',
+      headers: this.getHeaders(account),
+      body: JSON.stringify({
+        type: REACTION_MAP[reaction],
+      }),
     });
 
     if (!response.ok) {
@@ -375,15 +407,10 @@ export class FacebookAdapter {
   ): Promise<FacebookCommentResponse> {
     const url = `${this.baseUrl}/${postId}/comments`;
 
-    const response = await fetch(url, {
+    const response = await this.fetchWithTimeout(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        access_token: account.credentials.accessToken,
-        message,
-      }),
+      headers: this.getHeaders(account),
+      body: JSON.stringify({ message }),
     });
 
     if (!response.ok) {
@@ -405,7 +432,6 @@ export class FacebookAdapter {
     const url = `${this.baseUrl}/me/feed`;
 
     const body: Record<string, string> = {
-      access_token: account.credentials.accessToken,
       link: `https://www.facebook.com/${postId}`,
     };
 
@@ -413,11 +439,9 @@ export class FacebookAdapter {
       body.message = message;
     }
 
-    const response = await fetch(url, {
+    const response = await this.fetchWithTimeout(url, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: this.getHeaders(account),
       body: JSON.stringify(body),
     });
 

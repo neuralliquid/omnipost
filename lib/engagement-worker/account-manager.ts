@@ -19,6 +19,7 @@ export class AccountManager {
   private accounts: Map<string, SocialAccount> = new Map();
   private accountRotation: Map<Platform, string[]> = new Map();
   private currentAccountIndex: Map<Platform, number> = new Map();
+  private rateLimitTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
 
   constructor() {
     // Initialize rotation queues for each platform
@@ -57,6 +58,13 @@ export class AccountManager {
   removeAccount(accountId: string): boolean {
     const account = this.accounts.get(accountId);
     if (!account) return false;
+
+    // Clear any pending rate limit timer
+    const timer = this.rateLimitTimers.get(accountId);
+    if (timer) {
+      clearTimeout(timer);
+      this.rateLimitTimers.delete(accountId);
+    }
 
     // Remove from rotation
     const rotation = this.accountRotation.get(account.platform) || [];
@@ -270,6 +278,12 @@ export class AccountManager {
     const account = this.accounts.get(accountId);
     if (!account) return;
 
+    // Clear any existing timer for this account
+    const existingTimer = this.rateLimitTimers.get(accountId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+    }
+
     account.status = 'rate_limited';
     account.rateLimit.cooldownUntil = new Date(Date.now() + resetInMs).toISOString();
     account.updatedAt = new Date().toISOString();
@@ -282,10 +296,16 @@ export class AccountManager {
       this.accountRotation.set(account.platform, rotation);
     }
 
-    // Schedule re-activation
-    setTimeout(() => {
-      this.updateStatus(accountId, 'active');
+    // Schedule re-activation with tracked timer
+    const timer = setTimeout(() => {
+      this.rateLimitTimers.delete(accountId);
+      // Only reactivate if account still exists
+      if (this.accounts.has(accountId)) {
+        this.updateStatus(accountId, 'active');
+      }
     }, resetInMs);
+
+    this.rateLimitTimers.set(accountId, timer);
   }
 
   /**
