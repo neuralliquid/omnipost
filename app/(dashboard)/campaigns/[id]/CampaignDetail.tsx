@@ -27,6 +27,7 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     updateCampaign,
     deleteCampaign,
     addContent,
+    updateContent,
     removeContent,
     togglePlatform,
     updateStatus,
@@ -44,6 +45,12 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
     body: '',
     type: 'standalone' as CampaignContentType,
   });
+  const [editingContent, setEditingContent] = useState<{
+    id: string;
+    title: string;
+    body: string;
+    type: CampaignContentType;
+  } | null>(null);
 
   useEffect(() => {
     const found = getCampaign(campaignId);
@@ -129,6 +136,44 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
         setCampaign(updated);
       }
     }
+  };
+
+  const handleStartEditContent = (item: {
+    id: string;
+    title: string;
+    body: string;
+    type: CampaignContentType;
+  }) => {
+    setEditingContent({
+      id: item.id,
+      title: item.title,
+      body: item.body,
+      type: item.type,
+    });
+    setShowAddContent(false);
+  };
+
+  const handleSaveEditContent = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingContent) return;
+
+    const trimmedTitle = editingContent.title.trim();
+    const trimmedBody = editingContent.body.trim();
+    if (trimmedTitle && trimmedBody) {
+      const updated = updateContent(campaignId, editingContent.id, {
+        title: trimmedTitle,
+        body: trimmedBody,
+        type: editingContent.type,
+      });
+      if (updated) {
+        setCampaign(updated);
+      }
+      setEditingContent(null);
+    }
+  };
+
+  const handleCancelEditContent = () => {
+    setEditingContent(null);
   };
 
   const handleTogglePlatform = (platformId: string) => {
@@ -445,66 +490,154 @@ export default function CampaignDetail({ campaignId }: CampaignDetailProps) {
                 />
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                  {campaign.contentItems.map(item => (
-                    <div
-                      key={item.id}
-                      style={{
-                        padding: '1rem',
-                        border: '1px solid #e2e8f0',
-                        borderRadius: '8px',
-                      }}
-                    >
-                      <div
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'flex-start',
-                        }}
+                  {campaign.contentItems.map(item =>
+                    editingContent?.id === item.id ? (
+                      <form
+                        key={item.id}
+                        onSubmit={handleSaveEditContent}
+                        className={styles.addContentForm}
                       >
-                        <div>
-                          <h4 style={{ margin: 0 }}>{item.title}</h4>
-                          <span
-                            style={{
-                              fontSize: '0.75rem',
-                              color: '#666',
-                              textTransform: 'capitalize',
-                            }}
+                        <FormField label="Title" required>
+                          <input
+                            type="text"
+                            value={editingContent.title}
+                            onChange={e =>
+                              setEditingContent(prev =>
+                                prev ? { ...prev, title: e.target.value } : null
+                              )
+                            }
+                            className={styles.formInput}
+                            placeholder="Content title"
+                          />
+                        </FormField>
+                        <FormField label="Content Type">
+                          <select
+                            value={editingContent.type}
+                            onChange={e =>
+                              setEditingContent(prev =>
+                                prev
+                                  ? { ...prev, type: e.target.value as CampaignContentType }
+                                  : null
+                              )
+                            }
+                            className={styles.formSelect}
                           >
-                            {item.type.replace('-', ' ')}
-                          </span>
+                            <option value="standalone">Standalone Post</option>
+                            <option value="series-article">Series Article</option>
+                            <option value="thread">Thread</option>
+                            <option value="announcement">Announcement</option>
+                          </select>
+                        </FormField>
+                        <FormField label="Body" required>
+                          <textarea
+                            value={editingContent.body}
+                            onChange={e =>
+                              setEditingContent(prev =>
+                                prev ? { ...prev, body: e.target.value } : null
+                              )
+                            }
+                            className={styles.formTextarea}
+                            placeholder="Write your content..."
+                            rows={6}
+                          />
+                        </FormField>
+                        <div className={styles.formActions}>
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={handleCancelEditContent}
+                          >
+                            Cancel
+                          </Button>
+                          <Button type="submit" variant="primary">
+                            Save Changes
+                          </Button>
                         </div>
-                        <button
-                          onClick={() => handleRemoveContent(item.id)}
-                          className={`${styles.iconButton} ${styles.dangerButton}`}
-                          title="Remove content"
-                        >
-                          ×
-                        </button>
-                      </div>
-                      <p
+                      </form>
+                    ) : (
+                      <div
+                        key={item.id}
                         style={{
-                          marginTop: '0.5rem',
-                          fontSize: '0.875rem',
-                          color: '#333',
-                          whiteSpace: 'pre-wrap',
+                          padding: '1rem',
+                          border: '1px solid #e2e8f0',
+                          borderRadius: '8px',
                         }}
                       >
-                        {item.body.length > 200 ? `${item.body.substring(0, 200)}...` : item.body}
-                      </p>
-                      {item.adaptations.length > 0 ? (
                         <div
                           style={{
-                            marginTop: '0.5rem',
-                            fontSize: '0.75rem',
-                            color: '#666',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'flex-start',
                           }}
                         >
-                          {item.adaptations.length} platform adaptation
-                          {item.adaptations.length === 1 ? '' : 's'}
+                          <div>
+                            <h4 style={{ margin: 0 }}>{item.title}</h4>
+                            <span
+                              style={{
+                                fontSize: '0.75rem',
+                                color: '#666',
+                                textTransform: 'capitalize',
+                              }}
+                            >
+                              {item.type.replace('-', ' ')}
+                            </span>
+                          </div>
+                          <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            <button
+                              onClick={() => handleStartEditContent(item)}
+                              className={styles.iconButton}
+                              title="Edit content"
+                            >
+                              <svg
+                                width="16"
+                                height="16"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleRemoveContent(item.id)}
+                              className={`${styles.iconButton} ${styles.dangerButton}`}
+                              title="Remove content"
+                            >
+                              ×
+                            </button>
+                          </div>
                         </div>
-                      ) : null}
-                    </div>
-                  ))}
+                        <p
+                          style={{
+                            marginTop: '0.5rem',
+                            fontSize: '0.875rem',
+                            color: '#333',
+                            whiteSpace: 'pre-wrap',
+                          }}
+                        >
+                          {item.body.length > 200 ? `${item.body.substring(0, 200)}...` : item.body}
+                        </p>
+                        {item.adaptations.length > 0 ? (
+                          <div
+                            style={{
+                              marginTop: '0.5rem',
+                              fontSize: '0.75rem',
+                              color: '#666',
+                            }}
+                          >
+                            {item.adaptations.length} platform adaptation
+                            {item.adaptations.length === 1 ? '' : 's'}
+                          </div>
+                        ) : null}
+                      </div>
+                    )
+                  )}
                 </div>
               )}
             </div>
