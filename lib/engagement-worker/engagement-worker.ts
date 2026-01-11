@@ -18,6 +18,7 @@ import { AccountManager, getAccountManager } from './account-manager';
 import { HumanSimulator } from './human-simulator';
 import { TwitterAdapter, getTwitterAdapter } from './platforms/twitter';
 import { FacebookAdapter, getFacebookAdapter } from './platforms/facebook';
+import { random, randomInRange, addJitter } from './random-utils';
 
 /**
  * Task queue for pending tasks
@@ -517,7 +518,7 @@ export class EngagementWorker {
     const maxDelay = 3600000; // 1 hour
 
     const delay = baseDelay * Math.pow(2, attempts);
-    const jitter = Math.random() * 0.3 * delay; // 30% jitter
+    const jitter = random() * 0.3 * delay; // 30% jitter
 
     return Math.min(delay + jitter, maxDelay);
   }
@@ -536,7 +537,7 @@ export class EngagementWorker {
    * Generate unique task ID
    */
   private generateTaskId(): string {
-    return `task_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    return `task_${Date.now()}_${random().toString(36).substr(2, 9)}`;
   }
 
   /**
@@ -550,7 +551,7 @@ export class EngagementWorker {
    * Random number in range
    */
   private randomInRange(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomInRange(min, max);
   }
 }
 

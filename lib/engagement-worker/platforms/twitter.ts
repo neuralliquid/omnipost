@@ -11,6 +11,7 @@ import {
   BehavioralEvent,
 } from '../types';
 import { HumanSimulator } from '../human-simulator';
+import { shouldOccur, randomInRange } from '../random-utils';
 
 /**
  * Twitter API response types
@@ -181,7 +182,7 @@ export class TwitterAdapter {
     await this.delay(considerDelay);
 
     // Higher chance of second thoughts for retweets
-    if (Math.random() < 0.1) {
+    if (shouldOccur(0.1)) {
       events.push({
         timestamp: new Date().toISOString(),
         type: 'had_second_thoughts',
@@ -189,7 +190,7 @@ export class TwitterAdapter {
       });
 
       // 50% chance to actually abandon
-      if (Math.random() < 0.5) {
+      if (shouldOccur(0.5)) {
         return this.createAbandonedResult(task, account, startedAt, events);
       }
     }
@@ -533,7 +534,7 @@ export class TwitterAdapter {
    * Random number in range
    */
   private randomInRange(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomInRange(min, max);
   }
 
   /**

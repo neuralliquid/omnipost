@@ -12,6 +12,7 @@ import {
   FacebookReaction,
 } from '../types';
 import { HumanSimulator } from '../human-simulator';
+import { shouldOccur, randomInRange } from '../random-utils';
 
 /**
  * Facebook API response types
@@ -166,7 +167,7 @@ export class FacebookAdapter {
       await this.delay(this.randomInRange(500, 2000));
 
       // Maybe change to a different reaction
-      if (reactionChanges.changes.length > 0 && Math.random() < 0.3) {
+      if (reactionChanges.changes.length > 0 && shouldOccur(0.3)) {
         reaction = reactionChanges.changes[
           reactionChanges.changes.length - 1
         ] as FacebookReaction;
@@ -323,7 +324,7 @@ export class FacebookAdapter {
     await this.delay(thinkDelay);
 
     // Higher chance of second thoughts for shares (public commitment)
-    if (Math.random() < 0.15) {
+    if (shouldOccur(0.15)) {
       events.push({
         timestamp: new Date().toISOString(),
         type: 'had_second_thoughts',
@@ -331,7 +332,7 @@ export class FacebookAdapter {
       });
 
       // 60% chance to actually abandon
-      if (Math.random() < 0.6) {
+      if (shouldOccur(0.6)) {
         return this.createAbandonedResult(task, account, startedAt, events);
       }
     }
@@ -571,7 +572,7 @@ export class FacebookAdapter {
    * Random number in range
    */
   private randomInRange(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomInRange(min, max);
   }
 
   /**

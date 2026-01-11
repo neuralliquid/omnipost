@@ -111,6 +111,19 @@ export {
 export { TwitterAdapter, getTwitterAdapter } from './platforms/twitter';
 export { FacebookAdapter, getFacebookAdapter } from './platforms/facebook';
 
+// Random utilities (documented non-cryptographic PRNG for behavior simulation)
+export {
+  random,
+  randomInRange,
+  randomFloat,
+  shouldOccur,
+  randomChoice,
+  weightedChoice,
+  shuffle,
+  addJitter,
+  randomLetter,
+} from './random-utils';
+
 // Types
 export type {
   // Core types

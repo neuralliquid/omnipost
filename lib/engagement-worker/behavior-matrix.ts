@@ -12,6 +12,11 @@ import {
   EngagementAction,
   Platform,
 } from './types';
+import {
+  random,
+  weightedChoice,
+  shouldOccur,
+} from './random-utils';
 
 /**
  * Master Behavior Matrix
@@ -733,30 +738,20 @@ export function applyModifiers(
 
 /**
  * Select a behavior based on weighted probability
+ * Uses non-cryptographic PRNG - see random-utils.ts for security rationale
  */
 export function selectWeightedBehavior<T extends { weight: number }>(
   options: T[]
 ): T | null {
-  const totalWeight = options.reduce((sum, opt) => sum + opt.weight, 0);
-  if (totalWeight === 0) return null;
-
-  let random = Math.random() * totalWeight;
-
-  for (const option of options) {
-    random -= option.weight;
-    if (random <= 0) {
-      return option;
-    }
-  }
-
-  return options[options.length - 1];
+  return weightedChoice(options);
 }
 
 /**
  * Check if a behavior should occur based on its weight
+ * Uses non-cryptographic PRNG - see random-utils.ts for security rationale
  */
 export function shouldBehaviorOccur(weight: number): boolean {
-  return Math.random() < weight;
+  return shouldOccur(weight);
 }
 
 /**

@@ -25,6 +25,13 @@ import {
   applyModifiers,
   getBehaviorByName,
 } from './behavior-matrix';
+import {
+  random,
+  randomInRange,
+  shouldOccur,
+  randomLetter,
+  randomChoice,
+} from './random-utils';
 
 /**
  * Human Simulator
@@ -331,11 +338,12 @@ export class HumanSimulator {
 
     if (shouldBehaviorOccur(weight)) {
       const reactions = ['like', 'love', 'haha', 'wow', 'sad', 'angry'];
-      const numChanges = this.randomInRange(1, 3);
+      const numChanges = randomInRange(1, 3);
       const changes: string[] = [];
 
       for (let i = 0; i < numChanges; i++) {
-        changes.push(reactions[Math.floor(Math.random() * reactions.length)]);
+        const choice = randomChoice(reactions);
+        if (choice) changes.push(choice);
       }
 
       this.recordEvent('changed_reaction', { changes });
@@ -398,7 +406,7 @@ export class HumanSimulator {
     let time = baseTime;
 
     // Variation factor (humans aren't consistent)
-    time *= 0.7 + Math.random() * 0.6; // 70%-130% of base
+    time *= 0.7 + random() * 0.6; // 70%-130% of base
 
     // Faster for common letter sequences
     const lastTwo = currentText.slice(-2);
@@ -418,7 +426,7 @@ export class HumanSimulator {
     }
 
     // Burst typing effect (faster when in flow)
-    if (currentText.length > 10 && Math.random() < 0.3) {
+    if (currentText.length > 10 && shouldOccur(0.3)) {
       time *= 0.8;
     }
 
@@ -498,16 +506,17 @@ export class HumanSimulator {
     const adjacents = ADJACENT_KEYS[lower];
 
     if (adjacents && adjacents.length > 0) {
-      const adjacent = adjacents[Math.floor(Math.random() * adjacents.length)];
-      return char === char.toUpperCase() ? adjacent.toUpperCase() : adjacent;
+      const adjacent = randomChoice(adjacents);
+      if (adjacent) {
+        return char === char.toUpperCase() ? adjacent.toUpperCase() : adjacent;
+      }
     }
 
     return char;
   }
 
   private getRandomLetter(): string {
-    const letters = 'abcdefghijklmnopqrstuvwxyz';
-    return letters[Math.floor(Math.random() * letters.length)];
+    return randomLetter();
   }
 
   private shouldCorrectError(): boolean {
@@ -530,7 +539,7 @@ export class HumanSimulator {
 
   private simulateRewrite(text: string): { newText: string; duration: number } {
     // Rewrite ~20-50% of the text
-    const rewriteRatio = 0.2 + Math.random() * 0.3;
+    const rewriteRatio = 0.2 + random() * 0.3;
     const keepLength = Math.floor(text.length * (1 - rewriteRatio));
     const newText = text.slice(0, keepLength);
 
@@ -598,7 +607,7 @@ export class HumanSimulator {
 
     // Double space error
     if (shouldBehaviorOccur(0.5)) {
-      const position = Math.floor(Math.random() * (text.length - 10)) + 5;
+      const position = randomInRange(5, text.length - 10);
       const spaceIndex = modifiedText.indexOf(' ', position);
       if (spaceIndex !== -1) {
         modifiedText =
@@ -631,7 +640,7 @@ export class HumanSimulator {
   }
 
   private randomInRange(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    return randomInRange(min, max);
   }
 }
 
