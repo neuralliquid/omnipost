@@ -342,7 +342,7 @@ export class EngagementWorker {
       }
 
       // Execute task
-      this.executeTask(task);
+      await this.executeTask(task);
     }
   }
 
