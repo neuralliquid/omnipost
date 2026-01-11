@@ -167,4 +167,41 @@
   .activeLink::after {
     display: none;
   }
+
+  .authButton {
+    width: 100%;
+    text-align: left;
+  }
+}
+
+/* Auth button styles */
+.authButton {
+  background: none;
+  border: 1px solid var(--color-border, #e2e8f0);
+  color: var(--color-text-secondary, #4a5568);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+  padding: var(--spacing-sm, 0.5rem) var(--spacing-md, 1rem);
+  border-radius: var(--radius-md, 8px);
+  cursor: pointer;
+  transition:
+    color var(--transition-base, 200ms ease),
+    background-color var(--transition-base, 200ms ease),
+    border-color var(--transition-base, 200ms ease);
+}
+
+.authButton:hover {
+  color: var(--color-primary, #4a6491);
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+  border-color: var(--color-primary, #4a6491);
+}
+
+.loginLink {
+  border: 1px solid var(--color-primary, #4a6491);
+  color: var(--color-primary, #4a6491);
+}
+
+.loginLink:hover {
+  background-color: var(--color-primary, #4a6491);
+  color: white;
 }

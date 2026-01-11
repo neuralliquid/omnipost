@@ -11,6 +11,7 @@ import Layout from '@/components/layouts/Layout';
 import { CampaignCard, CampaignForm, EmptyState } from '@/components/campaigns';
 import { Button, LoadingSpinner } from '@/components/ui';
 import { useCampaign } from '@/hooks/useCampaign';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Campaign, CampaignStatus, CreateCampaignInput } from '@/types/campaign';
 import styles from '@/styles/Campaign.module.css';
 
@@ -40,8 +41,8 @@ function CampaignContent({
   filteredCampaigns: Campaign[];
   onCreateClick: () => void;
   onClearFilter: () => void;
-  onDelete: (id: string) => boolean;
-  onDuplicate: (id: string) => Campaign | null;
+  onDelete?: (id: string) => boolean;
+  onDuplicate?: (id: string) => Campaign | null;
 }>) {
   if (isLoading) {
     return (
@@ -84,6 +85,7 @@ function CampaignContent({
 export default function CampaignList() {
   const { campaigns, isLoading, error, createCampaign, deleteCampaign, duplicateCampaign } =
     useCampaign();
+  const { isAuthenticated } = useAuth();
 
   const [showForm, setShowForm] = useState(false);
   const [statusFilter, setStatusFilter] = useState<CampaignStatus | 'all'>('all');
@@ -125,22 +127,24 @@ export default function CampaignList() {
                 </button>
               ))}
             </div>
-            <Button
-              variant="primary"
-              onClick={() => setShowForm(true)}
-              leftIcon={
-                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              }
-            >
-              New Campaign
-            </Button>
+            {isAuthenticated && (
+              <Button
+                variant="primary"
+                onClick={() => setShowForm(true)}
+                leftIcon={
+                  <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                }
+              >
+                New Campaign
+              </Button>
+            )}
           </div>
         ) : null}
 
@@ -154,8 +158,8 @@ export default function CampaignList() {
           filteredCampaigns={filteredCampaigns}
           onCreateClick={() => setShowForm(true)}
           onClearFilter={() => setStatusFilter('all')}
-          onDelete={deleteCampaign}
-          onDuplicate={duplicateCampaign}
+          onDelete={isAuthenticated ? deleteCampaign : undefined}
+          onDuplicate={isAuthenticated ? duplicateCampaign : undefined}
         />
 
         <div className={styles.navigationLinks}>

@@ -12,11 +12,13 @@ import SeriesForm from '@/components/series/SeriesForm';
 import SeriesCard from '@/components/series/SeriesCard';
 import EmptyState from '@/components/series/EmptyState';
 import { useSeries } from '@/hooks/useSeries';
+import { useAuth } from '@/components/providers/AuthProvider';
 import { Series } from '@/types/series';
 import styles from '@/styles/Series.module.css';
 
 export default function SeriesContent() {
   const { series, isLoading, error, addSeries, editSeries, deleteSeries } = useSeries();
+  const { isAuthenticated } = useAuth();
   const [showForm, setShowForm] = useState<boolean>(false);
 
   const toggleForm = () => {
@@ -57,7 +59,7 @@ export default function SeriesContent() {
         {error && <div className={styles.errorMessage}>{error}</div>}
 
         {/* Header Actions */}
-        {!showForm && series.length > 0 && (
+        {!showForm && series.length > 0 && isAuthenticated && (
           <div className={styles.headerActions}>
             <button onClick={toggleForm} className={styles.primaryButton}>
               <svg
@@ -123,8 +125,8 @@ export default function SeriesContent() {
                 key={s.id || String(index)}
                 series={s}
                 index={index}
-                onEdit={editSeries}
-                onDelete={handleDeleteSeries}
+                onEdit={isAuthenticated ? editSeries : undefined}
+                onDelete={isAuthenticated ? handleDeleteSeries : undefined}
               />
             ))}
           </div>
