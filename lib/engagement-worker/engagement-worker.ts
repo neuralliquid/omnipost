@@ -565,6 +565,8 @@ export function getEngagementWorker(
 ): EngagementWorker {
   if (!engagementWorker) {
     engagementWorker = new EngagementWorker(config);
+  } else if (config) {
+    console.warn('EngagementWorker already initialized; config parameter ignored');
   }
   return engagementWorker;
 }
