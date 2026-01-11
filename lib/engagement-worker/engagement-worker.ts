@@ -437,7 +437,7 @@ export class EngagementWorker {
         this.accountManager.setRateLimited(account.id, resetMs);
       }
     } catch (error) {
-      console.error(`Task execution error: ${task.id}`, error);
+      console.error('Task execution error:', task.id, error);
 
       this.taskQueue.update(task.id, {
         status: 'failed',
