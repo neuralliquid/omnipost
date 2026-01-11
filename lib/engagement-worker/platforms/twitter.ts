@@ -3,15 +3,10 @@
  * Handles Twitter/X API interactions for engagement automation
  */
 
-import {
-  SocialAccount,
-  EngagementTask,
-  TaskExecutionResult,
-  EngagementAction,
-  BehavioralEvent,
-} from '../types';
+import { SocialAccount, EngagementTask, TaskExecutionResult, BehavioralEvent } from '../types';
 import { HumanSimulator } from '../human-simulator';
-import { shouldOccur, randomInRange } from '../random-utils';
+import { shouldOccur } from '../random-utils';
+import { BasePlatformAdapter } from './base-adapter';
 
 /**
  * Twitter API response types
@@ -45,29 +40,10 @@ interface TwitterError {
 /**
  * Twitter Platform Adapter
  */
-export class TwitterAdapter {
+export class TwitterAdapter extends BasePlatformAdapter {
   private readonly baseUrl = 'https://api.twitter.com/2';
-  private readonly fetchTimeoutMs = 30000; // 30 second timeout
   private readonly userIdCache: Map<string, { id: string; expiresAt: number }> = new Map();
   private readonly cacheExpiryMs = 3600000; // 1 hour cache
-
-  /**
-   * Make a fetch request with timeout
-   */
-  private async fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), this.fetchTimeoutMs);
-
-    try {
-      const response = await fetch(url, {
-        ...options,
-        signal: controller.signal,
-      });
-      return response;
-    } finally {
-      clearTimeout(timeoutId);
-    }
-  }
 
   /**
    * Execute an engagement action
@@ -112,7 +88,7 @@ export class TwitterAdapter {
 
       return result;
     } catch (error) {
-      return this.createErrorResult(task, account, startedAt, events, error);
+      return this.createErrorResult(task, account, startedAt, events, error, 'TWITTER_ERROR');
     }
   }
 
@@ -415,16 +391,6 @@ export class TwitterAdapter {
   }
 
   /**
-   * Get authorization headers
-   */
-  private getHeaders(account: SocialAccount): Record<string, string> {
-    return {
-      Authorization: `Bearer ${account.credentials.accessToken}`,
-      'Content-Type': 'application/json',
-    };
-  }
-
-  /**
    * Handle API errors
    */
   private async handleError(response: Response): Promise<Error> {
@@ -450,91 +416,9 @@ export class TwitterAdapter {
   }
 
   /**
-   * Create an abandoned task result
-   */
-  private createAbandonedResult(
-    task: EngagementTask,
-    account: SocialAccount,
-    startedAt: string,
-    events: BehavioralEvent[]
-  ): TaskExecutionResult {
-    const completedAt = new Date().toISOString();
-
-    events.push({
-      timestamp: completedAt,
-      type: 'abandoned',
-      details: { action: task.action },
-    });
-
-    return {
-      taskId: task.id,
-      accountId: account.id,
-      success: false,
-      execution: {
-        action: task.action,
-        startedAt,
-        completedAt,
-        duration: new Date(completedAt).getTime() - new Date(startedAt).getTime(),
-      },
-      behavioralEvents: events,
-      error: {
-        code: 'ABANDONED',
-        message: 'Action was abandoned (human-like behavior)',
-        retryable: true,
-      },
-    };
-  }
-
-  /**
-   * Create an error result
-   */
-  private createErrorResult(
-    task: EngagementTask,
-    account: SocialAccount,
-    startedAt: string,
-    events: BehavioralEvent[],
-    error: unknown
-  ): TaskExecutionResult {
-    const completedAt = new Date().toISOString();
-    const err = error as Error & { code?: string; retryable?: boolean; status?: number };
-
-    return {
-      taskId: task.id,
-      accountId: account.id,
-      success: false,
-      execution: {
-        action: task.action,
-        startedAt,
-        completedAt,
-        duration: new Date(completedAt).getTime() - new Date(startedAt).getTime(),
-      },
-      behavioralEvents: events,
-      error: {
-        code: err.code || 'TWITTER_ERROR',
-        message: err.message || 'Unknown error',
-        retryable: err.retryable ?? err.status === 429,
-      },
-    };
-  }
-
-  /**
-   * Delay helper
-   */
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Random number in range
-   */
-  private randomInRange(min: number, max: number): number {
-    return randomInRange(min, max);
-  }
-
-  /**
    * Validate action is supported
    */
-  isActionSupported(action: EngagementAction): boolean {
+  isActionSupported(action: string): boolean {
     return ['like', 'retweet', 'comment', 'reply'].includes(action);
   }
 
