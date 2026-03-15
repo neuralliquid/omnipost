@@ -16,7 +16,13 @@ interface ErrorProps {
 
 export default function MarketingError({ error, reset }: ErrorProps) {
   useEffect(() => {
-    console.error('Marketing error:', error);
+    console.error('[MarketingError] Error caught:', {
+      message: error.message,
+      digest: error.digest,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+    });
   }, [error]);
 
   return (

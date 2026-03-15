@@ -20,14 +20,20 @@ export function SeedDataProvider({ children }: SeedDataProviderProps) {
     }
 
     // Load seed data if not already loaded
-    if (!isSeedLoaded()) {
-      const result = loadAllSeedData();
-      const stats = getSeedStats();
-      console.warn('[SeedDataProvider] Loaded seed data:', {
-        series: result.series.length,
-        campaigns: result.campaigns.length,
-        totalPosts: stats.campaigns.totalPosts,
-      });
+    try {
+      if (!isSeedLoaded()) {
+        const result = loadAllSeedData();
+        const stats = getSeedStats();
+        console.warn('[SeedDataProvider] Loaded seed data:', {
+          series: result.series.length,
+          campaigns: result.campaigns.length,
+          totalPosts: stats.campaigns.totalPosts,
+        });
+      }
+    } catch (error) {
+      // Log but do not throw - seed data is non-critical and should not
+      // crash the app shell. The app can function without seed data.
+      console.error('[SeedDataProvider] Failed to load seed data:', error);
     }
   }, []);
 

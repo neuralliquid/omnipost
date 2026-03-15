@@ -40,25 +40,36 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    const token = tokenStorage.getToken();
-    if (token) {
-      // Try to decode the token to get user info
-      try {
-        const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload && payload.exp * 1000 > Date.now()) {
-          setUser({
-            id: payload.id,
-            username: payload.username,
-            role: payload.role,
-          });
-        } else {
-          // Token expired, remove it
+    try {
+      const token = tokenStorage.getToken();
+      if (token) {
+        // Try to decode the token to get user info
+        try {
+          const parts = token.split('.');
+          if (parts.length !== 3) {
+            throw new Error('Malformed JWT: expected 3 parts');
+          }
+          const payload = JSON.parse(atob(parts[1]));
+          if (payload && payload.exp * 1000 > Date.now()) {
+            setUser({
+              id: payload.id,
+              username: payload.username,
+              role: payload.role,
+            });
+          } else {
+            // Token expired, remove it
+            tokenStorage.removeToken();
+          }
+        } catch {
+          // Invalid token, remove it
+          console.warn('[AuthProvider] Removed invalid auth token from storage');
           tokenStorage.removeToken();
         }
-      } catch {
-        // Invalid token, remove it
-        tokenStorage.removeToken();
       }
+    } catch (error) {
+      // localStorage access can fail (e.g., corrupted storage, security restrictions).
+      // Log and continue - the user simply won't be authenticated.
+      console.error('[AuthProvider] Failed to restore auth state:', error);
     }
     setIsLoading(false);
   }, []);
