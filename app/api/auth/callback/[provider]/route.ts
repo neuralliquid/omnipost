@@ -12,7 +12,7 @@
  */
 
 import { cookies } from 'next/headers';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../../../_utils/audit';
 import { Errors, withErrorHandling } from '../../../_utils/errors';
 import { withRateLimit, RateLimitPresets } from '../../../_utils/rateLimit';
@@ -50,12 +50,15 @@ function findExistingUser(
 }
 
 async function handleCallback(
-  request: NextRequest,
-  context: { params: Promise<{ provider: string }> }
+  request: Request,
+  context?: { params: Promise<{ provider: string }> }
 ): Promise<NextResponse> {
+  if (!context) {
+    return Errors.badRequest('Missing route context');
+  }
   const { provider } = await context.params;
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get('code');
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
 
   if (!code) {
     return Errors.badRequest('Missing authorization code');
@@ -143,10 +146,16 @@ async function handleCallback(
 }
 
 export const GET = withRateLimit(
-  withErrorHandling(
-    async (req: NextRequest, ctx: { params: Promise<{ provider: string }> }) =>
-      handleCallback(req, ctx)
-  ),
+  withErrorHandling(async (req: Request) => {
+    // Extract provider from the URL path since withRateLimit/withErrorHandling
+    // don't forward the Next.js route context cleanly
+    const url = new URL(req.url);
+    const pathSegments = url.pathname.split('/');
+    const providerFromPath = pathSegments[pathSegments.length - 1];
+    return handleCallback(req, {
+      params: Promise.resolve({ provider: providerFromPath }),
+    });
+  }),
   '/api/auth/callback',
   RateLimitPresets.AUTH
 );
