@@ -20,14 +20,19 @@ const mockGetAllJobs = jest.fn();
 const mockGetJobsByStatus = jest.fn();
 const mockGetJobsByCampaign = jest.fn();
 
-jest.mock('@/lib/scheduler', () => ({
-  getScheduler: () => ({
-    schedule: mockSchedule,
-    getAllJobs: mockGetAllJobs,
-    getJobsByStatus: mockGetJobsByStatus,
-    getJobsByCampaign: mockGetJobsByCampaign,
-  }),
-}));
+// Mock the scheduler - need to mock the barrel export that the route imports from
+jest.mock('../../lib/scheduler', () => {
+  const original = jest.requireActual('../../lib/scheduler') as Record<string, unknown>;
+  return {
+    ...original,
+    getScheduler: jest.fn(() => ({
+      schedule: mockSchedule,
+      getAllJobs: mockGetAllJobs,
+      getJobsByStatus: mockGetJobsByStatus,
+      getJobsByCampaign: mockGetJobsByCampaign,
+    })),
+  };
+});
 
 jest.mock('@/app/api/_utils/sanitize', () => ({
   sanitizeText: jest.fn((val: string) => val),
