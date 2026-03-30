@@ -72,8 +72,15 @@ for skill_dir in "$SKILLS_DIR"/*/; do
     ERRORS=$((ERRORS + 1))
   fi
 
-  # Check description field exists
+  # Check description field exists (handles both inline and multiline YAML)
   fm_desc=$(echo "$frontmatter" | grep '^description:' | sed 's/^description: *//')
+  # For multiline descriptions (using > or |), grab the full block
+  if [ -z "$fm_desc" ] || [ "$fm_desc" = ">" ] || [ "$fm_desc" = "|" ]; then
+    fm_desc_full=$(echo "$frontmatter" | sed -n '/^description:/,/^[a-z]/p' | tail -n +2 | head -5)
+    if [ -n "$fm_desc_full" ]; then
+      fm_desc="$fm_desc_full"
+    fi
+  fi
   if [ -z "$fm_desc" ]; then
     echo -e "${RED}  [FAIL] ${dir_name}: Missing 'description' in frontmatter${NC}"
     ERRORS=$((ERRORS + 1))
@@ -85,7 +92,7 @@ for skill_dir in "$SKILLS_DIR"/*/; do
       ERRORS=$((ERRORS + 1))
     fi
 
-    # Warn if no trigger phrases
+    # Warn if no trigger phrases (case-insensitive, checks full description block)
     if ! echo "$fm_desc" | grep -qiE '(when|use|help|mention|improve|optimize|create|analyze|design|plan|set up|conduct|write)'; then
       echo -e "${YELLOW}  [WARN] ${dir_name}: Description lacks trigger phrases${NC}"
       WARNINGS=$((WARNINGS + 1))
