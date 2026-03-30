@@ -12,6 +12,7 @@ import {
   ErrorResponses,
   SuccessResponses,
 } from '@/app/api/_utils/responses';
+import { withErrorHandling } from '@/app/api/_utils/middleware';
 import { validateFormSubmission } from '@/app/api/_utils/validation';
 import { formsClient } from '@/lib/data/forms';
 import { leadsClient } from '@/lib/data/leads';
@@ -27,42 +28,40 @@ interface RouteParams {
  * GET /api/forms/[id]/submissions
  * List submissions for a form (authenticated)
  */
-export async function GET(request: NextRequest, { params }: RouteParams) {
-  try {
-    const rateLimitResponse = checkRateLimitOrRespond(
-      request,
-      '/api/forms/[id]/submissions',
-      RateLimitPresets.GENERAL
-    );
-    if (rateLimitResponse) return rateLimitResponse;
+export const GET = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const nextRequest = request as NextRequest;
 
-    if (!(await isAuthenticated())) {
-      return ErrorResponses.unauthorized();
-    }
+  const rateLimitResponse = checkRateLimitOrRespond(
+    nextRequest,
+    '/api/forms/[id]/submissions',
+    RateLimitPresets.GENERAL
+  );
+  if (rateLimitResponse) return rateLimitResponse;
 
-    const { id } = await params;
-    const form = await formsClient.getForm(id);
-    if (!form) {
-      return ErrorResponses.notFound('Form');
-    }
-
-    const { searchParams } = new URL(request.url);
-    const page = Number.parseInt(searchParams.get('page') || '1', 10);
-    const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
-
-    const result = await formsClient.getSubmissions(id, {
-      page,
-      pageSize: Math.min(pageSize, 100),
-    });
-
-    return SuccessResponses.ok({
-      submissions: result.submissions,
-      pagination: result.pagination,
-    });
-  } catch (error) {
-    return ErrorResponses.internalError('Error fetching submissions:', error);
+  if (!(await isAuthenticated())) {
+    return ErrorResponses.unauthorized();
   }
-}
+
+  const { id } = await params;
+  const form = await formsClient.getForm(id);
+  if (!form) {
+    return ErrorResponses.notFound('Form');
+  }
+
+  const { searchParams } = new URL(request.url);
+  const page = Number.parseInt(searchParams.get('page') || '1', 10);
+  const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
+
+  const result = await formsClient.getSubmissions(id, {
+    page,
+    pageSize: Math.min(pageSize, 100),
+  });
+
+  return SuccessResponses.ok({
+    submissions: result.submissions,
+    pagination: result.pagination,
+  });
+});
 
 /**
  * Validate that a form can accept submissions
@@ -181,59 +180,58 @@ async function handleLeadCreation(
 /**
  * POST /api/forms/[id]/submissions
  * Create a new submission (public endpoint for form submissions)
+ * No auth required -- rate-limited with PUBLIC_API preset
  */
-export async function POST(request: NextRequest, { params }: RouteParams) {
-  try {
-    const rateLimitResponse = checkRateLimitOrRespond(
-      request,
-      '/api/forms/[id]/submissions/post',
-      RateLimitPresets.PUBLIC_API
-    );
-    if (rateLimitResponse) return rateLimitResponse;
+export const POST = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const nextRequest = request as NextRequest;
 
-    const { id } = await params;
-    const form = await formsClient.getForm(id);
-    if (!form) {
-      return ErrorResponses.notFound('Form');
-    }
+  const rateLimitResponse = checkRateLimitOrRespond(
+    nextRequest,
+    '/api/forms/[id]/submissions/post',
+    RateLimitPresets.PUBLIC_API
+  );
+  if (rateLimitResponse) return rateLimitResponse;
 
-    // Validate form can accept submissions
-    const formError = validateFormAcceptsSubmissions(form);
-    if (formError) return formError;
-
-    // Check authentication if required
-    if (form.requireAuthentication && !(await isAuthenticated())) {
-      return ErrorResponses.unauthorized();
-    }
-
-    const body = await request.json();
-    const responses = body.responses || body;
-
-    // Validate form fields using shared utility
-    const errors = validateFormSubmission(form.fields, responses);
-    if (errors.length > 0) {
-      return ErrorResponses.validationError(errors);
-    }
-
-    // Create submission
-    const metadata = extractSubmissionMetadata(request);
-    const submission = await formsClient.createSubmission(id, responses, metadata, body.startedAt);
-
-    // Create lead if integration is enabled
-    const { leadId, warnings } = await handleLeadCreation(form, responses, submission.id);
-
-    return SuccessResponses.created({
-      success: true,
-      submissionId: submission.id,
-      leadId,
-      message: form.completionSettings.message || 'Thank you for your submission!',
-      redirectUrl: form.completionSettings.redirectUrl,
-      ...(warnings.length > 0 && { warnings }),
-    });
-  } catch (error) {
-    return ErrorResponses.internalError('Error creating submission:', error);
+  const { id } = await params;
+  const form = await formsClient.getForm(id);
+  if (!form) {
+    return ErrorResponses.notFound('Form');
   }
-}
+
+  // Validate form can accept submissions
+  const formError = validateFormAcceptsSubmissions(form);
+  if (formError) return formError;
+
+  // Check authentication if required
+  if (form.requireAuthentication && !(await isAuthenticated())) {
+    return ErrorResponses.unauthorized();
+  }
+
+  const body = await request.json();
+  const responses = body.responses || body;
+
+  // Validate form fields using shared utility
+  const errors = validateFormSubmission(form.fields, responses);
+  if (errors.length > 0) {
+    return ErrorResponses.validationError(errors);
+  }
+
+  // Create submission
+  const metadata = extractSubmissionMetadata(nextRequest);
+  const submission = await formsClient.createSubmission(id, responses, metadata, body.startedAt);
+
+  // Create lead if integration is enabled
+  const { leadId, warnings } = await handleLeadCreation(form, responses, submission.id);
+
+  return SuccessResponses.created({
+    success: true,
+    submissionId: submission.id,
+    leadId,
+    message: form.completionSettings.message || 'Thank you for your submission!',
+    redirectUrl: form.completionSettings.redirectUrl,
+    ...(warnings.length > 0 && { warnings }),
+  });
+});
 
 /**
  * Extract lead data from form responses based on field mappings
