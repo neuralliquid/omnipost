@@ -5,6 +5,49 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0-alpha] — 2026-03-30
+
+### Added
+
+- **Sluice AI Gateway** — OpenAI-compatible gateway client for centralized AI routing, cost tracking, and model abstraction (`lib/clients/sluice-gateway.ts`, `infra/sluice.bicep`)
+- **Retort Agent Orchestration** — Multi-tool agent config from single YAML spec: `.agentkit/spec/` generates `CLAUDE.md`, `AGENTS.md`, `AGENT_TEAMS.md`, `QUALITY_GATES.md`, `.cursor/rules/`, `.windsurf/rules/`
+- **34 Marketing Skills** — Full Agent Skills Spec library in `.agents/skills/` covering CRO (7), content (6), SEO (6), growth (11), analytics (4), with OmniPost-specific context overlays
+- **Signup + Onboarding** — Registration flow with password strength indicator, 3-step guided onboarding with session persistence
+- **Landing Page CRO** — Conversion-optimized hero, features, social proof, and CTA sections
+- **Pricing Page** — 3-tier pricing (Free/$19/$49) with billing toggle, feature comparison, FAQ accordion, FAQ-Page schema
+- **Analytics System** — AARRR event tracking with client-side batched tracker, API endpoint, `useAnalytics` hook wired into all pages
+- **Content Creation Flow** — Write → adapt per platform (char limits, hashtags) → schedule/publish workflow
+- **Platform Settings** — Connect/disconnect platforms with settings hub
+- **Auth Middleware** — JWT validation middleware injecting identity headers for API routes
+- **SEO Foundations** — Environment-aware robots.ts, sitemap.ts, Open Graph metadata, JSON-LD structured data
+- **CSS Design System** — Custom properties for colors/spacing/shadows, dark mode via `prefers-color-scheme`, `prefers-reduced-motion` support
+- **UI Components** — LoadingSpinner, EmptyState, PageSkeleton, ScrollLink with keyboard accessibility
+- **Launch Assets** — Blog post, 10+ social posts, launch email, Product Hunt brief, press release
+- **Test Suites** — Analytics events, tracker, sluice gateway, middleware, scheduler routes, LoadingSpinner, EmptyState, PageSkeleton, StructuredData
+- **Getting Started Guide** — `docs/GETTING_STARTED.md` with prerequisites, quick start, configuration, troubleshooting
+
+### Fixed
+
+- **BUG-04** — Error boundaries wrapping dashboard and marketing layouts
+- **BUG-06** — Rate limit race condition with safe eviction strategy
+- **BUG-07** — Feature flag cascade in parse endpoint (only checks textParser)
+- **BUG-08** — Token null check in JWT verification
+- **BUG-09** — Missing auth middleware (created middleware.ts)
+- **XSS** — HTML-escaped error messages in signup form
+- **Timing attack** — Constant-time CRON_SECRET comparison in scheduler
+- **Ownership** — Leads and forms API routes verify resource belongs to authenticated user
+- **Analytics auth** — GET /api/analytics/events requires authentication
+- **Gateway format** — Sluice gateway sends correct OpenAI messages format
+
+### Changed
+
+- CI pipeline now runs ESLint (`pnpm lint`) in addition to type-check, tests, and format
+- Feature flags extended with `aiGateway` for Sluice opt-in
+- All CSS modules migrated from hardcoded hex to CSS custom properties
+- copilot-instructions.md appended with agent teams, marketing skills, and Sluice sections
+
+---
+
 ## [Unreleased]
 
 ### Added
