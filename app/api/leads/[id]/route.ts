@@ -15,6 +15,7 @@ import {
 } from '@/app/api/_utils/constants';
 import {
   checkAuthAndRateLimit,
+  requireAuthWithUserId,
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
@@ -90,10 +91,13 @@ export const GET = withErrorHandling(async (request: Request, { params }: RouteP
   );
   if (checkError) return checkError;
 
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
+
   const { id } = await params;
 
   const lead = await leadsClient.getLead(id);
-  if (!lead) {
+  if (!lead || lead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 
@@ -123,11 +127,14 @@ export const PATCH = withErrorHandling(async (request: Request, { params }: Rout
   );
   if (checkError) return checkError;
 
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
+
   const { id } = await params;
 
-  // Check if lead exists
+  // Check if lead exists and belongs to the authenticated user
   const existingLead = await leadsClient.getLead(id);
-  if (!existingLead) {
+  if (!existingLead || existingLead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 
