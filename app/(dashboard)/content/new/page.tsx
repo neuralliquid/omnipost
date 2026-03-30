@@ -5,8 +5,10 @@
 
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import { platforms } from '@/lib/config/platforms';
 import { DEFAULT_PLATFORM_CONFIGS } from '@/types/campaign';
@@ -85,8 +87,15 @@ function saveDrafts(drafts: ContentDraft[]): void {
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function ContentCreatePage() {
+  const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const { track, trackPostPublished, events } = useAnalytics();
+
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   // Step state
   const [currentStep, setCurrentStep] = useState(0);
@@ -492,6 +501,11 @@ export function ContentCreatePage() {
       </div>
     );
   }
+
+  // ── Auth guard ──────────────────────────────────────────────────────────
+
+  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
+  if (!isAuthenticated) return null;
 
   // ── Main render ─────────────────────────────────────────────────────────
 
