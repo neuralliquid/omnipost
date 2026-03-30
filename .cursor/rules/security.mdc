@@ -45,10 +45,34 @@ globs:
 - Use `.env.local` for local development.
 - Use Azure Key Vault for production secrets.
 
+## HTTP Security Headers
+
+All headers are configured in `next.config.ts` security headers:
+- `Strict-Transport-Security: max-age=31536000; includeSubDomains` (HSTS)
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: SAMEORIGIN`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: origin-when-cross-origin`
+- `Permissions-Policy: camera=(), microphone=(), geolocation=()`
+- Content-Security-Policy: restrict `default-src`, `script-src`, `style-src`
+
+## CORS
+
+- API routes must not set overly permissive CORS headers.
+- Only allow trusted origins in production.
+- Validate `Origin` header on state-changing requests.
+
 ## OWASP Compliance
 
 - Protect against XSS via DOMPurify sanitization.
 - Protect against injection via Zod validation and Prisma parameterized queries.
 - Protect against CSRF via token validation.
 - Protect against brute force via rate limiting.
-- Implement security headers in middleware.
+- Implement security headers in `next.config.ts` and middleware.
+
+## Vulnerability Management
+
+- Run `pnpm audit` on every PR via CI.
+- Use Dependabot for automated dependency updates.
+- Never ignore high/critical vulnerability alerts.
+- Review `SECURITY.md` for incident reporting process.
