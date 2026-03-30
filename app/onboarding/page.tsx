@@ -159,6 +159,27 @@ export default function OnboardingPage() {
   const [postContent, setPostContent] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<Set<string>>(new Set());
 
+  // Restore progress from sessionStorage on mount
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem('onboarding-progress');
+      if (saved) {
+        const data = JSON.parse(saved) as {
+          step: number;
+          platforms: Platform[];
+          postContent: string;
+          selectedPlatforms: string[];
+        };
+        if (data.step) setStep(data.step);
+        if (data.platforms) setPlatforms(data.platforms);
+        if (data.postContent) setPostContent(data.postContent);
+        if (data.selectedPlatforms) setSelectedPlatforms(new Set(data.selectedPlatforms));
+      }
+    } catch {
+      // Ignore parse errors from corrupt sessionStorage data
+    }
+  }, []);
+
   // Redirect unauthenticated users to signup
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
@@ -186,6 +207,19 @@ export default function OnboardingPage() {
     });
   };
 
+  const saveProgress = (nextStep: number) => {
+    try {
+      sessionStorage.setItem('onboarding-progress', JSON.stringify({
+        step: nextStep,
+        platforms,
+        postContent,
+        selectedPlatforms: Array.from(selectedPlatforms),
+      }));
+    } catch {
+      // Ignore sessionStorage write errors
+    }
+  };
+
   const handleNext = () => {
     const stepNames = ['connect-platforms', 'create-post', 'complete'];
     trackOnboardingStep(step, stepNames[step - 1] || 'unknown', false);
@@ -205,8 +239,11 @@ export default function OnboardingPage() {
     }
 
     if (step < TOTAL_STEPS) {
-      setStep(step + 1);
+      const nextStep = step + 1;
+      saveProgress(nextStep);
+      setStep(nextStep);
     } else {
+      sessionStorage.removeItem('onboarding-progress');
       router.push('/dashboard');
     }
   };

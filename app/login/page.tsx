@@ -64,9 +64,9 @@ export default function LoginPage() {
       <Header />
       <main className={pageStyles.main}>
         <div className={styles.loginContainer}>
-          <h2 className={styles.title}>Login</h2>
+          <h1 className={styles.title}>Login</h1>
 
-          {error && <div className={styles.errorMessage}>{error}</div>}
+          {error && <div className={styles.errorMessage} role="alert">{error}</div>}
 
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>

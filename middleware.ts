@@ -76,5 +76,7 @@ export const config = {
     '/api/:path*',
     // Match dashboard routes
     '/(dashboard)/:path*',
+    // Match onboarding routes
+    '/onboarding/:path*',
   ],
 };

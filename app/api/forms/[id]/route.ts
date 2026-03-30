@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
-import { isAuthenticated } from '@/app/api/_utils/auth';
+import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import {
   checkRateLimitOrRespond,
@@ -69,27 +69,21 @@ export const GET = withRateLimit(
       }
       const { params } = args[0] as RouteParams;
 
-      // Check if this is public access (embed/share)
-      const { searchParams } = new URL(request.url);
-      const isPublic = searchParams.get('public') === 'true';
-
-      if (!isPublic && !(await isAuthenticated())) {
-        return ErrorResponses.unauthorized();
-      }
-
       const { id } = await params;
       const form = await formsClient.getForm(id);
       if (!form) {
         return ErrorResponses.notFound('Form');
       }
 
-      // For public access, only return published forms
-      if (isPublic && form.status !== 'published') {
+      const authenticated = await isAuthenticated();
+
+      // Allow unauthenticated access only for published forms (embed/share)
+      if (!authenticated && form.status !== 'published') {
         return ErrorResponses.notFound('Form');
       }
 
-      // Track view for public access
-      if (isPublic) {
+      // Track view for unauthenticated (public) access
+      if (!authenticated) {
         await formsClient.trackView(id);
       }
 
@@ -120,9 +114,10 @@ export const PATCH = withErrorHandling(async (request: Request, { params }: Rout
     return ErrorResponses.unauthorized();
   }
 
+  const currentUserId = await getCurrentUserId();
   const { id } = await params;
   const existingForm = await formsClient.getForm(id);
-  if (!existingForm) {
+  if (!existingForm || existingForm.createdBy !== currentUserId) {
     return ErrorResponses.notFound('Form');
   }
 
@@ -181,9 +176,10 @@ export const DELETE = withErrorHandling(async (request: Request, { params }: Rou
     return ErrorResponses.unauthorized();
   }
 
+  const currentUserId = await getCurrentUserId();
   const { id } = await params;
   const existingForm = await formsClient.getForm(id);
-  if (!existingForm) {
+  if (!existingForm || existingForm.createdBy !== currentUserId) {
     return ErrorResponses.notFound('Form');
   }
 

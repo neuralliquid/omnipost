@@ -15,6 +15,15 @@ import { tokenStorage } from '@/lib/storage/token-storage';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Signup.module.css';
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;');
+}
+
 interface RegisterResponse {
   token: string;
   user: {
@@ -123,26 +132,26 @@ export default function SignupPage() {
 
           <ul className={styles.benefits}>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon}>&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
               Multi-platform publishing
             </li>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon}>&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
               AI-powered formatting
             </li>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon}>&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
               Analytics dashboard
             </li>
           </ul>
 
           {error && (
-            <div className={styles.errorMessage} role="alert">
-              {error.replace(/[<>]/g, '')}
+            <div className={styles.errorMessage} role="alert" aria-live="assertive" aria-atomic="true">
+              {escapeHtml(error)}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} name="signup-form">
             <div className={styles.formGroup}>
               <label htmlFor="username" className={styles.label}>
                 Username
@@ -156,6 +165,7 @@ export default function SignupPage() {
                 placeholder="Choose a username"
                 disabled={loading}
                 autoComplete="username"
+                aria-required="true"
               />
             </div>
 
@@ -172,6 +182,7 @@ export default function SignupPage() {
                 placeholder="you@example.com"
                 disabled={loading}
                 autoComplete="email"
+                aria-required="true"
               />
             </div>
 
@@ -188,10 +199,11 @@ export default function SignupPage() {
                 placeholder="At least 8 characters"
                 disabled={loading}
                 autoComplete="new-password"
+                aria-required="true"
               />
             </div>
 
-            <button type="submit" disabled={loading} className={styles.submitButton}>
+            <button type="submit" disabled={loading} className={styles.submitButton} aria-busy={loading}>
               {loading ? 'Creating account...' : 'Create Free Account'}
             </button>
           </form>

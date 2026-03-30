@@ -183,11 +183,14 @@ export const DELETE = withErrorHandling(async (request: Request, { params }: Rou
   );
   if (checkError) return checkError;
 
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
+
   const { id } = await params;
 
-  // Check if lead exists
+  // Check if lead exists and belongs to the authenticated user
   const existingLead = await leadsClient.getLead(id);
-  if (!existingLead) {
+  if (!existingLead || existingLead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 

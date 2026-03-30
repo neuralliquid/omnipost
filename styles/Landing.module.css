@@ -60,13 +60,13 @@
 }
 
 .ctaPrimary:hover {
-  background-color: #059669;
+  background-color: var(--color-success-dark, #059669);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
 .ctaPrimary:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--color-text-inverse, #ffffff);
   outline-offset: 2px;
 }
 
@@ -90,11 +90,11 @@
 
 .ctaSecondary:hover {
   background-color: rgba(255, 255, 255, 0.1);
-  border-color: #ffffff;
+  border-color: var(--color-text-inverse, #ffffff);
 }
 
 .ctaSecondary:focus-visible {
-  outline: 2px solid #ffffff;
+  outline: 2px solid var(--color-text-inverse, #ffffff);
   outline-offset: 2px;
 }
 
