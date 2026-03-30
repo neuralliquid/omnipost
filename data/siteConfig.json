@@ -13,6 +13,14 @@
     },
     {
       "name": "Content",
+      "path": "/content",
+      "children": [
+        { "name": "All Content", "path": "/content" },
+        { "name": "Create New", "path": "/content/new" }
+      ]
+    },
+    {
+      "name": "Series",
       "path": "/series",
       "children": [
         { "name": "Series", "path": "/series" },
