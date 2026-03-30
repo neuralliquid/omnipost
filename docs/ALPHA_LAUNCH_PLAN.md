@@ -200,3 +200,37 @@
 | Day 7 retention | 30%+ | Return visits |
 | NPS (alpha users) | 40+ | In-app survey |
 | Critical bugs found | < 10 | Issue tracker |
+
+---
+
+## Launch Assets Checklist
+
+All launch content assets for Phase 4 (Task 4.1) have been created and are located in `docs/launch/`.
+
+| Asset | File | Status |
+|-------|------|--------|
+| Launch blog post | [`docs/launch/BLOG_POST.md`](launch/BLOG_POST.md) | Complete |
+| Social media posts (10+) | [`docs/launch/SOCIAL_POSTS.md`](launch/SOCIAL_POSTS.md) | Complete |
+| Launch email to waitlist | [`docs/launch/LAUNCH_EMAIL.md`](launch/LAUNCH_EMAIL.md) | Complete |
+| Product Hunt submission brief | [`docs/launch/PRODUCT_HUNT.md`](launch/PRODUCT_HUNT.md) | Complete |
+| Press release | [`docs/launch/PRESS_RELEASE.md`](launch/PRESS_RELEASE.md) | Complete |
+
+### Social Posts Breakdown
+
+| Platform | Count | Status |
+|----------|-------|--------|
+| Twitter/X | 3 posts | Complete |
+| LinkedIn | 3 posts | Complete |
+| Product Hunt | 2 comments (maker + follow-up) | Complete |
+| Reddit | 1 post (r/SideProject) | Complete |
+| Hacker News | 1 post (Show HN) | Complete |
+
+### Pre-Publish Review Checklist
+
+- [ ] Blog post reviewed for accuracy and brand voice
+- [ ] Social posts checked against character limits
+- [ ] Email tested in ESP with personalization fallbacks
+- [ ] Product Hunt gallery images created from descriptions
+- [ ] Press release contact info filled in
+- [ ] All links verified and UTM parameters added
+- [ ] Legal review of open-source claims and pricing language

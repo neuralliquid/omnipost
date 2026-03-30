@@ -5,111 +5,159 @@
  */
 
 import { NextResponse } from 'next/server';
-import { getScheduler, CreateJobInput, JobStatus } from '@/lib/scheduler';
+import { z } from 'zod';
+import { getScheduler } from '@/lib/scheduler';
+import type { JobStatus } from '@/lib/scheduler/types';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
+import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { sanitizeText, validateAndSanitize } from '@/app/api/_utils/sanitize';
+
+// ── Zod Schemas ──────────────────────────────────────────────────────────
+
+const listJobsQuerySchema = z.object({
+  status: z
+    .enum(['pending', 'scheduled', 'processing', 'published', 'failed', 'dead', 'cancelled'])
+    .optional(),
+  campaignId: z.string().min(1).optional(),
+  limit: z.coerce.number().int().min(1).max(500).default(100),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+const jobContentSchema = z.object({
+  text: z
+    .string()
+    .min(1, 'Content text is required')
+    .max(100_000, 'Content text too large')
+    .transform(val => sanitizeText(val)),
+  mediaUrls: z.array(z.string().url()).optional(),
+  hashtags: z.array(z.string()).optional(),
+  mentions: z.array(z.string()).optional(),
+  isThread: z.boolean().optional(),
+  threadParts: z
+    .array(
+      z.object({
+        order: z.number().int().min(0),
+        text: z
+          .string()
+          .min(1)
+          .transform(val => sanitizeText(val)),
+        mediaUrls: z.array(z.string().url()).optional(),
+      })
+    )
+    .optional(),
+});
+
+const createJobSchema = z.object({
+  type: z.enum(['campaign_post', 'series_promotion', 'standalone']),
+  campaignId: z.string().min(1).optional(),
+  contentId: z.string().min(1, 'contentId is required'),
+  platformId: z.string().min(1, 'platformId is required'),
+  content: jobContentSchema,
+  scheduledTime: z.string().refine(val => !Number.isNaN(new Date(val).getTime()), {
+    message: 'Invalid scheduledTime format',
+  }),
+  timezone: z.string().optional(),
+  maxAttempts: z.number().int().min(1).max(20).optional(),
+});
+
+// ── Route Handlers ───────────────────────────────────────────────────────
 
 /**
  * GET /api/scheduler
  * List scheduled jobs with optional filters (user-scoped)
  */
-export async function GET(request: Request) {
-  try {
-    // Check authentication
+export const GET = withRateLimit(
+  withErrorHandling(async (request: Request) => {
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return Errors.unauthorized('Authentication required');
     }
 
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+      return Errors.unauthorized('User ID not found');
     }
 
     const { searchParams } = new URL(request.url);
-    const status = searchParams.get('status') as JobStatus | null;
-    const campaignId = searchParams.get('campaignId');
-    const limit = Number.parseInt(searchParams.get('limit') || '100', 10);
+    const queryInput = {
+      status: searchParams.get('status') || undefined,
+      campaignId: searchParams.get('campaignId') || undefined,
+      limit: searchParams.get('limit') || undefined,
+      offset: searchParams.get('offset') || undefined,
+    };
 
+    const validation = validateAndSanitize(listJobsQuerySchema, queryInput);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid query parameters: ' + validation.errors.join(', '));
+    }
+
+    const { status, campaignId, limit, offset } = validation.data;
     const scheduler = getScheduler();
 
     let jobs;
     if (campaignId) {
       jobs = await scheduler.getJobsByCampaign(campaignId);
     } else if (status) {
-      jobs = await scheduler.getJobsByStatus(status, limit);
+      jobs = await scheduler.getJobsByStatus(status as JobStatus, limit + offset);
     } else {
       jobs = await scheduler.getAllJobs();
-      jobs = jobs.slice(0, limit);
     }
 
     // Filter jobs by current user
     const userJobs = jobs.filter(job => job.createdBy === currentUserId);
 
+    // Apply pagination
+    const paginated = userJobs.slice(offset, offset + limit);
+
     return NextResponse.json({
-      jobs: userJobs,
-      count: userJobs.length,
+      jobs: paginated,
+      count: paginated.length,
+      total: userJobs.length,
     });
-  } catch (error) {
-    console.error('Error fetching jobs:', error);
-    return NextResponse.json({ error: 'Failed to fetch jobs' }, { status: 500 });
-  }
-}
+  }),
+  '/api/scheduler',
+  RateLimitPresets.GENERAL
+);
 
 /**
  * POST /api/scheduler
  * Create a new scheduled job (user-scoped)
  */
-export async function POST(request: Request) {
-  try {
-    // Check authentication
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return Errors.unauthorized('Authentication required');
     }
 
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+      return Errors.unauthorized('User ID not found');
     }
 
     const body = await request.json();
 
-    // Validate required fields
-    const required = ['type', 'contentId', 'platformId', 'content', 'scheduledTime'];
-    for (const field of required) {
-      if (!body[field]) {
-        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 });
-      }
+    const validation = validateAndSanitize(createJobSchema, body);
+    if (!validation.success) {
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
     }
 
-    // Validate content has text
-    if (!body.content.text) {
-      return NextResponse.json({ error: 'Content must include text' }, { status: 400 });
-    }
-
-    // Validate scheduled time is in the future
-    const scheduledTime = new Date(body.scheduledTime);
-    if (Number.isNaN(scheduledTime.getTime())) {
-      return NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 });
-    }
-
-    const input: CreateJobInput = {
-      type: body.type,
-      campaignId: body.campaignId,
-      contentId: body.contentId,
-      platformId: body.platformId,
-      content: body.content,
-      scheduledTime: body.scheduledTime,
-      timezone: body.timezone,
-      maxAttempts: body.maxAttempts,
-      createdBy: currentUserId, // Use authenticated user ID
-    };
+    const data = validation.data;
 
     const scheduler = getScheduler();
-    const job = await scheduler.schedule(input);
+    const job = await scheduler.schedule({
+      type: data.type,
+      campaignId: data.campaignId,
+      contentId: data.contentId,
+      platformId: data.platformId,
+      content: data.content,
+      scheduledTime: data.scheduledTime,
+      timezone: data.timezone,
+      maxAttempts: data.maxAttempts,
+      createdBy: currentUserId,
+    });
 
     return NextResponse.json({ job }, { status: 201 });
-  } catch (error) {
-    console.error('Error creating job:', error);
-    const message = error instanceof Error ? error.message : 'Failed to create job';
-    return NextResponse.json({ error: message }, { status: 400 });
-  }
-}
+  }),
+  '/api/scheduler',
+  RateLimitPresets.GENERAL
+);

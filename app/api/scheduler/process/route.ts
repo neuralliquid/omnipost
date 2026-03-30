@@ -1,10 +1,13 @@
 /**
  * Scheduler Process Route
  * POST - Trigger processing of due jobs (for cron/manual trigger)
+ * GET - Health check for the process endpoint
  */
 
 import { NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/scheduler';
+import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
+import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 
 /**
  * POST /api/scheduler/process
@@ -14,9 +17,11 @@ import { getScheduler } from '@/lib/scheduler';
  * - Vercel Cron (every minute)
  * - Manual trigger for testing
  * - External scheduler service
+ *
+ * Authenticated via CRON_SECRET bearer token (not user auth).
  */
-export async function POST(request: Request) {
-  try {
+export const POST = withRateLimit(
+  withErrorHandling(async (request: Request) => {
     // Verify cron secret - mandatory in production
     const authHeader = request.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
@@ -24,15 +29,12 @@ export async function POST(request: Request) {
     // In production, CRON_SECRET must be configured
     if (process.env.NODE_ENV === 'production' && !cronSecret) {
       console.error('[Scheduler] CRON_SECRET not configured in production');
-      return NextResponse.json(
-        { error: 'Server misconfiguration: CRON_SECRET required' },
-        { status: 500 }
-      );
+      return Errors.internalServerError('Server misconfiguration: CRON_SECRET required');
     }
 
     // Validate authorization
     if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return Errors.unauthorized('Unauthorized');
     }
 
     const scheduler = getScheduler();
@@ -53,20 +55,23 @@ export async function POST(request: Request) {
       ...summary,
       results,
     });
-  } catch (error) {
-    console.error('Error processing jobs:', error);
-    return NextResponse.json({ error: 'Failed to process jobs' }, { status: 500 });
-  }
-}
+  }),
+  '/api/scheduler/process',
+  RateLimitPresets.ADMIN
+);
 
 /**
  * GET /api/scheduler/process
  * Get processing status (for health checks)
  */
-export async function GET() {
-  return NextResponse.json({
-    status: 'ok',
-    message: 'Scheduler process endpoint ready',
-    timestamp: new Date().toISOString(),
-  });
-}
+export const GET = withRateLimit(
+  withErrorHandling(async () => {
+    return NextResponse.json({
+      status: 'ok',
+      message: 'Scheduler process endpoint ready',
+      timestamp: new Date().toISOString(),
+    });
+  }),
+  '/api/scheduler/process',
+  RateLimitPresets.GENERAL
+);

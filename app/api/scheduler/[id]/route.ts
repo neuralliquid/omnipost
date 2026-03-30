@@ -1,223 +1,193 @@
 /**
  * Individual Job API Routes
  * GET - Get job details
+ * PATCH - Update job (reschedule or retry)
  * DELETE - Cancel a job
- * PATCH - Update job (reschedule)
  */
 
 import { NextResponse } from 'next/server';
+import { z } from 'zod';
 import { getScheduler } from '@/lib/scheduler';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
+import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { validateAndSanitize } from '@/app/api/_utils/sanitize';
+
+// ── Zod Schemas ──────────────────────────────────────────────────────────
+
+const jobIdSchema = z.object({
+  id: z.string().min(1, 'Job ID is required'),
+});
+
+const patchJobSchema = z
+  .object({
+    action: z.enum(['retry']).optional(),
+    scheduledTime: z
+      .string()
+      .refine(val => !Number.isNaN(new Date(val).getTime()), {
+        message: 'Invalid scheduledTime format',
+      })
+      .refine(val => new Date(val).getTime() > Date.now(), {
+        message: 'scheduledTime must be in the future',
+      })
+      .optional(),
+  })
+  .refine(data => data.action || data.scheduledTime, {
+    message: 'Either action or scheduledTime must be provided',
+  });
+
+// ── Helpers ──────────────────────────────────────────────────────────────
 
 interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
 /**
- * GET /api/scheduler/[id]
- * Get job details (user-scoped)
+ * Authenticate the request and return the user ID, or an error response
  */
-export async function GET(request: Request, { params }: RouteParams) {
-  try {
-    // Check authentication
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
-    }
-
-    const { id } = await params;
-    const scheduler = getScheduler();
-    const job = await scheduler.getJob(id);
-
-    if (!job) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // Verify ownership
-    if (job.createdBy !== currentUserId) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    return NextResponse.json({ job });
-  } catch (error) {
-    console.error('Error fetching job:', error);
-    return NextResponse.json({ error: 'Failed to fetch job' }, { status: 500 });
+async function authenticateRequest(): Promise<
+  { userId: string } | { error: NextResponse }
+> {
+  if (!(await isAuthenticated())) {
+    return { error: Errors.unauthorized('Authentication required') as NextResponse };
   }
+
+  const userId = await getCurrentUserId();
+  if (!userId) {
+    return { error: Errors.unauthorized('User ID not found') as NextResponse };
+  }
+
+  return { userId };
 }
 
 /**
- * DELETE /api/scheduler/[id]
- * Cancel a scheduled job (user-scoped)
+ * Verify the job exists and the user owns it
  */
-export async function DELETE(request: Request, { params }: RouteParams) {
-  try {
-    // Check authentication
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
-
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
-    }
-
-    const { id } = await params;
-    const scheduler = getScheduler();
-    const job = await scheduler.getJob(id);
-
-    if (!job) {
-      return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-    }
-
-    // Verify ownership
-    if (job.createdBy !== currentUserId) {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    const cancelled = await scheduler.cancel(id);
-
-    if (!cancelled) {
-      return NextResponse.json({ error: 'Failed to cancel job' }, { status: 500 });
-    }
-
-    return NextResponse.json({
-      message: 'Job cancelled successfully',
-      jobId: id,
-    });
-  } catch (error) {
-    console.error('Error cancelling job:', error);
-    return NextResponse.json({ error: 'Failed to cancel job' }, { status: 500 });
-  }
-}
-
-/**
- * Verify job ownership
- */
-async function verifyJobOwnership(
-  scheduler: ReturnType<typeof getScheduler>,
-  jobId: string,
-  userId: string
-): Promise<{ error?: NextResponse; job?: Awaited<ReturnType<typeof scheduler.getJob>> }> {
+async function getOwnedJob(jobId: string, userId: string) {
+  const scheduler = getScheduler();
   const job = await scheduler.getJob(jobId);
 
   if (!job) {
-    return { error: NextResponse.json({ error: 'Job not found' }, { status: 404 }) };
+    return { error: Errors.notFound('Job not found') as NextResponse };
   }
 
   if (job.createdBy !== userId) {
-    return { error: NextResponse.json({ error: 'Access denied' }, { status: 403 }) };
+    return { error: Errors.forbidden('Access denied') as NextResponse };
   }
 
   return { job };
 }
 
-/**
- * Handle retry action
- */
-async function handleRetryAction(
-  scheduler: ReturnType<typeof getScheduler>,
-  jobId: string
-): Promise<NextResponse> {
-  const job = await scheduler.retry(jobId);
-
-  if (!job) {
-    return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-  }
-
-  return NextResponse.json({
-    message: 'Job queued for retry',
-    job,
-  });
-}
+// ── Route Handlers ───────────────────────────────────────────────────────
 
 /**
- * Validate and parse scheduled time
+ * GET /api/scheduler/[id]
+ * Get job details (user-scoped)
  */
-function validateScheduledTime(scheduledTimeStr: string): { error?: NextResponse; date?: Date } {
-  const scheduledTime = new Date(scheduledTimeStr);
+export const GET = withRateLimit(
+  withErrorHandling(async (request: Request, context?: unknown) => {
+    const authResult = await authenticateRequest();
+    if ('error' in authResult) return authResult.error;
 
-  if (Number.isNaN(scheduledTime.getTime())) {
-    return { error: NextResponse.json({ error: 'Invalid scheduledTime format' }, { status: 400 }) };
-  }
+    const { id } = await (context as RouteParams).params;
+    const idValidation = validateAndSanitize(jobIdSchema, { id });
+    if (!idValidation.success) {
+      return Errors.badRequest('Invalid job ID: ' + idValidation.errors.join(', '));
+    }
 
-  if (scheduledTime.getTime() <= Date.now()) {
-    return {
-      error: NextResponse.json({ error: 'scheduledTime must be in the future' }, { status: 400 }),
-    };
-  }
+    const result = await getOwnedJob(idValidation.data.id, authResult.userId);
+    if ('error' in result) return result.error;
 
-  return { date: scheduledTime };
-}
-
-/**
- * Handle reschedule action
- */
-async function handleRescheduleAction(
-  scheduler: ReturnType<typeof getScheduler>,
-  jobId: string,
-  scheduledTimeStr: string
-): Promise<NextResponse> {
-  const validation = validateScheduledTime(scheduledTimeStr);
-  if (validation.error) {
-    return validation.error;
-  }
-
-  const job = await scheduler.reschedule(jobId, validation.date!.toISOString());
-
-  if (!job) {
-    return NextResponse.json({ error: 'Job not found' }, { status: 404 });
-  }
-
-  return NextResponse.json({
-    message: 'Job rescheduled successfully',
-    job,
-  });
-}
+    return NextResponse.json({ job: result.job });
+  }),
+  '/api/scheduler/[id]',
+  RateLimitPresets.GENERAL
+);
 
 /**
  * PATCH /api/scheduler/[id]
  * Update job (reschedule or retry) - user-scoped
  */
-export async function PATCH(request: Request, { params }: RouteParams) {
-  try {
-    // Check authentication
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+export const PATCH = withRateLimit(
+  withErrorHandling(async (request: Request, context?: unknown) => {
+    const authResult = await authenticateRequest();
+    if ('error' in authResult) return authResult.error;
+
+    const { id } = await (context as RouteParams).params;
+    const idValidation = validateAndSanitize(jobIdSchema, { id });
+    if (!idValidation.success) {
+      return Errors.badRequest('Invalid job ID: ' + idValidation.errors.join(', '));
     }
 
-    const currentUserId = await getCurrentUserId();
-    if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
-    }
-
-    const { id } = await params;
     const body = await request.json();
-    const scheduler = getScheduler();
-
-    // Verify job exists and user owns it
-    const ownership = await verifyJobOwnership(scheduler, id, currentUserId);
-    if (ownership.error) {
-      return ownership.error;
+    const bodyValidation = validateAndSanitize(patchJobSchema, body);
+    if (!bodyValidation.success) {
+      return Errors.badRequest('Invalid input: ' + bodyValidation.errors.join(', '));
     }
+
+    const result = await getOwnedJob(idValidation.data.id, authResult.userId);
+    if ('error' in result) return result.error;
+
+    const scheduler = getScheduler();
+    const { action, scheduledTime } = bodyValidation.data;
 
     // Handle retry action
-    if (body.action === 'retry') {
-      return handleRetryAction(scheduler, id);
+    if (action === 'retry') {
+      const retried = await scheduler.retry(idValidation.data.id);
+      if (!retried) {
+        return Errors.notFound('Job not found');
+      }
+      return NextResponse.json({ message: 'Job queued for retry', job: retried });
     }
 
     // Handle reschedule
-    if (body.scheduledTime) {
-      return handleRescheduleAction(scheduler, id, body.scheduledTime);
+    if (scheduledTime) {
+      const rescheduled = await scheduler.reschedule(
+        idValidation.data.id,
+        new Date(scheduledTime).toISOString()
+      );
+      if (!rescheduled) {
+        return Errors.notFound('Job not found');
+      }
+      return NextResponse.json({ message: 'Job rescheduled successfully', job: rescheduled });
     }
 
-    return NextResponse.json({ error: 'No valid update provided' }, { status: 400 });
-  } catch (error) {
-    console.error('Error updating job:', error);
-    const message = error instanceof Error ? error.message : 'Failed to update job';
-    return NextResponse.json({ error: message }, { status: 400 });
-  }
-}
+    return Errors.badRequest('No valid update provided');
+  }),
+  '/api/scheduler/[id]',
+  RateLimitPresets.GENERAL
+);
+
+/**
+ * DELETE /api/scheduler/[id]
+ * Cancel a scheduled job (user-scoped)
+ */
+export const DELETE = withRateLimit(
+  withErrorHandling(async (request: Request, context?: unknown) => {
+    const authResult = await authenticateRequest();
+    if ('error' in authResult) return authResult.error;
+
+    const { id } = await (context as RouteParams).params;
+    const idValidation = validateAndSanitize(jobIdSchema, { id });
+    if (!idValidation.success) {
+      return Errors.badRequest('Invalid job ID: ' + idValidation.errors.join(', '));
+    }
+
+    const result = await getOwnedJob(idValidation.data.id, authResult.userId);
+    if ('error' in result) return result.error;
+
+    const scheduler = getScheduler();
+    const cancelled = await scheduler.cancel(idValidation.data.id);
+
+    if (!cancelled) {
+      return Errors.internalServerError('Failed to cancel job');
+    }
+
+    return NextResponse.json({
+      message: 'Job cancelled successfully',
+      jobId: idValidation.data.id,
+    });
+  }),
+  '/api/scheduler/[id]',
+  RateLimitPresets.GENERAL
+);
