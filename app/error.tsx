@@ -14,13 +14,14 @@ interface AppErrorProps {
 
 export default function AppError({ error, reset }: AppErrorProps) {
   useEffect(() => {
-    // Log error to error reporting service
-    console.error('Application error:', error);
-
-    // In production, you might want to send this to an error tracking service
-    // if (process.env.NODE_ENV === 'production') {
-    //   reportError(error);
-    // }
+    // Structured error telemetry for debugging production issues
+    console.error('[AppError] Page-level error caught:', {
+      message: error.message,
+      digest: error.digest,
+      stack: error.stack,
+      timestamp: new Date().toISOString(),
+      url: typeof window !== 'undefined' ? window.location.href : 'unknown',
+    });
   }, [error]);
 
   return (
