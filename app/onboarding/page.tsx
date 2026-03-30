@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Header from '@/components/ui/Header';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Onboarding.module.css';
 
@@ -269,7 +270,9 @@ export default function OnboardingPage() {
       <>
         <Header />
         <main className={styles.main}>
-          <div className={styles.loadingContainer}>Loading...</div>
+          <div className={styles.loadingContainer}>
+            <LoadingSpinner size="lg" label="Loading..." />
+          </div>
         </main>
       </>
     );

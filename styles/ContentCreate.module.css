@@ -1,0 +1,497 @@
+/* ==========================================================================
+   Content Create Page Styles
+   ========================================================================== */
+
+/* ── Page Layout ─────────────────────────────────────────────────────────── */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pageTitle {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+/* ── Progress Bar ────────────────────────────────────────────────────────── */
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) 0;
+}
+
+.progressStep {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-medium);
+}
+
+.progressStep.active {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.progressStep.completed {
+  color: var(--color-success);
+}
+
+.stepNumber {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  border: 2px solid var(--color-border);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-muted);
+  transition: all var(--transition-normal);
+}
+
+.progressStep.active .stepNumber {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.progressStep.completed .stepNumber {
+  border-color: var(--color-success);
+  background-color: var(--color-success);
+  color: var(--color-text-inverse);
+}
+
+.progressConnector {
+  flex: 1;
+  height: 2px;
+  background-color: var(--color-border);
+  min-width: 24px;
+}
+
+.progressConnector.active {
+  background-color: var(--color-success);
+}
+
+/* ── Step Card ───────────────────────────────────────────────────────────── */
+
+.stepCard {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.stepTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-heading);
+  margin: 0 0 var(--spacing-lg) 0;
+}
+
+/* ── Form Fields ─────────────────────────────────────────────────────────── */
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-label);
+}
+
+.input {
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-family: var(--font-family-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-100);
+}
+
+.input::placeholder {
+  color: var(--color-text-placeholder);
+}
+
+.textarea {
+  composes: input;
+  min-height: 280px;
+  resize: vertical;
+  font-family: var(--font-family-mono);
+  line-height: var(--line-height-relaxed);
+}
+
+.charCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-align: right;
+}
+
+/* ── AI Summarize ────────────────────────────────────────────────────────── */
+
+.aiRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.aiButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-primary);
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.aiButton:hover:not(:disabled) {
+  background-color: var(--color-accent);
+  color: var(--color-text-inverse);
+}
+
+.aiButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.summarySection {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-top: var(--spacing-md);
+}
+
+.summaryToggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-tertiary);
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+}
+
+.summaryToggle:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.summaryContent {
+  padding: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-body);
+  background-color: var(--color-bg-primary);
+  border-top: 1px solid var(--color-border-light);
+}
+
+/* ── Platform Adaptation ─────────────────────────────────────────────────── */
+
+.platformList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.platformCard {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition: border-color var(--transition-fast);
+}
+
+.platformCard.excluded {
+  opacity: 0.5;
+  border-color: var(--color-border-light);
+}
+
+.platformCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-tertiary);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.platformName {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-heading);
+}
+
+.platformToggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.toggleLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.toggle {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-border-dark);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  border: none;
+  padding: 0;
+}
+
+.toggle.toggleOn {
+  background-color: var(--color-success);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-primary);
+  transition: transform var(--transition-fast);
+  pointer-events: none;
+}
+
+.toggle.toggleOn .toggleKnob {
+  transform: translateX(18px);
+}
+
+.platformCardBody {
+  padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.adaptedPreview {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+  color: var(--color-text-body);
+  background-color: var(--color-bg-secondary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-sm);
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--font-family-base);
+  min-height: 60px;
+}
+
+.hashtagInput {
+  composes: input;
+  font-size: var(--font-size-sm);
+}
+
+.charBar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.charBarTrack {
+  flex: 1;
+  height: 6px;
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.charBarFill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  transition: width var(--transition-fast), background-color var(--transition-fast);
+}
+
+.charBarFill.green {
+  background-color: var(--color-success);
+}
+
+.charBarFill.yellow {
+  background-color: var(--color-warning);
+}
+
+.charBarFill.red {
+  background-color: var(--color-error);
+}
+
+.charBarLabel {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  min-width: 80px;
+  text-align: right;
+}
+
+/* ── Schedule Step ───────────────────────────────────────────────────────── */
+
+.scheduleOptions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.publishSummary {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--color-bg-tertiary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.publishSummary strong {
+  color: var(--color-text-heading);
+}
+
+.scheduleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.dateTimeInput {
+  composes: input;
+  width: auto;
+  min-width: 220px;
+}
+
+/* ── Navigation Buttons ──────────────────────────────────────────────────── */
+
+.navButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+}
+
+.navButtonsLeft {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.navButtonsRight {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.btnPrimary {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background-color: var(--color-primary-dark);
+}
+
+.btnPrimary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  composes: btnPrimary;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background-color: var(--color-bg-secondary);
+}
+
+.btnSuccess {
+  composes: btnPrimary;
+  background-color: var(--color-success);
+}
+
+.btnSuccess:hover:not(:disabled) {
+  background-color: var(--color-success-dark);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .stepCard {
+    padding: var(--spacing-md);
+  }
+
+  .progressStep span:not(.stepNumber) {
+    display: none;
+  }
+
+  .scheduleRow {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dateTimeInput {
+    width: 100%;
+  }
+
+  .navButtons {
+    flex-direction: column-reverse;
+    gap: var(--spacing-sm);
+  }
+
+  .navButtonsLeft,
+  .navButtonsRight {
+    width: 100%;
+  }
+
+  .navButtonsLeft > button,
+  .navButtonsRight > button {
+    flex: 1;
+  }
+}

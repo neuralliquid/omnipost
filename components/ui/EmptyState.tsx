@@ -1,26 +1,30 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import styles from '@/styles/EmptyState.module.css';
 import Button from './Button';
 
 type EmptyStateVariant = 'default' | 'search' | 'error' | 'filter';
 
+interface EmptyStateAction {
+  readonly label: string;
+  readonly href?: string;
+  readonly onClick?: () => void;
+  readonly variant?: 'primary' | 'secondary';
+}
+
 interface EmptyStateProps {
-  variant?: EmptyStateVariant;
-  title: string;
-  description?: string;
-  icon?: React.ReactNode;
-  action?: {
-    label: string;
-    onClick: () => void;
-    variant?: 'primary' | 'secondary';
+  readonly variant?: EmptyStateVariant;
+  readonly title: string;
+  readonly description?: string;
+  readonly icon?: React.ReactNode;
+  readonly action?: EmptyStateAction;
+  readonly secondaryAction?: {
+    readonly label: string;
+    readonly onClick: () => void;
   };
-  secondaryAction?: {
-    label: string;
-    onClick: () => void;
-  };
-  className?: string;
+  readonly className?: string;
 }
 
 const defaultIcons: Record<EmptyStateVariant, JSX.Element> = {
@@ -66,11 +70,15 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       {description && <p className={styles.description}>{description}</p>}
       {(action || secondaryAction) && (
         <div className={styles.actions}>
-          {action && (
+          {action && action.href ? (
+            <Link href={action.href} className={styles.actionLink}>
+              {action.label}
+            </Link>
+          ) : action && action.onClick ? (
             <Button variant={action.variant || 'primary'} onClick={action.onClick}>
               {action.label}
             </Button>
-          )}
+          ) : null}
           {secondaryAction && (
             <Button variant="ghost" onClick={secondaryAction.onClick}>
               {secondaryAction.label}
@@ -82,4 +90,5 @@ const EmptyState: React.FC<EmptyStateProps> = ({
   );
 };
 
+export { EmptyState };
 export default EmptyState;

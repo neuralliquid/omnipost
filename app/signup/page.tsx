@@ -11,6 +11,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Header from '@/components/ui/Header';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { tokenStorage } from '@/lib/storage/token-storage';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Signup.module.css';
@@ -133,7 +134,9 @@ export default function SignupPage() {
       <>
         <Header />
         <main className={styles.main}>
-          <div className={styles.loadingContainer}>Loading...</div>
+          <div className={styles.loadingContainer}>
+            <LoadingSpinner size="lg" label="Checking authentication..." />
+          </div>
         </main>
       </>
     );
