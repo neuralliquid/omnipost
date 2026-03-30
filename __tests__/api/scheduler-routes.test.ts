@@ -20,21 +20,8 @@ const mockGetAllJobs = jest.fn();
 const mockGetJobsByStatus = jest.fn();
 const mockGetJobsByCampaign = jest.fn();
 
-// Mock the scheduler - need to mock the barrel export that the route imports from
-jest.mock('../../lib/scheduler', () => {
-  const original = jest.requireActual('../../lib/scheduler') as Record<string, unknown>;
-  return {
-    ...original,
-    getScheduler: jest.fn(() => ({
-      schedule: mockSchedule,
-      getAllJobs: mockGetAllJobs,
-      getJobsByStatus: mockGetJobsByStatus,
-      getJobsByCampaign: mockGetJobsByCampaign,
-    })),
-  };
-});
-
-jest.mock('@/app/api/_utils/sanitize', () => ({
+// Mock the sanitize module
+jest.mock('../../app/api/_utils/sanitize', () => ({
   sanitizeText: jest.fn((val: string) => val),
   validateAndSanitize: jest.fn((schema: { safeParse: Function }, data: unknown) => {
     const result = schema.safeParse(data);
@@ -48,7 +35,9 @@ jest.mock('@/app/api/_utils/sanitize', () => ({
   }),
 }));
 
-import { GET, POST } from '../../app/api/scheduler/route';
+// We dynamically import the route to ensure mocks are in place
+let GET: (req: Request) => Promise<Response>;
+let POST: (req: Request) => Promise<Response>;
 
 function createRequest(
   method: string,
@@ -82,12 +71,28 @@ const sampleJob = {
 };
 
 describe('Scheduler API Routes', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
+    jest.resetModules();
+
     mockGetAllJobs.mockResolvedValue([sampleJob]);
     mockGetJobsByStatus.mockResolvedValue([sampleJob]);
     mockGetJobsByCampaign.mockResolvedValue([sampleJob]);
     mockSchedule.mockResolvedValue(sampleJob);
+
+    // Mock the scheduler before importing the route
+    jest.doMock('../../lib/scheduler', () => ({
+      getScheduler: () => ({
+        schedule: mockSchedule,
+        getAllJobs: mockGetAllJobs,
+        getJobsByStatus: mockGetJobsByStatus,
+        getJobsByCampaign: mockGetJobsByCampaign,
+      }),
+    }));
+
+    const mod = await import('../../app/api/scheduler/route');
+    GET = mod.GET;
+    POST = mod.POST;
   });
 
   describe('GET /api/scheduler', () => {
@@ -133,7 +138,6 @@ describe('Scheduler API Routes', () => {
       const response = await POST(request);
       const data = await response.json();
 
-      console.log('POST response status:', response.status, 'data:', JSON.stringify(data));
       expect(response.status).toBe(201);
       expect(data.job).toBeDefined();
       expect(mockSchedule).toHaveBeenCalledTimes(1);

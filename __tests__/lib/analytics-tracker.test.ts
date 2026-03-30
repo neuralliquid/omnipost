@@ -3,6 +3,8 @@
  *
  * Tests for the client-side analytics tracker including
  * event queuing, batching, flushing, and page view tracking.
+ *
+ * @jest-environment jsdom
  */
 
 import { beforeEach, afterEach, describe, expect, jest, test } from '@jest/globals';
@@ -11,65 +13,42 @@ import { beforeEach, afterEach, describe, expect, jest, test } from '@jest/globa
 const mockFetch = jest.fn<() => Promise<Response>>();
 global.fetch = mockFetch as unknown as typeof fetch;
 
-// Mock sessionStorage
-const sessionStorageData: Record<string, string> = {};
-const mockSessionStorage = {
-  getItem: jest.fn((key: string) => sessionStorageData[key] || null),
-  setItem: jest.fn((key: string, value: string) => {
-    sessionStorageData[key] = value;
-  }),
-  removeItem: jest.fn((key: string) => {
-    delete sessionStorageData[key];
-  }),
-  clear: jest.fn(() => {
-    Object.keys(sessionStorageData).forEach(key => delete sessionStorageData[key]);
-  }),
-  length: 0,
-  key: jest.fn(() => null),
-};
-
-Object.defineProperty(global, 'sessionStorage', {
-  value: mockSessionStorage,
-  writable: true,
-});
-
-// Mock window.location and document
-Object.defineProperty(global, 'window', {
-  value: {
-    location: {
-      pathname: '/dashboard',
-      search: '',
-      href: 'http://localhost:3000/dashboard',
-    },
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-  },
-  writable: true,
-});
-
-Object.defineProperty(global, 'document', {
-  value: {
-    referrer: 'https://google.com',
-    title: 'OmniPost Dashboard',
-  },
-  writable: true,
-});
+// Set up sessionStorage data
+const SESSION_KEY = 'omnipost_session_id';
 
 describe('Analytics Tracker', () => {
-  let tracker: { track: Function; flush: Function; pageView: Function; identify: Function; destroy: Function };
+  let tracker: {
+    track: (name: string, properties?: Record<string, unknown>) => void;
+    flush: () => Promise<void>;
+    pageView: (properties?: Record<string, unknown>) => void;
+    identify: (userId: string) => void;
+    destroy: () => void;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
+
     mockFetch.mockResolvedValue({
       ok: true,
       json: async () => ({ success: true, received: 1 }),
     } as Response);
 
-    // Clear session storage
-    Object.keys(sessionStorageData).forEach(key => delete sessionStorageData[key]);
+    // Clear sessionStorage
+    sessionStorage.clear();
 
-    // Re-import to get a fresh instance
+    // Set up window.location for tests
+    Object.defineProperty(window, 'location', {
+      value: {
+        pathname: '/dashboard',
+        search: '',
+        href: 'http://localhost:3000/dashboard',
+      },
+      writable: true,
+      configurable: true,
+    });
+
+    // Re-import to get a fresh singleton instance
     jest.resetModules();
     const mod = require('../../lib/analytics/tracker');
     tracker = mod.tracker;
@@ -165,6 +144,18 @@ describe('Analytics Tracker', () => {
   });
 
   test('pageView() captures URL and referrer', () => {
+    // Set document.referrer via Object.defineProperty since it's read-only in jsdom
+    Object.defineProperty(document, 'referrer', {
+      value: 'https://google.com',
+      writable: true,
+      configurable: true,
+    });
+    Object.defineProperty(document, 'title', {
+      value: 'OmniPost Dashboard',
+      writable: true,
+      configurable: true,
+    });
+
     tracker.pageView();
     tracker.flush();
 

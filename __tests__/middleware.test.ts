@@ -49,14 +49,14 @@ jest.mock('next/server', () => {
     NextResponse: {
       next: jest.fn((opts?: { request?: { headers?: unknown } }) => {
         const responseHeaders = new MockHeaders();
-        const requestHeaders = opts?.request?.headers
-          ? opts.request.headers
-          : new MockHeaders();
-        return {
+        const result: Record<string, unknown> = {
           status: 200,
           headers: responseHeaders,
-          _requestHeaders: requestHeaders,
         };
+        if (opts?.request?.headers) {
+          result._requestHeaders = opts.request.headers;
+        }
+        return result;
       }),
       json: jest.fn((data: unknown, init?: { status?: number }) => ({
         status: init?.status || 200,
