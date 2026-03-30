@@ -1,0 +1,33 @@
+# DevOps Team Rules
+
+**Scope:** `.github/workflows/**`
+
+CI/CD pipelines, GitHub Actions workflows, and deployment automation.
+
+## GitHub Actions Workflows
+
+- `ci.yml` -- Runs quality gates (type-check, lint, format:check, test) on push/PR.
+- `azure-webapps-node.yml` -- Deploys to Azure Web Apps staging.
+- `deploy-prod.yml` -- Production deployment pipeline.
+
+## Workflow Standards
+
+- Use specific Node.js and pnpm versions (pin versions, do not use `latest`).
+- Cache pnpm dependencies for faster builds.
+- Run `pnpm check-all` as the primary CI quality gate.
+- Separate build, test, and deploy into distinct jobs.
+- Use GitHub environments for staging and production.
+
+## Security
+
+- NEVER commit secrets to workflow files.
+- Use GitHub Secrets and environment variables for sensitive values.
+- Use OIDC for Azure authentication where possible.
+- Limit workflow permissions to minimum required.
+
+## Deployment
+
+- Staging deploys automatically on push to main.
+- Production deploys require manual approval.
+- Include health check verification after deployment.
+- Support rollback via previous deployment artifacts.

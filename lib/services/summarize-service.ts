@@ -5,6 +5,7 @@
 
 import axios from 'axios';
 import featureFlags from '@/lib/featureFlags';
+import { isGatewayEnabled, gatewayPost, shouldFallbackToDirectCalls } from '@/lib/clients/sluice-gateway';
 
 // Helper function to get API configuration
 const getApiConfig = () => {
@@ -34,6 +35,27 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
       error: 'Summarization feature is disabled',
       statusCode: 403,
     };
+  }
+
+  // Try Sluice gateway first if enabled
+  if (isGatewayEnabled()) {
+    const implementation = featureFlags.summarization?.implementation || 'huggingface';
+    const gatewayResult = await gatewayPost('/v1/responses', {
+      model: implementation,
+      text: rawText,
+    }, { operation: 'summarize_text' });
+
+    if (gatewayResult.success) {
+      return { success: true, data: gatewayResult.data };
+    }
+
+    if (!shouldFallbackToDirectCalls()) {
+      return {
+        success: false,
+        error: gatewayResult.error || 'Gateway request failed',
+        statusCode: gatewayResult.statusCode || 502,
+      };
+    }
   }
 
   try {

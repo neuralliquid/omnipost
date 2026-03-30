@@ -1,0 +1,42 @@
+# Quality Team Rules
+
+**Scope:** `eslint.config.mjs`, `.prettierrc*`, `tsconfig.json`, `tsconfig.jest.json`
+
+Code quality tooling -- ESLint, Prettier, TypeScript configuration, and formatting rules.
+
+## ESLint
+
+- Configuration in `eslint.config.mjs` (flat config format).
+- Plugins: `@typescript-eslint`, `eslint-plugin-react`, `eslint-plugin-react-hooks`, `eslint-config-next`.
+- Run: `pnpm lint` to check, `pnpm lint:fix` to auto-fix.
+
+## Prettier
+
+- Formatting for: `*.{js,jsx,ts,tsx,json,css,md}`.
+- Run: `pnpm format:check` to verify, `pnpm format` to fix.
+
+## TypeScript
+
+- Strict mode enabled in `tsconfig.json`.
+- Key strict options: `strict`, `noUncheckedIndexedAccess`, `strictNullChecks`, `strictFunctionTypes`.
+- No `any` types -- use `unknown` if truly unknown.
+- Separate `tsconfig.jest.json` for test environment.
+- Run: `pnpm type-check` to validate.
+
+## Quality Gates
+
+All gates must pass before merge:
+
+1. `pnpm type-check` -- TypeScript compilation
+2. `pnpm lint` -- ESLint rules
+3. `pnpm format:check` -- Prettier formatting
+4. `pnpm test` -- Jest test suite
+
+Combined: `pnpm check-all`
+
+## Configuration Changes
+
+- Changes to quality configs affect the entire project.
+- Test config changes against the full codebase before merging.
+- Document rationale for rule additions or exceptions.
+- Coordinate with all teams when adding new lint rules.

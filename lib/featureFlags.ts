@@ -64,6 +64,11 @@ export interface CrmDashboardFeatureFlag {
   pipelineView: boolean;
 }
 
+export interface AIGatewayFeatureFlag {
+  enabled: boolean;
+  fallbackToDirectCalls: boolean;
+}
+
 // Define the base feature flags interface without index signature
 interface BaseFeatureFlags {
   textParser: TextParserFeatureFlag;
@@ -80,6 +85,8 @@ interface BaseFeatureFlags {
   surveyForms: SurveyFormsFeatureFlag;
   linkedinProspecting: LinkedInProspectingFeatureFlag;
   crmDashboard: CrmDashboardFeatureFlag;
+  // AI Gateway (Sluice)
+  aiGateway: AIGatewayFeatureFlag;
 }
 
 // Extend the base interface with an index signature for dynamic access
@@ -195,6 +202,11 @@ const featureFlags: FeatureFlags = {
     enabled: true,
     analytics: true,
     pipelineView: true,
+  },
+  // AI Gateway (Sluice) - disabled by default, opt-in
+  aiGateway: {
+    enabled: false,
+    fallbackToDirectCalls: true,
   },
 };
 /**

@@ -1,0 +1,45 @@
+# Docs Team Rules
+
+**Scope:** `docs/**`, `*.md`
+
+Project documentation, guides, architecture docs, and markdown files.
+
+## Documentation Standards
+
+- Keep README.md current with setup instructions and feature list.
+- Update CHANGELOG.md for every notable change.
+- Document all environment variables with descriptions and defaults.
+- Include troubleshooting for common issues.
+
+## Code Comments
+
+- Use JSDoc for public functions and complex logic.
+- Explain why, not what -- code should be self-explanatory.
+- Document complex algorithms and business rules.
+- Mark TODOs with clear context about what needs to be done.
+
+## Key Documentation Files
+
+- `README.md` -- Project overview and quick start
+- `CONTRIBUTING.md` -- Development guidelines and workflow
+- `SECURITY.md` -- Security policy and vulnerability reporting
+- `CHANGELOG.md` -- Version history and notable changes
+- `PROJECT_STRUCTURE.md` -- Architecture overview
+- `.github/copilot-instructions.md` -- Detailed coding standards
+- `docs/api-migration.md` -- API migration guide
+- `docs/best-practices.md` -- Best practices reference
+
+## Agent Context
+
+- `CLAUDE.md` -- Primary Claude Code context
+- `AGENTS.md` -- Cross-agent team discovery
+- `AGENT_TEAMS.md` -- Detailed team ownership
+- `QUALITY_GATES.md` -- Quality gate documentation
+- `.agents/context/` -- Product marketing context
+
+## Formatting
+
+- Use Markdown for all documentation.
+- Include code examples for technical docs.
+- Keep headings hierarchical (h1 > h2 > h3).
+- Use tables for structured data.

@@ -122,6 +122,20 @@ az webapp config appsettings set \
     TWITTER_API_KEY="your-api-key"
 ```
 
+### Sluice AI Gateway
+
+```bash
+# Sluice gateway URL and API key
+az webapp config appsettings set \
+  --name nl-dev-omnipost-app-euw \
+  --resource-group nl-dev-omnipost-rg-euw \
+  --settings \
+    SLUICE_GATEWAY_URL="https://nl-dev-omnipost-sluice-euw.azurecontainerapps.io" \
+    SLUICE_API_KEY="your-gateway-api-key"
+```
+
+> **Note:** The Sluice gateway is opt-in via the `aiGateway` feature flag. When enabled, AI requests are routed through the gateway for cost tracking and model abstraction. See `infra/sluice.bicep` for infrastructure deployment.
+
 ## Configuration via Azure Portal
 
 Alternatively, you can configure these via the Azure Portal:
