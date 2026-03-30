@@ -65,6 +65,12 @@ export function PlatformSettingsPage() {
   const [handleInput, setHandleInput] = useState('');
   const { trackPlatformConnected, track } = useAnalytics();
 
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
   const connectedCount = Object.keys(connections).length;
 
   const handleConnect = useCallback(
@@ -125,6 +131,9 @@ export function PlatformSettingsPage() {
     setApiKeyInput('');
     setHandleInput('');
   };
+
+  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
+  if (!isAuthenticated) return null;
 
   return (
     <>
