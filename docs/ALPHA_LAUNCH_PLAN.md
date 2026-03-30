@@ -32,99 +32,98 @@
 
 ---
 
-## Phase 1: Unblock (Team: Backend + Security)
+## Phase 1: Unblock (Team: Backend + Security) -- COMPLETED
 
 **Goal**: Get the project building, tests passing, auth working.
 
-### Task 1.1: Fix auth middleware (CRITICAL)
+### Task 1.1: Fix auth middleware (CRITICAL) -- COMPLETED
 **Team**: Security
-**File**: `middleware.ts` (new, project root)
-- Create Next.js middleware that validates JWT from cookies
+**File**: `middleware.ts` (project root)
+- Created Next.js middleware that validates JWT from cookies
 - Injects `x-user-id`, `x-user-name`, `x-user-role` headers
-- Without this, ALL auth checks fail on real requests
 
-### Task 1.2: Fix BUG-08 — Token null check
+### Task 1.2: Fix BUG-08 — Token null check -- COMPLETED
 **Team**: Security
 **File**: `lib/auth/auth-service.ts`
-- Add null check for token in verification flow
+- Added null check for token in verification flow
 
-### Task 1.3: Fix BUG-04 — Error boundaries
+### Task 1.3: Fix BUG-04 — Error boundaries -- COMPLETED
 **Team**: Frontend
-**File**: `components/ErrorBoundary.tsx` (new or update)
-- Wrap dashboard pages with error boundaries
-- Prevent single component crashes from taking down the app
+**File**: `components/ErrorBoundary.tsx`
+- Dashboard pages wrapped with error boundaries
+- Single component crashes no longer take down the app
 
-### Task 1.4: Fix BUG-06 — Rate limit race condition
+### Task 1.4: Fix BUG-06 — Rate limit race condition -- COMPLETED
 **Team**: Backend
 **File**: `app/api/_utils/rateLimit.ts`
-- Fix in-memory store eviction under concurrent load
-- Add atomic counter operations
+- Fixed in-memory store eviction under concurrent load
+- Added atomic counter operations
 
-### Task 1.5: Fix BUG-07 — Feature flag cascade
+### Task 1.5: Fix BUG-07 — Feature flag cascade -- COMPLETED
 **Team**: Backend
 **File**: `app/api/parse/route.ts`
-- Decouple unrelated feature flag checks
-- Parse endpoint should only check textParser flag
+- Decoupled unrelated feature flag checks
+- Parse endpoint now only checks textParser flag
 
 ---
 
-## Phase 2: Polish Core Flow (Team: Frontend + Backend)
+## Phase 2: Polish Core Flow (Team: Frontend + Backend) -- COMPLETED
 
-**Goal**: The sign-up → connect → publish → analyze flow works end-to-end.
+**Goal**: The sign-up -> connect -> publish -> analyze flow works end-to-end.
 
-### Task 2.1: Onboarding flow
+### Task 2.1: Onboarding flow -- COMPLETED
 **Team**: Frontend
-- After signup, redirect to guided onboarding (not blank dashboard)
+- After signup, users are redirected to guided onboarding
 - Step 1: Connect first platform
 - Step 2: Create first post
 - Step 3: Publish
 
-### Task 2.2: Signup page optimization
+### Task 2.2: Signup page optimization -- COMPLETED
 **Team**: Frontend
-- Apply signup-flow-cro skill framework:
+- Applied signup-flow-cro skill framework:
   - Social auth (Google/GitHub) as primary
   - Single email field for traditional signup
   - "Start Publishing Free" CTA
   - Trust signals below form
 
-### Task 2.3: Landing page CRO
+### Task 2.3: Landing page CRO -- COMPLETED
 **Team**: Frontend + Marketing
-- Apply page-cro skill framework:
+- Applied page-cro skill framework:
   - Hero: outcome headline + product screenshot
   - Problem-agitate-solution below fold
   - Social proof section
   - Feature walkthrough with platform screenshots
   - Final CTA
 
-### Task 2.4: Complete partial API routes
+### Task 2.4: Complete partial API routes -- COMPLETED
 **Team**: Backend
-- Priority routes for alpha:
-  - `/api/scheduler` — scheduling is core to the product
-  - `/api/leads` — basic lead capture for waitlist
-  - `/api/forms` — form builder for lead magnets
+- Implemented priority routes for alpha:
+  - `/api/scheduler` -- scheduling is core to the product
+  - `/api/leads` -- basic lead capture for waitlist
+  - `/api/forms` -- form builder for lead magnets
 
 ---
 
-## Phase 3: Analytics & Tracking (Team: Marketing + Backend)
+## Phase 3: Analytics & Tracking (Team: Marketing + Backend) -- COMPLETED
 
 **Goal**: We can measure what matters from day one.
 
-### Task 3.1: Implement event tracking
+### Task 3.1: Implement event tracking -- COMPLETED
 **Team**: Backend
-- Apply analytics-tracking skill AARRR framework:
+- Applied analytics-tracking skill AARRR framework:
   - `signup_completed`, `platform_connected`, `post_published`
   - `pricing_page_viewed`, `trial_started`, `upgrade_initiated`
-- Add to existing engagement-metrics API
+- Added to existing engagement-metrics API
 
-### Task 3.2: UTM parameter handling
+### Task 3.2: UTM parameter handling -- COMPLETED
 **Team**: Frontend
-- Capture UTM params on landing page
-- Store in cookie/session for attribution
-- Pass through to signup event
+- UTM params captured on landing page
+- Stored in cookie/session for attribution
+- Passed through to signup event
 
-### Task 3.3: Core funnels
+### Task 3.3: Core funnels -- COMPLETED
 **Team**: Marketing
-- Configure: Landing → Signup → Platform Connected → First Post → Retained (Day 7)
+- Configured: Landing -> Signup -> Platform Connected -> First Post -> Retained (Day 7)
 - Dashboard widget for conversion rates
 
 ---
