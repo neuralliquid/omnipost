@@ -6,8 +6,9 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Pricing.module.css';
 
 /* ---------- Data Types ---------- */
@@ -197,9 +198,11 @@ function ChevronDownIcon({ className }: { readonly className?: string }) {
 function PricingCard({
   tier,
   isAnnual,
+  onPlanSelect,
 }: {
   readonly tier: PricingTier;
   readonly isAnnual: boolean;
+  readonly onPlanSelect?: (planName: string) => void;
 }) {
   const isFree = tier.monthlyPrice === 0;
   const displayPrice = isFree
@@ -242,6 +245,7 @@ function PricingCard({
       <Link
         href={tier.href}
         className={`${styles.ctaButton} ${tier.highlighted ? styles.ctaPrimary : styles.ctaSecondary}`}
+        onClick={() => onPlanSelect?.(tier.name)}
       >
         {tier.cta}
       </Link>
@@ -274,6 +278,15 @@ function FaqAccordionItem({ item }: { readonly item: FaqItem }) {
 
 export default function PricingPage() {
   const [isAnnual, setIsAnnual] = useState(true);
+  const { track, events } = useAnalytics({ trackPageView: true });
+
+  useEffect(() => {
+    track(events.PRICING_PAGE_VIEWED, { source: 'direct' });
+  }, [track, events]);
+
+  const handlePlanSelect = (planName: string) => {
+    track(events.PLAN_SELECTED, { planName, billingPeriod: isAnnual ? 'annual' : 'monthly' });
+  };
 
   return (
     <section className={styles.page}>
@@ -336,7 +349,7 @@ export default function PricingPage() {
         {/* Pricing Cards */}
         <div className={styles.cardsGrid}>
           {TIERS.map((tier) => (
-            <PricingCard key={tier.name} tier={tier} isAnnual={isAnnual} />
+            <PricingCard key={tier.name} tier={tier} isAnnual={isAnnual} onPlanSelect={handlePlanSelect} />
           ))}
         </div>
 

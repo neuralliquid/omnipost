@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Header from '@/components/ui/Header';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Onboarding.module.css';
 
 interface Platform {
@@ -152,6 +153,7 @@ function ProgressIndicator({
 export default function OnboardingPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
+  const { trackOnboardingStep, trackPlatformConnected, trackPostPublished } = useAnalytics({ trackPageView: true });
   const [step, setStep] = useState(1);
   const [platforms, setPlatforms] = useState<Platform[]>(INITIAL_PLATFORMS);
   const [postContent, setPostContent] = useState('');
@@ -185,6 +187,23 @@ export default function OnboardingPage() {
   };
 
   const handleNext = () => {
+    const stepNames = ['connect-platforms', 'create-post', 'complete'];
+    trackOnboardingStep(step, stepNames[step - 1] || 'unknown', false);
+
+    if (step === 1) {
+      const connectedCount = platforms.filter(p => p.connected).length;
+      if (connectedCount > 0) {
+        platforms.filter(p => p.connected).forEach(p => {
+          trackPlatformConnected(p.name, connectedCount);
+        });
+      }
+    }
+
+    if (step === 2 && postContent.trim()) {
+      const platformNames = Array.from(selectedPlatforms);
+      trackPostPublished(platformNames, true);
+    }
+
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
     } else {
@@ -193,6 +212,9 @@ export default function OnboardingPage() {
   };
 
   const handleSkip = () => {
+    const stepNames = ['connect-platforms', 'create-post', 'complete'];
+    trackOnboardingStep(step, stepNames[step - 1] || 'unknown', true);
+
     if (step < TOTAL_STEPS) {
       setStep(step + 1);
     } else {

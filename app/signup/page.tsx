@@ -12,6 +12,7 @@ import Link from 'next/link';
 import { useAuth } from '@/components/providers/AuthProvider';
 import Header from '@/components/ui/Header';
 import { tokenStorage } from '@/lib/storage/token-storage';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/Signup.module.css';
 
 interface RegisterResponse {
@@ -26,6 +27,7 @@ interface RegisterResponse {
 export default function SignupPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
+  const { track, trackSignup, events } = useAnalytics({ trackPageView: true });
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -84,6 +86,9 @@ export default function SignupPage() {
 
       // Store the token
       tokenStorage.setToken(successData.token);
+
+      // Track signup completion
+      trackSignup('email');
 
       // Redirect to onboarding
       router.push('/onboarding');
