@@ -20,8 +20,7 @@ const mockGetAllJobs = jest.fn();
 const mockGetJobsByStatus = jest.fn();
 const mockGetJobsByCampaign = jest.fn();
 
-jest.mock('../../lib/scheduler', () => ({
-  __esModule: true,
+jest.mock('@/lib/scheduler', () => ({
   getScheduler: () => ({
     schedule: mockSchedule,
     getAllJobs: mockGetAllJobs,
@@ -30,8 +29,7 @@ jest.mock('../../lib/scheduler', () => ({
   }),
 }));
 
-// Mock sanitize to pass through values
-jest.mock('../../app/api/_utils/sanitize', () => ({
+jest.mock('@/app/api/_utils/sanitize', () => ({
   sanitizeText: jest.fn((val: string) => val),
   validateAndSanitize: jest.fn((schema: { safeParse: Function }, data: unknown) => {
     const result = schema.safeParse(data);
