@@ -51,10 +51,11 @@
 - **File:** `app/api/_utils/errors.ts`
 - **Status:** Fixed — production responses sanitized
 
-### BUG-06: Rate Limiting Race Condition
+### BUG-06: Rate Limiting Race Condition ✅ FIXED
 
 - **File:** `app/api/_utils/rateLimit.ts`
-- **Impact:** Bypasses under heavy load
+- **Issue:** FIFO eviction allowed attackers to flush rate-limited entries by flooding from many IPs
+- **Status:** Fixed — rate-limit-aware eviction that never evicts entries actively blocking abusers
 
 ### BUG-07: Overly Restrictive Feature Flags ✅ FIXED
 
