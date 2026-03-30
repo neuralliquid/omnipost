@@ -4,6 +4,7 @@
  * GET - Health check for the process endpoint
  */
 
+import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/scheduler';
 import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
@@ -32,9 +33,14 @@ export const POST = withRateLimit(
       return Errors.internalServerError('Server misconfiguration: CRON_SECRET required');
     }
 
-    // Validate authorization
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return Errors.unauthorized('Unauthorized');
+    // Validate authorization with constant-time comparison
+    if (cronSecret) {
+      const expected = `Bearer ${cronSecret}`;
+      const actual = authHeader || '';
+      if (expected.length !== actual.length ||
+          !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(actual.padEnd(expected.length)))) {
+        return Errors.unauthorized('Unauthorized');
+      }
     }
 
     const scheduler = getScheduler();

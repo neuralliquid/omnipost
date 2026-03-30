@@ -10,7 +10,8 @@
 
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { withErrorHandling } from '../../_utils/errors';
+import { Errors, withErrorHandling } from '../../_utils/errors';
+import { isAuthenticated } from '../../_utils/auth';
 import { withRateLimit, RateLimitPresets } from '../../_utils/rateLimit';
 import { logToAuditTrail } from '../../_utils/audit';
 
@@ -99,9 +100,13 @@ export const POST = withRateLimit(
 /**
  * GET /api/analytics/events
  * Returns aggregated event counts for the analytics dashboard.
- * Requires authentication in production; open in alpha for testing.
+ * Requires authentication.
  */
-export const GET = withErrorHandling(async (request: Request) => {
+export const GET = withRateLimit(withErrorHandling(async (request: Request) => {
+  if (!(await isAuthenticated())) {
+    return Errors.unauthorized('Authentication required to view analytics');
+  }
+
   const url = new URL(request.url);
   const eventName = url.searchParams.get('event');
   const since = url.searchParams.get('since');
@@ -153,4 +158,4 @@ export const GET = withErrorHandling(async (request: Request) => {
     counts,
     funnel,
   });
-});
+}), '/api/analytics/events', RateLimitPresets.GENERAL);

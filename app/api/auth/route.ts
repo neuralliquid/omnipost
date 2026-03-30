@@ -134,11 +134,12 @@ async function handleRegister(request: Request): Promise<NextResponse> {
       const bcrypt = await import('bcryptjs');
       passwordHash = await bcrypt.hash(password, 10);
     } catch {
-      // Fallback for alpha: store password as-is in memory (dev only)
       if (process.env.NODE_ENV === 'production') {
         return Errors.internalServerError('Password hashing unavailable');
       }
-      passwordHash = password;
+      // Dev-only fallback: prefix to mark as unhashed (never accept in prod)
+      console.warn('[Auth] bcryptjs not available — using dev-only unhashed password');
+      passwordHash = `__dev_unhashed__${password}`;
     }
 
     // Create user in-memory for alpha
