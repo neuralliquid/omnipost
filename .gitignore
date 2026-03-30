@@ -61,5 +61,11 @@ infra/*.json
 deploy/
 node-app.zip
 
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+e2e/.auth/
+
 # Retort ephemeral state
 .claude/state/
