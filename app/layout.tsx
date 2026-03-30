@@ -18,19 +18,25 @@ const fontConfig = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://omnipost.dev'),
   title: {
     template: '%s | OmniPost',
-    default: 'OmniPost',
+    default: 'OmniPost — Publish Everywhere, Manage Anywhere',
   },
-  description: 'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+  description:
+    'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter. Schedule, format, and analyze — all from one dashboard.',
   keywords: [
-    'omnipost',
-    'multi-platform',
-    'publishing',
+    'content publishing',
+    'social media management',
+    'multi-platform publishing',
+    'content scheduling',
+    'AI content tools',
+    'cross-platform posting',
+    'social media automation',
     'content creation',
-    'AI',
-    'automation',
-    'social media',
+    'blog publishing',
+    'newsletter management',
+    'omnipost',
   ],
   authors: [{ name: 'OmniPost Team' }],
   creator: 'OmniPost',
@@ -45,11 +51,11 @@ export const metadata: Metadata = {
     siteName: 'OmniPost',
     title: 'OmniPost — Publish Everywhere, Manage Anywhere',
     description:
-      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+      'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter.',
     url: 'https://omnipost.dev',
     images: [
       {
-        url: 'https://omnipost.dev/og-image.png',
+        url: '/og-image.png',
         width: 1200,
         height: 630,
         alt: 'OmniPost — AI-powered multi-platform content publishing',
@@ -61,8 +67,8 @@ export const metadata: Metadata = {
     site: '@omnipost',
     title: 'OmniPost — Publish Everywhere, Manage Anywhere',
     description:
-      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
-    images: ['https://omnipost.dev/og-image.png'],
+      'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter.',
+    images: ['/og-image.png'],
   },
   alternates: {
     canonical: 'https://omnipost.dev',
