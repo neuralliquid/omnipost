@@ -4,13 +4,21 @@
  * POST - Add interaction to a lead
  */
 
-import { NextResponse } from 'next/server';
-import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
 import type { LeadInteraction } from '@/types/lead';
+import {
+  checkAuthAndRateLimit,
+  requireAuthWithUserId,
+  withErrorHandling,
+} from '@/app/api/_utils/middleware';
+import { ErrorResponses } from '@/app/api/_utils/responses';
+import { sanitizeText } from '@/app/api/_utils/sanitize';
 
 // Valid interaction types
-const VALID_INTERACTION_TYPES: LeadInteraction['type'][] = [
+const VALID_INTERACTION_TYPES: readonly LeadInteraction['type'][] = [
   'email_sent',
   'email_opened',
   'email_clicked',
@@ -27,7 +35,18 @@ const VALID_INTERACTION_TYPES: LeadInteraction['type'][] = [
   'status_change',
   'tag_added',
   'tag_removed',
-];
+] as const;
+
+// Zod schema for creating an interaction
+const createInteractionSchema = z.object({
+  type: z.enum(VALID_INTERACTION_TYPES as unknown as [string, ...string[]]),
+  description: z
+    .string()
+    .min(1, 'Description is required')
+    .max(5000, 'Description must be at most 5000 characters')
+    .transform(sanitizeText),
+  metadata: z.record(z.unknown()).optional(),
+});
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -37,82 +56,76 @@ interface RouteParams {
  * GET /api/leads/[id]/interactions
  * Get all interactions for a lead
  */
-export async function GET(_request: Request, { params }: RouteParams) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const GET = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const nextRequest = request as NextRequest;
 
-    const { id } = await params;
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads/[id]/interactions',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
 
-    // Check if lead exists
-    const lead = await leadsClient.getLead(id);
-    if (!lead) {
-      return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
-    }
+  const { id } = await params;
 
-    const interactions = await leadsClient.getInteractions(id);
-
-    return NextResponse.json({
-      interactions,
-      count: interactions.length,
-    });
-  } catch (error) {
-    console.error('Error fetching interactions:', error);
-    return NextResponse.json({ error: 'Failed to fetch interactions' }, { status: 500 });
+  // Check if lead exists
+  const lead = await leadsClient.getLead(id);
+  if (!lead) {
+    return ErrorResponses.notFound('Lead');
   }
-}
+
+  const interactions = await leadsClient.getInteractions(id);
+
+  return NextResponse.json({
+    interactions,
+    count: interactions.length,
+  });
+});
 
 /**
  * POST /api/leads/[id]/interactions
  * Add an interaction to a lead
  */
-export async function POST(request: Request, { params }: RouteParams) {
-  try {
-    if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-    }
+export const POST = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const nextRequest = request as NextRequest;
 
-    const currentUserId = await getCurrentUserId();
-    const { id } = await params;
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads/[id]/interactions',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
 
-    // Check if lead exists
-    const lead = await leadsClient.getLead(id);
-    if (!lead) {
-      return NextResponse.json({ error: 'Lead not found' }, { status: 404 });
-    }
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
-    const body = await request.json();
+  const { id } = await params;
 
-    // Validate required fields
-    if (!body.type) {
-      return NextResponse.json({ error: 'type is required' }, { status: 400 });
-    }
-
-    if (!VALID_INTERACTION_TYPES.includes(body.type)) {
-      return NextResponse.json(
-        {
-          error: `type must be one of: ${VALID_INTERACTION_TYPES.join(', ')}`,
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!body.description?.trim()) {
-      return NextResponse.json({ error: 'description is required' }, { status: 400 });
-    }
-
-    const interaction = await leadsClient.addInteraction(id, {
-      type: body.type,
-      description: body.description.trim(),
-      metadata: body.metadata,
-      createdBy: currentUserId || undefined,
-    });
-
-    return NextResponse.json({ interaction }, { status: 201 });
-  } catch (error) {
-    console.error('Error adding interaction:', error);
-    const message = error instanceof Error ? error.message : 'Failed to add interaction';
-    return NextResponse.json({ error: message }, { status: 500 });
+  // Check if lead exists
+  const lead = await leadsClient.getLead(id);
+  if (!lead) {
+    return ErrorResponses.notFound('Lead');
   }
-}
+
+  const body = await request.json();
+
+  // Validate with Zod
+  const parseResult = createInteractionSchema.safeParse(body);
+  if (!parseResult.success) {
+    const errors = parseResult.error.errors.map(
+      (e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`
+    );
+    return ErrorResponses.badRequest(errors.join('; '));
+  }
+
+  const { type, description, metadata } = parseResult.data;
+
+  const interaction = await leadsClient.addInteraction(id, {
+    type: type as LeadInteraction['type'],
+    description,
+    metadata,
+    createdBy: authResult.userId,
+  });
+
+  return NextResponse.json({ interaction }, { status: 201 });
+});

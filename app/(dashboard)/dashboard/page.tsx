@@ -8,6 +8,7 @@ import { Suspense } from 'react';
 import { engagementMetrics } from '@/data/engagementMetrics';
 import styles from '@/styles/shared.module.css';
 import dashboardStyles from '@/styles/dashboard.module.css';
+import { PageSkeleton } from '@/components/ui/PageSkeleton';
 import { DashboardMetrics } from './DashboardMetrics';
 import { AirtableSection } from './AirtableSection';
 
@@ -35,7 +36,16 @@ export default async function PerformanceDashboardPage() {
       <div className={styles.section}>
         <div className={dashboardStyles.dashboardGrid}>
           {/* Engagement Metrics - Server rendered with client refresh */}
-          <Suspense fallback={<MetricsSkeleton />}>
+          <Suspense fallback={
+            <div className={dashboardStyles.metricsCard}>
+              <div className={dashboardStyles.cardHeader}>
+                <h2>Engagement Metrics</h2>
+              </div>
+              <div className={dashboardStyles.cardContent}>
+                <PageSkeleton rows={3} />
+              </div>
+            </div>
+          }>
             <DashboardMetrics initialMetrics={metrics} />
           </Suspense>
 
@@ -49,24 +59,6 @@ export default async function PerformanceDashboardPage() {
   );
 }
 
-// Loading skeleton for metrics
-function MetricsSkeleton() {
-  return (
-    <div className={dashboardStyles.metricsCard}>
-      <div className={dashboardStyles.cardHeader}>
-        <h2>Engagement Metrics</h2>
-      </div>
-      <div className={dashboardStyles.cardContent}>
-        <div className="animate-pulse space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-3/4" />
-          <div className="h-4 bg-gray-200 rounded w-1/2" />
-          <div className="h-4 bg-gray-200 rounded w-2/3" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // Loading skeleton for Airtable
 function AirtableSkeleton() {
   return (
@@ -75,10 +67,7 @@ function AirtableSkeleton() {
         <h2>Airtable Integration</h2>
       </div>
       <div className={dashboardStyles.cardContent}>
-        <div className="animate-pulse space-y-2">
-          <div className="h-4 bg-gray-200 rounded w-full" />
-          <div className="h-4 bg-gray-200 rounded w-3/4" />
-        </div>
+        <PageSkeleton rows={2} />
       </div>
     </div>
   );

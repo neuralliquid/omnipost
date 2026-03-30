@@ -1,6 +1,7 @@
 # Issues & Technical Debt — OmniPost
 
 > **Audit Date:** December 2024
+> **Updated:** March 30, 2026
 
 ---
 
@@ -39,29 +40,40 @@
 
 ## High Priority Bugs
 
-### BUG-04: Missing Error Boundaries
+### BUG-04: Missing Error Boundaries ✅ FIXED
 
-- **Files:** Multiple components
-- **Impact:** Single error crashes entire app
+- **Files:** `app/(dashboard)/layout.tsx`, `app/(marketing)/layout.tsx`
+- **Issue:** Single component error crashed entire app
+- **Status:** Fixed — wrapped both layouts with ErrorBoundary component
 
 ### BUG-05: Stack Trace Exposure ✅ FIXED
 
 - **File:** `app/api/_utils/errors.ts`
 - **Status:** Fixed — production responses sanitized
 
-### BUG-06: Rate Limiting Race Condition
+### BUG-06: Rate Limiting Race Condition ✅ FIXED
 
 - **File:** `app/api/_utils/rateLimit.ts`
-- **Impact:** Bypasses under heavy load
+- **Issue:** FIFO eviction allowed attackers to flush rate-limited entries by flooding from many IPs
+- **Status:** Fixed — rate-limit-aware eviction that never evicts entries actively blocking abusers
 
-### BUG-07: Overly Restrictive Feature Flags
+### BUG-07: Overly Restrictive Feature Flags ✅ FIXED
 
 - **File:** `app/api/parse/route.ts`
-- **Impact:** Parse endpoint requires unrelated flags
+- **Issue:** Parse endpoint required unrelated flags (scraping, notion, telegram)
+- **Status:** Fixed — validateFeatureFlags() now only checks textParser.enabled
 
-### BUG-08: Missing Token Null Check
+### BUG-08: Missing Token Null Check ✅ FIXED
 
 - **File:** `lib/auth/auth-service.ts`
+- **Issue:** verifyToken() didn't validate decoded payload structure
+- **Status:** Fixed — added null/type checks and required field validation
+
+### BUG-09: Missing Auth Middleware ✅ FIXED
+
+- **File:** `middleware.ts` (new)
+- **Issue:** No Next.js middleware to inject x-user-id/x-user-name/x-user-role headers from JWT
+- **Status:** Fixed — created root middleware.ts that validates JWT and sets identity headers
 
 ---
 

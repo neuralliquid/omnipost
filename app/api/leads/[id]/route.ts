@@ -5,16 +5,73 @@
  * DELETE - Delete lead
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
-import { VALID_LEAD_STATUSES, VALID_LEAD_TEMPERATURES } from '@/app/api/_utils/constants';
 import {
-  requireAuth,
-  validateEnumField,
-  validateEmailFormat,
+  VALID_LEAD_STATUSES,
+  VALID_LEAD_TEMPERATURES,
+} from '@/app/api/_utils/constants';
+import {
+  checkAuthAndRateLimit,
+  requireAuthWithUserId,
   withErrorHandling,
 } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
+import { sanitizeText } from '@/app/api/_utils/sanitize';
+
+// Zod schema for updating a lead
+const updateLeadSchema = z.object({
+  firstName: z
+    .string()
+    .min(1)
+    .max(100)
+    .transform(sanitizeText)
+    .optional(),
+  lastName: z
+    .string()
+    .min(1)
+    .max(100)
+    .transform(sanitizeText)
+    .optional(),
+  title: z
+    .string()
+    .max(200)
+    .transform(sanitizeText)
+    .optional(),
+  contact: z
+    .object({
+      email: z.string().email('Invalid email address').optional(),
+      phone: z.string().max(50).optional(),
+      linkedinUrl: z.string().url('Invalid LinkedIn URL').optional(),
+      twitterHandle: z.string().max(50).optional(),
+      website: z.string().url('Invalid website URL').optional(),
+    })
+    .optional(),
+  company: z
+    .object({
+      name: z.string().max(200).optional(),
+      industry: z.string().max(100).optional(),
+      size: z.string().max(20).optional(),
+      website: z.string().url('Invalid company website URL').optional(),
+      linkedinUrl: z.string().url('Invalid company LinkedIn URL').optional(),
+      location: z.string().max(200).optional(),
+      description: z.string().max(2000).optional(),
+    })
+    .optional(),
+  status: z.enum(VALID_LEAD_STATUSES as unknown as [string, ...string[]]).optional(),
+  temperature: z.enum(VALID_LEAD_TEMPERATURES as unknown as [string, ...string[]]).optional(),
+  assignedTo: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  notes: z
+    .string()
+    .max(10000)
+    .transform(sanitizeText)
+    .optional(),
+  nextFollowUpAt: z.string().datetime({ message: 'Invalid date format' }).optional(),
+  customFields: z.record(z.unknown()).optional(),
+});
 
 interface RouteParams {
   params: Promise<{ id: string }>;
@@ -25,13 +82,22 @@ interface RouteParams {
  * Get a lead by ID with interactions
  */
 export const GET = withErrorHandling(async (request: Request, { params }: RouteParams) => {
-  const authError = await requireAuth();
-  if (authError) return authError;
+  const nextRequest = request as NextRequest;
+
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads/[id]',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
+
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
 
   const lead = await leadsClient.getLead(id);
-  if (!lead) {
+  if (!lead || lead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 
@@ -52,50 +118,52 @@ export const GET = withErrorHandling(async (request: Request, { params }: RouteP
  * Update a lead
  */
 export const PATCH = withErrorHandling(async (request: Request, { params }: RouteParams) => {
-  const authError = await requireAuth();
-  if (authError) return authError;
+  const nextRequest = request as NextRequest;
+
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads/[id]',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
+
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
 
-  // Check if lead exists
+  // Check if lead exists and belongs to the authenticated user
   const existingLead = await leadsClient.getLead(id);
-  if (!existingLead) {
+  if (!existingLead || existingLead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 
   const body = await request.json();
 
-  // Validate status if provided
-  if (body.status) {
-    const statusError = validateEnumField(body.status, VALID_LEAD_STATUSES, 'status');
-    if (statusError) return statusError;
+  // Validate with Zod
+  const parseResult = updateLeadSchema.safeParse(body);
+  if (!parseResult.success) {
+    const errors = parseResult.error.errors.map(
+      (e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`
+    );
+    return ErrorResponses.badRequest(errors.join('; '));
   }
 
-  // Validate temperature if provided
-  if (body.temperature) {
-    const tempError = validateEnumField(body.temperature, VALID_LEAD_TEMPERATURES, 'temperature');
-    if (tempError) return tempError;
-  }
-
-  // Validate email format if provided
-  if (body.contact?.email) {
-    const emailError = validateEmailFormat(body.contact.email);
-    if (emailError) return emailError;
-  }
+  const data = parseResult.data;
 
   const lead = await leadsClient.updateLead(id, {
-    firstName: body.firstName?.trim(),
-    lastName: body.lastName?.trim(),
-    title: body.title?.trim(),
-    contact: body.contact,
-    company: body.company,
-    status: body.status,
-    temperature: body.temperature,
-    assignedTo: body.assignedTo,
-    tags: body.tags,
-    notes: body.notes,
-    nextFollowUpAt: body.nextFollowUpAt,
-    customFields: body.customFields,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    title: data.title,
+    contact: data.contact,
+    company: data.company,
+    status: data.status as typeof VALID_LEAD_STATUSES[number] | undefined,
+    temperature: data.temperature as typeof VALID_LEAD_TEMPERATURES[number] | undefined,
+    assignedTo: data.assignedTo,
+    tags: data.tags,
+    notes: data.notes,
+    nextFollowUpAt: data.nextFollowUpAt,
+    customFields: data.customFields,
   });
 
   return NextResponse.json({ lead });
@@ -105,15 +173,24 @@ export const PATCH = withErrorHandling(async (request: Request, { params }: Rout
  * DELETE /api/leads/[id]
  * Delete a lead
  */
-export const DELETE = withErrorHandling(async (_request: Request, { params }: RouteParams) => {
-  const authError = await requireAuth();
-  if (authError) return authError;
+export const DELETE = withErrorHandling(async (request: Request, { params }: RouteParams) => {
+  const nextRequest = request as NextRequest;
+
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads/[id]',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
+
+  const authResult = await requireAuthWithUserId();
+  if ('error' in authResult) return authResult.error;
 
   const { id } = await params;
 
-  // Check if lead exists
+  // Check if lead exists and belongs to the authenticated user
   const existingLead = await leadsClient.getLead(id);
-  if (!existingLead) {
+  if (!existingLead || existingLead.createdBy !== authResult.userId) {
     return ErrorResponses.notFound('Lead');
   }
 

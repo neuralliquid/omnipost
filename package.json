@@ -22,7 +22,11 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
-    "check-all": "pnpm run type-check && pnpm run lint && pnpm run format:check && pnpm run test"
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "check-all": "pnpm run type-check && pnpm run lint && pnpm run format:check && pnpm run test",
+    "prepare": "husky",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "@prisma/client": "^7.1.0",
@@ -48,6 +52,7 @@
     "zod": "^3.24.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.45.0",
     "@eslint/eslintrc": "^3.3.1",
     "@jest/globals": "^29.7.0",
     "@testing-library/jest-dom": "^6.6.3",
@@ -73,6 +78,8 @@
     "node-fetch": "^3.3.2",
     "prettier": "^3.6.2",
     "ts-jest": "^29.3.2",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
     "typescript": "^5.3.3"
   },
   "author": "JustAGhosT",

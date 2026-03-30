@@ -8,6 +8,7 @@ import '../styles/globals.css';
 import { SeedDataProvider } from '@/components/providers/SeedDataProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/ui';
+import { StructuredData } from '@/components/StructuredData';
 
 // Font configuration using CSS custom properties
 // Note: Google Fonts (Inter) can be enabled when network access is available
@@ -18,19 +19,25 @@ const fontConfig = {
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://omnipost.dev'),
   title: {
     template: '%s | OmniPost',
-    default: 'OmniPost',
+    default: 'OmniPost — Publish Everywhere, Manage Anywhere',
   },
-  description: 'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+  description:
+    'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter. Schedule, format, and analyze — all from one dashboard.',
   keywords: [
-    'omnipost',
-    'multi-platform',
-    'publishing',
+    'content publishing',
+    'social media management',
+    'multi-platform publishing',
+    'content scheduling',
+    'AI content tools',
+    'cross-platform posting',
+    'social media automation',
     'content creation',
-    'AI',
-    'automation',
-    'social media',
+    'blog publishing',
+    'newsletter management',
+    'omnipost',
   ],
   authors: [{ name: 'OmniPost Team' }],
   creator: 'OmniPost',
@@ -43,15 +50,29 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     siteName: 'OmniPost',
-    title: 'OmniPost',
+    title: 'OmniPost — Publish Everywhere, Manage Anywhere',
     description:
-      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+      'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter.',
+    url: 'https://omnipost.dev',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'OmniPost — AI-powered multi-platform content publishing',
+      },
+    ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'OmniPost',
+    site: '@omnipost',
+    title: 'OmniPost — Publish Everywhere, Manage Anywhere',
     description:
-      'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
+      'AI-powered multi-platform content publishing. Create once, publish to every social network, blog, and newsletter.',
+    images: ['/og-image.png'],
+  },
+  alternates: {
+    canonical: 'https://omnipost.dev',
   },
 };
 
@@ -70,6 +91,7 @@ export default function RootLayout({ children }: { readonly children: React.Reac
     <html lang="en" className={fontConfig.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
+        <StructuredData />
       </head>
       <body className={`${fontConfig.className} min-h-screen bg-background font-sans antialiased`}>
         {/* Skip to main content for accessibility */}

@@ -4,11 +4,12 @@
 export { default as Button } from './Button';
 export { default as FormField } from './FormField';
 export { Card, CardHeader, CardBody, CardFooter } from './Card';
-export { default as LoadingSpinner } from './LoadingSpinner';
-export { default as EmptyState } from './EmptyState';
+export { LoadingSpinner } from './LoadingSpinner';
+export { EmptyState } from './EmptyState';
+export { PageSkeleton } from './PageSkeleton';
 export { default as StatusBadge } from './StatusBadge';
 export { ToastProvider, useToast } from './Toast';
-export { default as ErrorBoundary, withErrorBoundary } from './ErrorBoundary';
+export { ErrorBoundary, withErrorBoundary } from './ErrorBoundary';
 export { default as ScrollingHeader } from './ScrollingHeader';
 export { default as SharedFooter } from './SharedFooter';
 

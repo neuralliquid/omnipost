@@ -5,6 +5,7 @@ import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
 import { authService, User } from '../../../lib/auth/auth-service';
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
+import { prisma } from '../../../lib/db/prisma';
 
 /**
  * Validates login input parameters
@@ -88,11 +89,134 @@ async function setAuthCookie(token: string): Promise<void> {
   });
 }
 
+/**
+ * Handles user registration with Prisma/PostgreSQL persistence
+ * @param request Request object
+ * @returns Response with JWT token and user info
+ */
+async function handleRegister(request: Request): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const { username, email, password } = body;
+
+    // Validate required fields
+    const usernameError = validateString(username, 'Username');
+    if (usernameError) {
+      return Errors.badRequest(usernameError);
+    }
+
+    const emailError = validateString(email, 'Email');
+    if (emailError) {
+      return Errors.badRequest(emailError);
+    }
+
+    const passwordError = validateString(password, 'Password');
+    if (passwordError) {
+      return Errors.badRequest(passwordError);
+    }
+
+    // Validate password length
+    if (typeof password === 'string' && password.length < 8) {
+      return Errors.badRequest('Password must be at least 8 characters');
+    }
+
+    if (!prisma) {
+      return Errors.internalServerError('Database is not available');
+    }
+
+    // Dynamic access: Prisma client models are typed at runtime after generation
+    const db = prisma as Record<string, unknown>;
+    const userModel = db.user as {
+      findUnique: (args: { where: { username?: string; email?: string } }) => Promise<{ id: string; username: string; email: string; role: string } | null>;
+      create: (args: { data: { username: string; email: string; passwordHash: string; role: string } }) => Promise<{ id: string; username: string; email: string; role: string }>;
+    };
+
+    // Check if username already exists
+    const existingByUsername = await userModel.findUnique({
+      where: { username },
+    });
+    if (existingByUsername) {
+      return Errors.badRequest('Username already exists');
+    }
+
+    // Check if email already exists
+    const existingByEmail = await userModel.findUnique({
+      where: { email },
+    });
+    if (existingByEmail) {
+      return Errors.badRequest('Email already exists');
+    }
+
+    // Hash password
+    let passwordHash: string;
+    try {
+      const bcrypt = await import('bcryptjs');
+      passwordHash = await bcrypt.hash(password, 10);
+    } catch {
+      if (process.env.NODE_ENV === 'production') {
+        return Errors.internalServerError('Password hashing unavailable');
+      }
+      // Dev-only fallback: prefix to mark as unhashed (never accept in prod)
+      console.warn('[Auth] bcryptjs not available — using dev-only unhashed password');
+      passwordHash = `__dev_unhashed__${password}`;
+    }
+
+    // Create user in database
+    const dbUser = await userModel.create({
+      data: {
+        username,
+        email,
+        passwordHash,
+        role: 'user',
+      },
+    });
+
+    const newUser: User = {
+      id: dbUser.id,
+      username: dbUser.username,
+      role: dbUser.role,
+    };
+
+    // Log registration
+    await logToAuditTrail(await createLogEntry('REGISTER_SUCCESS', { username, userId: newUser.id }));
+
+    // Generate JWT token
+    const token = generateToken(newUser);
+
+    // Set HTTP-only cookie with the token
+    await setAuthCookie(token);
+
+    return NextResponse.json({
+      token,
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role,
+      },
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return Errors.internalServerError('An error occurred during registration');
+  }
+}
+
 // Login endpoint - handle login request
 async function handleLogin(request: Request): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { username, password } = body;
+    const { action, username, password, email } = body;
+
+    // Route to registration if action is 'register'
+    if (action === 'register') {
+      // Re-create the request with the body for handleRegister
+      const registerBody = JSON.stringify({ username, email, password });
+      const registerRequest = new Request(request.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: registerBody,
+      });
+      return handleRegister(registerRequest);
+    }
 
     // Validate input
     const validationError = await validateLoginInput(username, password);
@@ -100,7 +224,7 @@ async function handleLogin(request: Request): Promise<NextResponse> {
       return validationError;
     }
 
-    // Authenticate user
+    // Authenticate user via Prisma and auth service
     const userOrError = await authenticateUser(username, password);
     // Check if authentication returned an error response (NextResponse)
     if (userOrError && typeof userOrError === 'object' && 'status' in userOrError) {

@@ -6,20 +6,43 @@ This document provides an overview of the project's directory structure and orga
 
 ```
 content_creation/
+├── .agentkit/             # Retort project specification
+│   └── spec/             # YAML specification files
+│
+├── .agents/               # Marketing agent configuration
+│   ├── skills/           # 34 marketing skills (Agent Skills Spec format)
+│   ├── context/          # OmniPost product context overlays
+│   └── config/           # Skills manifest
+│
+├── .claude-plugin/        # Plugin marketplace manifest
+│
+├── .cursor/               # Cursor IDE agent configuration
+│   └── rules/            # Cursor agent rules per team (10 .mdc files)
+│
+├── .windsurf/             # Windsurf IDE agent configuration
+│   └── rules/            # Windsurf agent rules per team (10 .md files)
+│
 ├── app/                    # Next.js App Router (Route Handlers)
-│   └── api/               # API routes using App Router pattern
-│       ├── _utils/        # Shared API utilities
-│       ├── audit/         # Audit trail endpoints
-│       ├── auth/          # Authentication endpoints
-│       ├── content/       # Content management endpoints
-│       ├── feature-flags/ # Feature flag endpoints
-│       ├── feedback/      # User feedback endpoints
-│       ├── images/        # Image generation endpoints
-│       ├── notifications/ # Notification system endpoints
-│       ├── parse/         # Text parsing endpoints
-│       ├── platforms/     # Platform integration endpoints
-│       ├── queue/         # Content queue endpoints
-│       └── summarize/     # Text summarization endpoints
+│   ├── api/               # API routes using App Router pattern
+│   │   ├── _utils/        # Shared API utilities
+│   │   ├── analytics/     # Analytics endpoints
+│   │   │   └── events/    # Analytics events API
+│   │   ├── audit/         # Audit trail endpoints
+│   │   ├── auth/          # Authentication endpoints
+│   │   ├── content/       # Content management endpoints
+│   │   ├── feature-flags/ # Feature flag endpoints
+│   │   ├── feedback/      # User feedback endpoints
+│   │   ├── images/        # Image generation endpoints
+│   │   ├── notifications/ # Notification system endpoints
+│   │   ├── parse/         # Text parsing endpoints
+│   │   ├── platforms/     # Platform integration endpoints
+│   │   ├── queue/         # Content queue endpoints
+│   │   └── summarize/     # Text summarization endpoints
+│   ├── (dashboard)/       # Dashboard UI pages
+│   ├── (marketing)/       # Marketing/landing pages
+│   │   └── pricing/       # Pricing page
+│   ├── signup/            # Signup page
+│   └── onboarding/        # Guided onboarding flow
 │
 ├── pages/                 # Next.js Pages Router
 │   ├── api/              # Legacy API routes (being migrated to app/api)
@@ -54,13 +77,16 @@ content_creation/
 │   ├── airtable.ts       # Airtable integration
 │   ├── api-client.ts     # API client utilities
 │   ├── featureFlags.ts   # Feature flags management
+│   ├── analytics/        # AARRR analytics event tracking
 │   ├── auth/             # Authentication services
-│   ├── clients/          # External API clients (e.g., Hugging Face)
+│   ├── clients/          # External API clients
+│   │   └── sluice-gateway.ts  # Sluice AI gateway client
 │   ├── config/           # Platform and app configuration
 │   ├── data/             # Data access layer (e.g., Airtable)
 │   └── storage/          # Storage utilities (e.g., token storage)
 │
 ├── hooks/                 # React custom hooks
+│   ├── useAnalytics.ts   # Analytics tracking hook
 │   ├── useAutomationTools.ts
 │   ├── useEngagementMetrics.ts
 │   ├── useReviewProcess.ts
@@ -92,10 +118,12 @@ content_creation/
 │   │   └── next-api-best-practices.md
 │   ├── guides/           # Developer guides and best practices
 │   │   └── next-best-practices/
+│   ├── launch/           # Launch content assets
 │   └── archived/         # Historical/implementation documentation
 │
 ├── infra/                 # Infrastructure as Code
 │   ├── main.bicep        # Azure Bicep template
+│   ├── sluice.bicep      # Sluice AI gateway infrastructure
 │   ├── naming.sh         # Resource naming script
 │   └── parameters.json   # Bicep parameters
 │
@@ -108,9 +136,35 @@ content_creation/
 │   ├── integration/      # Integration tests
 │   └── lib/              # Library tests
 │
+├── middleware.ts           # JWT auth middleware
+├── CLAUDE.md              # Primary Claude Code agent entry point
+├── AGENTS.md              # Cross-agent discovery
+├── AGENT_TEAMS.md         # Team documentation
+├── QUALITY_GATES.md       # Quality gate definitions
+│
 ```
 
 ## Key Directories Explained
+
+### `/.agentkit/spec/` - Retort Project Specification
+
+Contains YAML specification files for the Retort project spec, defining the product and agent behaviors.
+
+### `/.agents/` - Marketing Agent Configuration
+
+Houses the marketing automation agent layer:
+
+- **`skills/`**: 34 marketing skills in Agent Skills Spec format, organized by category (lead management, email sequences, content strategy, engagement, campaign management, analytics)
+- **`context/`**: OmniPost product context overlays for agent grounding
+- **`config/`**: Skills manifest for discovery and registration
+
+### `/.claude-plugin/` - Plugin Marketplace
+
+Plugin marketplace manifest for Claude Code integration.
+
+### `/.cursor/rules/` and `/.windsurf/rules/` - IDE Agent Rules
+
+Per-team agent rules for Cursor (10 `.mdc` files) and Windsurf (10 `.md` files) IDEs, ensuring consistent AI-assisted development across teams.
 
 ### `/app/api/` - Modern API Routes
 
@@ -122,6 +176,19 @@ This directory contains the new API route handlers following the Next.js App Rou
 - Better TypeScript support
 - More flexible middleware options
 - Located in `_utils/` subfolder for shared logic
+
+### `/app/api/analytics/events/` - Analytics Events API
+
+API endpoint for ingesting AARRR analytics events (Acquisition, Activation, Retention, Revenue, Referral).
+
+### `/app/signup/` and `/app/onboarding/` - User Onboarding
+
+- **`signup/`**: User signup page
+- **`onboarding/`**: Guided onboarding flow for new users
+
+### `/app/(marketing)/pricing/` - Pricing Page
+
+Public-facing pricing page within the marketing route group.
 
 ### `/pages/` - Pages and Legacy API Routes
 
@@ -141,8 +208,9 @@ Each component folder typically includes an `index.ts` for clean exports.
 
 Contains reusable business logic, services, and utilities:
 
+- **`analytics/`**: AARRR analytics event tracking (Acquisition, Activation, Retention, Revenue, Referral)
 - **`auth/`**: Authentication and authorization services
-- **`clients/`**: External API clients
+- **`clients/`**: External API clients, including `sluice-gateway.ts` for the Sluice AI gateway
 - **`config/`**: Platform and app configuration
 - **`data/`**: Data access and persistence logic
 - **`storage/`**: Storage abstractions
@@ -162,7 +230,21 @@ Centralized type definitions for better type safety and code sharing.
 
 ### `/infra/` - Infrastructure
 
-Azure infrastructure definitions using Bicep templates for deployment.
+Azure infrastructure definitions using Bicep templates for deployment:
+
+- **`main.bicep`**: Primary Azure resource definitions
+- **`sluice.bicep`**: Sluice AI gateway infrastructure
+
+### `/middleware.ts` - JWT Auth Middleware
+
+Root-level Next.js middleware for JWT-based authentication, protecting routes that require authorization.
+
+### Root Agent Configuration Files
+
+- **`CLAUDE.md`**: Primary Claude Code agent entry point with project context and critical rules
+- **`AGENTS.md`**: Cross-agent discovery file for multi-agent coordination
+- **`AGENT_TEAMS.md`**: Team ownership documentation mapping teams to code areas
+- **`QUALITY_GATES.md`**: Quality gate definitions for CI/CD and code review
 
 ### `/docs/` - Documentation
 
@@ -171,6 +253,7 @@ Project documentation organized by type:
 - **`ARCHITECTURE.md`**: Comprehensive technical architecture guide
 - **`api/`**: API-specific documentation and migration guides
 - **`guides/`**: Developer guides and best practices
+- **`launch/`**: Launch content assets (blog posts, announcements, etc.)
 - **`archived/`**: Historical documentation from previous analysis phases
 
 ## File Naming Conventions

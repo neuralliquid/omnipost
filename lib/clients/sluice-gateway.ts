@@ -76,7 +76,7 @@ export function shouldFallbackToDirectCalls(): boolean {
  */
 export async function gatewayPost<T = unknown>(
   path: string,
-  body: object,
+  body: Record<string, unknown>,
   options: SluiceRequestOptions = {}
 ): Promise<SluiceResponse<T>> {
   const config = getGatewayConfig();
@@ -91,6 +91,13 @@ export async function gatewayPost<T = unknown>(
   const { timeoutMs = 30000, operation = 'unknown' } = options;
   const url = `${config.url}${path}`;
 
+  // Validate URL before fetching
+  try {
+    new URL(url);
+  } catch {
+    return { success: false, error: 'Invalid gateway URL', statusCode: 502 };
+  }
+
   const controller = new globalThis.AbortController();
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -100,7 +107,7 @@ export async function gatewayPost<T = unknown>(
       'X-Sluice-Operation': operation,
     };
 
-    if (config.apiKey) {
+    if (config.apiKey.trim()) {
       headers['Authorization'] = `Bearer ${config.apiKey}`;
     }
 
@@ -112,10 +119,10 @@ export async function gatewayPost<T = unknown>(
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
+      const errorText = await response.text().catch(() => '');
       return {
         success: false,
-        error: `Gateway request failed: ${response.statusText}`,
+        error: `Gateway request failed: ${response.statusText}${errorText ? ` — ${errorText.slice(0, 200)}` : ''}`,
         statusCode: response.status,
         costMetadata: tryParseCostHeader(response),
       };

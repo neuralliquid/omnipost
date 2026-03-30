@@ -69,6 +69,16 @@ export interface AIGatewayFeatureFlag {
   fallbackToDirectCalls: boolean;
 }
 
+export interface ExternalIdentityProviderFeatureFlag {
+  enabled: boolean;
+  apiUrl?: string;
+}
+
+export interface PhoenixFlowFeatureFlag {
+  enabled: boolean;
+  mcpUrl?: string;
+}
+
 // Define the base feature flags interface without index signature
 interface BaseFeatureFlags {
   textParser: TextParserFeatureFlag;
@@ -87,6 +97,10 @@ interface BaseFeatureFlags {
   crmDashboard: CrmDashboardFeatureFlag;
   // AI Gateway (Sluice)
   aiGateway: AIGatewayFeatureFlag;
+  // External Identity Provider
+  externalIdentityProvider: ExternalIdentityProviderFeatureFlag;
+  // Phoenix-Flow Task Management (MCP)
+  phoenixFlow: PhoenixFlowFeatureFlag;
 }
 
 // Extend the base interface with an index signature for dynamic access
@@ -207,6 +221,14 @@ const featureFlags: FeatureFlags = {
   aiGateway: {
     enabled: false,
     fallbackToDirectCalls: true,
+  },
+  // External Identity Provider - disabled by default
+  externalIdentityProvider: {
+    enabled: false,
+  },
+  // Phoenix-Flow Task Management - disabled by default
+  phoenixFlow: {
+    enabled: false,
   },
 };
 /**

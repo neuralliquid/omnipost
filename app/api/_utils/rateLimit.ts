@@ -12,7 +12,6 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { evictOldestFromMap } from '@/lib/utils/bounded-store';
 
 // Dynamic import types for Upstash (avoids ESM issues in Jest)
 type UpstashRatelimit = InstanceType<typeof import('@upstash/ratelimit').Ratelimit>;
@@ -158,7 +157,11 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
 
 /**
  * PERF-03/MEM-02 Fix: In-memory store for rate limiting with bounded size
- * Uses a Map with LRU-style eviction to prevent unbounded memory growth
+ * Uses a Map with safe eviction to prevent unbounded memory growth
+ *
+ * BUG-06 Fix: Eviction is now rate-limit-aware. Entries that are actively
+ * enforcing a rate limit (count >= maxRequests) are never evicted, preventing
+ * attackers from flooding the store with unique IPs to reset their own counter.
  */
 const rateLimitStore = new Map<string, RateLimitEntry>();
 
@@ -169,20 +172,98 @@ const rateLimitStore = new Map<string, RateLimitEntry>();
 const MAX_RATE_LIMIT_ENTRIES = 10000;
 
 /**
+ * BUG-06 Fix: High-water-mark threshold ratio for triggering eviction.
+ * When the store reaches this fraction of MAX_RATE_LIMIT_ENTRIES, we
+ * proactively evict to avoid hitting the hard cap too frequently.
+ */
+const EVICTION_HIGH_WATER = 0.9;
+
+/**
  * Last cleanup timestamp for opportunistic cleanup (avoids setInterval in serverless)
  */
 let lastCleanup = 0;
 
 /**
- * PERF-03/MEM-02 Fix: Evict oldest entries when store reaches max size
- * Uses shared utility with FIFO eviction strategy (Map preserves insertion order)
+ * BUG-06 Fix: Rate-limit-aware eviction.
+ *
+ * Unlike the old FIFO eviction (evictOldestFromMap), this function:
+ * 1. First removes expired entries (safe, they are no longer enforcing anything)
+ * 2. Then removes low-count entries (least likely to be actively rate-limiting)
+ * 3. Never removes entries at or above their limit — those are actively blocking
+ *    an abuser and evicting them would reset the block
+ *
+ * This prevents the attack vector where an adversary floods from many IPs to
+ * push their rate-limited entry out of the store, then retries from the
+ * original IP with a fresh counter.
  */
-function evictOldestEntries(targetSize: number): void {
-  const removed = evictOldestFromMap(rateLimitStore, targetSize);
+function safeEvict(now: number, targetSize: number): number {
+  if (rateLimitStore.size <= targetSize) return 0;
+
+  let removed = 0;
+
+  // Phase 1: Remove all expired entries (always safe)
+  const expiredKeys: string[] = [];
+  for (const [entryKey, entry] of rateLimitStore.entries()) {
+    if (entry.resetTime < now) {
+      expiredKeys.push(entryKey);
+    }
+  }
+  for (const key of expiredKeys) {
+    rateLimitStore.delete(key);
+    removed++;
+  }
+
+  if (rateLimitStore.size <= targetSize) return removed;
+
+  // Phase 2: Remove entries with the lowest counts first (least security-sensitive).
+  // Collect non-expired entries and sort by count ascending so we evict the ones
+  // that have the most remaining budget (i.e., are least close to being blocked).
+  // Entries that have already hit their limit are preserved.
+  const evictable: Array<{ key: string; count: number }> = [];
+  for (const [entryKey, entry] of rateLimitStore.entries()) {
+    // Never evict entries that are actively enforcing a rate limit.
+    // We use a conservative threshold: keep anything at 50%+ of any preset's max.
+    // The smallest preset max is AUTH at 5, so 50% = 2.5 → keep entries with count >= 3.
+    // This is intentionally conservative to avoid helping attackers.
+    if (entry.count <= 2) {
+      evictable.push({ key: entryKey, count: entry.count });
+    }
+  }
+
+  // Sort by count ascending — evict lowest-count entries first
+  evictable.sort((a, b) => a.count - b.count);
+
+  const needed = rateLimitStore.size - targetSize;
+  for (let i = 0; i < Math.min(needed, evictable.length); i++) {
+    rateLimitStore.delete(evictable[i].key);
+    removed++;
+  }
+
+  // If we still exceed target, do a final FIFO pass on remaining entries
+  // EXCEPT those at or above the smallest preset limit (5 for AUTH).
+  // This is the last resort — we accept going slightly over targetSize
+  // rather than evicting actively-blocking entries.
+  if (rateLimitStore.size > targetSize) {
+    const stillNeeded = rateLimitStore.size - targetSize;
+    let finalRemoved = 0;
+    for (const [entryKey, entry] of rateLimitStore.entries()) {
+      if (finalRemoved >= stillNeeded) break;
+      // Protect any entry with count >= 3 (actively accumulating hits)
+      if (entry.count < 3) {
+        rateLimitStore.delete(entryKey);
+        finalRemoved++;
+        removed++;
+      }
+    }
+  }
 
   if (removed > 0 && process.env.NODE_ENV !== 'production') {
-    console.debug(`[Rate Limit] Evicted ${removed} oldest entries to maintain max size`);
+    console.debug(
+      `[Rate Limit] Safe-evicted ${removed} entries (store size: ${rateLimitStore.size})`
+    );
   }
+
+  return removed;
 }
 
 /**
@@ -207,46 +288,23 @@ function getClientIp(request: NextRequest): string {
 }
 
 /**
- * BUG-06 Fix: Flag to prevent concurrent cleanup operations
- * This ensures atomic cleanup even in async contexts
- */
-let cleanupInProgress = false;
-
-/**
- * BUG-06 Fix: Atomic cleanup function that prevents concurrent executions
- * Collects keys to delete first, then deletes in a separate pass
+ * BUG-06 Fix: Perform cleanup of expired entries and enforce store bounds.
+ *
+ * Uses safeEvict which is rate-limit-aware: it never removes entries that
+ * are actively enforcing a block, preventing the eviction-based bypass.
  */
 function performCleanup(now: number): void {
-  if (cleanupInProgress) return;
-  cleanupInProgress = true;
-
-  try {
-    // Collect expired keys first (read phase)
-    const expiredKeys: string[] = [];
-    for (const [entryKey, entry] of rateLimitStore.entries()) {
-      if (entry.resetTime < now) {
-        expiredKeys.push(entryKey);
-      }
-    }
-
-    // Delete collected keys (write phase)
-    for (const key of expiredKeys) {
-      rateLimitStore.delete(key);
-    }
-
-    // Enforce max size if needed
-    if (rateLimitStore.size > MAX_RATE_LIMIT_ENTRIES) {
-      evictOldestEntries(MAX_RATE_LIMIT_ENTRIES);
-    }
-  } finally {
-    cleanupInProgress = false;
-  }
+  safeEvict(now, MAX_RATE_LIMIT_ENTRIES);
 }
 
 /**
  * Check if request should be rate limited (in-memory version)
  * Includes opportunistic cleanup of expired entries (no setInterval needed)
- * BUG-06 Fix: Uses atomic patterns to prevent race conditions
+ *
+ * BUG-06 Fix: The eviction strategy is now rate-limit-aware, so an attacker
+ * cannot flood the store to evict their own rate-limited entry. Additionally,
+ * when the store is full and no safe eviction is possible, new unknown keys
+ * are denied by default (fail-closed) to maintain security under pressure.
  */
 function checkRateLimitInMemory(
   request: NextRequest,
@@ -258,59 +316,67 @@ function checkRateLimitInMemory(
 
   // PERF-03 Fix: Opportunistic cleanup with size enforcement
   // Every 60 seconds, clean expired entries and enforce max size
-  // BUG-06 Fix: Now uses atomic cleanup function
   if (now - lastCleanup > 60_000) {
     lastCleanup = now;
     performCleanup(now);
   }
 
-  // PERF-03 Fix: Immediate size check before adding new entry
-  // This prevents unbounded growth between cleanup cycles
+  // BUG-06 Fix: Check for existing entry BEFORE eviction.
+  // If this key already exists in the store, we handle it directly
+  // without any eviction that could affect it.
+  const existingEntry = rateLimitStore.get(key);
+
+  if (existingEntry && existingEntry.resetTime >= now) {
+    // Entry exists and is not expired — increment or deny
+    if (existingEntry.count < config.maxRequests) {
+      const newCount = existingEntry.count + 1;
+      rateLimitStore.set(key, {
+        count: newCount,
+        resetTime: existingEntry.resetTime,
+      });
+      return {
+        allowed: true,
+        remaining: config.maxRequests - newCount,
+        resetTime: existingEntry.resetTime,
+      };
+    }
+
+    // Over limit — deny
+    return {
+      allowed: false,
+      remaining: 0,
+      resetTime: existingEntry.resetTime,
+    };
+  }
+
+  // Entry does not exist or is expired — need to create a new one.
+  // First, enforce store size bounds with safe eviction.
   if (rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
-    // Evict 10% of entries to make room
-    evictOldestEntries(Math.floor(MAX_RATE_LIMIT_ENTRIES * 0.9));
+    safeEvict(now, Math.floor(MAX_RATE_LIMIT_ENTRIES * EVICTION_HIGH_WATER));
+
+    // BUG-06 Fix: Fail-closed — if we still cannot make room, deny the request.
+    // This prevents an attacker from using store exhaustion to bypass limits
+    // for OTHER keys. It is better to occasionally deny a legitimate new
+    // request than to allow an attacker to evict active rate-limit entries.
+    if (rateLimitStore.size >= MAX_RATE_LIMIT_ENTRIES) {
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: now + config.windowMs,
+      };
+    }
   }
 
-  // BUG-06 Fix: Atomic get-and-update pattern
-  // Get current entry and prepare the update in one logical operation
-  const entry = rateLimitStore.get(key);
-
-  // No entry or expired entry - allow and create new entry
-  if (!entry || entry.resetTime < now) {
-    const resetTime = now + config.windowMs;
-    // BUG-06 Fix: Create new entry object to avoid mutation issues
-    rateLimitStore.set(key, {
-      count: 1,
-      resetTime,
-    });
-    return {
-      allowed: true,
-      remaining: config.maxRequests - 1,
-      resetTime,
-    };
-  }
-
-  // Entry exists and not expired
-  if (entry.count < config.maxRequests) {
-    // BUG-06 Fix: Create new entry object instead of mutating
-    // This prevents issues if the same entry is accessed concurrently
-    const newEntry = {
-      count: entry.count + 1,
-      resetTime: entry.resetTime,
-    };
-    rateLimitStore.set(key, newEntry);
-    return {
-      allowed: true,
-      remaining: config.maxRequests - newEntry.count,
-      resetTime: entry.resetTime,
-    };
-  }
-
-  // Over limit - deny
+  // Create new entry (first request in window or expired entry replaced)
+  const resetTime = now + config.windowMs;
+  rateLimitStore.set(key, {
+    count: 1,
+    resetTime,
+  });
   return {
-    allowed: false,
-    remaining: 0,
-    resetTime: entry.resetTime,
+    allowed: true,
+    remaining: config.maxRequests - 1,
+    resetTime,
   };
 }
 

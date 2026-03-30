@@ -4,7 +4,9 @@
  * POST - Create new lead
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
 import type { LeadFilter } from '@/types/lead';
 import {
@@ -13,22 +15,76 @@ import {
   VALID_LEAD_TEMPERATURES,
 } from '@/app/api/_utils/constants';
 import {
-  requireAuth,
+  checkAuthAndRateLimit,
   requireAuthWithUserId,
-  validateRequiredFields,
-  validateEnumField,
-  validateEmailFormat,
   withErrorHandling,
   parseEnumFilter,
 } from '@/app/api/_utils/middleware';
+import { ErrorResponses } from '@/app/api/_utils/responses';
+import { sanitizeText } from '@/app/api/_utils/sanitize';
+
+// Zod schema for creating a lead
+const createLeadSchema = z.object({
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(100, 'First name must be at most 100 characters')
+    .transform(sanitizeText),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(100, 'Last name must be at most 100 characters')
+    .transform(sanitizeText),
+  title: z
+    .string()
+    .max(200, 'Title must be at most 200 characters')
+    .transform(sanitizeText)
+    .optional(),
+  contact: z
+    .object({
+      email: z.string().email('Invalid email address').optional(),
+      phone: z.string().max(50).optional(),
+      linkedinUrl: z.string().url('Invalid LinkedIn URL').optional(),
+      twitterHandle: z.string().max(50).optional(),
+      website: z.string().url('Invalid website URL').optional(),
+    })
+    .optional(),
+  company: z
+    .object({
+      name: z.string().max(200).optional(),
+      industry: z.string().max(100).optional(),
+      size: z.string().max(20).optional(),
+      website: z.string().url('Invalid company website URL').optional(),
+      linkedinUrl: z.string().url('Invalid company LinkedIn URL').optional(),
+      location: z.string().max(200).optional(),
+      description: z.string().max(2000).optional(),
+    })
+    .optional(),
+  source: z.enum(VALID_LEAD_SOURCES as unknown as [string, ...string[]]),
+  sourceDetails: z.string().max(500).optional(),
+  tags: z.array(z.string()).optional(),
+  notes: z
+    .string()
+    .max(10000, 'Notes must be at most 10000 characters')
+    .transform(sanitizeText)
+    .optional(),
+  customFields: z.record(z.unknown()).optional(),
+  linkedinData: z.record(z.unknown()).optional(),
+});
 
 /**
  * GET /api/leads
  * List leads with optional filters
  */
 export const GET = withErrorHandling(async (request: Request) => {
-  const authError = await requireAuth();
-  if (authError) return authError;
+  const nextRequest = request as NextRequest;
+
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
 
   const { searchParams } = new URL(request.url);
 
@@ -49,16 +105,16 @@ export const GET = withErrorHandling(async (request: Request) => {
   if (search) filter.search = search;
 
   const scoreMin = searchParams.get('scoreMin');
-  if (scoreMin) filter.scoreMin = Number.parseInt(scoreMin, 10);
+  if (scoreMin) filter.scoreMin = Math.max(0, Math.min(Number.parseInt(scoreMin, 10), 1000));
 
   const scoreMax = searchParams.get('scoreMax');
-  if (scoreMax) filter.scoreMax = Number.parseInt(scoreMax, 10);
+  if (scoreMax) filter.scoreMax = Math.max(0, Math.min(Number.parseInt(scoreMax, 10), 1000));
 
   const inSequence = searchParams.get('inSequence');
   if (inSequence) filter.inSequence = inSequence;
 
   // Pagination
-  const page = Number.parseInt(searchParams.get('page') || '1', 10);
+  const page = Math.min(Number.parseInt(searchParams.get('page') || '1', 10), 1000);
   const pageSize = Number.parseInt(searchParams.get('pageSize') || '20', 10);
   const sortField = searchParams.get('sortField') || 'CreatedAt';
   const sortDirectionParam = searchParams.get('sortDirection') || 'desc';
@@ -83,38 +139,44 @@ export const GET = withErrorHandling(async (request: Request) => {
  * Create a new lead
  */
 export const POST = withErrorHandling(async (request: Request) => {
+  const nextRequest = request as NextRequest;
+
+  const checkError = await checkAuthAndRateLimit(
+    nextRequest,
+    '/api/leads',
+    RateLimitPresets.GENERAL
+  );
+  if (checkError) return checkError;
+
   const authResult = await requireAuthWithUserId();
   if ('error' in authResult) return authResult.error;
 
   const body = await request.json();
 
-  // Validate required fields
-  const requiredError = validateRequiredFields(body, ['firstName', 'lastName', 'source']);
-  if (requiredError) return requiredError;
-
-  // Validate source
-  const sourceError = validateEnumField(body.source, VALID_LEAD_SOURCES, 'source');
-  if (sourceError) return sourceError;
-
-  // Validate email format if provided
-  if (body.contact?.email) {
-    const emailError = validateEmailFormat(body.contact.email);
-    if (emailError) return emailError;
+  // Validate with Zod
+  const parseResult = createLeadSchema.safeParse(body);
+  if (!parseResult.success) {
+    const errors = parseResult.error.errors.map(
+      (e: z.ZodIssue) => `${e.path.join('.')}: ${e.message}`
+    );
+    return ErrorResponses.badRequest(errors.join('; '));
   }
+
+  const data = parseResult.data;
 
   const lead = await leadsClient.createLead(
     {
-      firstName: body.firstName.trim(),
-      lastName: body.lastName.trim(),
-      title: body.title?.trim(),
-      contact: body.contact,
-      company: body.company,
-      source: body.source,
-      sourceDetails: body.sourceDetails,
-      tags: body.tags,
-      notes: body.notes,
-      customFields: body.customFields,
-      linkedinData: body.linkedinData,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      title: data.title,
+      contact: data.contact,
+      company: data.company,
+      source: data.source as typeof VALID_LEAD_SOURCES[number],
+      sourceDetails: data.sourceDetails,
+      tags: data.tags,
+      notes: data.notes,
+      customFields: data.customFields,
+      linkedinData: data.linkedinData,
     },
     authResult.userId
   );

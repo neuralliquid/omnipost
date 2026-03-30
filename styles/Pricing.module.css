@@ -1,0 +1,524 @@
+/* ==========================================================================
+   Pricing Page Styles
+   ========================================================================== */
+
+/* ---------- Page Container ---------- */
+.page {
+  padding: 4rem 1.5rem;
+  background-color: var(--color-bg-secondary, #f9fafb);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary, #1a1a2e);
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: var(--color-text-secondary, #4a5568);
+  max-width: 600px;
+  margin: 0 auto 2rem;
+  line-height: 1.6;
+}
+
+/* ---------- Billing Toggle ---------- */
+.toggleWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-bottom: 3rem;
+}
+
+.toggleLabel {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--color-text-secondary, #4a5568);
+  cursor: pointer;
+  transition: color 150ms ease;
+}
+
+.toggleLabelActive {
+  color: var(--color-text-primary, #1a1a2e);
+  font-weight: 600;
+}
+
+.toggle {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background-color: var(--color-border-dark, #cbd5e0);
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background-color 200ms ease;
+}
+
+.toggle[aria-checked='true'] {
+  background-color: var(--color-primary, #4a6491);
+}
+
+.toggleKnob {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  background: var(--color-bg-primary, #ffffff);
+  border-radius: 50%;
+  transition: transform 200ms ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.toggle[aria-checked='true'] .toggleKnob {
+  transform: translateX(24px);
+}
+
+.savingsBadge {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-success, #10b981);
+  background-color: var(--color-success-light, #d1fae5);
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+/* ---------- Trust Signals ---------- */
+.trustSignals {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+}
+
+.trustItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #4a5568);
+}
+
+.trustIcon {
+  color: var(--color-success, #10b981);
+  font-size: 1.1rem;
+}
+
+/* ---------- Pricing Cards Grid ---------- */
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+  align-items: stretch;
+}
+
+/* ---------- Pricing Card ---------- */
+.card {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+
+.card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.cardHighlighted {
+  border: 2px solid var(--color-primary, #4a6491);
+  position: relative;
+  transform: scale(1.03);
+  box-shadow: 0 8px 32px rgba(74, 100, 145, 0.15);
+}
+
+.cardHighlighted:hover {
+  box-shadow: 0 12px 40px rgba(74, 100, 145, 0.2);
+}
+
+.popularBadge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: var(--color-primary, #4a6491);
+  color: var(--color-text-inverse, #ffffff);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.35rem 1rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.cardName {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+  margin: 0 0 0.5rem;
+}
+
+.cardTarget {
+  font-size: 0.85rem;
+  color: var(--color-text-muted, #718096);
+  margin: 0 0 1.5rem;
+}
+
+.priceWrapper {
+  margin-bottom: 1.5rem;
+}
+
+.priceAmount {
+  font-size: 2.75rem;
+  font-weight: 800;
+  color: var(--color-text-primary, #1a1a2e);
+  line-height: 1;
+}
+
+.pricePeriod {
+  font-size: 0.95rem;
+  color: var(--color-text-muted, #718096);
+  margin-left: 0.25rem;
+}
+
+.priceAnnualNote {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--color-text-muted, #718096);
+  margin-top: 0.35rem;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #4a5568);
+  line-height: 1.4;
+}
+
+.featureIcon {
+  color: var(--color-success, #10b981);
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  text-align: center;
+}
+
+.ctaButton:focus-visible {
+  outline: 2px solid var(--color-primary, #4a6491);
+  outline-offset: 2px;
+}
+
+.ctaPrimary {
+  background-color: var(--color-success, #10b981);
+  color: var(--color-text-inverse, #ffffff);
+}
+
+.ctaPrimary:hover {
+  background-color: var(--color-success-dark, #059669);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.ctaSecondary {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.ctaSecondary:hover {
+  background-color: var(--color-border, #e2e8f0);
+  transform: translateY(-1px);
+}
+
+/* ---------- Enterprise Row ---------- */
+.enterpriseRow {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 4rem;
+}
+
+.enterpriseInfo {
+  flex: 1;
+}
+
+.enterpriseName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+  margin: 0 0 0.5rem;
+}
+
+.enterpriseDescription {
+  font-size: 1rem;
+  color: var(--color-text-secondary, #4a5568);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+}
+
+.enterpriseFeatures {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.enterpriseFeatureItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #4a5568);
+}
+
+.enterpriseCta {
+  flex-shrink: 0;
+}
+
+.ctaOutline {
+  background: transparent;
+  color: var(--color-primary, #4a6491);
+  border: 2px solid var(--color-primary, #4a6491);
+}
+
+.ctaOutline:hover {
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+  transform: translateY(-1px);
+}
+
+/* ---------- Feature Comparison Table ---------- */
+.comparisonSection {
+  margin-bottom: 4rem;
+}
+
+.sectionTitle {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+  text-align: center;
+  margin: 0 0 2rem;
+}
+
+.comparisonTable {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-bg-card, #ffffff);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.comparisonTable thead th {
+  background-color: var(--color-bg-tertiary, #f3f4f6);
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--color-text-primary, #1a1a2e);
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+}
+
+.comparisonTable thead th:first-child {
+  text-align: left;
+}
+
+.comparisonTable tbody td {
+  padding: 0.85rem 1rem;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary, #4a5568);
+  border-bottom: 1px solid var(--color-border-light, #edf2f7);
+  text-align: center;
+}
+
+.comparisonTable tbody td:first-child {
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-text-primary, #1a1a2e);
+}
+
+.comparisonTable tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.checkMark {
+  color: var(--color-success, #10b981);
+}
+
+.dashMark {
+  color: var(--color-text-muted, #718096);
+}
+
+.highlightCol {
+  background-color: var(--color-primary-50, rgba(74, 100, 145, 0.05));
+}
+
+/* ---------- FAQ Section ---------- */
+.faqSection {
+  margin-bottom: 2rem;
+}
+
+.faqList {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.faqItem {
+  background: var(--color-bg-card, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.faqQuestion {
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary, #1a1a2e);
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: background-color 150ms ease;
+}
+
+.faqQuestion:hover {
+  background-color: var(--color-bg-secondary, #f9fafb);
+}
+
+.faqQuestion:focus-visible {
+  outline: 2px solid var(--color-primary, #4a6491);
+  outline-offset: -2px;
+}
+
+.faqChevron {
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+  color: var(--color-text-muted, #718096);
+}
+
+.faqChevronOpen {
+  transform: rotate(180deg);
+}
+
+.faqAnswer {
+  padding: 0 1.5rem 1.25rem;
+  font-size: 0.95rem;
+  color: var(--color-text-secondary, #4a5568);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 960px) {
+  .cardsGrid {
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .cardHighlighted {
+    transform: none;
+    order: -1;
+  }
+
+  .enterpriseRow {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .enterpriseFeatures {
+    justify-content: center;
+  }
+
+  .title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 2.5rem 1rem;
+  }
+
+  .trustSignals {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .comparisonTable {
+    font-size: 0.8rem;
+  }
+
+  .comparisonTable thead th,
+  .comparisonTable tbody td {
+    padding: 0.65rem 0.5rem;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

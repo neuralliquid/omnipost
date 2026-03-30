@@ -32,25 +32,43 @@ Server-side API routes, business logic services, scheduling, and configuration.
 - Define explicit types for function parameters and return values.
 - Use interfaces for object shapes, types for unions/primitives.
 
+## Testing Requirements
+
+- Unit test validation logic and business logic separately.
+- Integration test with auth middleware (mock JWT).
+- Mock external services (Prisma, AI providers).
+- Test all error paths (401, 400, 404, 500).
+- Target 80%+ coverage per route file.
+
+## Database
+
+- Use Prisma `select()` to avoid fetching unnecessary fields.
+- Use `include()` for relations instead of separate queries.
+- Verify no N+1 queries with `PrismaClient({ log: ['query'] })`.
+- Wrap multi-step operations in `prisma.$transaction()`.
+
 ## Pattern Reference
 
 ```typescript
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
+import { withErrorHandling } from '@/app/api/_utils/errors';
+import { Errors } from '@/app/api/_utils/errors';
 import { validateAndSanitize } from '@/app/api/_utils/sanitize';
-import { isAuthenticated } from '@/middleware';
+import { isAuthenticated } from '@/app/api/_utils/auth';
 
 export const POST = withRateLimit(
-  async (request: Request) => {
+  withErrorHandling(async (request: Request) => {
     if (!(await isAuthenticated())) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      return Errors.unauthorized('Authentication required');
     }
     const body = await request.json();
     const validation = validateAndSanitize(schema, body);
     if (!validation.success) {
-      return Response.json({ error: 'Invalid input', details: validation.errors }, { status: 400 });
+      return Errors.badRequest('Invalid input: ' + validation.errors.join(', '));
     }
-    return Response.json({ success: true, data: result });
-  },
+    const result = await processData(validation.data);
+    return Response.json({ success: true, data: result }, { status: 201 });
+  }),
   '/api/route-path',
   RateLimitPresets.GENERAL
 );

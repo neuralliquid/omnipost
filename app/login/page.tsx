@@ -12,6 +12,13 @@ import Header from '@/components/ui/Header';
 import styles from '@/styles/LoginForm.module.css';
 import pageStyles from './page.module.css';
 
+interface AuthProviderInfo {
+  id: string;
+  name: string;
+  type: string;
+  icon?: string;
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const { login, isAuthenticated, isLoading } = useAuth();
@@ -19,6 +26,32 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<AuthProviderInfo[]>([]);
+  const [providersLoading, setProvidersLoading] = useState(true);
+
+  // Fetch available auth providers on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchProviders() {
+      try {
+        const res = await fetch('/api/auth/providers');
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && Array.isArray(data.providers)) {
+            setProviders(data.providers as AuthProviderInfo[]);
+          }
+        }
+      } catch {
+        // External providers unavailable — email/password still works
+      } finally {
+        if (!cancelled) {
+          setProvidersLoading(false);
+        }
+      }
+    }
+    void fetchProviders();
+    return () => { cancelled = true; };
+  }, []);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -26,6 +59,11 @@ export default function LoginPage() {
       router.push('/dashboard');
     }
   }, [isAuthenticated, isLoading, router]);
+
+  const handleProviderLogin = (providerId: string) => {
+    const callbackUrl = `${window.location.origin}/api/auth/callback/${encodeURIComponent(providerId)}`;
+    window.location.href = callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/dashboard')}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,9 +102,32 @@ export default function LoginPage() {
       <Header />
       <main className={pageStyles.main}>
         <div className={styles.loginContainer}>
-          <h2 className={styles.title}>Login</h2>
+          <h1 className={styles.title}>Login</h1>
 
-          {error && <div className={styles.errorMessage}>{error}</div>}
+          {!providersLoading && providers.length > 0 && (
+            <>
+              <div className={pageStyles.socialButtons}>
+                {providers.map((provider) => (
+                  <button
+                    key={provider.id}
+                    type="button"
+                    className={pageStyles.socialButton}
+                    onClick={() => handleProviderLogin(provider.id)}
+                    disabled={loading}
+                  >
+                    Continue with {provider.name}
+                  </button>
+                ))}
+              </div>
+              <div className={pageStyles.divider}>
+                <span className={pageStyles.dividerLine} />
+                <span className={pageStyles.dividerText}>or</span>
+                <span className={pageStyles.dividerLine} />
+              </div>
+            </>
+          )}
+
+          {error && <div className={styles.errorMessage} role="alert">{error}</div>}
 
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>

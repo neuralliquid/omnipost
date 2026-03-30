@@ -6,17 +6,20 @@
 
 **AI-powered multi-platform content publishing made simple**
 
+[![Alpha](https://img.shields.io/badge/status-alpha-orange)](./docs/ALPHA_LAUNCH_PLAN.md)
 [![CI](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml)
 [![Azure Web App](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-18.20.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black)](https://nextjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.0.0-orange)](https://pnpm.io/)
 
 [🌐 Live Demo](https://nl-dev-omnipost-app-euw.azurewebsites.net) · [📖 Documentation](./docs/README.md) · [🐛 Report Bug](https://github.com/JustAGhosT/content_creation/issues) · [✨ Request Feature](https://github.com/JustAGhosT/content_creation/issues)
 
 </div>
+
+> **Alpha Release** -- OmniPost is in active alpha. Core publishing workflows are functional and ready for early adopters. See the [Alpha Launch Plan](./docs/ALPHA_LAUNCH_PLAN.md) for current status and the [Getting Started Guide](./docs/GETTING_STARTED.md) for setup instructions.
 
 ---
 
@@ -33,9 +36,22 @@
 - [API Documentation](#-api-documentation)
 - [Testing](#-testing)
 - [Documentation](#-documentation)
+- [Architecture](#-architecture)
 - [Contributing](#-contributing)
 - [Troubleshooting](#-troubleshooting)
 - [License](#-license)
+
+---
+
+## 📘 Getting Started
+
+New to OmniPost? The **[Getting Started Guide](./docs/GETTING_STARTED.md)** covers everything you need:
+
+- Prerequisites and installation (5 steps)
+- Platform API key setup (Facebook, Instagram, LinkedIn, Twitter)
+- AI service configuration (OpenAI, Hugging Face)
+- Common issues and troubleshooting
+- Developer workflow and quality checks
 
 ---
 
@@ -43,7 +59,7 @@
 
 **The Problem:** Content creators and marketing teams waste hours manually posting the same content across multiple platforms, dealing with different formatting requirements, character limits, and APIs for each social network.
 
-**The Solution:** OmniPost is an AI-powered multi-platform content publishing platform built with Next.js 14, React 18, and TypeScript. It streamlines content workflows from creation to publication across all major platforms with intelligent content adaptation, AI-powered text processing, and automated image generation.
+**The Solution:** OmniPost is an AI-powered multi-platform content publishing platform built with Next.js 16 (App Router), React 19, and TypeScript. It streamlines content workflows from creation to publication across all major platforms with intelligent content adaptation, AI-powered text processing, and automated image generation.
 
 ### 🌟 What Makes OmniPost Different?
 
@@ -568,29 +584,57 @@ For more testing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md#testing).
 
 <div align="center">
 
-| Category            | Technologies                                                     |
-| ------------------- | ---------------------------------------------------------------- |
-| **Frontend**        | React 18, Next.js 14 (App Router + Pages Router), TypeScript 5.3 |
-| **Styling**         | CSS Modules, Global CSS                                          |
-| **API**             | Next.js Route Handlers, RESTful API design                       |
-| **Authentication**  | JWT tokens, Secure middleware                                    |
-| **Validation**      | Zod schemas, DOMPurify sanitization                              |
-| **Testing**         | Jest, React Testing Library                                      |
-| **Deployment**      | Azure Web Apps, Bicep IaC                                        |
-| **CI/CD**           | GitHub Actions                                                   |
-| **AI Services**     | Hugging Face (image generation), Multiple LLM providers          |
-| **Integrations**    | Airtable, Slack, Twilio, Nodemailer                              |
-| **Package Manager** | pnpm 9.0.0                                                       |
+| Category            | Technologies                                                  |
+| ------------------- | ------------------------------------------------------------- |
+| **Frontend**        | React 19, Next.js 16 (App Router), TypeScript 5.3             |
+| **Styling**         | CSS Modules, Global CSS                                       |
+| **ORM / Database**  | Prisma 7, PostgreSQL                                          |
+| **API**             | Next.js Route Handlers, RESTful API design                    |
+| **Authentication**  | JWT tokens, async middleware                                  |
+| **Validation**      | Zod 3 schemas, DOMPurify sanitization                         |
+| **Testing**         | Jest 29, React Testing Library, jest-axe                      |
+| **Deployment**      | Azure Web Apps, Bicep IaC                                     |
+| **CI/CD**           | GitHub Actions                                                |
+| **AI Services**     | Hugging Face (image generation), OpenAI, DeepSeek, Azure AI   |
+| **Integrations**    | Slack, Twilio, Nodemailer                                     |
+| **Package Manager** | pnpm 9                                                        |
 
 </div>
 
 ### Architecture Highlights
 
-- **Hybrid Routing**: Combines Next.js App Router (new features) with Pages Router (legacy support)
-- **Security-First**: Rate limiting, input sanitization, OWASP Top 10 compliance
-- **Type Safety**: Full TypeScript strict mode with comprehensive type definitions
-- **Modern Stack**: Latest stable versions of React, Next.js, and Node.js
-- **Scalable Infrastructure**: Azure-native deployment with Bicep templates
+- **App Router First**: All new development uses the Next.js App Router (`app/api/`)
+- **Security-First**: Rate limiting, input sanitization, RBAC, audit logging, OWASP Top 10 compliance
+- **Type Safety**: Full TypeScript strict mode with no `any` types
+- **Modern Stack**: React 19, Next.js 16, Prisma 7, Zod 3
+- **Scalable Infrastructure**: Azure-native deployment with Bicep IaC templates
+
+## 🏛️ Architecture
+
+OmniPost follows a layered architecture built on the Next.js App Router:
+
+```
+Frontend (React 19, CSS Modules)
+    |
+Next.js App Router (API Routes, Middleware, SSR)
+    |
+Business Logic (Auth, Validation, Feature Flags)
+    |
+Data Layer (Prisma 7 + PostgreSQL)
+    |
+External Services (OpenAI, Hugging Face, Slack, Twilio)
+```
+
+Key architectural decisions:
+
+- **Prisma 7 with PostgreSQL** for structured data persistence and type-safe queries
+- **JWT-based authentication** with async `isAuthenticated()` checks in every protected route
+- **Zod schemas** for runtime input validation on all API endpoints
+- **DOMPurify** for HTML sanitization to prevent XSS
+- **Rate limiting** on all public-facing endpoints via `withRateLimit` wrapper
+- **Feature flags** for controlling functionality without redeployment
+
+For the full architecture documentation, see [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
 
 ## 📚 Documentation
 
@@ -946,10 +990,11 @@ This project builds upon these amazing open-source technologies:
 
 ### Current Status
 
-- ✅ **Production Ready**: Deployed and running on Azure
-- ✅ **Active Development**: Regular updates and improvements
-- ✅ **CI/CD Pipeline**: Automated testing and deployment
-- ⚠️ **Test Coverage**: 66% (13 failures related to mocking - actively improving)
+- 🟠 **Alpha Release**: Core workflows functional, ready for early adopters
+- ✅ **Deployed**: Running on Azure Web Apps
+- ✅ **CI/CD Pipeline**: Automated testing and deployment via GitHub Actions
+- ✅ **Auth & Security**: JWT middleware, rate limiting, input sanitization all operational
+- ⚠️ **Test Coverage**: Actively improving toward 80%+ target
 
 ### Roadmap
 

@@ -1,0 +1,214 @@
+# OmniPost Alpha — Handoff Document
+
+**Branch**: `claude/review-repo-structure-9D1gP`
+**Date**: 2026-03-30
+**Commits**: 59 on branch
+**Scope**: 181 files changed, 21,058 lines added, 1,211 removed
+
+---
+
+## What Was Built
+
+### Infrastructure Layer
+
+| Component | Files | Purpose |
+|---|---|---|
+| **Sluice AI Gateway** | `lib/clients/sluice-gateway.ts`, `infra/sluice.bicep` | OpenAI-compatible proxy for centralized AI cost tracking, model routing, failover. Feature-flagged (`aiGateway`). |
+| **Azure PostgreSQL** | `infra/postgresql.bicep` | Free-tier Flexible Server (B1ms) for persistent user storage. |
+| **Retort Orchestration** | `.agentkit/spec/*.yaml` | Single-source YAML spec generating configs for 16+ AI tools. |
+| **Agent Rules** | `.cursor/rules/` (10), `.windsurf/rules/` (10) | Team-scoped coding rules for Claude, Cursor, Windsurf, Copilot. |
+| **Phoenix-Flow** | `lib/integrations/phoenix-flow.ts` | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`phoenixFlow`). |
+
+### Application Layer
+
+| Component | Files | Purpose |
+|---|---|---|
+| **Auth Middleware** | `middleware.ts` | JWT validation → header injection for all API/dashboard routes. |
+| **External Identity** | `lib/auth/identity-provider.ts`, `app/api/auth/providers/`, `app/api/auth/callback/` | Social login abstraction (Google, GitHub, etc.) via external identity API. Feature-flagged (`externalIdentityProvider`). |
+| **User Persistence** | `app/api/auth/route.ts`, `prisma/schema.prisma` | Registration/login backed by Prisma/PostgreSQL (replaced in-memory Map). |
+| **Analytics** | `lib/analytics/`, `app/api/analytics/events/`, `hooks/useAnalytics.ts` | AARRR event tracking with batched client tracker, wired into all pages. |
+| **Content Creation** | `app/(dashboard)/content/new/`, `app/(dashboard)/content/` | Write → adapt per platform → schedule/publish flow. |
+| **Task Board** | `app/(dashboard)/tasks/`, `app/api/tasks/` | Kanban board connected to phoenix-flow MCP. |
+| **Platform Settings** | `app/(dashboard)/settings/platforms/` | Connect/disconnect platforms with mock OAuth (real OAuth ready). |
+
+### Marketing Layer
+
+| Component | Files | Purpose |
+|---|---|---|
+| **34 Marketing Skills** | `.agents/skills/*/SKILL.md` | CRO (7), content (6), SEO (6), growth (11), analytics (4). |
+| **Product Context** | `.agents/context/product-marketing-context.md` | Foundational product positioning all skills reference. |
+| **Tool Registry** | `.agents/context/tool-registry-overlay.md` | Maps 80+ MarketingSkills tools to OmniPost integrations. |
+| **Launch Assets** | `docs/launch/` | Blog post, 10+ social posts, email, Product Hunt brief, press release. |
+
+### Frontend
+
+| Page | Route | Type |
+|---|---|---|
+| Landing (CRO) | `/` | Server component, hero + features + social proof |
+| Pricing | `/pricing` | Client, 3 tiers + FAQ + billing toggle |
+| Signup | `/signup` | Client, social login + email, password strength |
+| Login | `/login` | Client, social login + email |
+| Onboarding | `/onboarding` | Client, 3-step guided flow with persistence |
+| Dashboard | `/dashboard` | Client, metrics + Airtable |
+| Content List | `/content` | Client, draft/scheduled/published list |
+| Content Create | `/content/new` | Client, write → adapt → schedule |
+| Tasks | `/tasks` | Client, Kanban board (phoenix-flow) |
+| Settings | `/settings` | Client, settings hub |
+| Platform Settings | `/settings/platforms` | Client, connect/disconnect platforms |
+
+### Quality
+
+| Area | Count | Details |
+|---|---|---|
+| Unit tests | 22 files | Analytics, sluice, middleware, scheduler, UI components, API routes |
+| E2E tests | 4 suites | Auth flow, content creation, navigation, pricing |
+| Pre-commit hooks | 2 | lint-staged + conventional commits (husky) |
+| CI pipeline | 5 steps | type-check → lint → test → format → validate-skills |
+| Design system | 42 CSS modules | Custom properties, dark mode, reduced-motion, focus-visible |
+
+---
+
+## Feature Flags
+
+| Flag | Default | Controls |
+|---|---|---|
+| `aiGateway` | `false` | Sluice AI gateway routing |
+| `externalIdentityProvider` | `false` | Social login via external identity API |
+| `phoenixFlow` | `false` | Task board + org context via MCP |
+| `textParser` | `true` | AI text parsing (OpenAI/DeepSeek/Azure) |
+| `imageGeneration` | `true` | AI image generation (HuggingFace/DALL-E) |
+| `summarization` | `true` | AI text summarization |
+| `leadManagement` | `true` | CRM lead management |
+| `outreachSequences` | `true` | Email/LinkedIn sequences |
+| `crmDashboard` | `true` | CRM analytics dashboard |
+
+---
+
+## Environment Variables Required
+
+```bash
+# Required
+JWT_SECRET=<generate with: openssl rand -base64 32>
+DATABASE_URL=file:./dev.db  # or postgresql:// for Azure
+
+# Optional — AI Services
+OPENAI_API_ENDPOINT=
+DEEPSEEK_API_ENDPOINT=
+HUGGINGFACE_API_KEY=
+
+# Optional — Sluice Gateway
+SLUICE_GATEWAY_URL=
+SLUICE_API_KEY=
+
+# Optional — External Identity
+IDENTITY_API_URL=
+IDENTITY_API_KEY=
+
+# Optional — Phoenix-Flow
+PHOENIX_FLOW_MCP_URL=
+PHOENIX_FLOW_MCP_SECRET=
+
+# Optional — Platforms
+FACEBOOK_API_KEY=
+INSTAGRAM_API_KEY=
+LINKEDIN_API_KEY=
+TWITTER_API_KEY=
+```
+
+---
+
+## Setup Instructions
+
+```bash
+git clone https://github.com/JustAGhosT/content_creation.git
+cd content_creation
+git checkout claude/review-repo-structure-9D1gP
+pnpm install
+pnpm db:generate
+pnpm db:push
+cp .env.example .env.local
+# Edit .env.local — set JWT_SECRET at minimum
+pnpm dev
+# Open http://localhost:3000
+```
+
+### Verify
+```bash
+pnpm check-all              # lint + typecheck + format + test
+bash .agents/validate-skills.sh  # validate 34 marketing skills
+pnpm test:e2e               # Playwright E2E tests (needs running dev server)
+```
+
+---
+
+## Security Posture
+
+| Control | Implementation |
+|---|---|
+| Auth | JWT middleware → header injection, bcryptjs hashing |
+| XSS | DOMPurify + Zod validation + HTML escaping on client |
+| Rate limiting | Upstash Redis (prod) / in-memory with safe eviction (dev) |
+| CSRF | SameSite=strict cookies |
+| CSP | Tightened headers, no unsafe-eval, connect-src whitelist |
+| Ownership | Leads/forms routes verify resource belongs to user |
+| Secrets | Timing-safe comparison for CRON_SECRET |
+| Audit | Audit trail for auth events and significant analytics |
+
+---
+
+## Known Limitations (Alpha Scope)
+
+| Limitation | Mitigation | Post-Alpha Plan |
+|---|---|---|
+| Platform connections are mock | Settings page UI ready, mock toggle | Wire real OAuth per platform |
+| No payment processing | Pricing page shows tiers, CTAs go to signup | Integrate Stripe |
+| Content publishing is simulated | Scheduler creates jobs, adapters are stubs | Implement platform API adapters |
+| Email sequences not triggered | Sequence engine exists, no cron trigger | Add cron job for sequence processing |
+| In-memory fallbacks for some stores | Feature-flagged, Prisma primary | Remove fallbacks post-migration |
+
+---
+
+## Ecosystem Integrations
+
+| System | Status | Connection |
+|---|---|---|
+| **Retort** | Active | `.agentkit/spec/` → generates agent configs |
+| **MarketingSkills** | Active | 34 skills in `.agents/skills/`, validated |
+| **Sluice** | Ready (flag off) | `lib/clients/sluice-gateway.ts` + `infra/sluice.bicep` |
+| **Phoenix-Flow** | Ready (flag off) | `lib/integrations/phoenix-flow.ts` + task board UI |
+| **mcp-org** | Ready (via phoenix-flow) | Org context proxied through phoenix-flow MCP |
+| **Azure PostgreSQL** | Ready | `infra/postgresql.bicep` (free tier) |
+
+---
+
+## Files to Review First
+
+For a quick understanding of the codebase:
+1. `CLAUDE.md` — Agent entry point, architecture overview
+2. `docs/GETTING_STARTED.md` — Setup guide
+3. `docs/ALPHA_LAUNCH_PLAN.md` — Launch strategy and status
+4. `CHANGELOG.md` — [1.0.0-alpha] entry covers everything
+5. `.agentkit/spec/project.yaml` — Retort project spec
+6. `middleware.ts` — Auth flow entry point
+
+---
+
+## Metrics
+
+| Metric | Value |
+|---|---|
+| Commits | 59 |
+| Files changed | 181 |
+| Lines added | 21,058 |
+| Lines removed | 1,211 |
+| API routes | 39 |
+| Pages | 19 |
+| Test files | 28 (22 unit + 4 E2E + 2 fixtures) |
+| Marketing skills | 34 |
+| CSS modules | 42 |
+| Agent rules | 20 (10 Cursor + 10 Windsurf) |
+| Feature flags | 11 |
+| Bicep templates | 9 |
+| Launch assets | 5 |
+| Bugs fixed | 6 (BUG-04, 06, 07, 08, 09, + rate limit) |
+| Security fixes | 8 (XSS, timing, ownership, CSP, auth) |

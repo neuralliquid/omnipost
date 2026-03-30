@@ -3,14 +3,14 @@
 import React from 'react';
 import styles from '@/styles/LoadingSpinner.module.css';
 
-type SpinnerSize = 'sm' | 'md' | 'lg' | 'xl';
+type SpinnerSize = 'sm' | 'md' | 'lg';
 
 interface LoadingSpinnerProps {
-  size?: SpinnerSize;
-  label?: string;
-  fullScreen?: boolean;
-  overlay?: boolean;
-  className?: string;
+  readonly size?: SpinnerSize;
+  readonly label?: string;
+  readonly fullScreen?: boolean;
+  readonly overlay?: boolean;
+  readonly className?: string;
 }
 
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
@@ -32,7 +32,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   const spinnerClasses = [styles.spinner, styles[size]].join(' ');
 
   return (
-    <output className={wrapperClasses} aria-live="polite">
+    <div className={wrapperClasses} role="status" aria-label={label}>
       <svg className={spinnerClasses} viewBox="0 0 24 24" fill="none" aria-hidden="true">
         <circle
           className={styles.track}
@@ -51,7 +51,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
         />
       </svg>
       {label && <span className={styles.label}>{label}</span>}
-    </output>
+    </div>
   );
 };
 

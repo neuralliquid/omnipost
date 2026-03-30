@@ -6,6 +6,8 @@
 import { NextResponse } from 'next/server';
 import { getScheduler } from '@/lib/scheduler';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
+import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
+import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import type { JobStatus } from '@/lib/scheduler/types';
 
 // Define all possible job statuses
@@ -24,16 +26,15 @@ const JOB_STATUSES: JobStatus[] = [
  * Get scheduler statistics (user-scoped)
  * Returns job counts by status and timestamp
  */
-export async function GET() {
-  try {
-    // Check authentication
+export const GET = withRateLimit(
+  withErrorHandling(async () => {
     if (!(await isAuthenticated())) {
-      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+      return Errors.unauthorized('Authentication required');
     }
 
     const currentUserId = await getCurrentUserId();
     if (!currentUserId) {
-      return NextResponse.json({ error: 'User ID not found' }, { status: 401 });
+      return Errors.unauthorized('User ID not found');
     }
 
     const scheduler = getScheduler();
@@ -56,8 +57,7 @@ export async function GET() {
       stats: userStats,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
-    console.error('Error fetching stats:', error);
-    return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
-  }
-}
+  }),
+  '/api/scheduler/stats',
+  RateLimitPresets.GENERAL
+);

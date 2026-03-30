@@ -130,6 +130,26 @@ resource sluiceApp 'Microsoft.App/containerApps@2024-03-01' = {
               value: '4000'
             }
           ]
+          probes: [
+            {
+              type: 'Liveness'
+              httpGet: {
+                path: '/health'
+                port: 4000
+              }
+              initialDelaySeconds: 5
+              periodSeconds: 10
+            }
+            {
+              type: 'Readiness'
+              httpGet: {
+                path: '/health'
+                port: 4000
+              }
+              initialDelaySeconds: 3
+              periodSeconds: 5
+            }
+          ]
         }
       ]
       scale: {
@@ -161,4 +181,4 @@ resource sluiceApp 'Microsoft.App/containerApps@2024-03-01' = {
 // Outputs
 output sluiceAppName string = sluiceApp.name
 output sluiceAppFqdn string = sluiceApp.properties.configuration.ingress.fqdn
-output sluiceGatewayUrl string = 'https://${sluiceApp.properties.configuration.ingress.fqdn}'
+output sluiceGatewayUrl string = 'http://${sluiceApp.properties.configuration.ingress.fqdn}'

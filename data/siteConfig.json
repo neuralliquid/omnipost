@@ -13,6 +13,14 @@
     },
     {
       "name": "Content",
+      "path": "/content",
+      "children": [
+        { "name": "All Content", "path": "/content" },
+        { "name": "Create New", "path": "/content/new" }
+      ]
+    },
+    {
+      "name": "Series",
       "path": "/series",
       "children": [
         { "name": "Series", "path": "/series" },
@@ -36,8 +44,16 @@
       ]
     },
     {
+      "name": "Tasks",
+      "path": "/tasks"
+    },
+    {
       "name": "Dashboard",
       "path": "/dashboard"
+    },
+    {
+      "name": "Settings",
+      "path": "/settings"
     }
   ],
   "social": {

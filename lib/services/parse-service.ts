@@ -141,7 +141,9 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
   if (isGatewayEnabled()) {
     const gatewayResult = await gatewayPost('/v1/responses', {
       model: implementation,
-      data: parsedData,
+      messages: [
+        { role: 'user', content: JSON.stringify(parsedData) },
+      ],
     }, { operation: 'parse_text' });
 
     if (gatewayResult.success) {
@@ -159,7 +161,7 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
   }
 
   try {
-    const response = await axios.post(endpoint, { data: parsedData });
+    const response = await axios.post(endpoint, { data: parsedData }, { timeout: 30000 });
 
     return {
       success: true,

@@ -10,6 +10,23 @@
     "productContext": ".agents/context/product-marketing-context.md",
     "toolRegistry": ".agents/context/tool-registry-overlay.md"
   },
+  "quickStart": [
+    "product-marketing-context",
+    "content-strategy",
+    "copywriting",
+    "page-cro",
+    "analytics-tracking",
+    "seo-audit",
+    "pricing-strategy"
+  ],
+  "dependencies": {
+    "all": ["product-marketing-context"],
+    "email-sequence": ["analytics-tracking", "copywriting"],
+    "cold-email": ["copywriting", "lead-magnets"],
+    "ab-test-setup": ["analytics-tracking"],
+    "paid-ads": ["ad-creative", "analytics-tracking"],
+    "launch-strategy": ["content-strategy", "social-content", "email-sequence"]
+  },
   "skills": {
     "ab-test-setup": { "status": "as-is", "category": "conversion-optimization" },
     "ad-creative": { "status": "as-is", "category": "strategic-growth" },

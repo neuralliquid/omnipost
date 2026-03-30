@@ -1,0 +1,201 @@
+/* ==========================================================================
+   Content List Page Styles
+   ========================================================================== */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Page Header ─────────────────────────────────────────────────────────── */
+
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.createButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  cursor: pointer;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  text-decoration: none;
+  transition: background-color var(--transition-fast);
+}
+
+.createButton:hover {
+  background-color: var(--color-primary-dark);
+  text-decoration: none;
+}
+
+/* ── Content List ────────────────────────────────────────────────────────── */
+
+.contentList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.contentItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.contentItem:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+
+.contentItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  flex: 1;
+}
+
+.contentItemTitle {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-heading);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.contentItemMeta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.contentItemRight {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.platformCount {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+/* ── Status Badge ────────────────────────────────────────────────────────── */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px var(--spacing-sm);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.badgeDraft {
+  composes: badge;
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.badgeScheduled {
+  composes: badge;
+  background-color: var(--color-info-light);
+  color: var(--color-info);
+}
+
+.badgePublished {
+  composes: badge;
+  background-color: var(--color-success-bg-subtle);
+  color: var(--color-success);
+}
+
+/* ── Empty State ─────────────────────────────────────────────────────────── */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  background-color: var(--color-bg-card);
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: var(--font-size-4xl);
+  color: var(--color-text-muted);
+}
+
+.emptyTitle {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-heading);
+  margin: 0;
+}
+
+.emptyDescription {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  max-width: 360px;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .pageHeader {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .contentItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .contentItemRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

@@ -88,11 +88,25 @@ commands:
 
   # Retort utilities
   validate_skills:
-    run: "find .agents/skills -name '*.md' | wc -l && echo 'skills found'"
-    description: Validate that all marketing agent skills are present and well-formed
+    run: "bash .agents/validate-skills.sh"
+    description: Validate all 34 marketing skills against Agent Skills Specification
     category: retort
+    timeout_seconds: 30
 
   retort_sync:
-    run: "echo 'Retort sync: regenerating agent config files from .agentkit/spec/'"
+    run: "npx retort sync 2>/dev/null || echo 'Retort CLI not installed — manually update generated files'"
     description: Regenerate CLAUDE.md, AGENTS.md, cursor/windsurf rules from Retort spec
     category: retort
+    timeout_seconds: 60
+
+  # Composite workflows
+  setup_dev:
+    run: "pnpm install && pnpm db:generate"
+    description: Install dependencies and generate Prisma client for development
+    category: development
+    prerequisites: ["node >= 18", "pnpm >= 9"]
+
+  prepare_pr:
+    run: "pnpm check-all && bash .agents/validate-skills.sh"
+    description: Run all quality gates and validate skills before creating a PR
+    category: quality

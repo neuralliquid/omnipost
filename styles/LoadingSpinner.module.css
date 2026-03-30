@@ -52,16 +52,11 @@
 }
 
 .md {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 }
 
 .lg {
-  width: 36px;
-  height: 36px;
-}
-
-.xl {
   width: 48px;
   height: 48px;
 }
@@ -85,5 +80,16 @@
   }
   to {
     transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   Reduced Motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    opacity: 0.6;
   }
 }
