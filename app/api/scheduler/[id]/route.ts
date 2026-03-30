@@ -8,6 +8,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getScheduler } from '@/lib/scheduler';
+import type { ScheduledJob } from '@/lib/scheduler/types';
 import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
@@ -45,19 +46,21 @@ interface RouteParams {
 /**
  * Authenticate the request and return the user ID, or an error response
  */
-async function authenticateRequest(): Promise<
-  { userId: string; error?: never } | { error: NextResponse; userId?: never }
-> {
+async function requireUserId(): Promise<{ userId: string } | NextResponse> {
   if (!(await isAuthenticated())) {
-    return { error: Errors.unauthorized('Authentication required') as NextResponse };
+    return Errors.unauthorized('Authentication required') as NextResponse;
   }
 
   const userId = await getCurrentUserId();
   if (!userId) {
-    return { error: Errors.unauthorized('User ID not found') as NextResponse };
+    return Errors.unauthorized('User ID not found') as NextResponse;
   }
 
   return { userId };
+}
+
+function isAuthError(result: { userId: string } | NextResponse): result is NextResponse {
+  return result instanceof NextResponse;
 }
 
 /**
@@ -66,22 +69,23 @@ async function authenticateRequest(): Promise<
 async function getOwnedJob(
   jobId: string,
   userId: string
-): Promise<
-  { job: NonNullable<Awaited<ReturnType<ReturnType<typeof getScheduler>['getJob']>>>; error?: never }
-  | { error: NextResponse; job?: never }
-> {
+): Promise<{ job: ScheduledJob } | NextResponse> {
   const scheduler = getScheduler();
   const job = await scheduler.getJob(jobId);
 
   if (!job) {
-    return { error: Errors.notFound('Job not found') as NextResponse };
+    return Errors.notFound('Job not found') as NextResponse;
   }
 
   if (job.createdBy !== userId) {
-    return { error: Errors.forbidden('Access denied') as NextResponse };
+    return Errors.forbidden('Access denied') as NextResponse;
   }
 
   return { job };
+}
+
+function isJobError(result: { job: ScheduledJob } | NextResponse): result is NextResponse {
+  return result instanceof NextResponse;
 }
 
 // ── Route Handlers ───────────────────────────────────────────────────────
@@ -92,8 +96,8 @@ async function getOwnedJob(
  */
 export const GET = withRateLimit(
   withErrorHandling(async (request: Request, context?: unknown) => {
-    const authResult = await authenticateRequest();
-    if ('error' in authResult) return authResult.error;
+    const authResult = await requireUserId();
+    if (isAuthError(authResult)) return authResult;
 
     const { id } = await (context as RouteParams).params;
     const idValidation = validateAndSanitize(jobIdSchema, { id });
@@ -102,7 +106,7 @@ export const GET = withRateLimit(
     }
 
     const result = await getOwnedJob(idValidation.data.id, authResult.userId);
-    if ('error' in result) return result.error;
+    if (isJobError(result)) return result;
 
     return NextResponse.json({ job: result.job });
   }),
@@ -116,8 +120,8 @@ export const GET = withRateLimit(
  */
 export const PATCH = withRateLimit(
   withErrorHandling(async (request: Request, context?: unknown) => {
-    const authResult = await authenticateRequest();
-    if ('error' in authResult) return authResult.error;
+    const authResult = await requireUserId();
+    if (isAuthError(authResult)) return authResult;
 
     const { id } = await (context as RouteParams).params;
     const idValidation = validateAndSanitize(jobIdSchema, { id });
@@ -132,7 +136,7 @@ export const PATCH = withRateLimit(
     }
 
     const result = await getOwnedJob(idValidation.data.id, authResult.userId);
-    if ('error' in result) return result.error;
+    if (isJobError(result)) return result;
 
     const scheduler = getScheduler();
     const { action, scheduledTime } = bodyValidation.data;
@@ -170,8 +174,8 @@ export const PATCH = withRateLimit(
  */
 export const DELETE = withRateLimit(
   withErrorHandling(async (request: Request, context?: unknown) => {
-    const authResult = await authenticateRequest();
-    if ('error' in authResult) return authResult.error;
+    const authResult = await requireUserId();
+    if (isAuthError(authResult)) return authResult;
 
     const { id } = await (context as RouteParams).params;
     const idValidation = validateAndSanitize(jobIdSchema, { id });
@@ -180,7 +184,7 @@ export const DELETE = withRateLimit(
     }
 
     const result = await getOwnedJob(idValidation.data.id, authResult.userId);
-    if ('error' in result) return result.error;
+    if (isJobError(result)) return result;
 
     const scheduler = getScheduler();
     const cancelled = await scheduler.cancel(idValidation.data.id);
