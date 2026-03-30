@@ -63,9 +63,22 @@ __tests__/        Jest test suites
 |-------|---------|
 | `/content` | Content management list |
 | `/content/new` | Create new content |
+| `/tasks` | Kanban task board (phoenix-flow) |
 | `/settings` | User/account settings |
 | `/settings/platforms` | Platform connection settings |
 | `/pricing` | Pricing page with tier comparison |
+
+## Integrations
+
+### Phoenix-Flow (Task Management)
+- **Client:** `lib/integrations/phoenix-flow.ts` -- MCP client for phoenix-flow server
+- **API routes:** `app/api/tasks/` (CRUD), `app/api/org/health/` (org metrics)
+- **UI:** `app/(dashboard)/tasks/page.tsx` -- Kanban board
+- **Feature flag:** `phoenixFlow` (disabled by default)
+- **Env vars:** `PHOENIX_FLOW_MCP_URL`, `PHOENIX_FLOW_MCP_SECRET`
+- Phoenix-flow exposes 9 MCP tools: list_projects, get_tasks, create_task, update_task, sync_to_yaml, get_org_roadmap, list_org_projects, search_org_tasks, get_org_health
+- Org-level tools (roadmap, health) are proxied from **mcp-org**
+- Connects to Retort -- agents read tasks from phoenix-flow via MCP
 
 ## Teams
 

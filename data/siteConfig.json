@@ -44,6 +44,10 @@
       ]
     },
     {
+      "name": "Tasks",
+      "path": "/tasks"
+    },
+    {
       "name": "Dashboard",
       "path": "/dashboard"
     },
