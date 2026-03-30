@@ -31,8 +31,8 @@ OmniPost is an AI-powered multi-platform content publishing platform that lets u
 
 ## Media Contact
 
-**Name:** [Contact Name]
-**Email:** press@omnipost.app
+**Name:** OmniPost Team
+**Email:** press@omnipost.app <!-- TODO: Verify this email is configured before launch -->
 **GitHub:** https://github.com/JustAGhosT/content_creation
 
 *For press inquiries, product demos, or interview requests, please contact the email above.*

@@ -1,7 +1,7 @@
 # Issues & Technical Debt — OmniPost
 
 > **Audit Date:** December 2024
-> **Updated:** March 2026
+> **Updated:** March 30, 2026
 
 ---
 
