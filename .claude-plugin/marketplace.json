@@ -1,0 +1,49 @@
+{
+  "project": "omnipost-marketing-skills",
+  "creator": "OmniPost",
+  "version": "1.0.0",
+  "description": "34 marketing skills for AI agents working on OmniPost — covering CRO, SEO, content strategy, copywriting, ads, analytics, pricing, and more.",
+  "repository": "https://github.com/JustAGhosT/content_creation",
+  "plugins": [
+    {
+      "name": "marketing-skills",
+      "strict": false,
+      "skills": [
+        "ab-test-setup",
+        "ad-creative",
+        "ai-seo",
+        "analytics-tracking",
+        "churn-prevention",
+        "cold-email",
+        "competitor-alternatives",
+        "content-strategy",
+        "copy-editing",
+        "copywriting",
+        "customer-research",
+        "email-sequence",
+        "form-cro",
+        "free-tool-strategy",
+        "launch-strategy",
+        "lead-magnets",
+        "marketing-ideas",
+        "marketing-psychology",
+        "onboarding-cro",
+        "page-cro",
+        "paid-ads",
+        "paywall-upgrade-cro",
+        "popup-cro",
+        "pricing-strategy",
+        "product-marketing-context",
+        "programmatic-seo",
+        "referral-program",
+        "revops",
+        "sales-enablement",
+        "schema-markup",
+        "seo-audit",
+        "signup-flow-cro",
+        "site-architecture",
+        "social-content"
+      ]
+    }
+  ]
+}

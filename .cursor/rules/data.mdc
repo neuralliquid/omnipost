@@ -1,0 +1,46 @@
+---
+description: Rules for OmniPost data team -- Prisma schema, migrations, database access layer
+globs:
+  - prisma/**
+  - lib/db/**
+---
+
+# Data Team Rules
+
+## Prisma Schema
+
+- Define all models in `prisma/schema.prisma`.
+- Use descriptive model and field names.
+- Add `@map` and `@@map` annotations for database naming conventions when needed.
+- Include `createdAt` and `updatedAt` timestamps on all models.
+- Define explicit relations with `@relation` annotations.
+
+## Migrations
+
+- Use `pnpm db:migrate` to create migrations with descriptive names.
+- Never modify existing migrations -- create new ones.
+- Test migrations against a clean database before merging.
+- Use `pnpm db:push` only for prototyping, not production.
+
+## Data Access Layer
+
+- Build type-safe data access utilities in `lib/db/`.
+- Use Prisma Client generated types for all database operations.
+- Handle database errors gracefully with try/catch.
+- Use transactions for multi-step operations.
+- Validate data with Zod schemas before writing to database.
+
+## Commands
+
+```bash
+pnpm db:generate  # Regenerate Prisma client after schema changes
+pnpm db:push      # Push schema to database (dev only)
+pnpm db:migrate   # Create and apply migration
+pnpm db:studio    # Open Prisma Studio GUI
+```
+
+## TypeScript
+
+- Strict mode enforced. No `any` types.
+- Use Prisma-generated types for all database interactions.
+- Define explicit return types on data access functions.

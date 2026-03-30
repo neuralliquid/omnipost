@@ -60,3 +60,6 @@ infra/*.json
 # Deployment artifacts
 deploy/
 node-app.zip
+
+# Retort ephemeral state
+.claude/state/

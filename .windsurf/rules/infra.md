@@ -1,0 +1,35 @@
+# Infra Team Rules
+
+**Scope:** `infra/**`, `scripts/**`
+
+Azure infrastructure-as-code (Bicep), deployment scripts, and cloud configuration.
+
+## Bicep Templates
+
+- All Azure resources are defined in `infra/` using Bicep.
+- Use `main.bicep` as the entry point; decompose into modules.
+- Follow consistent naming via `naming.bicep` / `naming.sh`.
+- Parameterize environment-specific values (never hardcode secrets).
+- Use Key Vault references for sensitive configuration.
+
+## Resource Modules
+
+- `main.bicep` -- Orchestrates all resource deployments
+- `keyvault.bicep` -- Azure Key Vault configuration
+- `monitoring.bicep` -- Application Insights and alerts
+- `dns.bicep` / `dns-records.bicep` / `custom-domain.bicep` -- DNS management
+- `sluice.bicep` -- Network/traffic management
+
+## Scripts
+
+- Deployment and utility scripts go in `scripts/`.
+- Scripts must be idempotent (safe to re-run).
+- Include error handling and clear output messages.
+- Document required environment variables at the top of each script.
+
+## Security
+
+- NEVER hardcode secrets, connection strings, or API keys in Bicep or scripts.
+- Use Azure Key Vault for all sensitive values.
+- Apply least-privilege RBAC to all resource identities.
+- Enable diagnostic logging on all resources.

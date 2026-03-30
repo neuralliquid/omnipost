@@ -42,6 +42,9 @@ jobs:
     
     - name: Check code formatting
       run: pnpm run format:check
+
+    - name: Validate marketing skills
+      run: bash .agents/validate-skills.sh
       
   build:
     runs-on: ubuntu-latest

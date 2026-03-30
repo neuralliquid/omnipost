@@ -1,0 +1,84 @@
+{
+  "version": "1.0.0",
+  "source": {
+    "type": "direct-copy",
+    "upstream": "https://github.com/coreyhaines31/marketingskills",
+    "upstreamVersion": "1.2.0",
+    "copiedAt": "2026-03-30"
+  },
+  "contextOverlays": {
+    "productContext": ".agents/context/product-marketing-context.md",
+    "toolRegistry": ".agents/context/tool-registry-overlay.md"
+  },
+  "skills": {
+    "ab-test-setup": { "status": "as-is", "category": "conversion-optimization" },
+    "ad-creative": { "status": "as-is", "category": "strategic-growth" },
+    "ai-seo": { "status": "as-is", "category": "seo-discovery" },
+    "analytics-tracking": {
+      "status": "customized",
+      "category": "sales-analytics",
+      "overlay": ".agents/context/tool-registry-overlay.md",
+      "note": "References OmniPost engagement metrics infrastructure"
+    },
+    "churn-prevention": { "status": "as-is", "category": "strategic-growth" },
+    "cold-email": {
+      "status": "customized",
+      "category": "content-copywriting",
+      "overlay": ".agents/context/tool-registry-overlay.md",
+      "note": "References OmniPost lead management and sequence engine"
+    },
+    "competitor-alternatives": { "status": "as-is", "category": "seo-discovery" },
+    "content-strategy": {
+      "status": "customized",
+      "category": "content-copywriting",
+      "overlay": ".agents/context/product-marketing-context.md",
+      "note": "References OmniPost workflow stages and platform constraints"
+    },
+    "copy-editing": { "status": "as-is", "category": "content-copywriting" },
+    "copywriting": { "status": "as-is", "category": "content-copywriting" },
+    "customer-research": { "status": "as-is", "category": "sales-analytics" },
+    "email-sequence": {
+      "status": "customized",
+      "category": "content-copywriting",
+      "overlay": ".agents/context/tool-registry-overlay.md",
+      "note": "References OmniPost sequence types and engine"
+    },
+    "form-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "free-tool-strategy": { "status": "as-is", "category": "strategic-growth" },
+    "launch-strategy": { "status": "as-is", "category": "strategic-growth" },
+    "lead-magnets": {
+      "status": "customized",
+      "category": "strategic-growth",
+      "overlay": ".agents/context/tool-registry-overlay.md",
+      "note": "References OmniPost form builder and lead capture"
+    },
+    "marketing-ideas": { "status": "as-is", "category": "strategic-growth" },
+    "marketing-psychology": { "status": "as-is", "category": "strategic-growth" },
+    "onboarding-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "page-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "paid-ads": { "status": "as-is", "category": "strategic-growth" },
+    "paywall-upgrade-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "popup-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "pricing-strategy": { "status": "as-is", "category": "strategic-growth" },
+    "product-marketing-context": {
+      "status": "customized",
+      "category": "strategic-growth",
+      "overlay": ".agents/context/product-marketing-context.md",
+      "note": "Foundational skill — OmniPost context pre-populated"
+    },
+    "programmatic-seo": { "status": "as-is", "category": "seo-discovery" },
+    "referral-program": { "status": "as-is", "category": "strategic-growth" },
+    "revops": { "status": "as-is", "category": "sales-analytics" },
+    "sales-enablement": { "status": "as-is", "category": "sales-analytics" },
+    "schema-markup": { "status": "as-is", "category": "seo-discovery" },
+    "seo-audit": { "status": "as-is", "category": "seo-discovery" },
+    "signup-flow-cro": { "status": "as-is", "category": "conversion-optimization" },
+    "site-architecture": { "status": "as-is", "category": "seo-discovery" },
+    "social-content": {
+      "status": "customized",
+      "category": "content-copywriting",
+      "overlay": ".agents/context/product-marketing-context.md",
+      "note": "References OmniPost supported platforms and character limits"
+    }
+  }
+}

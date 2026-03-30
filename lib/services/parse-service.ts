@@ -5,6 +5,7 @@
 
 import axios from 'axios';
 import featureFlags from '@/lib/featureFlags';
+import { isGatewayEnabled, gatewayPost, shouldFallbackToDirectCalls } from '@/lib/clients/sluice-gateway';
 
 // Helper function to get API endpoints with fallbacks
 const getApiEndpoints = () => {
@@ -134,6 +135,27 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
       error: 'Invalid text parser implementation',
       statusCode: 400,
     };
+  }
+
+  // Try Sluice gateway first if enabled
+  if (isGatewayEnabled()) {
+    const gatewayResult = await gatewayPost('/v1/responses', {
+      model: implementation,
+      data: parsedData,
+    }, { operation: 'parse_text' });
+
+    if (gatewayResult.success) {
+      return { success: true, data: gatewayResult.data };
+    }
+
+    // Fall back to direct calls if configured
+    if (!shouldFallbackToDirectCalls()) {
+      return {
+        success: false,
+        error: gatewayResult.error || 'Gateway request failed',
+        statusCode: gatewayResult.statusCode || 502,
+      };
+    }
   }
 
   try {
