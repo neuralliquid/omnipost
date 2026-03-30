@@ -7,7 +7,10 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { platforms, platformConfigurations } from '@/lib/config/platforms';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/PlatformSettings.module.css';
@@ -54,6 +57,8 @@ function getIconColorClass(slug: string): string {
 const settingsPlatforms = platforms.filter(p => p.slug !== 'custom-channel');
 
 export function PlatformSettingsPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
   const [connections, setConnections] = useState<ConnectionStore>({});
   const [modal, setModal] = useState<ModalState>(null);
   const [apiKeyInput, setApiKeyInput] = useState('');

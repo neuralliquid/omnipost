@@ -6,7 +6,11 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import styles from '@/styles/PlatformSettings.module.css';
 
 interface SettingsSection {
@@ -38,6 +42,18 @@ const settingsSections: SettingsSection[] = [
 ];
 
 export function SettingsPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
+  if (!isAuthenticated) return null;
+
   return (
     <>
       <div className={styles.pageHeader}>
