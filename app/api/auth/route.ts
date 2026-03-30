@@ -88,11 +88,115 @@ async function setAuthCookie(token: string): Promise<void> {
   });
 }
 
+// In-memory user store for alpha registration
+const registeredUsers = new Map<string, { id: string; username: string; email: string; passwordHash: string; role: string }>();
+
+/**
+ * Handles user registration
+ * @param request Request object
+ * @returns Response with JWT token and user info
+ */
+async function handleRegister(request: Request): Promise<NextResponse> {
+  try {
+    const body = await request.json();
+    const { username, email, password } = body;
+
+    // Validate required fields
+    const usernameError = validateString(username, 'Username');
+    if (usernameError) {
+      return Errors.badRequest(usernameError);
+    }
+
+    const emailError = validateString(email, 'Email');
+    if (emailError) {
+      return Errors.badRequest(emailError);
+    }
+
+    const passwordError = validateString(password, 'Password');
+    if (passwordError) {
+      return Errors.badRequest(passwordError);
+    }
+
+    // Validate password length
+    if (typeof password === 'string' && password.length < 8) {
+      return Errors.badRequest('Password must be at least 8 characters');
+    }
+
+    // Check if username already exists (hardcoded admin or in-memory store)
+    const existingUser = await authService.findUserByUsername(username);
+    if (existingUser || registeredUsers.has(username)) {
+      return Errors.badRequest('Username already exists');
+    }
+
+    // Hash password
+    let passwordHash: string;
+    try {
+      const bcrypt = await import('bcryptjs');
+      passwordHash = await bcrypt.hash(password, 10);
+    } catch {
+      // Fallback for alpha: store password as-is in memory (dev only)
+      if (process.env.NODE_ENV === 'production') {
+        return Errors.internalServerError('Password hashing unavailable');
+      }
+      passwordHash = password;
+    }
+
+    // Create user in-memory for alpha
+    const userId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    const newUser: User = {
+      id: userId,
+      username,
+      role: 'user',
+    };
+
+    registeredUsers.set(username, {
+      id: userId,
+      username,
+      email,
+      passwordHash,
+      role: 'user',
+    });
+
+    // Log registration
+    await logToAuditTrail(await createLogEntry('REGISTER_SUCCESS', { username, userId }));
+
+    // Generate JWT token
+    const token = generateToken(newUser);
+
+    // Set HTTP-only cookie with the token
+    await setAuthCookie(token);
+
+    return NextResponse.json({
+      token,
+      user: {
+        id: newUser.id,
+        username: newUser.username,
+        role: newUser.role,
+      },
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    return Errors.internalServerError('An error occurred during registration');
+  }
+}
+
 // Login endpoint - handle login request
 async function handleLogin(request: Request): Promise<NextResponse> {
   try {
     const body = await request.json();
-    const { username, password } = body;
+    const { action, username, password, email } = body;
+
+    // Route to registration if action is 'register'
+    if (action === 'register') {
+      // Re-create the request with the body for handleRegister
+      const registerBody = JSON.stringify({ username, email, password });
+      const registerRequest = new Request(request.url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: registerBody,
+      });
+      return handleRegister(registerRequest);
+    }
 
     // Validate input
     const validationError = await validateLoginInput(username, password);
@@ -100,7 +204,43 @@ async function handleLogin(request: Request): Promise<NextResponse> {
       return validationError;
     }
 
-    // Authenticate user
+    // Check in-memory registered users first
+    const registeredUser = registeredUsers.get(username);
+    if (registeredUser) {
+      let isValid = false;
+      try {
+        const bcrypt = await import('bcryptjs');
+        isValid = await bcrypt.compare(password, registeredUser.passwordHash);
+      } catch {
+        // Dev fallback: plain comparison
+        isValid = password === registeredUser.passwordHash;
+      }
+
+      if (!isValid) {
+        return Errors.unauthorized('Invalid username or password');
+      }
+
+      const user: User = {
+        id: registeredUser.id,
+        username: registeredUser.username,
+        role: registeredUser.role,
+      };
+
+      const token = generateToken(user);
+      await setAuthCookie(token);
+      await logToAuditTrail(await createLogEntry('LOGIN_SUCCESS', { username, userId: user.id }));
+
+      return NextResponse.json({
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          role: user.role,
+        },
+      });
+    }
+
+    // Authenticate user (existing flow)
     const userOrError = await authenticateUser(username, password);
     // Check if authentication returned an error response (NextResponse)
     if (userOrError && typeof userOrError === 'object' && 'status' in userOrError) {
