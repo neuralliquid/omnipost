@@ -4,8 +4,8 @@
   align-items: center;
   justify-content: center;
   min-height: calc(100vh - 80px);
-  padding: 2rem;
-  background-color: var(--color-bg-secondary, #f8fafc);
+  padding: var(--spacing-xl);
+  background-color: var(--color-bg-secondary);
 }
 
 .container {
@@ -13,10 +13,10 @@
   width: 100%;
   margin-left: auto;
   margin-right: auto;
-  padding: 2rem;
-  background-color: white;
-  border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-xl);
+  background-color: var(--color-bg-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 /* Progress indicator */
@@ -24,8 +24,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
 }
 
 .progressStep {
@@ -34,127 +34,132 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  border-radius: 50%;
-  font-size: 0.875rem;
-  font-weight: 600;
-  border: 2px solid #d1d5db;
-  color: #9ca3af;
-  background-color: white;
-  transition: all 0.2s;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  border: 2px solid var(--color-border);
+  color: var(--color-text-placeholder);
+  background-color: var(--color-bg-primary);
+  transition: all var(--transition-base);
 }
 
 .progressStepActive {
-  border-color: #4a6491;
-  color: white;
-  background-color: #4a6491;
+  border-color: var(--color-primary);
+  color: var(--color-text-inverse);
+  background-color: var(--color-primary);
 }
 
 .progressStepCompleted {
-  border-color: #16a34a;
-  color: white;
-  background-color: #16a34a;
+  border-color: var(--color-success);
+  color: var(--color-text-inverse);
+  background-color: var(--color-success);
 }
 
 .progressLine {
   width: 3rem;
   height: 2px;
-  background-color: #d1d5db;
-  transition: background-color 0.2s;
+  background-color: var(--color-border);
+  transition: background-color var(--transition-base);
 }
 
 .progressLineActive {
-  background-color: #16a34a;
+  background-color: var(--color-success);
 }
 
 /* Step content */
 .stepTitle {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1e293b;
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-heading);
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: var(--spacing-sm);
 }
 
 .stepDescription {
   font-size: 0.95rem;
-  color: #64748b;
+  color: var(--color-text-secondary);
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 /* Platform cards (Step 1) */
 .platformGrid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .platformCard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: var(--spacing-sm);
   padding: 1.25rem 1rem;
-  border: 2px solid #e2e8f0;
-  border-radius: 0.5rem;
-  background-color: white;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-primary);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
 }
 
 .platformCard:hover {
-  border-color: #4a6491;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-sm);
 }
 
 .platformCardConnected {
-  border-color: #16a34a;
-  background-color: #f0fdf4;
+  border-color: var(--color-success);
+  background-color: var(--color-success-bg-subtle);
 }
 
 .platformIcon {
-  font-size: 1.5rem;
+  font-size: var(--font-size-2xl);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 0.5rem;
-  background-color: #f1f5f9;
+  border-radius: var(--radius-md);
+  background-color: var(--color-bg-tertiary);
 }
 
 .platformCardConnected .platformIcon {
-  background-color: #dcfce7;
+  background-color: var(--color-success-bg);
 }
 
 .platformName {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-label);
 }
 
 .platformStatus {
-  font-size: 0.75rem;
-  color: #16a34a;
-  font-weight: 500;
+  font-size: var(--font-size-xs);
+  color: var(--color-success);
+  font-weight: var(--font-weight-medium);
 }
 
 .connectButton {
   padding: 0.25rem 0.75rem;
   font-size: 0.8rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
-  background-color: white;
-  color: #475569;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-body);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--transition-fast);
 }
 
 .connectButton:hover {
-  background-color: #f1f5f9;
-  border-color: #4a6491;
-  color: #4a6491;
+  background-color: var(--color-bg-tertiary);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.connectButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 /* Post creation (Step 2) */
@@ -162,21 +167,28 @@
   width: 100%;
   min-height: 8rem;
   padding: 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 0.375rem;
   font-size: 0.95rem;
   font-family: inherit;
   resize: vertical;
   transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   box-sizing: border-box;
-  margin-bottom: 1rem;
+  margin-bottom: var(--spacing-md);
 }
 
 .postTextarea:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--color-info);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.postTextarea:focus-visible {
+  outline: 2px solid var(--color-info);
+  outline-offset: 2px;
+  border-color: var(--color-info);
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
 }
 
@@ -184,20 +196,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--spacing-lg);
 }
 
 .checkboxLabel {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  font-size: 0.875rem;
-  color: #475569;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-body);
   cursor: pointer;
 }
 
 .checkboxLabel input[type="checkbox"] {
-  accent-color: #4a6491;
+  accent-color: var(--color-primary);
 }
 
 /* Success screen (Step 3) */
@@ -206,27 +218,27 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem 0;
+  padding: var(--spacing-md) 0;
 }
 
 .successIcon {
   width: 4rem;
   height: 4rem;
-  border-radius: 50%;
-  background-color: #dcfce7;
-  color: #16a34a;
+  border-radius: var(--radius-full);
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+  font-size: var(--font-size-4xl);
+  margin-bottom: var(--spacing-md);
 }
 
 .successMessage {
   font-size: 0.95rem;
-  color: #64748b;
-  margin-bottom: 1.5rem;
-  line-height: 1.5;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--spacing-lg);
+  line-height: var(--line-height-normal);
 }
 
 /* Buttons */
@@ -234,50 +246,61 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: var(--spacing-md);
 }
 
 .primaryButton {
   padding: 0.625rem 1.5rem;
-  background-color: #4a6491;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
   border-radius: 0.375rem;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--transition-fast);
 }
 
 .primaryButton:hover {
-  background-color: #3b5177;
+  background-color: var(--color-primary-dark);
 }
 
 .primaryButton:focus {
   outline: none;
-  box-shadow: 0 0 0 2px rgba(74, 100, 145, 0.5);
+  box-shadow: 0 0 0 2px var(--color-primary-200);
+}
+
+.primaryButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--color-primary-200);
 }
 
 .skipButton {
   padding: 0.625rem 1rem;
   background: none;
   border: none;
-  color: #94a3b8;
-  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: color 0.15s;
+  transition: color var(--transition-fast);
 }
 
 .skipButton:hover {
-  color: #64748b;
+  color: var(--color-text-secondary);
+}
+
+.skipButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
 }
 
 .loadingContainer {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.125rem;
-  color: var(--color-text-secondary, #64748b);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
 }
 
 /* Accessibility */
