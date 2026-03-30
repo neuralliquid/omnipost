@@ -156,7 +156,7 @@ export default function ContentCard(props: any) {
 // ✅ Good
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { validateAndSanitize, textInputSchema } from '@/app/api/_utils/sanitize';
-import { isAuthenticated } from '@/middleware';
+import { isAuthenticated } from '@/app/api/_utils/auth';
 
 export const POST = withRateLimit(
   async (request: Request) => {

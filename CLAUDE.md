@@ -57,6 +57,16 @@ __tests__/        Jest test suites
 .agents/          Marketing agent skills and context
 ```
 
+## Key Pages
+
+| Route | Purpose |
+|-------|---------|
+| `/content` | Content management list |
+| `/content/new` | Create new content |
+| `/settings` | User/account settings |
+| `/settings/platforms` | Platform connection settings |
+| `/pricing` | Pricing page with tier comparison |
+
 ## Teams
 
 | Team | Scope |
