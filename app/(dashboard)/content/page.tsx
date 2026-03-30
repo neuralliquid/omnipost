@@ -7,6 +7,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/components/providers/AuthProvider';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAnalytics } from '@/hooks/useAnalytics';
 import styles from '@/styles/ContentList.module.css';
 
@@ -88,12 +91,23 @@ function formatDate(iso: string): string {
 // ── Component ───────────────────────────────────────────────────────────────
 
 export function ContentListPage() {
+  const { isAuthenticated, isLoading } = useAuth();
+  const router = useRouter();
   const [items, setItems] = useState<StoredContent[]>([]);
   const { track, events } = useAnalytics();
 
   useEffect(() => {
+    if (!isAuthenticated && !isLoading) {
+      router.push('/login');
+    }
+  }, [isAuthenticated, isLoading, router]);
+
+  useEffect(() => {
     setItems(loadDrafts());
   }, []);
+
+  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
+  if (!isAuthenticated) return null;
 
   const handleItemClick = useCallback(
     (item: StoredContent) => {
