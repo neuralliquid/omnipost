@@ -46,7 +46,7 @@ interface RouteParams {
  * Authenticate the request and return the user ID, or an error response
  */
 async function authenticateRequest(): Promise<
-  { userId: string } | { error: NextResponse }
+  { userId: string; error?: never } | { error: NextResponse; userId?: never }
 > {
   if (!(await isAuthenticated())) {
     return { error: Errors.unauthorized('Authentication required') as NextResponse };
@@ -63,7 +63,13 @@ async function authenticateRequest(): Promise<
 /**
  * Verify the job exists and the user owns it
  */
-async function getOwnedJob(jobId: string, userId: string) {
+async function getOwnedJob(
+  jobId: string,
+  userId: string
+): Promise<
+  { job: NonNullable<Awaited<ReturnType<ReturnType<typeof getScheduler>['getJob']>>>; error?: never }
+  | { error: NextResponse; job?: never }
+> {
   const scheduler = getScheduler();
   const job = await scheduler.getJob(jobId);
 
