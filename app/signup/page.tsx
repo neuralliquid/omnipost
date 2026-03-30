@@ -43,6 +43,25 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const getPasswordStrength = (
+    pwd: string
+  ): { label: string; level: 'weak' | 'fair' | 'strong' } => {
+    if (pwd.length === 0) return { label: '', level: 'weak' };
+    if (pwd.length < 8) return { label: 'Weak', level: 'weak' };
+    if (pwd.length >= 12) {
+      const hasUpper = /[A-Z]/.test(pwd);
+      const hasLower = /[a-z]/.test(pwd);
+      const hasNumber = /[0-9]/.test(pwd);
+      const hasSpecial = /[^A-Za-z0-9]/.test(pwd);
+      if (hasUpper && hasLower && hasNumber && hasSpecial) {
+        return { label: 'Strong', level: 'strong' };
+      }
+    }
+    return { label: 'Fair', level: 'fair' };
+  };
+
+  const passwordStrength = getPasswordStrength(password);
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
@@ -200,7 +219,34 @@ export default function SignupPage() {
                 disabled={loading}
                 autoComplete="new-password"
                 aria-required="true"
+                aria-describedby="password-strength password-requirements"
               />
+              {password.length > 0 && (
+                <div className={styles.strengthIndicator}>
+                  <div className={styles.strengthBar}>
+                    <div
+                      className={`${styles.strengthFill} ${styles[`strength_${passwordStrength.level}`]}`}
+                      role="progressbar"
+                      aria-valuenow={
+                        passwordStrength.level === 'weak' ? 33 :
+                        passwordStrength.level === 'fair' ? 66 : 100
+                      }
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`Password strength: ${passwordStrength.label}`}
+                    />
+                  </div>
+                  <span
+                    id="password-strength"
+                    className={`${styles.strengthLabel} ${styles[`strength_${passwordStrength.level}`]}`}
+                  >
+                    {passwordStrength.label}
+                  </span>
+                </div>
+              )}
+              <p id="password-requirements" className={styles.passwordRequirements}>
+                At least 8 characters, ideally 12+
+              </p>
             </div>
 
             <button type="submit" disabled={loading} className={styles.submitButton} aria-busy={loading}>

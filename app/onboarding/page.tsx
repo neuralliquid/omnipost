@@ -48,6 +48,7 @@ function StepConnectPlatforms({
             type="button"
             className={`${styles.platformCard} ${platform.connected ? styles.platformCardConnected : ''}`}
             onClick={() => onToggleConnect(platform.id)}
+            aria-label={`Connect ${platform.name}`}
             aria-pressed={platform.connected}
           >
             <span className={styles.platformIcon}>{platform.icon}</span>
@@ -90,7 +91,8 @@ function StepCreatePost({
         onChange={e => onPostChange(e.target.value)}
         aria-label="Post content"
       />
-      <div className={styles.platformCheckboxes}>
+      <fieldset className={styles.platformCheckboxes}>
+        <legend>Select platforms</legend>
         {platforms.map(platform => (
           <label key={platform.id} className={styles.checkboxLabel}>
             <input
@@ -101,7 +103,7 @@ function StepCreatePost({
             {platform.name}
           </label>
         ))}
-      </div>
+      </fieldset>
     </>
   );
 }
@@ -125,7 +127,7 @@ function ProgressIndicator({
   readonly currentStep: number;
 }) {
   return (
-    <div className={styles.progressBar}>
+    <div className={styles.progressBar} aria-live="polite">
       {Array.from({ length: TOTAL_STEPS }, (_, i) => {
         const stepNum = i + 1;
         let stepClass = styles.progressStep;
@@ -253,8 +255,11 @@ export default function OnboardingPage() {
     trackOnboardingStep(step, stepNames[step - 1] || 'unknown', true);
 
     if (step < TOTAL_STEPS) {
-      setStep(step + 1);
+      const nextStep = step + 1;
+      saveProgress(nextStep);
+      setStep(nextStep);
     } else {
+      sessionStorage.removeItem('onboarding-progress');
       router.push('/dashboard');
     }
   };
