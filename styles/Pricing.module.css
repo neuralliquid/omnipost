@@ -517,3 +517,8 @@
     padding: 0.65rem 0.5rem;
   }
 }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

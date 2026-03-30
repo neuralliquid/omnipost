@@ -181,3 +181,8 @@
   font-size: 1.125rem;
   color: var(--color-text-secondary, #64748b);
 }
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

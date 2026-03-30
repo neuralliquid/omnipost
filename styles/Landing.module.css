@@ -401,3 +401,14 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Accessibility ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .ctaPrimary,
+  .ctaSecondary,
+  .featureCard,
+  .testimonialCard,
+  .painPoint {
+    transition: none;
+  }
+}
