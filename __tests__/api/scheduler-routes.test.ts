@@ -129,6 +129,7 @@ describe('Scheduler API Routes', () => {
       const response = await POST(request);
       const data = await response.json();
 
+      console.log('POST response status:', response.status, 'data:', JSON.stringify(data));
       expect(response.status).toBe(201);
       expect(data.job).toBeDefined();
       expect(mockSchedule).toHaveBeenCalledTimes(1);
