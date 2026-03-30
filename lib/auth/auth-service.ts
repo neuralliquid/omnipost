@@ -190,20 +190,24 @@ export class AuthService {
     // Try to use Prisma if available
     try {
       const { prisma } = await import('../db/prisma');
-      // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const prismaClient = prisma as any;
-      if (prismaClient?.user?.findUnique) {
-        const dbUser = await prismaClient.user.findUnique({
-          where: { username },
-        });
-        if (dbUser) {
-          return {
-            id: dbUser.id,
-            username: dbUser.username,
-            role: dbUser.role,
-            isAdmin: dbUser.role === 'admin',
-          };
+      if (prisma) {
+        // Dynamic access: Prisma client is typed at runtime after generation
+        const db = prisma as Record<string, unknown>;
+        const userModel = db.user as
+          | { findUnique: (args: { where: { username: string } }) => Promise<{ id: string; username: string; role: string } | null> }
+          | undefined;
+        if (userModel?.findUnique) {
+          const dbUser = await userModel.findUnique({
+            where: { username },
+          });
+          if (dbUser) {
+            return {
+              id: dbUser.id,
+              username: dbUser.username,
+              role: dbUser.role,
+              isAdmin: dbUser.role === 'admin',
+            };
+          }
         }
       }
     } catch {
@@ -250,30 +254,33 @@ export class AuthService {
     // Try to use Prisma if available
     try {
       const { prisma } = await import('../db/prisma');
-      // Use dynamic access to avoid TypeScript errors when Prisma schema hasn't been generated
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const prismaClient = prisma as any;
-      if (prismaClient?.user?.findUnique) {
-        const dbUser = await prismaClient.user.findUnique({
-          where: { username },
-        });
-        if (dbUser?.passwordHash) {
-          // Use bcryptjs to compare passwords securely
-          try {
-            const bcrypt = await import('bcryptjs');
-            return await bcrypt.compare(password, dbUser.passwordHash);
-          } catch (bcryptError) {
-            console.error('[Auth] Failed to load or use bcryptjs:', bcryptError);
-            // In production, never allow plaintext fallback
-            if (isProduction) {
-              console.error('[Auth] bcryptjs unavailable in production - denying access');
+      if (prisma) {
+        const db = prisma as Record<string, unknown>;
+        const userModel = db.user as
+          | { findUnique: (args: { where: { username: string } }) => Promise<{ id: string; username: string; role: string; passwordHash: string } | null> }
+          | undefined;
+        if (userModel?.findUnique) {
+          const dbUser = await userModel.findUnique({
+            where: { username },
+          });
+          if (dbUser?.passwordHash) {
+            // Use bcryptjs to compare passwords securely
+            try {
+              const bcrypt = await import('bcryptjs');
+              return await bcrypt.compare(password, dbUser.passwordHash);
+            } catch (bcryptError) {
+              console.error('[Auth] Failed to load or use bcryptjs:', bcryptError);
+              // In production, never allow plaintext fallback
+              if (isProduction) {
+                console.error('[Auth] bcryptjs unavailable in production - denying access');
+                return false;
+              }
+              // In development only, warn and deny (no plaintext fallback)
+              console.warn(
+                '[Auth] bcryptjs unavailable - install bcryptjs for password verification'
+              );
               return false;
             }
-            // In development only, warn and deny (no plaintext fallback)
-            console.warn(
-              '[Auth] bcryptjs unavailable - install bcryptjs for password verification'
-            );
-            return false;
           }
         }
       }

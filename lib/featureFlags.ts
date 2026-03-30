@@ -69,6 +69,11 @@ export interface AIGatewayFeatureFlag {
   fallbackToDirectCalls: boolean;
 }
 
+export interface ExternalIdentityProviderFeatureFlag {
+  enabled: boolean;
+  apiUrl?: string;
+}
+
 // Define the base feature flags interface without index signature
 interface BaseFeatureFlags {
   textParser: TextParserFeatureFlag;
@@ -87,6 +92,8 @@ interface BaseFeatureFlags {
   crmDashboard: CrmDashboardFeatureFlag;
   // AI Gateway (Sluice)
   aiGateway: AIGatewayFeatureFlag;
+  // External Identity Provider
+  externalIdentityProvider: ExternalIdentityProviderFeatureFlag;
 }
 
 // Extend the base interface with an index signature for dynamic access
@@ -207,6 +214,10 @@ const featureFlags: FeatureFlags = {
   aiGateway: {
     enabled: false,
     fallbackToDirectCalls: true,
+  },
+  // External Identity Provider - disabled by default
+  externalIdentityProvider: {
+    enabled: false,
   },
 };
 /**

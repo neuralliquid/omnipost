@@ -89,11 +89,8 @@ async function setAuthCookie(token: string): Promise<void> {
   });
 }
 
-// In-memory user store for alpha registration
-const registeredUsers = new Map<string, { id: string; username: string; email: string; passwordHash: string; role: string }>();
-
 /**
- * Handles user registration
+ * Handles user registration with Prisma/PostgreSQL persistence
  * @param request Request object
  * @returns Response with JWT token and user info
  */
@@ -123,10 +120,31 @@ async function handleRegister(request: Request): Promise<NextResponse> {
       return Errors.badRequest('Password must be at least 8 characters');
     }
 
-    // Check if username already exists (hardcoded admin or in-memory store)
-    const existingUser = await authService.findUserByUsername(username);
-    if (existingUser || registeredUsers.has(username)) {
+    if (!prisma) {
+      return Errors.internalServerError('Database is not available');
+    }
+
+    // Dynamic access: Prisma client models are typed at runtime after generation
+    const db = prisma as Record<string, unknown>;
+    const userModel = db.user as {
+      findUnique: (args: { where: { username?: string; email?: string } }) => Promise<{ id: string; username: string; email: string; role: string } | null>;
+      create: (args: { data: { username: string; email: string; passwordHash: string; role: string } }) => Promise<{ id: string; username: string; email: string; role: string }>;
+    };
+
+    // Check if username already exists
+    const existingByUsername = await userModel.findUnique({
+      where: { username },
+    });
+    if (existingByUsername) {
       return Errors.badRequest('Username already exists');
+    }
+
+    // Check if email already exists
+    const existingByEmail = await userModel.findUnique({
+      where: { email },
+    });
+    if (existingByEmail) {
+      return Errors.badRequest('Email already exists');
     }
 
     // Hash password
@@ -143,24 +161,24 @@ async function handleRegister(request: Request): Promise<NextResponse> {
       passwordHash = `__dev_unhashed__${password}`;
     }
 
-    // Create user in-memory for alpha
-    const userId = `user-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-    const newUser: User = {
-      id: userId,
-      username,
-      role: 'user',
-    };
-
-    registeredUsers.set(username, {
-      id: userId,
-      username,
-      email,
-      passwordHash,
-      role: 'user',
+    // Create user in database
+    const dbUser = await userModel.create({
+      data: {
+        username,
+        email,
+        passwordHash,
+        role: 'user',
+      },
     });
 
+    const newUser: User = {
+      id: dbUser.id,
+      username: dbUser.username,
+      role: dbUser.role,
+    };
+
     // Log registration
-    await logToAuditTrail(await createLogEntry('REGISTER_SUCCESS', { username, userId }));
+    await logToAuditTrail(await createLogEntry('REGISTER_SUCCESS', { username, userId: newUser.id }));
 
     // Generate JWT token
     const token = generateToken(newUser);
@@ -206,43 +224,7 @@ async function handleLogin(request: Request): Promise<NextResponse> {
       return validationError;
     }
 
-    // Check in-memory registered users first
-    const registeredUser = registeredUsers.get(username);
-    if (registeredUser) {
-      let isValid = false;
-      try {
-        const bcrypt = await import('bcryptjs');
-        isValid = await bcrypt.compare(password, registeredUser.passwordHash);
-      } catch {
-        // Dev fallback: plain comparison
-        isValid = password === registeredUser.passwordHash;
-      }
-
-      if (!isValid) {
-        return Errors.unauthorized('Invalid username or password');
-      }
-
-      const user: User = {
-        id: registeredUser.id,
-        username: registeredUser.username,
-        role: registeredUser.role,
-      };
-
-      const token = generateToken(user);
-      await setAuthCookie(token);
-      await logToAuditTrail(await createLogEntry('LOGIN_SUCCESS', { username, userId: user.id }));
-
-      return NextResponse.json({
-        token,
-        user: {
-          id: user.id,
-          username: user.username,
-          role: user.role,
-        },
-      });
-    }
-
-    // Authenticate user (existing flow)
+    // Authenticate user via Prisma and auth service
     const userOrError = await authenticateUser(username, password);
     // Check if authentication returned an error response (NextResponse)
     if (userOrError && typeof userOrError === 'object' && 'status' in userOrError) {

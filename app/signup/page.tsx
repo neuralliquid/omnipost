@@ -34,6 +34,13 @@ interface RegisterResponse {
   };
 }
 
+interface AuthProviderInfo {
+  id: string;
+  name: string;
+  type: string;
+  icon?: string;
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
@@ -43,6 +50,8 @@ export default function SignupPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [providers, setProviders] = useState<AuthProviderInfo[]>([]);
+  const [providersLoading, setProvidersLoading] = useState(true);
 
   const getPasswordStrength = (
     pwd: string
@@ -63,12 +72,41 @@ export default function SignupPage() {
 
   const passwordStrength = getPasswordStrength(password);
 
+  // Fetch available auth providers on mount
+  useEffect(() => {
+    let cancelled = false;
+    async function fetchProviders() {
+      try {
+        const res = await fetch('/api/auth/providers');
+        if (res.ok) {
+          const data = await res.json();
+          if (!cancelled && Array.isArray(data.providers)) {
+            setProviders(data.providers as AuthProviderInfo[]);
+          }
+        }
+      } catch {
+        // External providers unavailable — email/password still works
+      } finally {
+        if (!cancelled) {
+          setProvidersLoading(false);
+        }
+      }
+    }
+    void fetchProviders();
+    return () => { cancelled = true; };
+  }, []);
+
   // Redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !isLoading) {
       router.push('/dashboard');
     }
   }, [isAuthenticated, isLoading, router]);
+
+  const handleProviderLogin = (providerId: string) => {
+    const callbackUrl = `${window.location.origin}/api/auth/callback/${encodeURIComponent(providerId)}`;
+    window.location.href = callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/onboarding')}`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,6 +204,29 @@ export default function SignupPage() {
               Analytics dashboard
             </li>
           </ul>
+
+          {!providersLoading && providers.length > 0 && (
+            <>
+              <div className={styles.socialButtons}>
+                {providers.map((provider) => (
+                  <button
+                    key={provider.id}
+                    type="button"
+                    className={styles.socialButton}
+                    onClick={() => handleProviderLogin(provider.id)}
+                    disabled={loading}
+                  >
+                    Continue with {provider.name}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.divider}>
+                <span className={styles.dividerLine} />
+                <span className={styles.dividerText}>or</span>
+                <span className={styles.dividerLine} />
+              </div>
+            </>
+          )}
 
           {error && (
             <div className={styles.errorMessage} role="alert" aria-live="assertive" aria-atomic="true">
