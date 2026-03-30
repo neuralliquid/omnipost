@@ -35,7 +35,7 @@ datasource db {
 model User {
   id           String   @id @default(cuid())
   username     String   @unique
-  email        String?  @unique
+  email        String   @unique
   passwordHash String   // bcrypt hashed password
   role         String   @default("user")
   createdAt    DateTime @default(now())

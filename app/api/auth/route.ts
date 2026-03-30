@@ -5,6 +5,7 @@ import { Errors, withErrorHandling } from '../_utils/errors';
 import { validateString } from '../_utils/validation';
 import { authService, User } from '../../../lib/auth/auth-service';
 import { withRateLimit, RateLimitPresets } from '../_utils/rateLimit';
+import { prisma } from '../../../lib/db/prisma';
 
 /**
  * Validates login input parameters
