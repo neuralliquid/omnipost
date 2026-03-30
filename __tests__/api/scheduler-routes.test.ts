@@ -20,7 +20,7 @@ const mockGetAllJobs = jest.fn();
 const mockGetJobsByStatus = jest.fn();
 const mockGetJobsByCampaign = jest.fn();
 
-jest.mock('../../lib/scheduler', () => ({
+jest.mock('@/lib/scheduler', () => ({
   getScheduler: () => ({
     schedule: mockSchedule,
     getAllJobs: mockGetAllJobs,

@@ -128,31 +128,31 @@
 
 ---
 
-## Phase 4: Launch Prep (Team: Marketing + Docs)
+## Phase 4: Launch Prep (Team: Marketing + Docs) -- COMPLETED
 
 **Goal**: Assets and channels ready for alpha announcement.
 
-### Task 4.1: Content package
+### Task 4.1: Content package -- COMPLETED
 **Team**: Marketing (using content-strategy + launch-strategy skills)
-- Launch blog post
-- 10+ social media posts (staggered)
-- Product Hunt submission assets
-- Launch email for waitlist
+- Launch blog post created (`docs/launch/BLOG_POST.md`)
+- 10+ social media posts created (`docs/launch/SOCIAL_POSTS.md`)
+- Product Hunt submission assets prepared (`docs/launch/PRODUCT_HUNT.md`)
+- Launch email for waitlist written (`docs/launch/LAUNCH_EMAIL.md`)
 
-### Task 4.2: Pricing page
+### Task 4.2: Pricing page -- COMPLETED
 **Team**: Frontend + Marketing (using pricing-strategy skill)
 - Free / Pro ($19/mo) / Team ($49/mo) tiers
 - Feature comparison table
 - FAQ section
-- No payment processing yet — just "Coming Soon" or waitlist
+- No payment processing yet -- waitlist CTA in place
 
-### Task 4.3: Documentation
+### Task 4.3: Documentation -- COMPLETED
 **Team**: Docs
-- Getting started guide
-- Platform connection guides (per platform)
-- API documentation (for developer audience)
+- Getting started guide created (`docs/GETTING_STARTED.md`)
+- Platform connection guides included in getting started guide
+- API documentation available in `docs/api/`
 
-### Task 4.4: SEO foundations
+### Task 4.4: SEO foundations -- COMPLETED
 **Team**: Marketing (using seo-audit + site-architecture skills)
 - Meta tags on all pages
 - Schema markup for SaaS product

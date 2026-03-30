@@ -18,6 +18,10 @@ Located in the repository root for easy access:
 - **[CHANGELOG.md](../CHANGELOG.md)** - Version history and changes
 - **[PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md)** - Directory structure overview
 
+### Getting Started
+
+- **[GETTING_STARTED.md](./GETTING_STARTED.md)** - Setup guide for alpha users (prerequisites, installation, first steps, configuration, troubleshooting)
+
 ### Technical Documentation
 
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Comprehensive technical architecture guide
@@ -71,7 +75,7 @@ Historical documentation from previous development phases:
 
 ### I want to...
 
-- **Get started with the project** → [README.md](../README.md)
+- **Get started with the project** → [GETTING_STARTED.md](./GETTING_STARTED.md)
 - **Understand the architecture** → [ARCHITECTURE.md](./ARCHITECTURE.md)
 - **Contribute code** → [CONTRIBUTING.md](../CONTRIBUTING.md)
 - **Work on API routes** → [api/next-api-best-practices.md](./api/next-api-best-practices.md)
@@ -111,4 +115,4 @@ If you can't find what you're looking for:
 
 ---
 
-**Last Updated**: November 23, 2025
+**Last Updated**: March 30, 2026
