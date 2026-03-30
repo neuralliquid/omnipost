@@ -8,6 +8,7 @@ import '../styles/globals.css';
 import { SeedDataProvider } from '@/components/providers/SeedDataProvider';
 import { AuthProvider } from '@/components/providers/AuthProvider';
 import { ToastProvider } from '@/components/ui';
+import { StructuredData } from '@/components/StructuredData';
 
 // Font configuration using CSS custom properties
 // Note: Google Fonts (Inter) can be enabled when network access is available
@@ -90,48 +91,7 @@ export default function RootLayout({ children }: { readonly children: React.Reac
     <html lang="en" className={fontConfig.variable} suppressHydrationWarning>
       <head>
         <link rel="icon" href="/favicon.ico" sizes="any" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              '@context': 'https://schema.org',
-              '@type': 'SoftwareApplication',
-              name: 'OmniPost',
-              applicationCategory: 'BusinessApplication',
-              operatingSystem: 'Web',
-              url: 'https://omnipost.dev',
-              description:
-                'AI-powered multi-platform content publishing. Publish everywhere, manage anywhere.',
-              offers: [
-                {
-                  '@type': 'Offer',
-                  name: 'Free',
-                  price: '0',
-                  priceCurrency: 'USD',
-                },
-                {
-                  '@type': 'Offer',
-                  name: 'Pro',
-                  price: '19',
-                  priceCurrency: 'USD',
-                  billingIncrement: 'P1M',
-                },
-                {
-                  '@type': 'Offer',
-                  name: 'Team',
-                  price: '49',
-                  priceCurrency: 'USD',
-                  billingIncrement: 'P1M',
-                },
-              ],
-              creator: {
-                '@type': 'Organization',
-                name: 'OmniPost',
-                url: 'https://omnipost.dev',
-              },
-            }),
-          }}
-        />
+        <StructuredData />
       </head>
       <body className={`${fontConfig.className} min-h-screen bg-background font-sans antialiased`}>
         {/* Skip to main content for accessibility */}
