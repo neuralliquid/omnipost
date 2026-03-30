@@ -80,13 +80,18 @@ AI agents should read this before using any marketing skill.
 
 ## Pricing Model
 
-**Status: TBD** — Pricing strategy not yet defined.
+**Status: Under Development** — See `pricing-strategy` skill for proposed tier structure.
 
-Potential models to evaluate (use pricing-strategy skill):
-- Freemium with platform limits
-- Per-seat for teams
-- Usage-based on AI generations
-- Tiered by number of connected platforms
+Proposed model (requires validation):
+- **Free**: 2 platforms, 10 posts/month, basic analytics
+- **Pro** ($19/mo): Unlimited platforms and posts, AI formatting, scheduling
+- **Team** ($49/mo): Pro + collaboration, client workspaces, priority support
+- **Enterprise**: Custom pricing, SSO, API access, SLA
+
+Additional models to evaluate:
+- Self-hosted/open-source licensing (community edition vs enterprise)
+- API-based usage pricing for developers
+- Per-client pricing for agencies
 
 ## Competitive Landscape
 
@@ -94,11 +99,14 @@ Potential models to evaluate (use pricing-strategy skill):
 **Indirect Competitors**: Canva (content creation), Mailchimp (email), HubSpot (all-in-one)
 
 **Differentiation**:
-- AI-native content optimization (summarization, image gen, quality scoring)
-- Open-source with self-hosting option
-- Built-in CRM and lead management
-- 34 marketing skills embedded in development workflow
-- Developer-first extensibility
+- AI-native content optimization (auto-reformats for each platform's constraints)
+- Open-source (MIT license) with self-hosting option — no vendor lock-in
+- Built-in CRM, lead management, and outreach sequences
+- 34 marketing skills embedded in development workflow (no other publisher has this)
+- Developer-first extensibility (API, custom platform adapters)
+- Unified analytics across all platforms in one dashboard
+- Multi-agent orchestration for development (Retort + 10 team-scoped agents)
+- Sluice AI gateway for centralized cost tracking across AI providers
 
 ## Brand Voice
 

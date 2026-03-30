@@ -173,8 +173,8 @@ export default function HomePage() {
 
           <div className={styles.metrics}>
             <div className={styles.metric}>
-              <span className={styles.metricValue}>10K+</span>
-              <span className={styles.metricLabel}>Active creators</span>
+              <span className={styles.metricValue}>Open Source</span>
+              <span className={styles.metricLabel}>MIT Licensed</span>
             </div>
             <div className={styles.metric}>
               <span className={styles.metricValue}>2M+</span>
