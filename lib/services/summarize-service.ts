@@ -42,7 +42,10 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
     const implementation = featureFlags.summarization?.implementation || 'huggingface';
     const gatewayResult = await gatewayPost('/v1/responses', {
       model: implementation,
-      text: rawText,
+      messages: [
+        { role: 'system', content: 'Summarize the following text concisely.' },
+        { role: 'user', content: rawText },
+      ],
     }, { operation: 'summarize_text' });
 
     if (gatewayResult.success) {
@@ -60,7 +63,7 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
 
   try {
     const apiConfig = getApiConfig();
-    const response = await axios.post(apiConfig.summarizationUrl, { text: rawText });
+    const response = await axios.post(apiConfig.summarizationUrl, { text: rawText }, { timeout: 30000 });
 
     return {
       success: true,
@@ -84,7 +87,7 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
 export async function approveSummary(summary: string): Promise<SummarizeServiceResult> {
   try {
     const apiConfig = getApiConfig();
-    const response = await axios.post(apiConfig.approvalUrl, { summary });
+    const response = await axios.post(apiConfig.approvalUrl, { summary }, { timeout: 30000 });
 
     return {
       success: true,
