@@ -106,15 +106,15 @@ export function ContentListPage() {
     setItems(loadDrafts());
   }, []);
 
-  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
-  if (!isAuthenticated) return null;
-
   const handleItemClick = useCallback(
     (item: StoredContent) => {
       track(events.FEATURE_USED, { featureName: 'content_view', context: item.id });
     },
     [track, events]
   );
+
+  if (isLoading) return <LoadingSpinner size="lg" label="Loading..." />;
+  if (!isAuthenticated) return null;
 
   // ── Empty state ─────────────────────────────────────────────────────────
 
@@ -166,9 +166,7 @@ export function ContentListPage() {
                 <h3 className={styles.contentItemTitle}>{item.title || 'Untitled'}</h3>
                 <div className={styles.contentItemMeta}>
                   <span>{formatDate(item.createdAt)}</span>
-                  {item.body && (
-                    <span>{item.body.length} chars</span>
-                  )}
+                  {item.body && <span>{item.body.length} chars</span>}
                 </div>
               </div>
               <div className={styles.contentItemRight}>
@@ -177,9 +175,7 @@ export function ContentListPage() {
                     {enabledPlatforms.length} platform{enabledPlatforms.length !== 1 ? 's' : ''}
                   </span>
                 )}
-                <span className={getBadgeClass(item.status)}>
-                  {getDisplayStatus(item.status)}
-                </span>
+                <span className={getBadgeClass(item.status)}>{getDisplayStatus(item.status)}</span>
               </div>
             </Link>
           );

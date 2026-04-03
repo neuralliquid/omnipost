@@ -44,6 +44,7 @@ type AuthFixtures = {
  * });
  * ```
  */
+/* eslint-disable react-hooks/rules-of-hooks -- Playwright's use() is not React's use() hook */
 export const test = base.extend<AuthFixtures>({
   authenticatedPage: async ({ browser }, use) => {
     // Try to reuse previously-saved auth state; fall back to fresh login
