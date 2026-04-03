@@ -18,7 +18,7 @@ env:
   NODE_VERSION: '20.x'
   AZURE_WEBAPP_PACKAGE_PATH: '.'
   ORG_CODE: 'nl'
-  PROJECT_NAME: 'omnipost'
+  PROJECT_NAME: 'cc'
   REGION_CODE: 'euw'
   LOCATION: 'westeurope'
   DNS_ZONE: 'nexamesh.ai'
