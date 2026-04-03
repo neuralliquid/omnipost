@@ -15,10 +15,14 @@ jest.mock('../../app/api/_utils/audit', () => ({
 }));
 
 // Mock scheduler module
-const mockSchedule = jest.fn();
-const mockGetAllJobs = jest.fn();
-const mockGetJobsByStatus = jest.fn();
-const mockGetJobsByCampaign = jest.fn();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockSchedule = jest.fn<any>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockGetAllJobs = jest.fn<any>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockGetJobsByStatus = jest.fn<any>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mockGetJobsByCampaign = jest.fn<any>();
 
 // Mock the sanitize module
 jest.mock('../../app/api/_utils/sanitize', () => ({
