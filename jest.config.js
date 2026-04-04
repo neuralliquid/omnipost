@@ -40,6 +40,7 @@ const customJestConfig = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
+    '<rootDir>/e2e/',
     '<rootDir>/__tests__/a11y/a11y-setup.ts',
   ],
 
