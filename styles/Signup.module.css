@@ -313,5 +313,5 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  * { transition: none !important; animation: none !important; }
+  :global(*) { transition: none !important; animation: none !important; }
 }
