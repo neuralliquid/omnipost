@@ -71,7 +71,9 @@ export const POST = withRateLimit(
 
     // Audit log for significant events
     const significantEvents = events.filter(e =>
-      ['signup_completed', 'platform_connected', 'post_published', 'payment_completed'].includes(e.name)
+      ['signup_completed', 'platform_connected', 'post_published', 'payment_completed'].includes(
+        e.name
+      )
     );
 
     if (significantEvents.length > 0) {
@@ -102,60 +104,64 @@ export const POST = withRateLimit(
  * Returns aggregated event counts for the analytics dashboard.
  * Requires authentication.
  */
-export const GET = withRateLimit(withErrorHandling(async (request: Request) => {
-  if (!(await isAuthenticated())) {
-    return Errors.unauthorized('Authentication required to view analytics');
-  }
-
-  const url = new URL(request.url);
-  const eventName = url.searchParams.get('event');
-  const since = url.searchParams.get('since');
-
-  let filtered = eventStore;
-
-  if (eventName) {
-    filtered = filtered.filter(e => e.name === eventName);
-  }
-
-  if (since) {
-    const sinceDate = new Date(since).getTime();
-    if (!isNaN(sinceDate)) {
-      filtered = filtered.filter(e => new Date(e.receivedAt).getTime() >= sinceDate);
+export const GET = withRateLimit(
+  withErrorHandling(async (request: Request) => {
+    if (!(await isAuthenticated())) {
+      return Errors.unauthorized('Authentication required to view analytics');
     }
-  }
 
-  // Aggregate by event name
-  const counts: Record<string, number> = {};
-  for (const event of filtered) {
-    counts[event.name] = (counts[event.name] || 0) + 1;
-  }
+    const url = new URL(request.url);
+    const eventName = url.searchParams.get('event');
+    const since = url.searchParams.get('since');
 
-  // AARRR funnel metrics
-  const funnel = {
-    acquisition: {
-      pageViews: counts['page_viewed'] || 0,
-      signupStarted: counts['signup_started'] || 0,
-      signupCompleted: counts['signup_completed'] || 0,
-    },
-    activation: {
-      platformConnected: counts['platform_connected'] || 0,
-      postCreated: counts['post_created'] || 0,
-      postPublished: counts['post_published'] || 0,
-    },
-    revenue: {
-      pricingViewed: counts['pricing_page_viewed'] || 0,
-      trialStarted: counts['trial_started'] || 0,
-      paymentCompleted: counts['payment_completed'] || 0,
-    },
-    referral: {
-      linkShared: counts['referral_link_shared'] || 0,
-      referralSignup: counts['referral_signup'] || 0,
-    },
-  };
+    let filtered = eventStore;
 
-  return NextResponse.json({
-    totalEvents: filtered.length,
-    counts,
-    funnel,
-  });
-}), '/api/analytics/events', RateLimitPresets.GENERAL);
+    if (eventName) {
+      filtered = filtered.filter(e => e.name === eventName);
+    }
+
+    if (since) {
+      const sinceDate = new Date(since).getTime();
+      if (!isNaN(sinceDate)) {
+        filtered = filtered.filter(e => new Date(e.receivedAt).getTime() >= sinceDate);
+      }
+    }
+
+    // Aggregate by event name
+    const counts: Record<string, number> = {};
+    for (const event of filtered) {
+      counts[event.name] = (counts[event.name] || 0) + 1;
+    }
+
+    // AARRR funnel metrics
+    const funnel = {
+      acquisition: {
+        pageViews: counts['page_viewed'] || 0,
+        signupStarted: counts['signup_started'] || 0,
+        signupCompleted: counts['signup_completed'] || 0,
+      },
+      activation: {
+        platformConnected: counts['platform_connected'] || 0,
+        postCreated: counts['post_created'] || 0,
+        postPublished: counts['post_published'] || 0,
+      },
+      revenue: {
+        pricingViewed: counts['pricing_page_viewed'] || 0,
+        trialStarted: counts['trial_started'] || 0,
+        paymentCompleted: counts['payment_completed'] || 0,
+      },
+      referral: {
+        linkShared: counts['referral_link_shared'] || 0,
+        referralSignup: counts['referral_signup'] || 0,
+      },
+    };
+
+    return NextResponse.json({
+      totalEvents: filtered.length,
+      counts,
+      funnel,
+    });
+  }),
+  '/api/analytics/events',
+  RateLimitPresets.GENERAL
+);

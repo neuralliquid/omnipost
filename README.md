@@ -584,20 +584,20 @@ For more testing guidelines, see [CONTRIBUTING.md](./CONTRIBUTING.md#testing).
 
 <div align="center">
 
-| Category            | Technologies                                                  |
-| ------------------- | ------------------------------------------------------------- |
-| **Frontend**        | React 19, Next.js 16 (App Router), TypeScript 5.3             |
-| **Styling**         | CSS Modules, Global CSS                                       |
-| **ORM / Database**  | Prisma 7, PostgreSQL                                          |
-| **API**             | Next.js Route Handlers, RESTful API design                    |
-| **Authentication**  | JWT tokens, async middleware                                  |
-| **Validation**      | Zod 3 schemas, DOMPurify sanitization                         |
-| **Testing**         | Jest 29, React Testing Library, jest-axe                      |
-| **Deployment**      | Azure Web Apps, Bicep IaC                                     |
-| **CI/CD**           | GitHub Actions                                                |
-| **AI Services**     | Hugging Face (image generation), OpenAI, DeepSeek, Azure AI   |
-| **Integrations**    | Slack, Twilio, Nodemailer                                     |
-| **Package Manager** | pnpm 9                                                        |
+| Category            | Technologies                                                |
+| ------------------- | ----------------------------------------------------------- |
+| **Frontend**        | React 19, Next.js 16 (App Router), TypeScript 5.3           |
+| **Styling**         | CSS Modules, Global CSS                                     |
+| **ORM / Database**  | Prisma 7, PostgreSQL                                        |
+| **API**             | Next.js Route Handlers, RESTful API design                  |
+| **Authentication**  | JWT tokens, async middleware                                |
+| **Validation**      | Zod 3 schemas, DOMPurify sanitization                       |
+| **Testing**         | Jest 29, React Testing Library, jest-axe                    |
+| **Deployment**      | Azure Web Apps, Bicep IaC                                   |
+| **CI/CD**           | GitHub Actions                                              |
+| **AI Services**     | Hugging Face (image generation), OpenAI, DeepSeek, Azure AI |
+| **Integrations**    | Slack, Twilio, Nodemailer                                   |
+| **Package Manager** | pnpm 9                                                      |
 
 </div>
 

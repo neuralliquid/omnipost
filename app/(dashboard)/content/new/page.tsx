@@ -126,10 +126,7 @@ export function ContentCreatePage() {
 
   // ── Derived values ──────────────────────────────────────────────────────
 
-  const enabledPlatforms = useMemo(
-    () => platformStates.filter(p => p.enabled),
-    [platformStates]
-  );
+  const enabledPlatforms = useMemo(() => platformStates.filter(p => p.enabled), [platformStates]);
 
   const canProceedStep1 = title.trim().length > 0 && body.trim().length > 0;
   const canProceedStep2 = enabledPlatforms.length > 0;
@@ -162,15 +159,11 @@ export function ContentCreatePage() {
   }, [body, track, events]);
 
   const togglePlatform = useCallback((slug: string) => {
-    setPlatformStates(prev =>
-      prev.map(p => (p.slug === slug ? { ...p, enabled: !p.enabled } : p))
-    );
+    setPlatformStates(prev => prev.map(p => (p.slug === slug ? { ...p, enabled: !p.enabled } : p)));
   }, []);
 
   const updateHashtags = useCallback((slug: string, value: string) => {
-    setPlatformStates(prev =>
-      prev.map(p => (p.slug === slug ? { ...p, hashtags: value } : p))
-    );
+    setPlatformStates(prev => prev.map(p => (p.slug === slug ? { ...p, hashtags: value } : p)));
   }, []);
 
   const saveDraft = useCallback(() => {
@@ -285,8 +278,7 @@ export function ContentCreatePage() {
     return (
       <div className={styles.progressBar} role="navigation" aria-label="Creation steps">
         {STEPS.map((label, i) => {
-          const stepState =
-            i < currentStep ? 'completed' : i === currentStep ? 'active' : '';
+          const stepState = i < currentStep ? 'completed' : i === currentStep ? 'active' : '';
           return (
             <div key={label} style={{ display: 'contents' }}>
               {i > 0 && (
@@ -408,10 +400,7 @@ export function ContentCreatePage() {
                     <div className={styles.adaptedPreview}>{adapted}</div>
 
                     <div className={styles.fieldGroup} style={{ marginBottom: 0 }}>
-                      <label
-                        htmlFor={`hashtags-${platform.slug}`}
-                        className={styles.label}
-                      >
+                      <label htmlFor={`hashtags-${platform.slug}`} className={styles.label}>
                         Hashtags (comma-separated)
                       </label>
                       <input
@@ -453,7 +442,10 @@ export function ContentCreatePage() {
         <h2 className={styles.stepTitle}>Schedule or Publish</h2>
 
         <div className={styles.publishSummary}>
-          Publishing to <strong>{enabledPlatforms.length} platform{enabledPlatforms.length !== 1 ? 's' : ''}</strong>
+          Publishing to{' '}
+          <strong>
+            {enabledPlatforms.length} platform{enabledPlatforms.length !== 1 ? 's' : ''}
+          </strong>
           {enabledPlatforms.length > 0 && <>: {platformNames}</>}
         </div>
 
@@ -541,8 +533,7 @@ export function ContentCreatePage() {
               type="button"
               className={styles.btnPrimary}
               disabled={
-                (currentStep === 0 && !canProceedStep1) ||
-                (currentStep === 1 && !canProceedStep2)
+                (currentStep === 0 && !canProceedStep1) || (currentStep === 1 && !canProceedStep2)
               }
               onClick={() => setCurrentStep(currentStep + 1)}
             >
@@ -557,11 +548,7 @@ export function ContentCreatePage() {
               disabled={!canPublish || publishing}
               onClick={handlePublish}
             >
-              {publishing
-                ? 'Publishing...'
-                : scheduleMode === 'now'
-                  ? 'Publish Now'
-                  : 'Schedule'}
+              {publishing ? 'Publishing...' : scheduleMode === 'now' ? 'Publish Now' : 'Schedule'}
             </button>
           )}
         </div>

@@ -14,16 +14,17 @@ AI agents should read this before using any marketing skill.
 
 ## Target Users
 
-| Segment | Description | Primary Need |
-|---|---|---|
-| Content Creators | Bloggers, writers, indie creators | Publish once, distribute everywhere |
-| Marketing Teams | 2-10 person teams at startups/SMBs | Centralized content operations |
-| SMBs | Small businesses managing social presence | Time savings, consistency |
-| Social Media Managers | Freelancers and agencies | Multi-client, multi-platform management |
+| Segment               | Description                               | Primary Need                            |
+| --------------------- | ----------------------------------------- | --------------------------------------- |
+| Content Creators      | Bloggers, writers, indie creators         | Publish once, distribute everywhere     |
+| Marketing Teams       | 2-10 person teams at startups/SMBs        | Centralized content operations          |
+| SMBs                  | Small businesses managing social presence | Time savings, consistency               |
+| Social Media Managers | Freelancers and agencies                  | Multi-client, multi-platform management |
 
 ## Core Capabilities
 
 ### Content Publishing
+
 - Multi-platform publishing (Facebook, Instagram, LinkedIn, Twitter, Custom)
 - Platform-specific content adaptation (character limits, hashtags, threading)
 - Campaign management (draft → scheduled → active → completed)
@@ -31,12 +32,14 @@ AI agents should read this before using any marketing skill.
 - Human review workflows with approval gates
 
 ### AI-Powered Features
+
 - Text summarization (Hugging Face, Azure AI, OpenAI)
 - Text parsing and extraction (DeepSeek, OpenAI, Azure)
 - AI image generation (Hugging Face Stable Diffusion, DALL-E)
 - Content quality scoring
 
 ### CRM & Growth
+
 - Lead management with scoring and tagging
 - Outreach sequences (email, LinkedIn, SMS)
 - Form builder with lead capture
@@ -44,13 +47,13 @@ AI agents should read this before using any marketing skill.
 
 ## Platform Constraints
 
-| Platform | Character Limit | Capabilities | Rate Limit |
-|---|---|---|---|
-| Twitter | 280 chars | Text, images, threading | 300/15min, 2400/day |
-| LinkedIn | 3,000 chars | Text, images, articles | 100/day |
-| Facebook | 63,206 chars | Text, images, video | 200/hour |
-| Instagram | 2,200 chars | Images, video, stories | 200/hour |
-| Custom | Configurable | Configurable | 1000/hour |
+| Platform  | Character Limit | Capabilities            | Rate Limit          |
+| --------- | --------------- | ----------------------- | ------------------- |
+| Twitter   | 280 chars       | Text, images, threading | 300/15min, 2400/day |
+| LinkedIn  | 3,000 chars     | Text, images, articles  | 100/day             |
+| Facebook  | 63,206 chars    | Text, images, video     | 200/hour            |
+| Instagram | 2,200 chars     | Images, video, stories  | 200/hour            |
+| Custom    | Configurable    | Configurable            | 1000/hour           |
 
 ## Tech Stack
 
@@ -65,30 +68,32 @@ AI agents should read this before using any marketing skill.
 
 ## Integrations
 
-| Integration | Purpose | Status |
-|---|---|---|
-| Hugging Face | Image generation, summarization | Active |
-| OpenAI | Text parsing | Active |
-| DeepSeek | Text parsing (alternative) | Active |
-| Azure AI Foundry | Chat completion, image gen, embeddings | Active |
-| Airtable | Data storage and tracking | Active |
-| Slack | Team notifications | Active |
-| Twilio | SMS notifications | Active |
-| Nodemailer | Email notifications | Active |
-| Upstash Redis | Rate limiting cache | Active |
-| Sluice Gateway | AI cost tracking and routing | Planned |
+| Integration      | Purpose                                | Status  |
+| ---------------- | -------------------------------------- | ------- |
+| Hugging Face     | Image generation, summarization        | Active  |
+| OpenAI           | Text parsing                           | Active  |
+| DeepSeek         | Text parsing (alternative)             | Active  |
+| Azure AI Foundry | Chat completion, image gen, embeddings | Active  |
+| Airtable         | Data storage and tracking              | Active  |
+| Slack            | Team notifications                     | Active  |
+| Twilio           | SMS notifications                      | Active  |
+| Nodemailer       | Email notifications                    | Active  |
+| Upstash Redis    | Rate limiting cache                    | Active  |
+| Sluice Gateway   | AI cost tracking and routing           | Planned |
 
 ## Pricing Model
 
 **Status: Under Development** — See `pricing-strategy` skill for proposed tier structure.
 
 Proposed model (requires validation):
+
 - **Free**: 2 platforms, 10 posts/month, basic analytics
 - **Pro** ($19/mo): Unlimited platforms and posts, AI formatting, scheduling
 - **Team** ($49/mo): Pro + collaboration, client workspaces, priority support
 - **Enterprise**: Custom pricing, SSO, API access, SLA
 
 Additional models to evaluate:
+
 - Self-hosted/open-source licensing (community edition vs enterprise)
 - API-based usage pricing for developers
 - Per-client pricing for agencies
@@ -99,6 +104,7 @@ Additional models to evaluate:
 **Indirect Competitors**: Canva (content creation), Mailchimp (email), HubSpot (all-in-one)
 
 **Differentiation**:
+
 - AI-native content optimization (auto-reformats for each platform's constraints)
 - Open-source (MIT license) with self-hosting option — no vendor lock-in
 - Built-in CRM, lead management, and outreach sequences

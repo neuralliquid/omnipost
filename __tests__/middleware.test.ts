@@ -19,11 +19,17 @@ jest.mock('next/server', () => {
     constructor(init?: Headers | Record<string, string> | [string, string][]) {
       if (init) {
         if (Array.isArray(init)) {
-          init.forEach(([k, v]) => { this.store[k.toLowerCase()] = v; });
+          init.forEach(([k, v]) => {
+            this.store[k.toLowerCase()] = v;
+          });
         } else if (typeof init === 'object' && 'forEach' in init) {
-          (init as Headers).forEach((v: string, k: string) => { this.store[k.toLowerCase()] = v; });
+          (init as Headers).forEach((v: string, k: string) => {
+            this.store[k.toLowerCase()] = v;
+          });
         } else {
-          Object.entries(init).forEach(([k, v]) => { this.store[k.toLowerCase()] = v; });
+          Object.entries(init).forEach(([k, v]) => {
+            this.store[k.toLowerCase()] = v;
+          });
         }
       }
     }
@@ -126,11 +132,9 @@ describe('Middleware', () => {
   });
 
   test('extracts and verifies JWT from cookie', () => {
-    const token = jwt.sign(
-      { id: 'user-1', username: 'testuser', role: 'admin' },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = jwt.sign({ id: 'user-1', username: 'testuser', role: 'admin' }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
 
     const request = createMockNextRequest({ cookieToken: token });
     const response = middleware(request);
@@ -143,11 +147,9 @@ describe('Middleware', () => {
   });
 
   test('extracts and verifies JWT from Authorization header', () => {
-    const token = jwt.sign(
-      { id: 'user-2', username: 'bearer-user', role: 'editor' },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = jwt.sign({ id: 'user-2', username: 'bearer-user', role: 'editor' }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
 
     const request = createMockNextRequest({ authHeader: `Bearer ${token}` });
     const response = middleware(request);
@@ -159,11 +161,9 @@ describe('Middleware', () => {
   });
 
   test('sets x-user-id, x-user-name, x-user-role headers on valid token', () => {
-    const token = jwt.sign(
-      { id: '42', username: 'alice', role: 'admin' },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = jwt.sign({ id: '42', username: 'alice', role: 'admin' }, JWT_SECRET, {
+      expiresIn: '1h',
+    });
 
     const request = createMockNextRequest({ cookieToken: token });
     const response = middleware(request);
@@ -176,11 +176,9 @@ describe('Middleware', () => {
 
   test('handles expired tokens gracefully', () => {
     // Create a token that is already expired
-    const token = jwt.sign(
-      { id: 'user-3', username: 'expired-user', role: 'admin' },
-      JWT_SECRET,
-      { expiresIn: '-1s' }
-    );
+    const token = jwt.sign({ id: 'user-3', username: 'expired-user', role: 'admin' }, JWT_SECRET, {
+      expiresIn: '-1s',
+    });
 
     const request = createMockNextRequest({ cookieToken: token });
     const response = middleware(request);

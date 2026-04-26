@@ -29,24 +29,25 @@ Implement and optimize structured data across OmniPost's website to improve sear
 
 Map OmniPost page types to schema.org types:
 
-| Page Type | Primary Schema | Rich Result |
-|-----------|---------------|-------------|
-| Homepage | Organization, WebSite | Sitelinks search box |
-| Product/features | SoftwareApplication, Product | Product rich snippet |
-| Pricing | Product, Offer | Price display |
-| Blog posts | Article, BlogPosting | Article rich snippet |
-| How-to guides | HowTo | How-to rich snippet |
-| FAQ pages | FAQPage | FAQ accordion |
-| Comparison pages | Article + ItemList | None (but helps AI search) |
-| About page | Organization, AboutPage | Knowledge panel |
-| Team pages | Person, Organization | None |
-| Case studies | Article, Review | Review stars |
+| Page Type        | Primary Schema               | Rich Result                |
+| ---------------- | ---------------------------- | -------------------------- |
+| Homepage         | Organization, WebSite        | Sitelinks search box       |
+| Product/features | SoftwareApplication, Product | Product rich snippet       |
+| Pricing          | Product, Offer               | Price display              |
+| Blog posts       | Article, BlogPosting         | Article rich snippet       |
+| How-to guides    | HowTo                        | How-to rich snippet        |
+| FAQ pages        | FAQPage                      | FAQ accordion              |
+| Comparison pages | Article + ItemList           | None (but helps AI search) |
+| About page       | Organization, AboutPage      | Knowledge panel            |
+| Team pages       | Person, Organization         | None                       |
+| Case studies     | Article, Review              | Review stars               |
 
 ### Step 3: Implementation (JSON-LD)
 
 Always use JSON-LD format (Google's preferred method).
 
 **Organization (sitewide)**:
+
 ```json
 {
   "@context": "https://schema.org",
@@ -69,6 +70,7 @@ Always use JSON-LD format (Google's preferred method).
 ```
 
 **SoftwareApplication (product pages)**:
+
 ```json
 {
   "@context": "https://schema.org",
@@ -92,6 +94,7 @@ Always use JSON-LD format (Google's preferred method).
 ```
 
 **FAQPage**:
+
 ```json
 {
   "@context": "https://schema.org",
@@ -110,6 +113,7 @@ Always use JSON-LD format (Google's preferred method).
 ```
 
 **Article/BlogPosting**:
+
 ```json
 {
   "@context": "https://schema.org",
@@ -133,24 +137,27 @@ Always use JSON-LD format (Google's preferred method).
 ### Step 4: Advanced Schema Patterns
 
 **BreadcrumbList** (all pages):
+
 ```json
 {
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://omnipost.com"},
-    {"@type": "ListItem", "position": 2, "name": "Blog", "item": "https://omnipost.com/blog"},
-    {"@type": "ListItem", "position": 3, "name": "[Post Title]"}
+    { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://omnipost.com" },
+    { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://omnipost.com/blog" },
+    { "@type": "ListItem", "position": 3, "name": "[Post Title]" }
   ]
 }
 ```
 
 **HowTo** (tutorial content):
+
 - Include step-by-step instructions with estimated time
 - Add images per step when available
 - Specify tools or supplies needed
 
 **ItemList** (comparison and listicle pages):
+
 - List items with position, name, and URL
 - Helps search engines understand list content
 
@@ -180,6 +187,7 @@ Always use JSON-LD format (Google's preferred method).
 ## Output Format
 
 Deliver schema markup as:
+
 1. JSON-LD code blocks ready to implement
 2. Page-type mapping (which schema goes where)
 3. Validation results

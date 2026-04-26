@@ -22,14 +22,14 @@ Design and optimize OmniPost's pricing — tier structure, feature packaging, pr
 
 **Common SaaS pricing models**:
 
-| Model | Description | Best For |
-|-------|-------------|----------|
-| Flat rate | One price, all features | Simple products |
-| Tiered | Good/Better/Best | Most SaaS (recommended for OmniPost) |
-| Per-seat | Price per user | Team/collaboration tools |
-| Usage-based | Price per unit (posts, platforms) | High-variance usage |
-| Hybrid | Base price + usage | Complex products |
-| Freemium | Free tier + paid upgrades | Growth-focused products |
+| Model       | Description                       | Best For                             |
+| ----------- | --------------------------------- | ------------------------------------ |
+| Flat rate   | One price, all features           | Simple products                      |
+| Tiered      | Good/Better/Best                  | Most SaaS (recommended for OmniPost) |
+| Per-seat    | Price per user                    | Team/collaboration tools             |
+| Usage-based | Price per unit (posts, platforms) | High-variance usage                  |
+| Hybrid      | Base price + usage                | Complex products                     |
+| Freemium    | Free tier + paid upgrades         | Growth-focused products              |
 
 **Recommended for OmniPost**: Freemium + Tiered, with per-seat pricing for team plans.
 
@@ -38,20 +38,24 @@ Design and optimize OmniPost's pricing — tier structure, feature packaging, pr
 Design 3-4 tiers with clear differentiation:
 
 **Free tier** (acquisition engine):
+
 - Purpose: Remove barriers, build habit, create upgrade desire
 - Include: Core publishing to 2 platforms, 10 posts/month, basic analytics
 - Gate: Platform count, post volume, advanced features
 
 **Pro tier** ($19/mo, $190/yr — target: solo creators):
+
 - Purpose: Serve the primary persona's full needs
 - Include: Unlimited platforms, unlimited posts, AI formatting, scheduling, full analytics
 - This should be the "obvious choice" for active creators
 
 **Team tier** ($49/mo, $490/yr — target: small teams/agencies):
+
 - Purpose: Serve multi-person workflows
 - Include: Everything in Pro + team collaboration, client workspaces, shared calendars, priority support
 
 **Enterprise** (custom pricing):
+
 - Purpose: Serve large organizations
 - Include: SSO, API access, dedicated support, SLA, custom integrations
 
@@ -80,6 +84,7 @@ Design 3-4 tiers with clear differentiation:
 ### Step 4: Feature Packaging
 
 **Principles for feature gating**:
+
 - Free tier should deliver real value (not a crippled demo)
 - The upgrade trigger should feel natural (not punitive)
 - Each tier should have 2-3 "hero features" that justify the price jump
@@ -131,6 +136,7 @@ See **marketing-psychology** skill for deeper psychological principles.
 ## Output Format
 
 Deliver pricing strategy as:
+
 1. Pricing model recommendation with rationale
 2. Tier definitions with features, prices, and target personas
 3. Competitive pricing analysis

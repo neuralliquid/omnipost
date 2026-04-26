@@ -18,14 +18,17 @@ async function handleGetProviders(): Promise<NextResponse> {
 
   // Only return the fields the client needs
   const publicProviders = providers
-    .filter((p) => p.enabled)
+    .filter(p => p.enabled)
     .map(({ id, name, type, icon }) => ({ id, name, type, icon }));
 
-  return NextResponse.json({ providers: publicProviders }, {
-    headers: {
-      'Cache-Control': 'public, max-age=300, s-maxage=300',
-    },
-  });
+  return NextResponse.json(
+    { providers: publicProviders },
+    {
+      headers: {
+        'Cache-Control': 'public, max-age=300, s-maxage=300',
+      },
+    }
+  );
 }
 
 export const GET = withRateLimit(

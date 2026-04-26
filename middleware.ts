@@ -25,9 +25,7 @@ export function middleware(request: NextRequest): NextResponse {
   // Try to get token from cookie first, then Authorization header
   const tokenFromCookie = request.cookies.get('auth-token')?.value;
   const authHeader = request.headers.get('authorization');
-  const tokenFromHeader = authHeader?.startsWith('Bearer ')
-    ? authHeader.slice(7)
-    : null;
+  const tokenFromHeader = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
 
   const token = tokenFromCookie || tokenFromHeader;
 

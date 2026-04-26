@@ -138,7 +138,9 @@
   padding: 2rem;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 200ms ease, transform 200ms ease;
+  transition:
+    box-shadow 200ms ease,
+    transform 200ms ease;
 }
 
 .card:hover {
@@ -246,7 +248,10 @@
   text-decoration: none;
   border: none;
   cursor: pointer;
-  transition: background-color 200ms ease, transform 200ms ease, box-shadow 200ms ease;
+  transition:
+    background-color 200ms ease,
+    transform 200ms ease,
+    box-shadow 200ms ease;
   text-align: center;
 }
 
@@ -520,5 +525,8 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  :global(*) { transition: none !important; animation: none !important; }
+  :global(*) {
+    transition: none !important;
+    animation: none !important;
+  }
 }

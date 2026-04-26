@@ -21,25 +21,27 @@ Ideate, design, and optimize free tools for OmniPost that attract target users t
 ### Step 1: Identify Free Tool Opportunities
 
 Free tools should meet all three criteria:
+
 1. **Search demand**: People actively search for the tool
 2. **Audience alignment**: Searchers are potential OmniPost users
 3. **Product connection**: Natural bridge to OmniPost's core value
 
 OmniPost free tool ideas:
 
-| Tool | Search Intent | Traffic Potential | Product Bridge |
-|------|--------------|------------------|---------------|
-| Social media character counter | "Twitter character limit checker" | High | Shows platform differences → OmniPost handles formatting |
-| Image size calculator | "Instagram image dimensions" | High | Shows complexity → OmniPost auto-resizes |
-| Best time to post calculator | "Best time to post on LinkedIn" | High | Scheduling → OmniPost's scheduling feature |
-| Content repurposing generator | "Turn blog post into tweets" | Medium | Core use case → try OmniPost for the full workflow |
-| Hashtag generator | "Hashtag generator for Instagram" | High | Content optimization → OmniPost's AI features |
-| Social media bio generator | "LinkedIn bio generator" | Medium | Creator audience → multi-platform publishing |
-| Post preview tool | "How will my tweet look" | Medium | Multi-platform preview → OmniPost's preview feature |
+| Tool                           | Search Intent                     | Traffic Potential | Product Bridge                                           |
+| ------------------------------ | --------------------------------- | ----------------- | -------------------------------------------------------- |
+| Social media character counter | "Twitter character limit checker" | High              | Shows platform differences → OmniPost handles formatting |
+| Image size calculator          | "Instagram image dimensions"      | High              | Shows complexity → OmniPost auto-resizes                 |
+| Best time to post calculator   | "Best time to post on LinkedIn"   | High              | Scheduling → OmniPost's scheduling feature               |
+| Content repurposing generator  | "Turn blog post into tweets"      | Medium            | Core use case → try OmniPost for the full workflow       |
+| Hashtag generator              | "Hashtag generator for Instagram" | High              | Content optimization → OmniPost's AI features            |
+| Social media bio generator     | "LinkedIn bio generator"          | Medium            | Creator audience → multi-platform publishing             |
+| Post preview tool              | "How will my tweet look"          | Medium            | Multi-platform preview → OmniPost's preview feature      |
 
 ### Step 2: Design the Free Tool
 
 **User experience principles**:
+
 - **Instant value**: The tool must work immediately with no signup
 - **No login wall**: Free tools should be fully usable without an account
 - **Simple UI**: One screen, one input, immediate output
@@ -47,6 +49,7 @@ OmniPost free tool ideas:
 - **Fast**: Instant results, no loading spinners
 
 **Tool page structure**:
+
 ```
 H1: [Tool Name] — Free [Description]
 ├── Tool interface (above the fold)
@@ -71,12 +74,14 @@ H1: [Tool Name] — Free [Description]
 ### Step 4: Conversion Integration
 
 **Soft conversion points** (no friction):
+
 - Show OmniPost features naturally in tool output ("OmniPost can do this automatically")
 - "Save your results" requires a free account
 - Email results option captures email address
 - "Advanced version" available in OmniPost
 
 **Conversion funnel**:
+
 ```
 Tool visitor (100%)
 → Uses the tool (80%)
@@ -97,18 +102,19 @@ Tool visitor (100%)
 
 ### Step 6: Measurement
 
-| Metric | Target | Purpose |
-|--------|--------|---------|
-| Monthly unique visitors | 5,000+ per tool | Traffic generation |
-| Tool usage rate | > 70% of visitors | UX quality |
-| CTA click rate | 5-10% | Conversion path effectiveness |
-| Signup conversion | 1-3% of visitors | User acquisition |
-| Backlinks earned | 10+ per quarter | SEO authority building |
-| Search ranking | Top 5 for target keyword | Organic visibility |
+| Metric                  | Target                   | Purpose                       |
+| ----------------------- | ------------------------ | ----------------------------- |
+| Monthly unique visitors | 5,000+ per tool          | Traffic generation            |
+| Tool usage rate         | > 70% of visitors        | UX quality                    |
+| CTA click rate          | 5-10%                    | Conversion path effectiveness |
+| Signup conversion       | 1-3% of visitors         | User acquisition              |
+| Backlinks earned        | 10+ per quarter          | SEO authority building        |
+| Search ranking          | Top 5 for target keyword | Organic visibility            |
 
 ## Output Format
 
 Deliver free tool plans as:
+
 1. Tool concept with search demand data
 2. Feature specification and UX wireframe
 3. SEO plan (target keywords, content, schema)

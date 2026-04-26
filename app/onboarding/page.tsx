@@ -115,18 +115,14 @@ function StepSuccess() {
       <div className={styles.successIcon}>&#10003;</div>
       <h2 className={styles.stepTitle}>You&apos;re All Set!</h2>
       <p className={styles.successMessage}>
-        Your account is ready. Head to the dashboard to start managing
-        your content and publishing across platforms.
+        Your account is ready. Head to the dashboard to start managing your content and publishing
+        across platforms.
       </p>
     </div>
   );
 }
 
-function ProgressIndicator({
-  currentStep,
-}: {
-  readonly currentStep: number;
-}) {
+function ProgressIndicator({ currentStep }: { readonly currentStep: number }) {
   return (
     <div className={styles.progressBar} aria-live="polite">
       {Array.from({ length: TOTAL_STEPS }, (_, i) => {
@@ -156,7 +152,9 @@ function ProgressIndicator({
 export default function OnboardingPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
-  const { trackOnboardingStep, trackPlatformConnected, trackPostPublished } = useAnalytics({ trackPageView: true });
+  const { trackOnboardingStep, trackPlatformConnected, trackPostPublished } = useAnalytics({
+    trackPageView: true,
+  });
   const [step, setStep] = useState(1);
   const [platforms, setPlatforms] = useState<Platform[]>(INITIAL_PLATFORMS);
   const [postContent, setPostContent] = useState('');
@@ -192,9 +190,7 @@ export default function OnboardingPage() {
 
   const handleToggleConnect = (platformId: string) => {
     setPlatforms(prev =>
-      prev.map(p =>
-        p.id === platformId ? { ...p, connected: !p.connected } : p
-      )
+      prev.map(p => (p.id === platformId ? { ...p, connected: !p.connected } : p))
     );
   };
 
@@ -212,12 +208,15 @@ export default function OnboardingPage() {
 
   const saveProgress = (nextStep: number) => {
     try {
-      sessionStorage.setItem('onboarding-progress', JSON.stringify({
-        step: nextStep,
-        platforms,
-        postContent,
-        selectedPlatforms: Array.from(selectedPlatforms),
-      }));
+      sessionStorage.setItem(
+        'onboarding-progress',
+        JSON.stringify({
+          step: nextStep,
+          platforms,
+          postContent,
+          selectedPlatforms: Array.from(selectedPlatforms),
+        })
+      );
     } catch {
       // Ignore sessionStorage write errors
     }
@@ -230,9 +229,11 @@ export default function OnboardingPage() {
     if (step === 1) {
       const connectedCount = platforms.filter(p => p.connected).length;
       if (connectedCount > 0) {
-        platforms.filter(p => p.connected).forEach(p => {
-          trackPlatformConnected(p.name, connectedCount);
-        });
+        platforms
+          .filter(p => p.connected)
+          .forEach(p => {
+            trackPlatformConnected(p.name, connectedCount);
+          });
       }
     }
 
@@ -290,10 +291,7 @@ export default function OnboardingPage() {
           <ProgressIndicator currentStep={step} />
 
           {step === 1 && (
-            <StepConnectPlatforms
-              platforms={platforms}
-              onToggleConnect={handleToggleConnect}
-            />
+            <StepConnectPlatforms platforms={platforms} onToggleConnect={handleToggleConnect} />
           )}
 
           {step === 2 && (
@@ -311,29 +309,17 @@ export default function OnboardingPage() {
           <div className={styles.buttonRow}>
             {step < TOTAL_STEPS ? (
               <>
-                <button
-                  type="button"
-                  className={styles.skipButton}
-                  onClick={handleSkip}
-                >
+                <button type="button" className={styles.skipButton} onClick={handleSkip}>
                   Skip
                 </button>
-                <button
-                  type="button"
-                  className={styles.primaryButton}
-                  onClick={handleNext}
-                >
+                <button type="button" className={styles.primaryButton} onClick={handleNext}>
                   Continue
                 </button>
               </>
             ) : (
               <>
                 <span />
-                <button
-                  type="button"
-                  className={styles.primaryButton}
-                  onClick={handleNext}
-                >
+                <button type="button" className={styles.primaryButton} onClick={handleNext}>
                   Go to Dashboard
                 </button>
               </>

@@ -43,6 +43,7 @@ Authentication, authorization, input sanitization, rate limiting, and security m
 ## HTTP Security Headers
 
 All headers are configured in `next.config.ts` security headers:
+
 - `Strict-Transport-Security: max-age=31536000; includeSubDomains` (HSTS)
 - `X-Content-Type-Options: nosniff`
 - `X-Frame-Options: SAMEORIGIN`

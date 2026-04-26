@@ -10,10 +10,7 @@ import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
 import { TAG_COLORS } from '@/types/lead';
 import { webcrypto } from 'node:crypto';
-import {
-  checkAuthAndRateLimit,
-  withErrorHandling,
-} from '@/app/api/_utils/middleware';
+import { checkAuthAndRateLimit, withErrorHandling } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { sanitizeText } from '@/app/api/_utils/sanitize';
 

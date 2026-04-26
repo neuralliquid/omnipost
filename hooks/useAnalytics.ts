@@ -86,26 +86,20 @@ export function useAnalytics(options: UseAnalyticsOptions = {}): AnalyticsAPI {
     []
   );
 
-  const trackPlatformConnected = useCallback(
-    (platformName: string, totalPlatforms: number) => {
-      tracker.track(AnalyticsEvents.PLATFORM_CONNECTED, {
-        platformName,
-        totalPlatforms,
-      });
-    },
-    []
-  );
+  const trackPlatformConnected = useCallback((platformName: string, totalPlatforms: number) => {
+    tracker.track(AnalyticsEvents.PLATFORM_CONNECTED, {
+      platformName,
+      totalPlatforms,
+    });
+  }, []);
 
-  const trackPostPublished = useCallback(
-    (platforms: string[], isFirstPost = false) => {
-      tracker.track(AnalyticsEvents.POST_PUBLISHED, {
-        platformNames: platforms,
-        platformCount: platforms.length,
-        isFirstPost,
-      });
-    },
-    []
-  );
+  const trackPostPublished = useCallback((platforms: string[], isFirstPost = false) => {
+    tracker.track(AnalyticsEvents.POST_PUBLISHED, {
+      platformNames: platforms,
+      platformCount: platforms.length,
+      isFirstPost,
+    });
+  }, []);
 
   const trackFeatureUsed = useCallback((featureName: string, context?: string) => {
     tracker.track(AnalyticsEvents.FEATURE_USED, { featureName, context });

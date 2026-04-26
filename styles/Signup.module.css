@@ -214,7 +214,9 @@
 .strengthFill {
   height: 100%;
   border-radius: 2px;
-  transition: width 0.2s ease, background-color 0.2s ease;
+  transition:
+    width 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .strengthFill.strength_weak {
@@ -274,7 +276,9 @@
   font-size: var(--font-size-base, 1rem);
   font-weight: var(--font-weight-medium, 500);
   cursor: pointer;
-  transition: background-color var(--transition-fast, 0.15s), border-color var(--transition-fast, 0.15s);
+  transition:
+    background-color var(--transition-fast, 0.15s),
+    border-color var(--transition-fast, 0.15s);
 }
 
 .socialButton:hover:not(:disabled) {
@@ -313,5 +317,8 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  :global(*) { transition: none !important; animation: none !important; }
+  :global(*) {
+    transition: none !important;
+    animation: none !important;
+  }
 }

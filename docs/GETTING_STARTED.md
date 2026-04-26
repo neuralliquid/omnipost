@@ -6,11 +6,11 @@ This guide walks you through setting up OmniPost for local development and publi
 
 Before you begin, ensure you have the following installed:
 
-| Tool | Version | Installation |
-|------|---------|-------------|
-| Node.js | 18+ | [nodejs.org](https://nodejs.org/) or use [nvm](https://github.com/nvm-sh/nvm) |
-| pnpm | 9+ | [pnpm.io/installation](https://pnpm.io/installation) |
-| Git | Latest | [git-scm.com](https://git-scm.com/) |
+| Tool    | Version | Installation                                                                  |
+| ------- | ------- | ----------------------------------------------------------------------------- |
+| Node.js | 18+     | [nodejs.org](https://nodejs.org/) or use [nvm](https://github.com/nvm-sh/nvm) |
+| pnpm    | 9+      | [pnpm.io/installation](https://pnpm.io/installation)                          |
+| Git     | Latest  | [git-scm.com](https://git-scm.com/)                                           |
 
 Verify your installations:
 
@@ -208,12 +208,12 @@ See [PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md) for a detailed breakdown of 
 
 ### Key documentation
 
-| Document | Description |
-|----------|-------------|
-| [Architecture Guide](./ARCHITECTURE.md) | System design and technical decisions |
-| [API Best Practices](./api/next-api-best-practices.md) | Standards for API route development |
-| [Contributing Guidelines](../CONTRIBUTING.md) | How to contribute code and documentation |
-| [Deployment Guide](./DEPLOYMENT.md) | Azure deployment and infrastructure |
+| Document                                               | Description                              |
+| ------------------------------------------------------ | ---------------------------------------- |
+| [Architecture Guide](./ARCHITECTURE.md)                | System design and technical decisions    |
+| [API Best Practices](./api/next-api-best-practices.md) | Standards for API route development      |
+| [Contributing Guidelines](../CONTRIBUTING.md)          | How to contribute code and documentation |
+| [Deployment Guide](./DEPLOYMENT.md)                    | Azure deployment and infrastructure      |
 
 ## Next Steps
 

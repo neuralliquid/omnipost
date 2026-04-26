@@ -1,18 +1,20 @@
 # OmniPost Launch Week -- Social Media Posts
 
-*Launch date: Week of March 30, 2026*
-*Brand voice: Professional, approachable, technically confident, clear.*
+_Launch date: Week of March 30, 2026_
+_Brand voice: Professional, approachable, technically confident, clear._
 
 ---
 
 ## Twitter/X Posts (280 characters max)
 
 ### Tweet 1 -- Launch Announcement
+
 > We just launched OmniPost -- write once, publish to Facebook, Instagram, LinkedIn, and Twitter simultaneously. AI adapts your content to each platform automatically. Free and open source.
 >
 > Try it: https://nl-dev-omnipost-app-euw.azurewebsites.net
 
 ### Tweet 2 -- Problem Hook
+
 > You spend 45 min reformatting the same post for 4 platforms. Every day.
 >
 > We built OmniPost so you can write once and let AI handle the rest. Adapts tone, length, and images per platform.
@@ -20,6 +22,7 @@
 > It's free. It's open source. It's live now.
 
 ### Tweet 3 -- Developer Angle
+
 > OmniPost is open source (MIT). Next.js 16, React 19, TypeScript, PostgreSQL.
 >
 > If you've wanted a modern, self-hostable alternative to Buffer/Hootsuite -- this is it.
@@ -78,6 +81,7 @@ OmniPost is a multi-platform content publishing tool with AI-powered adaptation,
 Some people think open-sourcing a SaaS product is a bad business decision. We disagree.
 
 Open source means:
+
 - Transparency: you can see exactly how your data is handled
 - Flexibility: self-host if your compliance requirements demand it
 - Community: the best features often come from the people who use the product daily
@@ -151,6 +155,7 @@ OmniPost is a content publishing tool that lets you write once and publish to Fa
 Stack: Next.js 16, React 19, TypeScript 5.3 (strict mode), Prisma 7, PostgreSQL. MIT-licensed.
 
 Key technical decisions:
+
 - App Router with RSC for fast initial loads
 - JWT auth with async middleware validation
 - Zod schemas for runtime input validation across all API routes

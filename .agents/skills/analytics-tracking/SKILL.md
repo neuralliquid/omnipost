@@ -22,13 +22,13 @@ Design and implement OmniPost's marketing analytics infrastructure — event tra
 
 Use the AARRR (Pirate Metrics) framework for OmniPost:
 
-| Stage | Key Question | Primary Metric | Events to Track |
-|-------|-------------|----------------|-----------------|
-| Acquisition | Where do users come from? | Signups by source | page_view, signup_started, signup_completed |
-| Activation | Do they reach the "aha moment"? | % who publish first post | platform_connected, post_created, post_published |
-| Retention | Do they come back? | Day 1/7/30 retention | session_start, post_published, feature_used |
-| Revenue | Do they pay? | Trial-to-paid conversion | trial_started, upgrade_initiated, payment_completed |
-| Referral | Do they tell others? | Referral invites sent | referral_link_shared, referral_signup |
+| Stage       | Key Question                    | Primary Metric           | Events to Track                                     |
+| ----------- | ------------------------------- | ------------------------ | --------------------------------------------------- |
+| Acquisition | Where do users come from?       | Signups by source        | page_view, signup_started, signup_completed         |
+| Activation  | Do they reach the "aha moment"? | % who publish first post | platform_connected, post_created, post_published    |
+| Retention   | Do they come back?              | Day 1/7/30 retention     | session_start, post_published, feature_used         |
+| Revenue     | Do they pay?                    | Trial-to-paid conversion | trial_started, upgrade_initiated, payment_completed |
+| Referral    | Do they tell others?            | Referral invites sent    | referral_link_shared, referral_signup               |
 
 ### Step 2: Event Taxonomy
 
@@ -37,6 +37,7 @@ Design a consistent event naming convention:
 **Format**: `object_action` (snake_case)
 
 **Core events**:
+
 ```
 # Acquisition
 page_viewed (url, referrer, utm_source, utm_medium, utm_campaign)
@@ -76,6 +77,7 @@ referral_reward_earned (referrer_id, reward_type)
 ### Step 3: Tracking Implementation
 
 **Tools stack**:
+
 - **Event collection**: Segment, Rudderstack, or custom (sends to all destinations)
 - **Product analytics**: Mixpanel, Amplitude, or PostHog
 - **Web analytics**: Google Analytics 4 (GA4)
@@ -84,6 +86,7 @@ referral_reward_earned (referrer_id, reward_type)
 - **Attribution**: UTM parameters + multi-touch attribution model
 
 **Implementation checklist**:
+
 - [ ] Event taxonomy documented and approved
 - [ ] Tracking code installed on all pages
 - [ ] Conversion events configured in GA4
@@ -107,6 +110,7 @@ utm_term: [keyword or targeting] — multi-platform-publishing, creator-audience
 ```
 
 **Examples**:
+
 - Google Search ad: `?utm_source=google&utm_medium=cpc&utm_campaign=product-keywords&utm_term=multi-platform-publishing`
 - Newsletter: `?utm_source=email&utm_medium=newsletter&utm_campaign=weekly-2026-03-30`
 - Twitter post: `?utm_source=twitter&utm_medium=social&utm_campaign=feature-launch`
@@ -116,21 +120,25 @@ utm_term: [keyword or targeting] — multi-platform-publishing, creator-audience
 Define and track key funnels:
 
 **Marketing funnel**:
+
 ```
 Landing page view → Signup started → Signup completed → Platform connected → First post published → Trial started → Paid conversion
 ```
 
 **Upgrade funnel**:
+
 ```
 Pricing page viewed → Plan selected → Payment form started → Payment completed
 ```
 
 **Content funnel**:
+
 ```
 Blog post viewed → CTA clicked → Signup page viewed → Signup completed
 ```
 
 For each funnel, track:
+
 - Step-to-step conversion rates
 - Drop-off points and volume
 - Time between steps
@@ -139,6 +147,7 @@ For each funnel, track:
 ### Step 6: Dashboards & Reporting
 
 **Marketing dashboard (weekly review)**:
+
 - Traffic by source and trend
 - Signup volume and conversion rate
 - Trial starts and trial-to-paid rate
@@ -146,12 +155,14 @@ For each funnel, track:
 - MRR and revenue growth
 
 **Content dashboard (monthly review)**:
+
 - Organic traffic by page and trend
 - Top-performing content by signups driven
 - Content conversion rates
 - Keyword rankings
 
 **Product-led growth dashboard**:
+
 - Activation rate (% reaching first publish)
 - Feature adoption rates
 - Retention curves (Day 1, 7, 30)
@@ -160,6 +171,7 @@ For each funnel, track:
 ## Attribution Model
 
 **Recommended**: Multi-touch attribution with position-based weighting:
+
 - First touch: 40% credit (how they found OmniPost)
 - Middle touches: 20% credit split (nurture interactions)
 - Last touch: 40% credit (what triggered conversion)
@@ -169,6 +181,7 @@ Track both first-touch and last-touch for channel-level decisions.
 ## Output Format
 
 Deliver analytics plans as:
+
 1. Measurement framework with key metrics per funnel stage
 2. Event taxonomy with naming conventions and properties
 3. Implementation specification (tools, code, validation)

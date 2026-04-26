@@ -9,8 +9,18 @@ import EmptyState from '@/components/ui/EmptyState';
 // Mock next/link
 jest.mock('next/link', () => ({
   __esModule: true,
-  default: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) => (
-    <a href={href} className={className}>{children}</a>
+  default: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string;
+    children: React.ReactNode;
+    className?: string;
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
   ),
 }));
 
@@ -30,12 +40,7 @@ describe('EmptyState', () => {
   });
 
   it('renders action link when provided', () => {
-    render(
-      <EmptyState
-        title="No posts"
-        action={{ label: 'Create Post', href: '/posts/new' }}
-      />
-    );
+    render(<EmptyState title="No posts" action={{ label: 'Create Post', href: '/posts/new' }} />);
     const link = screen.getByText('Create Post');
     expect(link).toBeInTheDocument();
     expect(link.closest('a')).toHaveAttribute('href', '/posts/new');

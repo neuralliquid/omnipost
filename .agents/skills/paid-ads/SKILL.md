@@ -21,6 +21,7 @@ Plan, structure, and optimize OmniPost's paid advertising across Google Ads, Met
 ### Step 1: Campaign Strategy
 
 **Define campaign parameters**:
+
 - Monthly budget: Total and per-channel allocation
 - Target CPA (Cost Per Acquisition): What can OmniPost afford per signup/trial?
 - LTV:CAC ratio target: Aim for 3:1 minimum
@@ -38,6 +39,7 @@ Plan, structure, and optimize OmniPost's paid advertising across Google Ads, Met
 ### Step 2: Campaign Structure
 
 **Google Search**:
+
 ```
 Account
 ├── Campaign: Brand
@@ -60,6 +62,7 @@ Account
 ```
 
 **Meta Ads**:
+
 ```
 Campaign: Conversions — Free Trial
 ├── Ad Set: Lookalike — Current Users (1%)
@@ -72,17 +75,20 @@ Campaign: Conversions — Free Trial
 ### Step 3: Audience Targeting
 
 **Google**:
+
 - Keywords: Exact and phrase match for high-intent terms
 - Negative keywords: Maintain robust negative keyword lists
 - Audiences: In-market (social media software), affinity (content creators)
 
 **Meta**:
+
 - Lookalike audiences based on current paying users (1%, 2%, 5%)
 - Interest targeting: Content creation, social media marketing, specific platforms
 - Custom audiences: Website visitors, email list, video viewers
 - Exclusions: Current users, recent converters
 
 **LinkedIn**:
+
 - Job titles: Content Manager, Social Media Manager, Marketing Manager
 - Company size: 11-500 (SMB sweet spot for OmniPost)
 - Industries: Marketing, Media, Technology, Agency
@@ -98,6 +104,7 @@ Campaign: Conversions — Free Trial
 | Scale | Target ROAS | Bid Cap |
 
 **Budget rules**:
+
 - Start with 2x target CPA per day per ad set (minimum for learning)
 - Don't change budgets by more than 20% at a time
 - Allow 3-5 days of learning phase before optimizing
@@ -106,6 +113,7 @@ Campaign: Conversions — Free Trial
 ### Step 5: Tracking & Attribution
 
 **Required tracking setup**:
+
 - Google Ads conversion tracking (signup, trial start, paid conversion)
 - Meta Pixel with standard events (Lead, StartTrial, Purchase)
 - LinkedIn Insight Tag
@@ -132,18 +140,19 @@ Campaign: Conversions — Free Trial
 
 ## Key Metrics
 
-| Metric | Target | Healthy Range |
-|--------|--------|---------------|
-| CTR (Search) | > 5% | 3-8% |
-| CTR (Social) | > 1% | 0.8-2% |
-| CPC | < $3 | $1-5 |
-| Trial CPA | < $25 | $15-40 |
-| Paid CPA | < $100 | $50-150 |
-| ROAS | > 3x | 2-5x |
+| Metric       | Target | Healthy Range |
+| ------------ | ------ | ------------- |
+| CTR (Search) | > 5%   | 3-8%          |
+| CTR (Social) | > 1%   | 0.8-2%        |
+| CPC          | < $3   | $1-5          |
+| Trial CPA    | < $25  | $15-40        |
+| Paid CPA     | < $100 | $50-150       |
+| ROAS         | > 3x   | 2-5x          |
 
 ## Output Format
 
 Deliver paid ad plans as:
+
 1. Campaign strategy with budget allocation
 2. Campaign and ad set structure
 3. Audience targeting specifications

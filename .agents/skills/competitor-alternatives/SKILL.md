@@ -22,19 +22,20 @@ Analyze OmniPost's competitive landscape, create comparison and alternatives con
 
 Map competitors by category:
 
-| Category | Competitors | Overlap with OmniPost |
-|----------|------------|----------------------|
-| Social media management | Buffer, Hootsuite, Sprout Social | Scheduling, multi-platform posting |
-| Content repurposing | Repurpose.io, Castmagic | Content reformatting |
-| Cross-posting | Typefully (Twitter focus), Publer | Multi-platform publishing |
-| All-in-one marketing | HubSpot, CoSchedule | Content + analytics |
-| Creator tools | Linktree, Stan, Beacons | Creator audience |
+| Category                | Competitors                       | Overlap with OmniPost              |
+| ----------------------- | --------------------------------- | ---------------------------------- |
+| Social media management | Buffer, Hootsuite, Sprout Social  | Scheduling, multi-platform posting |
+| Content repurposing     | Repurpose.io, Castmagic           | Content reformatting               |
+| Cross-posting           | Typefully (Twitter focus), Publer | Multi-platform publishing          |
+| All-in-one marketing    | HubSpot, CoSchedule               | Content + analytics                |
+| Creator tools           | Linktree, Stan, Beacons           | Creator audience                   |
 
 ### Step 2: Competitive Analysis Framework
 
 For each key competitor, document:
 
 **Product comparison**:
+
 - Features: What do they offer vs. OmniPost?
 - Platforms supported: Which social/content platforms?
 - Pricing: How do their tiers compare?
@@ -43,6 +44,7 @@ For each key competitor, document:
 - Limitations: What can't they do?
 
 **Market positioning**:
+
 - Target audience: Who are they built for?
 - Key messaging: What do they claim?
 - Brand perception: How are they seen in the market?
@@ -70,6 +72,7 @@ H1: OmniPost vs. [Competitor]: [Key Differentiator]
 ```
 
 **Comparison table best practices**:
+
 - Be factually accurate — never misrepresent competitors
 - Highlight genuine differentiators, not feature-for-feature parity
 - Include pricing transparency
@@ -95,12 +98,14 @@ H1: 7 Best [Competitor] Alternatives in 2026
 ### Step 5: Develop Positioning Statements
 
 **Against each key competitor, define**:
+
 - **Primary differentiator**: The #1 reason to choose OmniPost instead
 - **Supporting points**: 2-3 proof points for the differentiator
 - **Concession**: Where the competitor is genuinely strong (builds credibility)
 - **Reframe**: How to position their strength as less important
 
 Example:
+
 ```
 vs. Buffer:
 Primary: OmniPost natively reformats content for each platform;
@@ -123,6 +128,7 @@ for each platform in the first place.
 ## Output Format
 
 Deliver competitive analysis as:
+
 1. Competitive landscape map
 2. Detailed competitor profiles (strengths, weaknesses, positioning)
 3. Comparison page content (ready to publish)

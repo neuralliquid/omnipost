@@ -38,8 +38,7 @@ const DEFAULT_STRUCTURED_DATA = {
       price: '19',
       priceCurrency: 'USD',
       billingIncrement: 'P1M',
-      description:
-        'Unlimited platforms and posts, AI formatting, advanced scheduling',
+      description: 'Unlimited platforms and posts, AI formatting, advanced scheduling',
     },
     {
       '@type': 'Offer',
@@ -47,8 +46,7 @@ const DEFAULT_STRUCTURED_DATA = {
       price: '49',
       priceCurrency: 'USD',
       billingIncrement: 'P1M',
-      description:
-        'Everything in Pro plus team collaboration, client workspaces, shared calendars',
+      description: 'Everything in Pro plus team collaboration, client workspaces, shared calendars',
     },
   ],
   aggregateRating: {

@@ -90,25 +90,56 @@ const TIERS: PricingTier[] = [
   },
 ];
 
-const ENTERPRISE_FEATURES = [
-  'SSO / SAML',
-  'API access',
-  'Dedicated support',
-  'Custom SLA',
-];
+const ENTERPRISE_FEATURES = ['SSO / SAML', 'API access', 'Dedicated support', 'Custom SLA'];
 
 const COMPARISON_ROWS: ComparisonRow[] = [
-  { feature: 'Connected platforms', free: '2', pro: 'Unlimited', team: 'Unlimited', enterprise: 'Unlimited' },
-  { feature: 'Posts per month', free: '10', pro: 'Unlimited', team: 'Unlimited', enterprise: 'Unlimited' },
+  {
+    feature: 'Connected platforms',
+    free: '2',
+    pro: 'Unlimited',
+    team: 'Unlimited',
+    enterprise: 'Unlimited',
+  },
+  {
+    feature: 'Posts per month',
+    free: '10',
+    pro: 'Unlimited',
+    team: 'Unlimited',
+    enterprise: 'Unlimited',
+  },
   { feature: 'AI formatting', free: '\u2014', pro: '\u2713', team: '\u2713', enterprise: '\u2713' },
   { feature: 'Scheduling', free: '\u2014', pro: '\u2713', team: '\u2713', enterprise: '\u2713' },
   { feature: 'Analytics', free: 'Basic', pro: 'Full', team: 'Full', enterprise: 'Full + custom' },
-  { feature: 'Team collaboration', free: '\u2014', pro: '\u2014', team: '\u2713', enterprise: '\u2713' },
-  { feature: 'Client workspaces', free: '\u2014', pro: '\u2014', team: '\u2713', enterprise: '\u2713' },
-  { feature: 'Shared calendars', free: '\u2014', pro: '\u2014', team: '\u2713', enterprise: '\u2713' },
+  {
+    feature: 'Team collaboration',
+    free: '\u2014',
+    pro: '\u2014',
+    team: '\u2713',
+    enterprise: '\u2713',
+  },
+  {
+    feature: 'Client workspaces',
+    free: '\u2014',
+    pro: '\u2014',
+    team: '\u2713',
+    enterprise: '\u2713',
+  },
+  {
+    feature: 'Shared calendars',
+    free: '\u2014',
+    pro: '\u2014',
+    team: '\u2713',
+    enterprise: '\u2713',
+  },
   { feature: 'SSO / SAML', free: '\u2014', pro: '\u2014', team: '\u2014', enterprise: '\u2713' },
   { feature: 'API access', free: '\u2014', pro: '\u2014', team: '\u2014', enterprise: '\u2713' },
-  { feature: 'Dedicated support', free: '\u2014', pro: '\u2014', team: '\u2014', enterprise: '\u2713' },
+  {
+    feature: 'Dedicated support',
+    free: '\u2014',
+    pro: '\u2014',
+    team: '\u2014',
+    enterprise: '\u2713',
+  },
   { feature: 'SLA', free: '\u2014', pro: '\u2014', team: '\u2014', enterprise: 'Custom' },
 ];
 
@@ -212,29 +243,21 @@ function PricingCard({
       : tier.monthlyPrice;
 
   return (
-    <div
-      className={`${styles.card} ${tier.highlighted ? styles.cardHighlighted : ''}`}
-    >
-      {tier.highlighted && (
-        <span className={styles.popularBadge}>Most Popular</span>
-      )}
+    <div className={`${styles.card} ${tier.highlighted ? styles.cardHighlighted : ''}`}>
+      {tier.highlighted && <span className={styles.popularBadge}>Most Popular</span>}
       <h3 className={styles.cardName}>{tier.name}</h3>
       <p className={styles.cardTarget}>{tier.target}</p>
 
       <div className={styles.priceWrapper}>
-        <span className={styles.priceAmount}>
-          {isFree ? '$0' : `$${displayPrice}`}
-        </span>
+        <span className={styles.priceAmount}>{isFree ? '$0' : `$${displayPrice}`}</span>
         {!isFree && <span className={styles.pricePeriod}>/mo</span>}
         {!isFree && isAnnual && (
-          <span className={styles.priceAnnualNote}>
-            Billed annually (${tier.annualPrice}/yr)
-          </span>
+          <span className={styles.priceAnnualNote}>Billed annually (${tier.annualPrice}/yr)</span>
         )}
       </div>
 
       <ul className={styles.featureList}>
-        {tier.features.map((feature) => (
+        {tier.features.map(feature => (
           <li key={feature} className={styles.featureItem}>
             <CheckIcon className={styles.featureIcon} />
             <span>{feature}</span>
@@ -260,7 +283,7 @@ function FaqAccordionItem({ item }: { readonly item: FaqItem }) {
     <div className={styles.faqItem}>
       <button
         className={styles.faqQuestion}
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={() => setIsOpen(prev => !prev)}
         aria-expanded={isOpen}
         type="button"
       >
@@ -313,7 +336,7 @@ export default function PricingPage() {
             role="switch"
             aria-checked={isAnnual}
             aria-label="Toggle annual billing"
-            onClick={() => setIsAnnual((prev) => !prev)}
+            onClick={() => setIsAnnual(prev => !prev)}
             type="button"
           >
             <span className={styles.toggleKnob} />
@@ -325,31 +348,40 @@ export default function PricingPage() {
           >
             Annual
           </span>
-          {isAnnual && (
-            <span className={styles.savingsBadge}>Save up to 17%</span>
-          )}
+          {isAnnual && <span className={styles.savingsBadge}>Save up to 17%</span>}
         </div>
 
         {/* Trust Signals */}
         <div className={styles.trustSignals} aria-label="Trust signals">
           <span className={styles.trustItem}>
-            <span className={styles.trustIcon} aria-hidden="true">&#10003;</span>
+            <span className={styles.trustIcon} aria-hidden="true">
+              &#10003;
+            </span>
             14-day free trial
           </span>
           <span className={styles.trustItem}>
-            <span className={styles.trustIcon} aria-hidden="true">&#10003;</span>
+            <span className={styles.trustIcon} aria-hidden="true">
+              &#10003;
+            </span>
             No credit card required
           </span>
           <span className={styles.trustItem}>
-            <span className={styles.trustIcon} aria-hidden="true">&#10003;</span>
+            <span className={styles.trustIcon} aria-hidden="true">
+              &#10003;
+            </span>
             Cancel anytime
           </span>
         </div>
 
         {/* Pricing Cards */}
         <div className={styles.cardsGrid}>
-          {TIERS.map((tier) => (
-            <PricingCard key={tier.name} tier={tier} isAnnual={isAnnual} onPlanSelect={handlePlanSelect} />
+          {TIERS.map(tier => (
+            <PricingCard
+              key={tier.name}
+              tier={tier}
+              isAnnual={isAnnual}
+              onPlanSelect={handlePlanSelect}
+            />
           ))}
         </div>
 
@@ -358,11 +390,11 @@ export default function PricingPage() {
           <div className={styles.enterpriseInfo}>
             <h3 className={styles.enterpriseName}>Enterprise</h3>
             <p className={styles.enterpriseDescription}>
-              Need more? Custom solutions for large organizations with
-              dedicated support and SLA guarantees.
+              Need more? Custom solutions for large organizations with dedicated support and SLA
+              guarantees.
             </p>
             <ul className={styles.enterpriseFeatures}>
-              {ENTERPRISE_FEATURES.map((feature) => (
+              {ENTERPRISE_FEATURES.map(feature => (
                 <li key={feature} className={styles.enterpriseFeatureItem}>
                   <CheckIcon className={styles.featureIcon} />
                   <span>{feature}</span>
@@ -390,47 +422,65 @@ export default function PricingPage() {
               <tr>
                 <th scope="col">Feature</th>
                 <th scope="col">Free</th>
-                <th scope="col" className={styles.highlightCol}>Pro</th>
+                <th scope="col" className={styles.highlightCol}>
+                  Pro
+                </th>
                 <th scope="col">Team</th>
                 <th scope="col">Enterprise</th>
               </tr>
             </thead>
             <tbody>
-              {COMPARISON_ROWS.map((row) => (
+              {COMPARISON_ROWS.map(row => (
                 <tr key={row.feature}>
                   <td>{row.feature}</td>
                   <td>
                     {row.free === '\u2713' ? (
-                      <span className={styles.checkMark} aria-label="Included">&#10003;</span>
+                      <span className={styles.checkMark} aria-label="Included">
+                        &#10003;
+                      </span>
                     ) : row.free === '\u2014' ? (
-                      <span className={styles.dashMark} aria-label="Not included">&mdash;</span>
+                      <span className={styles.dashMark} aria-label="Not included">
+                        &mdash;
+                      </span>
                     ) : (
                       row.free
                     )}
                   </td>
                   <td className={styles.highlightCol}>
                     {row.pro === '\u2713' ? (
-                      <span className={styles.checkMark} aria-label="Included">&#10003;</span>
+                      <span className={styles.checkMark} aria-label="Included">
+                        &#10003;
+                      </span>
                     ) : row.pro === '\u2014' ? (
-                      <span className={styles.dashMark} aria-label="Not included">&mdash;</span>
+                      <span className={styles.dashMark} aria-label="Not included">
+                        &mdash;
+                      </span>
                     ) : (
                       row.pro
                     )}
                   </td>
                   <td>
                     {row.team === '\u2713' ? (
-                      <span className={styles.checkMark} aria-label="Included">&#10003;</span>
+                      <span className={styles.checkMark} aria-label="Included">
+                        &#10003;
+                      </span>
                     ) : row.team === '\u2014' ? (
-                      <span className={styles.dashMark} aria-label="Not included">&mdash;</span>
+                      <span className={styles.dashMark} aria-label="Not included">
+                        &mdash;
+                      </span>
                     ) : (
                       row.team
                     )}
                   </td>
                   <td>
                     {row.enterprise === '\u2713' ? (
-                      <span className={styles.checkMark} aria-label="Included">&#10003;</span>
+                      <span className={styles.checkMark} aria-label="Included">
+                        &#10003;
+                      </span>
                     ) : row.enterprise === '\u2014' ? (
-                      <span className={styles.dashMark} aria-label="Not included">&mdash;</span>
+                      <span className={styles.dashMark} aria-label="Not included">
+                        &mdash;
+                      </span>
                     ) : (
                       row.enterprise
                     )}
@@ -447,7 +497,7 @@ export default function PricingPage() {
             Frequently Asked Questions
           </h2>
           <div className={styles.faqList}>
-            {FAQ_ITEMS.map((item) => (
+            {FAQ_ITEMS.map(item => (
               <FaqAccordionItem key={item.question} item={item} />
             ))}
           </div>

@@ -22,12 +22,12 @@ Develop and maintain OmniPost's content strategy — defining content pillars, p
 
 Define content audiences and their information needs:
 
-| Audience Segment | Stage | Content Need | Content Type |
-|-----------------|-------|--------------|--------------|
-| Solo content creators | Awareness | How to grow on multiple platforms | Blog posts, guides |
-| Marketing managers | Consideration | How to scale content operations | Case studies, comparisons |
-| Agency owners | Decision | ROI of multi-platform tools | Whitepapers, demos |
-| Existing users | Retention | How to get more from OmniPost | Tutorials, best practices |
+| Audience Segment      | Stage         | Content Need                      | Content Type              |
+| --------------------- | ------------- | --------------------------------- | ------------------------- |
+| Solo content creators | Awareness     | How to grow on multiple platforms | Blog posts, guides        |
+| Marketing managers    | Consideration | How to scale content operations   | Case studies, comparisons |
+| Agency owners         | Decision      | ROI of multi-platform tools       | Whitepapers, demos        |
+| Existing users        | Retention     | How to get more from OmniPost     | Tutorials, best practices |
 
 ### Step 2: Content Pillars
 
@@ -41,6 +41,7 @@ Define 4-6 content pillars — broad topics that OmniPost owns:
 6. **Content analytics & performance** (product feature alignment)
 
 Each pillar should have:
+
 - A cornerstone/pillar page (2,000-4,000 words, comprehensive)
 - 8-15 supporting cluster articles (800-1,500 words each)
 - Internal linking strategy connecting cluster to pillar
@@ -67,6 +68,7 @@ Pillar Page: "The Complete Guide to Multi-Platform Content Publishing"
 Plan content on a monthly cycle:
 
 **Monthly cadence**:
+
 - 4 blog posts (1 per week, alternating pillars)
 - 2 SEO-optimized comparison/alternatives pages
 - 1 in-depth guide or resource
@@ -82,6 +84,7 @@ Plan content on a monthly cycle:
 ### Step 5: Content Distribution
 
 Every piece of content should be distributed through:
+
 1. **Owned channels**: Blog, newsletter, social media accounts
 2. **Earned channels**: Guest posts, PR, community shares
 3. **Repurposed formats**: Blog → Twitter thread → LinkedIn post → Newsletter → Video script
@@ -92,11 +95,11 @@ Every piece of content should be distributed through:
 
 Track content effectiveness:
 
-| Metric | Awareness Content | Consideration Content | Decision Content |
-|--------|------------------|----------------------|-----------------|
-| Primary | Organic traffic | Email signups | Trial signups |
-| Secondary | Social shares | Content downloads | Demo requests |
-| Engagement | Time on page | Return visits | Feature page views |
+| Metric     | Awareness Content | Consideration Content | Decision Content   |
+| ---------- | ----------------- | --------------------- | ------------------ |
+| Primary    | Organic traffic   | Email signups         | Trial signups      |
+| Secondary  | Social shares     | Content downloads     | Demo requests      |
+| Engagement | Time on page      | Return visits         | Feature page views |
 
 **Content scoring**: Rate each piece quarterly on traffic, conversions, and engagement. Update, consolidate, or retire underperformers.
 
@@ -111,6 +114,7 @@ Track content effectiveness:
 ## Output Format
 
 Deliver content strategy as:
+
 1. Audience and persona summary
 2. Content pillar definitions with topic clusters
 3. 3-month editorial calendar

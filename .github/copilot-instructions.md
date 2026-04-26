@@ -869,9 +869,11 @@ pnpm install
 ## Agent Infrastructure
 
 ### Retort Configuration
+
 Agent configurations are managed via `.agentkit/spec/` YAML files. See `CLAUDE.md` for the primary agent entry point, `AGENTS.md` for cross-agent discovery, and `AGENT_TEAMS.md` for team ownership.
 
 ### Marketing Skills (34 skills)
+
 Marketing domain expertise is available in `.agents/skills/`. Each skill follows the Agent Skills Specification with YAML frontmatter and structured guidance.
 
 **Categories:** Conversion Optimization (7), Content & Copywriting (5), SEO & Discovery (6), Strategic & Growth (11), Sales & Analytics (4)
@@ -879,18 +881,20 @@ Marketing domain expertise is available in `.agents/skills/`. Each skill follows
 **Foundational skill:** `product-marketing-context` — load `.agents/context/product-marketing-context.md` before using any marketing skill.
 
 ### Sluice AI Gateway
+
 AI requests can be routed through the Sluice gateway for centralized cost tracking and model abstraction. Controlled via the `aiGateway` feature flag in `lib/featureFlags.ts`. See `lib/clients/sluice-gateway.ts` for the client and `infra/sluice.bicep` for infrastructure.
 
 ### Agent Teams
-| Team | Scope |
-|------|-------|
-| backend | `app/api/`, `lib/services/`, `lib/scheduler/`, `lib/config/` |
-| frontend | `app/(dashboard)/`, `app/(marketing)/`, `components/`, `hooks/`, `styles/` |
-| data | `prisma/`, `lib/db/` |
-| infra | `infra/`, `scripts/` |
-| devops | `.github/workflows/` |
-| testing | `__tests__/`, `tests/` |
-| security | `lib/auth/`, `app/api/_utils/auth.ts`, `app/api/_utils/sanitize.ts`, `app/api/_utils/rateLimit.ts` |
-| docs | `docs/`, `*.md` |
-| quality | ESLint, Prettier, TypeScript configs |
+
+| Team      | Scope                                                                                                                                        |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| backend   | `app/api/`, `lib/services/`, `lib/scheduler/`, `lib/config/`                                                                                 |
+| frontend  | `app/(dashboard)/`, `app/(marketing)/`, `components/`, `hooks/`, `styles/`                                                                   |
+| data      | `prisma/`, `lib/db/`                                                                                                                         |
+| infra     | `infra/`, `scripts/`                                                                                                                         |
+| devops    | `.github/workflows/`                                                                                                                         |
+| testing   | `__tests__/`, `tests/`                                                                                                                       |
+| security  | `lib/auth/`, `app/api/_utils/auth.ts`, `app/api/_utils/sanitize.ts`, `app/api/_utils/rateLimit.ts`                                           |
+| docs      | `docs/`, `*.md`                                                                                                                              |
+| quality   | ESLint, Prettier, TypeScript configs                                                                                                         |
 | marketing | `.agents/skills/`, `app/api/leads/`, `app/api/forms/`, `app/api/sequences/`, `app/api/engagement-metrics/`, `lib/scoring/`, `lib/sequences/` |

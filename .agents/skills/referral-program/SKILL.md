@@ -22,13 +22,13 @@ Design and optimize referral and word-of-mouth programs for OmniPost that incent
 
 Choose the referral mechanic:
 
-| Model | Description | Best For |
-|-------|-------------|----------|
-| Two-sided reward | Both referrer and referred get value | Most SaaS (recommended) |
-| One-sided (referrer) | Only the referrer gets rewarded | High-value products |
-| One-sided (referred) | Only the new user gets a bonus | Low-friction products |
-| Tiered rewards | Rewards increase with more referrals | Power users |
-| Community/status | Social recognition, not monetary | Community-driven products |
+| Model                | Description                          | Best For                  |
+| -------------------- | ------------------------------------ | ------------------------- |
+| Two-sided reward     | Both referrer and referred get value | Most SaaS (recommended)   |
+| One-sided (referrer) | Only the referrer gets rewarded      | High-value products       |
+| One-sided (referred) | Only the new user gets a bonus       | Low-friction products     |
+| Tiered rewards       | Rewards increase with more referrals | Power users               |
+| Community/status     | Social recognition, not monetary     | Community-driven products |
 
 **Recommended for OmniPost**: Two-sided with tiered bonuses.
 
@@ -36,20 +36,22 @@ Choose the referral mechanic:
 
 **Two-sided incentive structure**:
 
-| Tier | Referrer Gets | Referred Gets | Target |
-|------|--------------|---------------|--------|
-| Each referral | 1 free month of Pro | 1 free month of Pro | Trial users |
-| 3 referrals | 3 months free | — | Active users |
-| 10 referrals | 1 year free | — | Power advocates |
-| 25 referrals | Lifetime free + swag | — | Brand ambassadors |
+| Tier          | Referrer Gets        | Referred Gets       | Target            |
+| ------------- | -------------------- | ------------------- | ----------------- |
+| Each referral | 1 free month of Pro  | 1 free month of Pro | Trial users       |
+| 3 referrals   | 3 months free        | —                   | Active users      |
+| 10 referrals  | 1 year free          | —                   | Power advocates   |
+| 25 referrals  | Lifetime free + swag | —                   | Brand ambassadors |
 
 **Alternative incentive options**:
+
 - Feature unlocks (extra platforms, analytics)
 - Account credits ($5 per referral)
 - Exclusive features (beta access, priority support)
 - Physical rewards (branded merchandise at high tiers)
 
 **Incentive principles**:
+
 - The reward should feel valuable but not cost more than your CAC
 - Two-sided rewards create higher conversion (referred user has a reason to use the link)
 - Non-monetary rewards (features, access) can be more cost-effective
@@ -58,6 +60,7 @@ Choose the referral mechanic:
 ### Step 3: Referral Flow Design
 
 **User journey**:
+
 ```
 1. Trigger: User achieves a success moment (publishes first post, hits milestone)
 2. Prompt: "Love OmniPost? Give your friends a free month"
@@ -70,6 +73,7 @@ Choose the referral mechanic:
 ```
 
 **Key touchpoints to trigger referral prompts**:
+
 - After first successful publish (high satisfaction moment)
 - After hitting a usage milestone (100 posts, 5 platforms)
 - In the product dashboard (persistent but not intrusive)
@@ -94,6 +98,7 @@ Fine print: Terms of the referral offer
 **Viral coefficient (K)** = (Invites sent per user) x (Conversion rate per invite)
 
 To achieve K > 0.5 (meaningful viral contribution):
+
 - Optimize invite volume: Make sharing easy and rewarding
 - Optimize invite conversion: Make the referral landing page compelling
 - Optimize activation: Ensure referred users reach the "aha moment"
@@ -110,18 +115,21 @@ To achieve K > 0.5 (meaningful viral contribution):
 ### Step 6: Program Management
 
 **Anti-fraud measures**:
+
 - Require referred user to activate (not just sign up)
 - Limit rewards to genuine new accounts (no duplicate emails)
 - Cap monthly rewards per referrer (prevent gaming)
 - Flag suspicious patterns (same IP, rapid signups)
 
 **Tracking & attribution**:
+
 - Unique referral links per user
 - UTM parameters for channel tracking
 - Cookie-based attribution (30-day window)
 - Dashboard for users to track their referrals and rewards
 
 **Communication cadence**:
+
 - Welcome email mentioning the referral program
 - Monthly email with referral stats and sharing prompt
 - Milestone congratulations (3, 10, 25 referrals)
@@ -130,6 +138,7 @@ To achieve K > 0.5 (meaningful viral contribution):
 ## Output Format
 
 Deliver referral program plans as:
+
 1. Program model and incentive structure
 2. Referral flow (trigger → share → convert → reward)
 3. Referral landing page specification

@@ -43,7 +43,7 @@ Design, implement, and analyze A/B tests across OmniPost's marketing surfaces â€
 - Set statistical significance threshold (usually 95%, p < 0.05)
 - Set statistical power (usually 80%)
 - Calculate required sample size per variant:
-  - Use formula: n = (Z_alpha/2 + Z_beta)^2 * (p1(1-p1) + p2(1-p2)) / (p1 - p2)^2
+  - Use formula: n = (Z_alpha/2 + Z_beta)^2 \* (p1(1-p1) + p2(1-p2)) / (p1 - p2)^2
   - Or provide a practical estimate based on current traffic
 - Estimate test duration based on daily traffic volume
 - Minimum test duration: 1 full business week to account for day-of-week effects
@@ -76,13 +76,15 @@ Minimum Sample Size: [per variant]
 ## Frameworks
 
 ### ICE Prioritization
-| Factor | Score | Description |
-|--------|-------|-------------|
-| Impact | 1-10 | How much will this move the target metric? |
-| Confidence | 1-10 | How confident are we this will work? |
-| Ease | 1-10 | How easy is this to implement and measure? |
+
+| Factor     | Score | Description                                |
+| ---------- | ----- | ------------------------------------------ |
+| Impact     | 1-10  | How much will this move the target metric? |
+| Confidence | 1-10  | How confident are we this will work?       |
+| Ease       | 1-10  | How easy is this to implement and measure? |
 
 ### Test Velocity Program
+
 - Maintain a backlog of 10+ test ideas at all times
 - Run 2-4 tests per month across different surfaces
 - Document all results in a shared test log

@@ -129,7 +129,7 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
     const response = await fetch(`${config.apiUrl}/providers`, {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       signal: AbortSignal.timeout(5000),
@@ -149,7 +149,7 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
       return EMAIL_ONLY_PROVIDERS;
     }
 
-    const providers = (data as Array<Record<string, unknown>>).map((item) => ({
+    const providers = (data as Array<Record<string, unknown>>).map(item => ({
       id: String(item.id ?? ''),
       name: String(item.name ?? ''),
       enabled: Boolean(item.enabled),
@@ -165,7 +165,10 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
 
     return providers;
   } catch (error) {
-    console.warn('[IdentityProvider] Failed to reach external API — falling back to email/password', error);
+    console.warn(
+      '[IdentityProvider] Failed to reach external API — falling back to email/password',
+      error
+    );
     return EMAIL_ONLY_PROVIDERS;
   }
 }
@@ -191,7 +194,7 @@ export async function initiateExternalAuth(
     const response = await fetch(`${config.apiUrl}/auth/initiate`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ providerId, redirectUrl }),
@@ -241,7 +244,7 @@ export async function handleAuthCallback(
     const response = await fetch(`${config.apiUrl}/auth/callback`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ providerId, code }),
@@ -303,7 +306,7 @@ export async function linkExternalAccount(
     const response = await fetch(`${config.apiUrl}/accounts/link`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
+        Authorization: `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ userId, providerId, externalId }),

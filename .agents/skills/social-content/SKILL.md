@@ -22,14 +22,14 @@ Create and optimize social media content for OmniPost's brand accounts and provi
 
 Define the role of each platform for OmniPost:
 
-| Platform | Audience | Content Focus | Posting Frequency |
-|----------|----------|--------------|-------------------|
-| Twitter/X | Creators, indie hackers, marketers | Tips, threads, product updates, engagement | 3-5x/day |
-| LinkedIn | Marketing pros, agencies, B2B | Thought leadership, case studies, industry insights | 1x/day |
-| Instagram | Visual creators, designers | Carousels, Reels, behind-the-scenes | 3-5x/week |
-| TikTok | Gen Z creators, short-form content | Tutorials, trends, product demos | 3-5x/week |
-| YouTube | Long-form learners | Tutorials, comparisons, case studies | 1-2x/week |
-| Threads | Early adopters, text-first creators | Conversational, community-building | 1-2x/day |
+| Platform  | Audience                            | Content Focus                                       | Posting Frequency |
+| --------- | ----------------------------------- | --------------------------------------------------- | ----------------- |
+| Twitter/X | Creators, indie hackers, marketers  | Tips, threads, product updates, engagement          | 3-5x/day          |
+| LinkedIn  | Marketing pros, agencies, B2B       | Thought leadership, case studies, industry insights | 1x/day            |
+| Instagram | Visual creators, designers          | Carousels, Reels, behind-the-scenes                 | 3-5x/week         |
+| TikTok    | Gen Z creators, short-form content  | Tutorials, trends, product demos                    | 3-5x/week         |
+| YouTube   | Long-form learners                  | Tutorials, comparisons, case studies                | 1-2x/week         |
+| Threads   | Early adopters, text-first creators | Conversational, community-building                  | 1-2x/day          |
 
 ### Step 2: Content Pillars for Social
 
@@ -44,6 +44,7 @@ Map content pillars to social formats:
 ### Step 3: Platform-Specific Formatting
 
 **Twitter/X**:
+
 - Hook in the first line (stop the scroll)
 - Thread format for educational content (8-12 tweets)
 - Use line breaks for readability
@@ -51,6 +52,7 @@ Map content pillars to social formats:
 - Optimal: 1-2 images or a short video
 
 **LinkedIn**:
+
 - Open with a provocative statement or story
 - Short paragraphs (1-2 sentences each)
 - Use "→" and "•" for visual structure
@@ -58,6 +60,7 @@ Map content pillars to social formats:
 - Optimal length: 150-300 words
 
 **Instagram**:
+
 - Carousels outperform single images for educational content
 - First slide is the hook (bold statement + clean design)
 - 7-10 slides per carousel
@@ -65,6 +68,7 @@ Map content pillars to social formats:
 - Use 5-10 relevant hashtags (mix of sizes)
 
 **TikTok**:
+
 - Hook in the first 2 seconds
 - Show, don't tell — screen recordings of OmniPost in action
 - Jump cuts to maintain pace
@@ -74,6 +78,7 @@ Map content pillars to social formats:
 ### Step 4: Content Creation Process
 
 For each post:
+
 1. **Identify the core idea**: One insight, tip, or story per post
 2. **Choose the format**: Text, image, carousel, video, thread
 3. **Write the hook**: First line must stop scrolling
@@ -82,6 +87,7 @@ For each post:
 6. **Add metadata**: Hashtags, alt text, tags, location (if relevant)
 
 **Hook Formulas**:
+
 - "Most people [common mistake]. Here's what top creators do instead:"
 - "I [achieved result] by doing [one specific thing]:"
 - "Stop [common bad practice]. Start [better alternative]."
@@ -119,15 +125,16 @@ Blog Post (source)
 
 ## Metrics
 
-| Metric | Twitter | LinkedIn | Instagram |
-|--------|---------|----------|-----------|
-| Engagement rate | > 2% | > 3% | > 4% |
-| Follower growth | 5-10%/mo | 5-10%/mo | 3-5%/mo |
-| Link clicks | Track per post | Track per post | Bio link clicks |
+| Metric          | Twitter        | LinkedIn       | Instagram       |
+| --------------- | -------------- | -------------- | --------------- |
+| Engagement rate | > 2%           | > 3%           | > 4%            |
+| Follower growth | 5-10%/mo       | 5-10%/mo       | 3-5%/mo         |
+| Link clicks     | Track per post | Track per post | Bio link clicks |
 
 ## Output Format
 
 Deliver social content as:
+
 1. Post copy formatted for the target platform
 2. Visual direction or image specifications
 3. Hashtags and tags

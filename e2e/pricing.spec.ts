@@ -20,32 +20,29 @@ test.describe('Pricing page', () => {
       await expect(card.getByRole('heading')).toBeVisible();
 
       // Price value (e.g. "$29", "Free", "$99")
-      const priceText = card.locator(
-        '[data-testid="price"], [class*="price"], [class*="Price"]'
-      ).or(card.getByText(/\$\d+|free/i));
+      const priceText = card
+        .locator('[data-testid="price"], [class*="price"], [class*="Price"]')
+        .or(card.getByText(/\$\d+|free/i));
       await expect(priceText.first()).toBeVisible();
 
       // CTA button
-      const cta = card.getByRole('link', { name: /get\s*started|sign\s*up|choose|select|start/i }).or(
-        card.getByRole('button', { name: /get\s*started|sign\s*up|choose|select|start/i })
-      );
+      const cta = card
+        .getByRole('link', { name: /get\s*started|sign\s*up|choose|select|start/i })
+        .or(card.getByRole('button', { name: /get\s*started|sign\s*up|choose|select|start/i }));
       await expect(cta).toBeVisible();
     }
   });
 
   test('billing toggle switches between monthly and annual prices', async ({ page }) => {
     // Find the billing toggle
-    const billingToggle = page.getByRole('switch', { name: /annual|yearly|billing/i }).or(
-      page.getByLabel(/annual|yearly|billing/i)
-    ).or(
-      page.locator('[data-testid="billing-toggle"]')
-    );
+    const billingToggle = page
+      .getByRole('switch', { name: /annual|yearly|billing/i })
+      .or(page.getByLabel(/annual|yearly|billing/i))
+      .or(page.locator('[data-testid="billing-toggle"]'));
     await expect(billingToggle).toBeVisible();
 
     // Capture initial prices
-    const priceElements = page.locator(
-      '[data-testid="price"], [class*="price"], [class*="Price"]'
-    );
+    const priceElements = page.locator('[data-testid="price"], [class*="price"], [class*="Price"]');
     const initialPrices: string[] = [];
     const priceCount = await priceElements.count();
     for (let i = 0; i < priceCount; i++) {
@@ -93,18 +90,16 @@ test.describe('Pricing page', () => {
 
   test('FAQ accordion opens and closes', async ({ page }) => {
     // Scroll to FAQ section
-    const faqSection = page.locator(
-      '[data-testid="faq"], section[class*="faq"], section[class*="FAQ"]'
-    ).or(page.getByRole('heading', { name: /faq|frequently/i }).locator('..'));
+    const faqSection = page
+      .locator('[data-testid="faq"], section[class*="faq"], section[class*="FAQ"]')
+      .or(page.getByRole('heading', { name: /faq|frequently/i }).locator('..'));
 
     await faqSection.scrollIntoViewIfNeeded();
 
     // Find accordion items
-    const accordionItems = page.locator(
-      '[data-testid="faq-item"], [class*="accordion"], details'
-    ).or(
-      page.getByRole('button').filter({ hasText: /\?/ })
-    );
+    const accordionItems = page
+      .locator('[data-testid="faq-item"], [class*="accordion"], details')
+      .or(page.getByRole('button').filter({ hasText: /\?/ }));
     const itemCount = await accordionItems.count();
     expect(itemCount).toBeGreaterThanOrEqual(1);
 
@@ -114,9 +109,11 @@ test.describe('Pricing page', () => {
     await trigger.click();
 
     // Answer text should be visible
-    const answerPanel = page.locator(
-      '[data-testid="faq-answer"], [class*="accordionContent"], [class*="AccordionContent"], [role="region"]'
-    ).or(firstItem.locator('p'));
+    const answerPanel = page
+      .locator(
+        '[data-testid="faq-answer"], [class*="accordionContent"], [class*="AccordionContent"], [role="region"]'
+      )
+      .or(firstItem.locator('p'));
     await expect(answerPanel.first()).toBeVisible({ timeout: 3_000 });
 
     // Click again to close
@@ -125,7 +122,10 @@ test.describe('Pricing page', () => {
     // Answer panel should be hidden (or details closed)
     // Use a soft check since animation timing varies
     await page.waitForTimeout(500);
-    const isHidden = await answerPanel.first().isHidden().catch(() => true);
+    const isHidden = await answerPanel
+      .first()
+      .isHidden()
+      .catch(() => true);
     expect(isHidden).toBe(true);
   });
 
@@ -139,15 +139,15 @@ test.describe('Pricing page', () => {
       const card = tierCards.nth(i);
 
       // Each tier should list features
-      const features = card.getByRole('list').or(
-        card.locator('[data-testid="feature-list"], [class*="feature"]')
-      );
+      const features = card
+        .getByRole('list')
+        .or(card.locator('[data-testid="feature-list"], [class*="feature"]'));
       await expect(features.first()).toBeVisible();
 
       // Should have at least one list item / feature
-      const featureItems = card.getByRole('listitem').or(
-        card.locator('[data-testid="feature-item"]')
-      );
+      const featureItems = card
+        .getByRole('listitem')
+        .or(card.locator('[data-testid="feature-item"]'));
       const featureCount = await featureItems.count();
       expect(featureCount).toBeGreaterThanOrEqual(1);
     }

@@ -51,7 +51,7 @@ describe('LoadingSpinner', () => {
 
   it('applies correct CSS class for each size', () => {
     const sizes = ['sm', 'md', 'lg'] as const;
-    sizes.forEach((size) => {
+    sizes.forEach(size => {
       const { container, unmount } = render(<LoadingSpinner size={size} />);
       const svg = container.querySelector('svg');
       expect(svg).toHaveClass(size);

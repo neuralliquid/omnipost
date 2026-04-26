@@ -37,8 +37,8 @@ export default function HomePage() {
         <div className={styles.heroInner}>
           <h1 className={styles.headline}>Publish Once. Reach Every Platform.</h1>
           <p className={styles.subheadline}>
-            AI-powered content publishing for creators who want to grow everywhere
-            &mdash; without the busywork.
+            AI-powered content publishing for creators who want to grow everywhere &mdash; without
+            the busywork.
           </p>
 
           <div className={styles.heroCtas}>
@@ -52,19 +52,27 @@ export default function HomePage() {
 
           <div className={styles.platformIcons} aria-label="Supported platforms">
             <span className={styles.platformIcon}>
-              <span role="img" aria-hidden="true">f</span>
+              <span role="img" aria-hidden="true">
+                f
+              </span>
               <span>Facebook</span>
             </span>
             <span className={styles.platformIcon}>
-              <span role="img" aria-hidden="true">ig</span>
+              <span role="img" aria-hidden="true">
+                ig
+              </span>
               <span>Instagram</span>
             </span>
             <span className={styles.platformIcon}>
-              <span role="img" aria-hidden="true">in</span>
+              <span role="img" aria-hidden="true">
+                in
+              </span>
               <span>LinkedIn</span>
             </span>
             <span className={styles.platformIcon}>
-              <span role="img" aria-hidden="true">X</span>
+              <span role="img" aria-hidden="true">
+                X
+              </span>
               <span>Twitter</span>
             </span>
           </div>
@@ -74,9 +82,7 @@ export default function HomePage() {
       {/* ---- Problem ---- */}
       <section className={`${styles.section} ${styles.problemSection}`}>
         <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>
-            Tired of copying and pasting across 5 platforms?
-          </h2>
+          <h2 className={styles.sectionTitle}>Tired of copying and pasting across 5 platforms?</h2>
           <p className={styles.sectionSubtitle}>
             Managing multiple channels manually is slow, error-prone, and unsustainable.
           </p>
@@ -85,22 +91,22 @@ export default function HomePage() {
             <article className={styles.painPoint}>
               <h3>Hours Lost Reformatting</h3>
               <p>
-                Every platform has different character limits, image sizes, and hashtag
-                rules. You end up editing the same post four times.
+                Every platform has different character limits, image sizes, and hashtag rules. You
+                end up editing the same post four times.
               </p>
             </article>
             <article className={styles.painPoint}>
               <h3>Inconsistent Posting Schedule</h3>
               <p>
-                Without a unified queue, posts slip through the cracks and your audience
-                engagement drops.
+                Without a unified queue, posts slip through the cracks and your audience engagement
+                drops.
               </p>
             </article>
             <article className={styles.painPoint}>
               <h3>No Unified Analytics</h3>
               <p>
-                Jumping between dashboards to piece together performance data means you
-                never see the full picture.
+                Jumping between dashboards to piece together performance data means you never see
+                the full picture.
               </p>
             </article>
           </div>
@@ -108,10 +114,7 @@ export default function HomePage() {
       </section>
 
       {/* ---- Features / Solution ---- */}
-      <section
-        id="features"
-        className={`${styles.section} ${styles.featuresSection}`}
-      >
+      <section id="features" className={`${styles.section} ${styles.featuresSection}`}>
         <div className={styles.sectionInner}>
           <h2 className={styles.sectionTitle}>One Tool. Every Channel. Zero Hassle.</h2>
           <p className={styles.sectionSubtitle}>
@@ -125,8 +128,8 @@ export default function HomePage() {
               </div>
               <h3>Multi-Platform Publishing</h3>
               <p>
-                Publish to Facebook, Instagram, LinkedIn, and Twitter from a single
-                editor. One click, every platform.
+                Publish to Facebook, Instagram, LinkedIn, and Twitter from a single editor. One
+                click, every platform.
               </p>
             </article>
 
@@ -136,8 +139,8 @@ export default function HomePage() {
               </div>
               <h3>AI Content Adaptation</h3>
               <p>
-                Our AI automatically reformats your content for each platform&apos;s
-                requirements — character limits, hashtags, and image crops.
+                Our AI automatically reformats your content for each platform&apos;s requirements —
+                character limits, hashtags, and image crops.
               </p>
             </article>
 
@@ -147,8 +150,8 @@ export default function HomePage() {
               </div>
               <h3>Smart Scheduling</h3>
               <p>
-                Queue content and publish at the times your audience is most active.
-                Set it and forget it.
+                Queue content and publish at the times your audience is most active. Set it and
+                forget it.
               </p>
             </article>
 
@@ -158,8 +161,8 @@ export default function HomePage() {
               </div>
               <h3>Unified Analytics</h3>
               <p>
-                See engagement, reach, and conversions across every platform in one
-                dashboard. No more tab-switching.
+                See engagement, reach, and conversions across every platform in one dashboard. No
+                more tab-switching.
               </p>
             </article>
           </div>
@@ -189,8 +192,8 @@ export default function HomePage() {
           <div className={styles.testimonials}>
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;OmniPost cut my publishing time in half. I used to spend an hour
-                reformatting posts — now it takes seconds.&rdquo;
+                &ldquo;OmniPost cut my publishing time in half. I used to spend an hour reformatting
+                posts — now it takes seconds.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
                 <strong>Sarah K.</strong> — Social Media Manager
@@ -199,8 +202,8 @@ export default function HomePage() {
 
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;The AI adaptation feature is a game-changer. Each platform gets
-                perfectly tailored content automatically.&rdquo;
+                &ldquo;The AI adaptation feature is a game-changer. Each platform gets perfectly
+                tailored content automatically.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
                 <strong>Marcus T.</strong> — Content Creator
@@ -209,8 +212,8 @@ export default function HomePage() {
 
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;Finally, one dashboard for all our analytics. Our team makes
-                better decisions faster.&rdquo;
+                &ldquo;Finally, one dashboard for all our analytics. Our team makes better decisions
+                faster.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
                 <strong>Priya R.</strong> — Marketing Director

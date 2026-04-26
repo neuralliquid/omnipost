@@ -4,7 +4,7 @@
 
 ## OmniPost Launches Open-Source, AI-Powered Platform for Multi-Platform Content Publishing
 
-*New tool lets content creators write once and publish to Facebook, Instagram, LinkedIn, and Twitter with AI-driven content adaptation*
+_New tool lets content creators write once and publish to Facebook, Instagram, LinkedIn, and Twitter with AI-driven content adaptation_
 
 ---
 
@@ -35,4 +35,4 @@ OmniPost is an AI-powered multi-platform content publishing platform that lets u
 **Email:** press@omnipost.app <!-- TODO: Verify this email is configured before launch -->
 **GitHub:** https://github.com/JustAGhosT/content_creation
 
-*For press inquiries, product demos, or interview requests, please contact the email above.*
+_For press inquiries, product demos, or interview requests, please contact the email above._

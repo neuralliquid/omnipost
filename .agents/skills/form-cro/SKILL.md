@@ -80,6 +80,7 @@ When forms require 4+ fields, consider multi-step approaches:
 ## Form Analytics Framework
 
 Track these metrics for every form:
+
 - **View-to-start rate**: % of visitors who interact with the first field
 - **Field-level drop-off**: Which fields cause abandonment
 - **Completion rate**: % of starters who submit
@@ -89,6 +90,7 @@ Track these metrics for every form:
 ## Output Format
 
 Deliver form optimization recommendations as:
+
 1. Current state assessment with metrics
 2. Prioritized list of changes (high/medium/low impact)
 3. Wireframe or field specification for the optimized form

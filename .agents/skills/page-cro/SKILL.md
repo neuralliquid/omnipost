@@ -21,6 +21,7 @@ Audit and optimize OmniPost's landing pages, feature pages, comparison pages, an
 ### Step 1: Page Audit
 
 Evaluate the page against these criteria:
+
 - **Clarity**: Can a visitor understand the offer in 5 seconds?
 - **Relevance**: Does the page match the traffic source's intent?
 - **Value proposition**: Is the benefit clear and compelling?
@@ -30,11 +31,13 @@ Evaluate the page against these criteria:
 ### Step 2: Above-the-Fold Optimization
 
 The hero section must accomplish three things:
+
 1. **What it is**: Clear headline stating what OmniPost does
 2. **Why it matters**: Subheadline with the key benefit
 3. **What to do next**: Prominent CTA
 
 **Hero Formula**:
+
 ```
 Headline: [Outcome the user wants] + [Without the pain they fear]
 Subheadline: [How OmniPost delivers that outcome] + [Key differentiator]
@@ -42,6 +45,7 @@ CTA: [Action verb] + [What they get] (e.g., "Start Publishing Free")
 ```
 
 Visual hierarchy checklist:
+
 - [ ] Headline is the largest text element
 - [ ] CTA button contrasts with page background
 - [ ] Supporting visual shows the product in action (not stock photos)
@@ -64,6 +68,7 @@ Follow the **Problem-Agitate-Solution-Proof-CTA** framework:
 ### Step 4: Social Proof Optimization
 
 Layer social proof throughout the page:
+
 - **Logos**: Recognizable brands using OmniPost (near hero)
 - **Metrics**: "10,000+ creators", "1M+ posts published" (near hero)
 - **Testimonials**: Specific, results-oriented quotes (mid-page)
@@ -90,16 +95,19 @@ Layer social proof throughout the page:
 ## Page-Type Specific Guidance
 
 ### Homepage
+
 - Serve multiple audiences with segmented paths
 - Feature the strongest social proof
 - Include a secondary CTA for users not ready to sign up
 
 ### Feature Pages
+
 - Lead with the outcome, not the feature name
 - Show the feature in action with screenshots or video
 - Include comparison with manual/alternative approaches
 
 ### Comparison Pages
+
 - Fair but favorable comparison with competitors
 - Use a comparison table with checkmarks
 - Highlight OmniPost's unique differentiators
@@ -108,6 +116,7 @@ Layer social proof throughout the page:
 ## Output Format
 
 Deliver page audits as:
+
 1. Screenshot annotations or section-by-section analysis
 2. Prioritized recommendations (high/medium/low impact)
 3. Specific copy suggestions for headlines, subheadlines, CTAs

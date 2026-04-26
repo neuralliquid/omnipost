@@ -208,7 +208,7 @@
   cursor: pointer;
 }
 
-.checkboxLabel input[type="checkbox"] {
+.checkboxLabel input[type='checkbox'] {
   accent-color: var(--color-primary);
 }
 
@@ -305,5 +305,8 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
-  :global(*) { transition: none !important; animation: none !important; }
+  :global(*) {
+    transition: none !important;
+    animation: none !important;
+  }
 }

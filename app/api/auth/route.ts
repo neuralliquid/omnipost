@@ -127,8 +127,12 @@ async function handleRegister(request: Request): Promise<NextResponse> {
     // Dynamic access: Prisma client models are typed at runtime after generation
     const db = prisma as Record<string, unknown>;
     const userModel = db.user as {
-      findUnique: (args: { where: { username?: string; email?: string } }) => Promise<{ id: string; username: string; email: string; role: string } | null>;
-      create: (args: { data: { username: string; email: string; passwordHash: string; role: string } }) => Promise<{ id: string; username: string; email: string; role: string }>;
+      findUnique: (args: {
+        where: { username?: string; email?: string };
+      }) => Promise<{ id: string; username: string; email: string; role: string } | null>;
+      create: (args: {
+        data: { username: string; email: string; passwordHash: string; role: string };
+      }) => Promise<{ id: string; username: string; email: string; role: string }>;
     };
 
     // Check if username already exists
@@ -178,7 +182,9 @@ async function handleRegister(request: Request): Promise<NextResponse> {
     };
 
     // Log registration
-    await logToAuditTrail(await createLogEntry('REGISTER_SUCCESS', { username, userId: newUser.id }));
+    await logToAuditTrail(
+      await createLogEntry('REGISTER_SUCCESS', { username, userId: newUser.id })
+    );
 
     // Generate JWT token
     const token = generateToken(newUser);

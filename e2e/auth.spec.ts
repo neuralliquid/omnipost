@@ -95,9 +95,10 @@ test.describe('Authentication flow', () => {
     if (await userMenu.isVisible({ timeout: 2_000 }).catch(() => false)) {
       await userMenu.click();
     }
-    await page.getByRole('button', { name: /log\s*out|sign\s*out/i }).or(
-      page.getByRole('menuitem', { name: /log\s*out|sign\s*out/i })
-    ).click();
+    await page
+      .getByRole('button', { name: /log\s*out|sign\s*out/i })
+      .or(page.getByRole('menuitem', { name: /log\s*out|sign\s*out/i }))
+      .click();
 
     // Should redirect away from dashboard
     await expect(page).not.toHaveURL(/\/dashboard/);

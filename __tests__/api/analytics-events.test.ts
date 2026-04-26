@@ -115,11 +115,7 @@ describe('Analytics Events API', () => {
         },
       });
 
-      const request = createRequest(
-        'GET',
-        undefined,
-        'http://localhost:3000/api/analytics/events'
-      );
+      const request = createRequest('GET', undefined, 'http://localhost:3000/api/analytics/events');
 
       const response = await GET(request);
       const data = await response.json();
@@ -189,9 +185,7 @@ describe('Analytics Events API', () => {
     test('should filter by since date', async () => {
       // Ingest events
       const postRequest = createRequest('POST', {
-        events: [
-          { name: 'page_viewed', properties: {} },
-        ],
+        events: [{ name: 'page_viewed', properties: {} }],
       });
       await POST(postRequest);
 

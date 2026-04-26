@@ -22,23 +22,24 @@ Create and maintain OmniPost's sales enablement materials — battle cards, obje
 
 Identify what the sales team needs:
 
-| Material | Purpose | Priority |
-|----------|---------|----------|
-| One-pager | Quick product overview for prospects | P0 |
-| Battle cards | Competitive positioning per competitor | P0 |
-| Objection handling guide | Responses to common objections | P0 |
-| Demo script | Structured product demonstration | P1 |
-| Case studies | Proof of value by segment | P1 |
-| ROI calculator | Quantify value for prospects | P1 |
-| Proposal template | Standard proposal format | P2 |
-| Email templates | Outreach and follow-up templates | P2 |
-| FAQ document | Answers to common prospect questions | P2 |
+| Material                 | Purpose                                | Priority |
+| ------------------------ | -------------------------------------- | -------- |
+| One-pager                | Quick product overview for prospects   | P0       |
+| Battle cards             | Competitive positioning per competitor | P0       |
+| Objection handling guide | Responses to common objections         | P0       |
+| Demo script              | Structured product demonstration       | P1       |
+| Case studies             | Proof of value by segment              | P1       |
+| ROI calculator           | Quantify value for prospects           | P1       |
+| Proposal template        | Standard proposal format               | P2       |
+| Email templates          | Outreach and follow-up templates       | P2       |
+| FAQ document             | Answers to common prospect questions   | P2       |
 
 ### Step 2: One-Pager
 
 **Structure** (single page, front and back):
 
 **Front**:
+
 ```
 OmniPost logo + tagline
 ─────────────────────────
@@ -55,6 +56,7 @@ OmniPost logo + tagline
 ```
 
 **Back**:
+
 ```
 [Feature overview with 4-6 key features]
 [Pricing summary]
@@ -68,6 +70,7 @@ OmniPost logo + tagline
 Create one battle card per key competitor:
 
 **Battle card template**:
+
 ```
 ┌─────────────────────────────────────────────┐
 │ BATTLE CARD: OmniPost vs. [Competitor]      │
@@ -109,19 +112,20 @@ Create one battle card per key competitor:
 
 **Common objections and responses**:
 
-| Objection | Category | Response Framework |
-|-----------|----------|-------------------|
-| "We already use Buffer/Hootsuite" | Competitor | Acknowledge → Differentiate → Prove |
-| "It's too expensive" | Price | Quantify ROI → Compare to cost of problem |
-| "We don't have time to switch" | Inertia | Easy migration → Show time-to-value |
-| "Will posts look automated?" | Quality | Explain AI formatting → Show examples |
-| "We need to get approval from..." | Authority | Provide materials for internal champion |
-| "We're not sure we need this" | Need | Quantify current pain → Show opportunity cost |
-| "What about data security?" | Trust | Security practices → Compliance → Guarantees |
+| Objection                         | Category   | Response Framework                            |
+| --------------------------------- | ---------- | --------------------------------------------- |
+| "We already use Buffer/Hootsuite" | Competitor | Acknowledge → Differentiate → Prove           |
+| "It's too expensive"              | Price      | Quantify ROI → Compare to cost of problem     |
+| "We don't have time to switch"    | Inertia    | Easy migration → Show time-to-value           |
+| "Will posts look automated?"      | Quality    | Explain AI formatting → Show examples         |
+| "We need to get approval from..." | Authority  | Provide materials for internal champion       |
+| "We're not sure we need this"     | Need       | Quantify current pain → Show opportunity cost |
+| "What about data security?"       | Trust      | Security practices → Compliance → Guarantees  |
 
 **Response formula**: **Acknowledge → Reframe → Evidence → Bridge**
 
 Example:
+
 ```
 Objection: "Buffer is cheaper"
 
@@ -170,6 +174,7 @@ works with your content?"
 ### Step 6: Case Study Template
 
 **Structure**:
+
 ```
 Title: How [Customer] [achieved result] with OmniPost
 Subtitle: [Specific metric or outcome]
@@ -205,6 +210,7 @@ Key metrics:
 ## Output Format
 
 Deliver sales enablement materials as:
+
 1. Formatted, ready-to-use documents (not drafts)
 2. One material at a time, refined to completion
 3. Include usage guidance (when/how to use each piece)

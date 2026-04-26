@@ -21,6 +21,7 @@ Design and optimize OmniPost's signup and registration flows to maximize the per
 ### Step 1: Audit Current Signup Flow
 
 Map every step from CTA click to account creation:
+
 1. What triggers the signup? (CTA button, pricing selection, feature gate)
 2. What information is collected? (fields, steps)
 3. What authentication methods are available? (email, Google, GitHub, etc.)
@@ -30,11 +31,13 @@ Map every step from CTA click to account creation:
 ### Step 2: Minimize Signup Friction
 
 **Authentication Options** (in order of conversion rate):
+
 1. **Social auth (Google/GitHub)**: One-click, highest conversion — make this the default
 2. **Magic link**: Email-based, no password to create
 3. **Email + password**: Traditional, lowest conversion but most familiar
 
 **Recommended OmniPost Signup Layout**:
+
 ```
 [Sign up with Google] (primary, prominent button)
 [Sign up with GitHub] (secondary)
@@ -46,34 +49,38 @@ Map every step from CTA click to account creation:
 
 Collect only what's essential at signup. Gather the rest later:
 
-| Timing | Data to Collect | Purpose |
-|--------|----------------|---------|
-| Signup | Email (or social auth) | Account creation |
-| Onboarding step 1 | Name, role type | Personalization |
-| Onboarding step 2 | Team size, use case | Segmentation |
-| First week in-app | Platform preferences | Feature recommendations |
-| Upgrade flow | Company, billing info | Payment |
+| Timing            | Data to Collect        | Purpose                 |
+| ----------------- | ---------------------- | ----------------------- |
+| Signup            | Email (or social auth) | Account creation        |
+| Onboarding step 1 | Name, role type        | Personalization         |
+| Onboarding step 2 | Team size, use case    | Segmentation            |
+| First week in-app | Platform preferences   | Feature recommendations |
+| Upgrade flow      | Company, billing info  | Payment                 |
 
 ### Step 4: Signup Page Design
 
 **Above the form**:
+
 - Clear headline: "Start publishing everywhere in minutes"
 - Benefit bullets (3 max): Multi-platform publishing, AI formatting, Analytics
 - Social proof: "Trusted by 10,000+ content creators"
 
 **The form itself**:
+
 - Minimal fields (email only for step 1)
 - Large, high-contrast submit button
 - Password requirements shown proactively (not after error)
 - Terms of service as a subtle link, not a checkbox
 
 **Below the form**:
+
 - Trust signals: "Free forever plan available" • "No credit card required"
 - Login link for existing users: "Already have an account? Log in"
 
 ### Step 5: Post-Signup Experience
 
 **Email verification** (if required):
+
 - Auto-send verification email immediately
 - Show a clear "Check your email" screen with:
   - The email address used (with option to change)
@@ -83,6 +90,7 @@ Collect only what's essential at signup. Gather the rest later:
 - Keep the session active — don't force re-login after verification
 
 **Immediate redirect**:
+
 - Send new users directly to the onboarding flow, not a blank dashboard
 - Pre-populate any data from the signup (name, email, avatar from social auth)
 - Show the first valuable action they can take
@@ -115,6 +123,7 @@ Collect only what's essential at signup. Gather the rest later:
 ## Output Format
 
 Deliver signup flow recommendations as:
+
 1. Current flow audit with drop-off analysis
 2. Recommended flow (wireframe-level specification)
 3. Copy for all form elements, CTAs, and error states

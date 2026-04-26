@@ -9,10 +9,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
-import {
-  VALID_LEAD_STATUSES,
-  VALID_LEAD_TEMPERATURES,
-} from '@/app/api/_utils/constants';
+import { VALID_LEAD_STATUSES, VALID_LEAD_TEMPERATURES } from '@/app/api/_utils/constants';
 import {
   checkAuthAndRateLimit,
   requireAuthWithUserId,
@@ -23,23 +20,9 @@ import { sanitizeText } from '@/app/api/_utils/sanitize';
 
 // Zod schema for updating a lead
 const updateLeadSchema = z.object({
-  firstName: z
-    .string()
-    .min(1)
-    .max(100)
-    .transform(sanitizeText)
-    .optional(),
-  lastName: z
-    .string()
-    .min(1)
-    .max(100)
-    .transform(sanitizeText)
-    .optional(),
-  title: z
-    .string()
-    .max(200)
-    .transform(sanitizeText)
-    .optional(),
+  firstName: z.string().min(1).max(100).transform(sanitizeText).optional(),
+  lastName: z.string().min(1).max(100).transform(sanitizeText).optional(),
+  title: z.string().max(200).transform(sanitizeText).optional(),
   contact: z
     .object({
       email: z.string().email('Invalid email address').optional(),
@@ -64,11 +47,7 @@ const updateLeadSchema = z.object({
   temperature: z.enum(VALID_LEAD_TEMPERATURES as unknown as [string, ...string[]]).optional(),
   assignedTo: z.string().optional(),
   tags: z.array(z.string()).optional(),
-  notes: z
-    .string()
-    .max(10000)
-    .transform(sanitizeText)
-    .optional(),
+  notes: z.string().max(10000).transform(sanitizeText).optional(),
   nextFollowUpAt: z.string().datetime({ message: 'Invalid date format' }).optional(),
   customFields: z.record(z.unknown()).optional(),
 });
@@ -157,8 +136,8 @@ export const PATCH = withErrorHandling(async (request: Request, { params }: Rout
     title: data.title,
     contact: data.contact,
     company: data.company,
-    status: data.status as typeof VALID_LEAD_STATUSES[number] | undefined,
-    temperature: data.temperature as typeof VALID_LEAD_TEMPERATURES[number] | undefined,
+    status: data.status as (typeof VALID_LEAD_STATUSES)[number] | undefined,
+    temperature: data.temperature as (typeof VALID_LEAD_TEMPERATURES)[number] | undefined,
     assignedTo: data.assignedTo,
     tags: data.tags,
     notes: data.notes,

@@ -7,6 +7,7 @@
 ## Alpha Definition
 
 **Alpha** = OmniPost is functional enough for early adopters to:
+
 1. Sign up and authenticate
 2. Connect at least one platform
 3. Create, adapt, and publish content
@@ -18,17 +19,17 @@
 
 ## Current State Assessment
 
-| Area | Status | Blocker? |
-|------|--------|----------|
-| Frontend pages (10) | Complete | No |
-| API routes (33) | 65% complete | No - core publishing routes work |
-| Database schema (13 models) | Defined but not initialized | **YES** |
-| Auth (JWT) | Logic complete, middleware missing | **YES** |
-| Security (rate limit, sanitize, CSP) | Implemented | No |
-| Tests (15 files, ~47% coverage) | Exist but can't run (no node_modules) | **YES** |
-| Build | Can't build (no node_modules) | **YES** |
-| Feature flags | Working | No |
-| Known bugs | 4 high-priority open | **YES** (BUG-04, 06, 07, 08) |
+| Area                                 | Status                                | Blocker?                         |
+| ------------------------------------ | ------------------------------------- | -------------------------------- |
+| Frontend pages (10)                  | Complete                              | No                               |
+| API routes (33)                      | 65% complete                          | No - core publishing routes work |
+| Database schema (13 models)          | Defined but not initialized           | **YES**                          |
+| Auth (JWT)                           | Logic complete, middleware missing    | **YES**                          |
+| Security (rate limit, sanitize, CSP) | Implemented                           | No                               |
+| Tests (15 files, ~47% coverage)      | Exist but can't run (no node_modules) | **YES**                          |
+| Build                                | Can't build (no node_modules)         | **YES**                          |
+| Feature flags                        | Working                               | No                               |
+| Known bugs                           | 4 high-priority open                  | **YES** (BUG-04, 06, 07, 08)     |
 
 ---
 
@@ -37,31 +38,41 @@
 **Goal**: Get the project building, tests passing, auth working.
 
 ### Task 1.1: Fix auth middleware (CRITICAL) -- COMPLETED
+
 **Team**: Security
 **File**: `middleware.ts` (project root)
+
 - Created Next.js middleware that validates JWT from cookies
 - Injects `x-user-id`, `x-user-name`, `x-user-role` headers
 
 ### Task 1.2: Fix BUG-08 — Token null check -- COMPLETED
+
 **Team**: Security
 **File**: `lib/auth/auth-service.ts`
+
 - Added null check for token in verification flow
 
 ### Task 1.3: Fix BUG-04 — Error boundaries -- COMPLETED
+
 **Team**: Frontend
 **File**: `components/ErrorBoundary.tsx`
+
 - Dashboard pages wrapped with error boundaries
 - Single component crashes no longer take down the app
 
 ### Task 1.4: Fix BUG-06 — Rate limit race condition -- COMPLETED
+
 **Team**: Backend
 **File**: `app/api/_utils/rateLimit.ts`
+
 - Fixed in-memory store eviction under concurrent load
 - Added atomic counter operations
 
 ### Task 1.5: Fix BUG-07 — Feature flag cascade -- COMPLETED
+
 **Team**: Backend
 **File**: `app/api/parse/route.ts`
+
 - Decoupled unrelated feature flag checks
 - Parse endpoint now only checks textParser flag
 
@@ -72,14 +83,18 @@
 **Goal**: The sign-up -> connect -> publish -> analyze flow works end-to-end.
 
 ### Task 2.1: Onboarding flow -- COMPLETED
+
 **Team**: Frontend
+
 - After signup, users are redirected to guided onboarding
 - Step 1: Connect first platform
 - Step 2: Create first post
 - Step 3: Publish
 
 ### Task 2.2: Signup page optimization -- COMPLETED
+
 **Team**: Frontend
+
 - Applied signup-flow-cro skill framework:
   - Social auth (Google/GitHub) as primary
   - Single email field for traditional signup
@@ -87,7 +102,9 @@
   - Trust signals below form
 
 ### Task 2.3: Landing page CRO -- COMPLETED
+
 **Team**: Frontend + Marketing
+
 - Applied page-cro skill framework:
   - Hero: outcome headline + product screenshot
   - Problem-agitate-solution below fold
@@ -96,7 +113,9 @@
   - Final CTA
 
 ### Task 2.4: Complete partial API routes -- COMPLETED
+
 **Team**: Backend
+
 - Implemented priority routes for alpha:
   - `/api/scheduler` -- scheduling is core to the product
   - `/api/leads` -- basic lead capture for waitlist
@@ -109,20 +128,26 @@
 **Goal**: We can measure what matters from day one.
 
 ### Task 3.1: Implement event tracking -- COMPLETED
+
 **Team**: Backend
+
 - Applied analytics-tracking skill AARRR framework:
   - `signup_completed`, `platform_connected`, `post_published`
   - `pricing_page_viewed`, `trial_started`, `upgrade_initiated`
 - Added to existing engagement-metrics API
 
 ### Task 3.2: UTM parameter handling -- COMPLETED
+
 **Team**: Frontend
+
 - UTM params captured on landing page
 - Stored in cookie/session for attribution
 - Passed through to signup event
 
 ### Task 3.3: Core funnels -- COMPLETED
+
 **Team**: Marketing
+
 - Configured: Landing -> Signup -> Platform Connected -> First Post -> Retained (Day 7)
 - Dashboard widget for conversion rates
 
@@ -133,27 +158,35 @@
 **Goal**: Assets and channels ready for alpha announcement.
 
 ### Task 4.1: Content package -- COMPLETED
+
 **Team**: Marketing (using content-strategy + launch-strategy skills)
+
 - Launch blog post created (`docs/launch/BLOG_POST.md`)
 - 10+ social media posts created (`docs/launch/SOCIAL_POSTS.md`)
 - Product Hunt submission assets prepared (`docs/launch/PRODUCT_HUNT.md`)
 - Launch email for waitlist written (`docs/launch/LAUNCH_EMAIL.md`)
 
 ### Task 4.2: Pricing page -- COMPLETED
+
 **Team**: Frontend + Marketing (using pricing-strategy skill)
+
 - Free / Pro ($19/mo) / Team ($49/mo) tiers
 - Feature comparison table
 - FAQ section
 - No payment processing yet -- waitlist CTA in place
 
 ### Task 4.3: Documentation -- COMPLETED
+
 **Team**: Docs
+
 - Getting started guide created (`docs/GETTING_STARTED.md`)
 - Platform connection guides included in getting started guide
 - API documentation available in `docs/api/`
 
 ### Task 4.4: SEO foundations -- COMPLETED
+
 **Team**: Marketing (using seo-audit + site-architecture skills)
+
 - Meta tags on all pages
 - Schema markup for SaaS product
 - robots.txt and sitemap.xml
@@ -166,6 +199,7 @@
 **Goal**: Coordinated alpha launch following launch-strategy skill.
 
 ### Launch Day Checklist
+
 - [ ] Flip launch page live
 - [ ] Send launch email
 - [ ] Post on Product Hunt (Tuesday-Thursday, 12:01 AM PT)
@@ -179,26 +213,26 @@
 
 ## Team Assignment Matrix
 
-| Phase | Backend | Frontend | Security | Marketing | Docs | Testing |
-|-------|---------|----------|----------|-----------|------|---------|
-| 1. Unblock | BUG-06, 07 | BUG-04 | Middleware, BUG-08 | — | — | — |
-| 2. Polish | Scheduler, leads, forms | Onboarding, signup, landing | — | Landing CRO | — | E2E for core flow |
-| 3. Analytics | Event tracking API | UTM capture | — | Funnels | — | Tracking validation |
-| 4. Launch Prep | — | Pricing page | — | Content, SEO | Guides | — |
-| 5. Launch | Monitoring | — | — | Execute launch | — | Smoke tests |
+| Phase          | Backend                 | Frontend                    | Security           | Marketing      | Docs   | Testing             |
+| -------------- | ----------------------- | --------------------------- | ------------------ | -------------- | ------ | ------------------- |
+| 1. Unblock     | BUG-06, 07              | BUG-04                      | Middleware, BUG-08 | —              | —      | —                   |
+| 2. Polish      | Scheduler, leads, forms | Onboarding, signup, landing | —                  | Landing CRO    | —      | E2E for core flow   |
+| 3. Analytics   | Event tracking API      | UTM capture                 | —                  | Funnels        | —      | Tracking validation |
+| 4. Launch Prep | —                       | Pricing page                | —                  | Content, SEO   | Guides | —                   |
+| 5. Launch      | Monitoring              | —                           | —                  | Execute launch | —      | Smoke tests         |
 
 ---
 
 ## Success Metrics (Alpha)
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Signups (week 1) | 100+ | signup_completed events |
-| Platform connections | 50+ | platform_connected events |
-| Posts published | 200+ | post_published events |
-| Day 7 retention | 30%+ | Return visits |
-| NPS (alpha users) | 40+ | In-app survey |
-| Critical bugs found | < 10 | Issue tracker |
+| Metric               | Target | Measurement               |
+| -------------------- | ------ | ------------------------- |
+| Signups (week 1)     | 100+   | signup_completed events   |
+| Platform connections | 50+    | platform_connected events |
+| Posts published      | 200+   | post_published events     |
+| Day 7 retention      | 30%+   | Return visits             |
+| NPS (alpha users)    | 40+    | In-app survey             |
+| Critical bugs found  | < 10   | Issue tracker             |
 
 ---
 
@@ -206,23 +240,23 @@
 
 All launch content assets for Phase 4 (Task 4.1) have been created and are located in `docs/launch/`.
 
-| Asset | File | Status |
-|-------|------|--------|
-| Launch blog post | [`docs/launch/BLOG_POST.md`](launch/BLOG_POST.md) | Complete |
-| Social media posts (10+) | [`docs/launch/SOCIAL_POSTS.md`](launch/SOCIAL_POSTS.md) | Complete |
-| Launch email to waitlist | [`docs/launch/LAUNCH_EMAIL.md`](launch/LAUNCH_EMAIL.md) | Complete |
-| Product Hunt submission brief | [`docs/launch/PRODUCT_HUNT.md`](launch/PRODUCT_HUNT.md) | Complete |
-| Press release | [`docs/launch/PRESS_RELEASE.md`](launch/PRESS_RELEASE.md) | Complete |
+| Asset                         | File                                                      | Status   |
+| ----------------------------- | --------------------------------------------------------- | -------- |
+| Launch blog post              | [`docs/launch/BLOG_POST.md`](launch/BLOG_POST.md)         | Complete |
+| Social media posts (10+)      | [`docs/launch/SOCIAL_POSTS.md`](launch/SOCIAL_POSTS.md)   | Complete |
+| Launch email to waitlist      | [`docs/launch/LAUNCH_EMAIL.md`](launch/LAUNCH_EMAIL.md)   | Complete |
+| Product Hunt submission brief | [`docs/launch/PRODUCT_HUNT.md`](launch/PRODUCT_HUNT.md)   | Complete |
+| Press release                 | [`docs/launch/PRESS_RELEASE.md`](launch/PRESS_RELEASE.md) | Complete |
 
 ### Social Posts Breakdown
 
-| Platform | Count | Status |
-|----------|-------|--------|
-| Twitter/X | 3 posts | Complete |
-| LinkedIn | 3 posts | Complete |
+| Platform     | Count                          | Status   |
+| ------------ | ------------------------------ | -------- |
+| Twitter/X    | 3 posts                        | Complete |
+| LinkedIn     | 3 posts                        | Complete |
 | Product Hunt | 2 comments (maker + follow-up) | Complete |
-| Reddit | 1 post (r/SideProject) | Complete |
-| Hacker News | 1 post (Show HN) | Complete |
+| Reddit       | 1 post (r/SideProject)         | Complete |
+| Hacker News  | 1 post (Show HN)               | Complete |
 
 ### Pre-Publish Review Checklist
 
