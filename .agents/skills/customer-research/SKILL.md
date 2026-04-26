@@ -22,19 +22,20 @@ Plan and execute customer research for OmniPost — user interviews, surveys, fe
 
 Clarify what you need to learn:
 
-| Research Goal | Method | Timeline |
-|--------------|--------|----------|
-| Understand pain points | 1:1 interviews | 2-3 weeks |
-| Validate messaging | Message testing survey | 1-2 weeks |
-| Measure satisfaction | NPS/CSAT survey | Ongoing |
-| Understand churn | Exit interviews + survey | Ongoing |
-| Validate personas | Interviews + analytics | 3-4 weeks |
-| Test pricing | Willingness-to-pay survey | 1-2 weeks |
-| Identify use cases | Jobs-to-be-done interviews | 3-4 weeks |
+| Research Goal          | Method                     | Timeline  |
+| ---------------------- | -------------------------- | --------- |
+| Understand pain points | 1:1 interviews             | 2-3 weeks |
+| Validate messaging     | Message testing survey     | 1-2 weeks |
+| Measure satisfaction   | NPS/CSAT survey            | Ongoing   |
+| Understand churn       | Exit interviews + survey   | Ongoing   |
+| Validate personas      | Interviews + analytics     | 3-4 weeks |
+| Test pricing           | Willingness-to-pay survey  | 1-2 weeks |
+| Identify use cases     | Jobs-to-be-done interviews | 3-4 weeks |
 
 ### Step 2: Interview Planning
 
 **Recruitment**:
+
 - Source interviewees from: active users, churned users, prospects, non-users in the target market
 - Aim for 8-12 interviews per segment (saturation point for qualitative research)
 - Offer incentive: $50 gift card or 3 months free Pro for a 30-minute call
@@ -73,6 +74,7 @@ Clarify what you need to learn:
 ```
 
 **Interview best practices**:
+
 - Ask "why" and "tell me more" liberally
 - Use silence — let them fill the gap
 - Ask for specific examples, not hypotheticals
@@ -84,6 +86,7 @@ Clarify what you need to learn:
 **Survey types for OmniPost**:
 
 **NPS Survey** (quarterly):
+
 ```
 Q1: How likely are you to recommend OmniPost? (0-10)
 Q2: What's the primary reason for your score? (open text)
@@ -91,6 +94,7 @@ Q3: What one thing could we improve? (open text)
 ```
 
 **Onboarding survey** (day 3):
+
 ```
 Q1: What's your primary goal with OmniPost? (multiple choice)
 Q2: How easy was it to get started? (1-5 scale)
@@ -99,6 +103,7 @@ Q4: What's been confusing or difficult? (open text)
 ```
 
 **Churn survey** (at cancellation):
+
 ```
 Q1: What's the main reason you're canceling? (dropdown)
 Q2: What could we have done differently? (open text)
@@ -106,6 +111,7 @@ Q3: Would you consider coming back if we [improvement]? (yes/no)
 ```
 
 **Survey best practices**:
+
 - Keep it under 5 minutes (< 10 questions)
 - Use a mix of closed and open-ended questions
 - Avoid leading questions
@@ -115,6 +121,7 @@ Q3: Would you consider coming back if we [improvement]? (yes/no)
 ### Step 4: Feedback Analysis
 
 **Sources to analyze**:
+
 - Support tickets and live chat transcripts
 - App store and G2/Capterra reviews
 - Social media mentions and comments
@@ -123,6 +130,7 @@ Q3: Would you consider coming back if we [improvement]? (yes/no)
 - NPS and survey responses
 
 **Analysis framework**:
+
 1. **Categorize** feedback by theme (features, pricing, UX, bugs, competition)
 2. **Quantify** frequency of each theme
 3. **Prioritize** by impact (revenue risk, acquisition impact, user volume)
@@ -140,6 +148,7 @@ So I can [expected outcome].
 ```
 
 **Example JTBD for OmniPost**:
+
 - "When I've written a great blog post, I want to share it across all my platforms, so I can maximize its reach without spending hours reformatting."
 - "When I'm managing content for multiple clients, I want one place to publish everywhere, so I can serve more clients without hiring more people."
 - "When I'm growing my personal brand, I want to be consistently present on every platform, so I can build authority without burning out."
@@ -147,6 +156,7 @@ So I can [expected outcome].
 ### Step 6: Synthesize & Share Insights
 
 **Research report structure**:
+
 1. Executive summary (key findings in 3-5 bullets)
 2. Methodology (who we talked to, how, when)
 3. Key findings by theme
@@ -157,6 +167,7 @@ So I can [expected outcome].
 ## Output Format
 
 Deliver customer research as:
+
 1. Research plan with objectives, methods, and timeline
 2. Interview scripts or survey instruments
 3. Research findings report with themes, quotes, and data

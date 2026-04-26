@@ -21,6 +21,7 @@ Audit and optimize OmniPost's website for organic search performance — technic
 ### Step 1: Technical SEO Audit
 
 **Crawlability & Indexation**:
+
 - Robots.txt: Verify correct allow/disallow rules
 - XML Sitemap: Confirm all important pages are included, no errors
 - Indexation: Check Google Search Console for indexed vs. submitted pages
@@ -30,6 +31,7 @@ Audit and optimize OmniPost's website for organic search performance — technic
 - Orphan pages: Identify pages with no internal links
 
 **Site Speed (Core Web Vitals)**:
+
 - LCP (Largest Contentful Paint): Target < 2.5 seconds
 - INP (Interaction to Next Paint): Target < 200ms
 - CLS (Cumulative Layout Shift): Target < 0.1
@@ -37,6 +39,7 @@ Audit and optimize OmniPost's website for organic search performance — technic
 - Common fixes: Image optimization, lazy loading, code splitting, CDN
 
 **Mobile Optimization**:
+
 - Mobile-friendly test for all page templates
 - Responsive design verification
 - Touch target sizing (minimum 48x48px)
@@ -44,6 +47,7 @@ Audit and optimize OmniPost's website for organic search performance — technic
 - Mobile page speed
 
 **Security & Infrastructure**:
+
 - HTTPS on all pages (no mixed content)
 - HSTS headers configured
 - Proper www/non-www redirect
@@ -53,20 +57,21 @@ Audit and optimize OmniPost's website for organic search performance — technic
 
 For each key page, evaluate:
 
-| Element | Best Practice | Check |
-|---------|-------------|-------|
-| Title tag | 50-60 chars, keyword near start, compelling | Unique per page? |
-| Meta description | 150-160 chars, includes keyword, has CTA | Unique per page? |
-| H1 | One per page, includes primary keyword | Present on all pages? |
-| H2-H6 | Logical hierarchy, include related keywords | Properly nested? |
-| URL structure | Short, descriptive, includes keyword | Clean URLs? |
-| Internal links | 3-5 contextual internal links per page | Well-distributed? |
-| Image alt text | Descriptive, includes keywords where natural | Present on all images? |
-| Content length | Appropriate for the query intent | Competitive with ranking pages? |
+| Element          | Best Practice                                | Check                           |
+| ---------------- | -------------------------------------------- | ------------------------------- |
+| Title tag        | 50-60 chars, keyword near start, compelling  | Unique per page?                |
+| Meta description | 150-160 chars, includes keyword, has CTA     | Unique per page?                |
+| H1               | One per page, includes primary keyword       | Present on all pages?           |
+| H2-H6            | Logical hierarchy, include related keywords  | Properly nested?                |
+| URL structure    | Short, descriptive, includes keyword         | Clean URLs?                     |
+| Internal links   | 3-5 contextual internal links per page       | Well-distributed?               |
+| Image alt text   | Descriptive, includes keywords where natural | Present on all images?          |
+| Content length   | Appropriate for the query intent             | Competitive with ranking pages? |
 
 ### Step 3: Keyword Research & Mapping
 
 **Keyword research process**:
+
 1. Seed keywords from OmniPost's product features and use cases
 2. Expand with tools (Ahrefs, SEMrush, Google Keyword Planner)
 3. Analyze search intent (informational, navigational, commercial, transactional)
@@ -74,6 +79,7 @@ For each key page, evaluate:
 5. Map clusters to existing or new pages
 
 **Priority keyword categories for OmniPost**:
+
 - Product keywords: "multi-platform publishing tool", "cross-posting app"
 - Use case keywords: "how to post to multiple platforms", "content repurposing"
 - Comparison keywords: "OmniPost vs Buffer", "Hootsuite alternatives"
@@ -94,12 +100,14 @@ For each key page, evaluate:
 ### Step 5: Link Profile Analysis
 
 **Internal linking**:
+
 - Identify pages with high authority but few outbound internal links
 - Ensure pillar pages receive the most internal links
 - Fix broken internal links
 - Optimize anchor text (descriptive, keyword-relevant)
 
 **External linking (backlinks)**:
+
 - Audit existing backlink profile for quality and relevance
 - Identify toxic or spammy links to disavow
 - Competitive backlink analysis: Where do competitors get links?
@@ -109,16 +117,17 @@ For each key page, evaluate:
 
 Prioritize fixes by impact and effort:
 
-| Priority | Type | Example | Impact | Effort |
-|----------|------|---------|--------|--------|
-| P0 | Critical | Fix indexation issues, broken redirects | High | Low |
-| P1 | High | Optimize title tags on top pages | High | Low |
-| P2 | Medium | Create missing content for target keywords | High | High |
-| P3 | Low | Optimize image alt text sitewide | Low | Medium |
+| Priority | Type     | Example                                    | Impact | Effort |
+| -------- | -------- | ------------------------------------------ | ------ | ------ |
+| P0       | Critical | Fix indexation issues, broken redirects    | High   | Low    |
+| P1       | High     | Optimize title tags on top pages           | High   | Low    |
+| P2       | Medium   | Create missing content for target keywords | High   | High   |
+| P3       | Low      | Optimize image alt text sitewide           | Low    | Medium |
 
 ## Output Format
 
 Deliver SEO audits as:
+
 1. Executive summary with key findings and estimated impact
 2. Technical SEO issue list with severity and fix instructions
 3. On-page optimization recommendations per page

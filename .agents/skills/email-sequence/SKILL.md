@@ -22,14 +22,14 @@ Design and optimize OmniPost's automated email sequences — welcome series, nur
 
 Classify the email sequence:
 
-| Sequence Type | Trigger | Goal | Length |
-|--------------|---------|------|--------|
-| Welcome/nurture | Newsletter signup | Educate → trial signup | 5-7 emails over 2-3 weeks |
-| Onboarding | Account creation | Activate key features | 5-8 emails over 14 days |
-| Trial conversion | Trial start | Convert to paid | 6-8 emails over 14 days |
-| Re-engagement | Inactivity (7+ days) | Bring user back | 3-4 emails over 10 days |
-| Upgrade | Feature limit hit | Convert free to paid | 3-5 emails over 7 days |
-| Churn prevention | Cancel signal | Retain the user | 2-3 emails over 5 days |
+| Sequence Type    | Trigger              | Goal                   | Length                    |
+| ---------------- | -------------------- | ---------------------- | ------------------------- |
+| Welcome/nurture  | Newsletter signup    | Educate → trial signup | 5-7 emails over 2-3 weeks |
+| Onboarding       | Account creation     | Activate key features  | 5-8 emails over 14 days   |
+| Trial conversion | Trial start          | Convert to paid        | 6-8 emails over 14 days   |
+| Re-engagement    | Inactivity (7+ days) | Bring user back        | 3-4 emails over 10 days   |
+| Upgrade          | Feature limit hit    | Convert free to paid   | 3-5 emails over 7 days    |
+| Churn prevention | Cancel signal        | Retain the user        | 2-3 emails over 5 days    |
 
 ### Step 2: Map the Sequence
 
@@ -52,6 +52,7 @@ Day 0: [Trigger event]
 ### Step 3: Write Each Email
 
 **Email Structure**:
+
 ```
 From: [Real person name] at OmniPost
 Subject: [4-8 words, personal, curiosity-driven]
@@ -65,6 +66,7 @@ Body:
 ```
 
 **Subject Line Formulas**:
+
 - Question: "How are you publishing to LinkedIn?"
 - Personal: "Quick tip for your content workflow"
 - Benefit: "Save 6 hours this week on content publishing"
@@ -74,12 +76,14 @@ Body:
 ### Step 4: Segmentation & Personalization
 
 Personalize sequences based on:
+
 - **User type**: Solo creator vs. team vs. agency
 - **Signup source**: Blog, paid ad, referral, product hunt
 - **Behavior**: Features used, platforms connected, posts published
 - **Engagement**: Email opens, clicks, product logins
 
 Dynamic content blocks:
+
 - Show different case studies based on user segment
 - Reference specific features they haven't tried
 - Adjust CTA based on current plan status
@@ -87,6 +91,7 @@ Dynamic content blocks:
 ### Step 5: Key Sequence Templates
 
 **Welcome Sequence (Newsletter Subscribers)**:
+
 1. **Immediate**: Welcome + best content piece + what to expect
 2. **Day 2**: "The biggest challenge with multi-platform publishing" (problem aware)
 3. **Day 5**: Case study: how [creator] publishes to 8 platforms in 10 min
@@ -94,6 +99,7 @@ Dynamic content blocks:
 5. **Day 12**: Direct CTA to try OmniPost free
 
 **Onboarding Sequence (New Users)**:
+
 1. **Immediate**: Welcome + first step (connect a platform)
 2. **Day 1**: "Create your first cross-platform post" (if not done)
 3. **Day 3**: Feature spotlight: AI content reformatting
@@ -104,14 +110,15 @@ Dynamic content blocks:
 
 ### Step 6: Optimize Performance
 
-| Metric | Good | Great | Action if Below |
-|--------|------|-------|-----------------|
-| Open rate | 25% | 40%+ | Test subject lines, sender name, send time |
-| Click rate | 3% | 5%+ | Improve CTA clarity, reduce content length |
-| Unsubscribe rate | < 0.5% | < 0.2% | Reduce frequency, improve relevance |
-| Conversion rate | 1% | 3%+ | Strengthen offer, improve segmentation |
+| Metric           | Good   | Great  | Action if Below                            |
+| ---------------- | ------ | ------ | ------------------------------------------ |
+| Open rate        | 25%    | 40%+   | Test subject lines, sender name, send time |
+| Click rate       | 3%     | 5%+    | Improve CTA clarity, reduce content length |
+| Unsubscribe rate | < 0.5% | < 0.2% | Reduce frequency, improve relevance        |
+| Conversion rate  | 1%     | 3%+    | Strengthen offer, improve segmentation     |
 
 **Send time optimization**:
+
 - B2B/professional: Tuesday-Thursday, 9-11 AM recipient's timezone
 - Creator audience: Varies — test mornings vs. evenings
 - Always A/B test send times with your specific audience
@@ -127,6 +134,7 @@ Dynamic content blocks:
 ## Output Format
 
 Deliver email sequences as:
+
 1. Sequence map with triggers, timing, and branching logic
 2. Full copy for each email (subject, preview, body, CTA)
 3. Segmentation rules and personalization variables

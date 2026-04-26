@@ -84,9 +84,7 @@ interface McpToolResult<T> {
 const REQUEST_TIMEOUT_MS = 10_000;
 
 function getConfig(): PhoenixFlowConfig | null {
-  const phoenixFlow = featureFlags.phoenixFlow as
-    | { enabled: boolean; mcpUrl?: string }
-    | undefined;
+  const phoenixFlow = featureFlags.phoenixFlow as { enabled: boolean; mcpUrl?: string } | undefined;
 
   if (!phoenixFlow?.enabled) {
     return null;
@@ -106,15 +104,10 @@ function getConfig(): PhoenixFlowConfig | null {
 // MCP call helper
 // ---------------------------------------------------------------------------
 
-async function callMcpTool<T>(
-  toolName: string,
-  params: Record<string, unknown> = {},
-): Promise<T> {
+async function callMcpTool<T>(toolName: string, params: Record<string, unknown> = {}): Promise<T> {
   const config = getConfig();
   if (!config) {
-    throw new PhoenixFlowUnavailableError(
-      'Phoenix-Flow integration is not configured or disabled',
-    );
+    throw new PhoenixFlowUnavailableError('Phoenix-Flow integration is not configured or disabled');
   }
 
   const controller = new AbortController();
@@ -134,7 +127,7 @@ async function callMcpTool<T>(
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
       throw new Error(
-        `Phoenix-Flow MCP call "${toolName}" failed: ${response.status} ${errorText}`,
+        `Phoenix-Flow MCP call "${toolName}" failed: ${response.status} ${errorText}`
       );
     }
 
@@ -146,11 +139,11 @@ async function callMcpTool<T>(
     }
     if (error instanceof DOMException && error.name === 'AbortError') {
       throw new PhoenixFlowUnavailableError(
-        `Phoenix-Flow MCP call "${toolName}" timed out after ${REQUEST_TIMEOUT_MS}ms`,
+        `Phoenix-Flow MCP call "${toolName}" timed out after ${REQUEST_TIMEOUT_MS}ms`
       );
     }
     throw new PhoenixFlowUnavailableError(
-      `Phoenix-Flow MCP call "${toolName}" failed: ${error instanceof Error ? error.message : String(error)}`,
+      `Phoenix-Flow MCP call "${toolName}" failed: ${error instanceof Error ? error.message : String(error)}`
     );
   } finally {
     clearTimeout(timeout);
@@ -182,10 +175,7 @@ export async function listProjects(): Promise<Project[]> {
 /**
  * Get tasks with optional project and status filters.
  */
-export async function getTasks(
-  projectId?: string,
-  status?: string,
-): Promise<Task[]> {
+export async function getTasks(projectId?: string, status?: string): Promise<Task[]> {
   const params: Record<string, unknown> = {};
   if (projectId) params.projectId = projectId;
   if (status) params.status = status;
@@ -202,10 +192,7 @@ export async function createTask(task: CreateTaskInput): Promise<Task> {
 /**
  * Update an existing task.
  */
-export async function updateTask(
-  taskId: string,
-  updates: UpdateTaskInput,
-): Promise<Task> {
+export async function updateTask(taskId: string, updates: UpdateTaskInput): Promise<Task> {
   return callMcpTool<Task>('update_task', {
     taskId,
     ...updates,

@@ -21,6 +21,7 @@ Design, target, and optimize popups, modals, slide-ins, and notification bars ac
 ### Step 1: Define Popup Purpose
 
 Every popup must have one clear goal:
+
 - **Email capture**: Newsletter signup, content upgrade, lead magnet
 - **Upgrade prompt**: Free-to-paid conversion at key moments
 - **Announcement**: New feature, event, or offer
@@ -31,16 +32,17 @@ Every popup must have one clear goal:
 
 Choose the right trigger for the context:
 
-| Trigger | Best For | Timing |
-|---------|----------|--------|
-| Time delay | First-time visitors, blog readers | 15-30 seconds |
-| Scroll depth | Content pages, long-form articles | 50-70% scroll |
-| Exit intent | Any page, especially pricing | Mouse moves toward browser chrome |
-| Click trigger | Content upgrades, gated resources | User clicks a specific element |
-| Page count | Returning visitors | 2nd or 3rd page view |
-| Inactivity | Product pages | 30+ seconds idle |
+| Trigger       | Best For                          | Timing                            |
+| ------------- | --------------------------------- | --------------------------------- |
+| Time delay    | First-time visitors, blog readers | 15-30 seconds                     |
+| Scroll depth  | Content pages, long-form articles | 50-70% scroll                     |
+| Exit intent   | Any page, especially pricing      | Mouse moves toward browser chrome |
+| Click trigger | Content upgrades, gated resources | User clicks a specific element    |
+| Page count    | Returning visitors                | 2nd or 3rd page view              |
+| Inactivity    | Product pages                     | 30+ seconds idle                  |
 
 **Never** trigger a popup:
+
 - Immediately on page load (annoys users, harms SEO)
 - On mobile without a clear close button
 - When the user is actively filling out a form
@@ -49,6 +51,7 @@ Choose the right trigger for the context:
 ### Step 3: Popup Design
 
 **Layout Principles**:
+
 - One clear headline, one supporting line, one CTA
 - Visual hierarchy: headline > benefit > form > CTA
 - Clear close button (X) — never hide it
@@ -56,6 +59,7 @@ Choose the right trigger for the context:
 - Brand-consistent design
 
 **Copy Framework**:
+
 ```
 Headline: [Specific benefit or offer]
 Supporting text: [What they get + why it matters]
@@ -64,6 +68,7 @@ Dismissal text: [Low-friction, non-judgmental close]
 ```
 
 Example:
+
 ```
 Headline: "Get the Content Distribution Playbook"
 Supporting: "Learn how top creators publish to 5+ platforms in minutes"
@@ -75,13 +80,13 @@ Dismiss: "No thanks, I'll keep doing it manually"
 
 Show different popups based on visitor context:
 
-| Segment | Popup Type | Offer |
-|---------|-----------|-------|
-| New blog visitors | Slide-in at 50% scroll | Newsletter signup |
-| Returning visitors, not signed up | Exit intent modal | Free trial CTA |
-| Pricing page visitors | Exit intent | Demo booking or discount |
-| Free users in-app | Contextual modal | Feature upgrade |
-| Users from competitor content | Timed modal | Comparison guide |
+| Segment                           | Popup Type             | Offer                    |
+| --------------------------------- | ---------------------- | ------------------------ |
+| New blog visitors                 | Slide-in at 50% scroll | Newsletter signup        |
+| Returning visitors, not signed up | Exit intent modal      | Free trial CTA           |
+| Pricing page visitors             | Exit intent            | Demo booking or discount |
+| Free users in-app                 | Contextual modal       | Feature upgrade          |
+| Users from competitor content     | Timed modal            | Comparison guide         |
 
 ### Step 5: Popup Types & Placement
 
@@ -110,6 +115,7 @@ Show different popups based on visitor context:
 ## Output Format
 
 Deliver popup specifications including:
+
 1. Popup type, trigger, and timing
 2. Targeting rules (who sees it, who doesn't)
 3. Copy and layout specification

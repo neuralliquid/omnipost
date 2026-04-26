@@ -51,6 +51,7 @@ OmniPost [key differentiator]
 ```
 
 **OmniPost positioning statement**:
+
 ```
 For content creators and marketing teams
 Who publish content across multiple social platforms
@@ -66,16 +67,19 @@ so every post looks like it was written specifically for that platform.
 Define value props by persona:
 
 **Solo Content Creators**:
+
 - Primary: "Publish everywhere without the busywork"
 - Supporting: Save 6+ hours/week on content distribution
 - Proof: "10,000+ creators publish with OmniPost"
 
 **Marketing Teams**:
+
 - Primary: "Scale your content reach without scaling your team"
 - Supporting: One workflow for all platforms, with team collaboration
 - Proof: Case studies from marketing teams
 
 **Agencies**:
+
 - Primary: "Manage multi-client publishing from one dashboard"
 - Supporting: Client workspaces, brand consistency, team permissions
 - Proof: Agency-specific testimonials and ROI data
@@ -83,6 +87,7 @@ Define value props by persona:
 ### Step 4: Persona Definitions
 
 **Persona 1: Solo Creator Sarah**
+
 - Role: Independent content creator, blogger, influencer
 - Platforms: Twitter, LinkedIn, Instagram, blog
 - Pain: Spends hours reformatting content for each platform
@@ -91,6 +96,7 @@ Define value props by persona:
 - Trigger: Publishes 3+ times per week across platforms
 
 **Persona 2: Marketing Manager Mike**
+
 - Role: Marketing manager at a 20-100 person company
 - Platforms: All major social + blog + newsletter
 - Pain: Content team can't keep up with multi-platform demands
@@ -99,6 +105,7 @@ Define value props by persona:
 - Trigger: Managing 5+ platforms with a small team
 
 **Persona 3: Agency Owner Alex**
+
 - Role: Runs a content/social media agency
 - Platforms: All, varies by client
 - Pain: Managing multiple clients across multiple platforms is chaotic
@@ -123,6 +130,7 @@ Define value props by persona:
 ### Step 6: Brand Voice & Tone
 
 **Voice attributes**:
+
 - Confident but not arrogant
 - Helpful and practical, not academic
 - Creator-first language
@@ -148,6 +156,7 @@ Define value props by persona:
 ## Output Format
 
 Deliver product marketing context as:
+
 1. Product definition and category
 2. Positioning statement
 3. Value propositions by persona

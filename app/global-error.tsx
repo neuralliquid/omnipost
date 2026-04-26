@@ -39,24 +39,30 @@ function clearAllCaches(): void {
 
   // Clear Cache API entries (stale bundles from previous deployments)
   if ('caches' in window) {
-    caches.keys().then(names => {
-      for (const name of names) {
-        caches.delete(name);
-      }
-    }).catch(() => {
-      // Cache API may be unavailable
-    });
+    caches
+      .keys()
+      .then(names => {
+        for (const name of names) {
+          caches.delete(name);
+        }
+      })
+      .catch(() => {
+        // Cache API may be unavailable
+      });
   }
 
   // Unregister any service workers
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(registrations => {
-      for (const registration of registrations) {
-        registration.unregister();
-      }
-    }).catch(() => {
-      // Service worker API may be unavailable
-    });
+    navigator.serviceWorker
+      .getRegistrations()
+      .then(registrations => {
+        for (const registration of registrations) {
+          registration.unregister();
+        }
+      })
+      .catch(() => {
+        // Service worker API may be unavailable
+      });
   }
 }
 
@@ -87,12 +93,15 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   return (
     <html lang="en">
-      <body style={{
-        margin: 0,
-        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-        backgroundColor: '#f9fafb',
-        color: '#1a1a2e',
-      }}>
+      <body
+        style={{
+          margin: 0,
+          fontFamily:
+            '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          backgroundColor: '#f9fafb',
+          color: '#1a1a2e',
+        }}
+      >
         <div
           role="alert"
           style={{
@@ -105,21 +114,25 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             textAlign: 'center',
           }}
         >
-          <div style={{
-            maxWidth: '480px',
-            width: '100%',
-          }}>
+          <div
+            style={{
+              maxWidth: '480px',
+              width: '100%',
+            }}
+          >
             {/* Error icon */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '64px',
-              height: '64px',
-              borderRadius: '50%',
-              backgroundColor: '#fee2e2',
-              margin: '0 auto 1.5rem',
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '64px',
+                height: '64px',
+                borderRadius: '50%',
+                backgroundColor: '#fee2e2',
+                margin: '0 auto 1.5rem',
+              }}
+            >
               <svg
                 width="32"
                 height="32"
@@ -138,65 +151,77 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </div>
 
             {/* Error heading */}
-            <h1 style={{
-              fontSize: '1.5rem',
-              fontWeight: 600,
-              margin: '0 0 0.5rem',
-              color: '#1a1a2e',
-            }}>
+            <h1
+              style={{
+                fontSize: '1.5rem',
+                fontWeight: 600,
+                margin: '0 0 0.5rem',
+                color: '#1a1a2e',
+              }}
+            >
               Something went wrong
             </h1>
 
-            <p style={{
-              fontSize: '0.875rem',
-              color: '#6b7280',
-              margin: '0 0 1.5rem',
-              lineHeight: 1.6,
-            }}>
-              The application failed to load. This can happen due to a network issue or
-              stale cached data. Try reloading, or clear the cache and reload if the problem persists.
+            <p
+              style={{
+                fontSize: '0.875rem',
+                color: '#6b7280',
+                margin: '0 0 1.5rem',
+                lineHeight: 1.6,
+              }}
+            >
+              The application failed to load. This can happen due to a network issue or stale cached
+              data. Try reloading, or clear the cache and reload if the problem persists.
             </p>
 
             {/* Error details (development only) */}
             {process.env.NODE_ENV === 'development' && (
-              <details style={{
-                width: '100%',
-                marginBottom: '1.5rem',
-                textAlign: 'left',
-              }}>
-                <summary style={{
-                  cursor: 'pointer',
-                  fontSize: '0.75rem',
-                  fontWeight: 500,
-                  color: '#6b7280',
-                  padding: '0.5rem',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '4px',
-                }}>
+              <details
+                style={{
+                  width: '100%',
+                  marginBottom: '1.5rem',
+                  textAlign: 'left',
+                }}
+              >
+                <summary
+                  style={{
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                    fontWeight: 500,
+                    color: '#6b7280',
+                    padding: '0.5rem',
+                    backgroundColor: '#f3f4f6',
+                    borderRadius: '4px',
+                  }}
+                >
                   Error details
                 </summary>
-                <pre style={{
-                  marginTop: '0.5rem',
-                  padding: '0.75rem',
-                  backgroundColor: '#f3f4f6',
-                  borderRadius: '4px',
-                  fontSize: '0.75rem',
-                  fontFamily: 'monospace',
-                  overflowX: 'auto',
-                  whiteSpace: 'pre-wrap',
-                  wordBreak: 'break-word',
-                  color: '#ef4444',
-                  border: '1px solid #e5e7eb',
-                }}>
+                <pre
+                  style={{
+                    marginTop: '0.5rem',
+                    padding: '0.75rem',
+                    backgroundColor: '#f3f4f6',
+                    borderRadius: '4px',
+                    fontSize: '0.75rem',
+                    fontFamily: 'monospace',
+                    overflowX: 'auto',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-word',
+                    color: '#ef4444',
+                    border: '1px solid #e5e7eb',
+                  }}
+                >
                   {error.message}
                   {error.stack && `\n\n${error.stack}`}
                 </pre>
                 {error.digest && (
-                  <p style={{
-                    fontSize: '0.75rem',
-                    color: '#6b7280',
-                    marginTop: '0.5rem',
-                  }}>
+                  <p
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#6b7280',
+                      marginTop: '0.5rem',
+                    }}
+                  >
                     Error ID: {error.digest}
                   </p>
                 )}
@@ -204,12 +229,14 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             )}
 
             {/* Recovery actions */}
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem',
-              alignItems: 'center',
-            }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
+                alignItems: 'center',
+              }}
+            >
               <button
                 onClick={() => reset()}
                 style={{
@@ -263,11 +290,13 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               </button>
             </div>
 
-            <p style={{
-              fontSize: '0.75rem',
-              color: '#9ca3af',
-              marginTop: '1.5rem',
-            }}>
+            <p
+              style={{
+                fontSize: '0.75rem',
+                color: '#9ca3af',
+                marginTop: '1.5rem',
+              }}
+            >
               If this problem persists, please{' '}
               <a href="mailto:support@example.com" style={{ color: '#4a6491' }}>
                 contact support

@@ -50,7 +50,9 @@ export default function LoginPage() {
       }
     }
     void fetchProviders();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Redirect if already authenticated
@@ -62,7 +64,8 @@ export default function LoginPage() {
 
   const handleProviderLogin = (providerId: string) => {
     const callbackUrl = `${window.location.origin}/api/auth/callback/${encodeURIComponent(providerId)}`;
-    window.location.href = callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/dashboard')}`;
+    window.location.href =
+      callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/dashboard')}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -107,7 +110,7 @@ export default function LoginPage() {
           {!providersLoading && providers.length > 0 && (
             <>
               <div className={pageStyles.socialButtons}>
-                {providers.map((provider) => (
+                {providers.map(provider => (
                   <button
                     key={provider.id}
                     type="button"
@@ -127,7 +130,11 @@ export default function LoginPage() {
             </>
           )}
 
-          {error && <div className={styles.errorMessage} role="alert">{error}</div>}
+          {error && (
+            <div className={styles.errorMessage} role="alert">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit}>
             <div className={styles.formGroup}>

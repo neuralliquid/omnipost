@@ -37,8 +37,10 @@ export const POST = withRateLimit(
     if (cronSecret) {
       const expected = `Bearer ${cronSecret}`;
       const actual = authHeader || '';
-      if (expected.length !== actual.length ||
-          !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(actual.padEnd(expected.length)))) {
+      if (
+        expected.length !== actual.length ||
+        !crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(actual.padEnd(expected.length)))
+      ) {
         return Errors.unauthorized('Unauthorized');
       }
     }

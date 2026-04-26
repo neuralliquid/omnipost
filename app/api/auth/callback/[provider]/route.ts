@@ -25,7 +25,14 @@ import { handleAuthCallback } from '../../../../../lib/auth/identity-provider';
  */
 const externalUsers = new Map<
   string,
-  { id: string; username: string; email: string; role: string; provider: string; externalId: string }
+  {
+    id: string;
+    username: string;
+    email: string;
+    role: string;
+    provider: string;
+    externalId: string;
+  }
 >();
 
 /**

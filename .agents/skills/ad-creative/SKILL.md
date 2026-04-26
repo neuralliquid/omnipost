@@ -21,6 +21,7 @@ Create compelling ad creatives and copy for OmniPost's paid advertising across G
 ### Step 1: Campaign Brief
 
 Define the creative requirements:
+
 - **Objective**: Awareness, consideration, or conversion?
 - **Platform**: Google Search, Display, Meta, LinkedIn, Twitter?
 - **Audience**: Who are we targeting? (creators, marketers, agencies)
@@ -31,6 +32,7 @@ Define the creative requirements:
 ### Step 2: Platform-Specific Formats
 
 **Google Search Ads**:
+
 - Responsive Search Ads: Up to 15 headlines (30 chars) + 4 descriptions (90 chars)
 - Pin key messages to specific positions
 - Include keywords in headlines naturally
@@ -53,6 +55,7 @@ Descriptions (write 4):
 ```
 
 **Meta (Facebook/Instagram) Ads**:
+
 - Primary text: 125 chars visible before "See more" — front-load the hook
 - Headline: 40 chars (below the image/video)
 - Image: 1080x1080 (feed), 1080x1920 (stories)
@@ -60,6 +63,7 @@ Descriptions (write 4):
 - Carousel: 3-5 cards telling a sequential story
 
 **LinkedIn Ads**:
+
 - Sponsored Content: Professional tone, industry-specific messaging
 - Image: 1200x627
 - Body: 150 chars visible, 600 max
@@ -70,6 +74,7 @@ Descriptions (write 4):
 Develop 3-5 creative concepts per campaign:
 
 **Concept types**:
+
 1. **Problem/Solution**: Show the pain, reveal OmniPost as the fix
 2. **Demo/Product**: Screen recording or screenshots of OmniPost in action
 3. **Social proof**: Customer quote or metric as the hero element
@@ -77,6 +82,7 @@ Develop 3-5 creative concepts per campaign:
 5. **Lifestyle**: Creator/marketer in their element, empowered by OmniPost
 
 **Ad copy angles to test**:
+
 - Time savings: "Save 6 hours/week on content publishing"
 - Reach growth: "3x your content reach without 3x the work"
 - Simplicity: "One click. Eight platforms. Done."
@@ -86,6 +92,7 @@ Develop 3-5 creative concepts per campaign:
 ### Step 4: Creative Best Practices
 
 **Visual guidelines**:
+
 - Minimal text on images (Meta's ad system penalizes text-heavy images)
 - High contrast between text and background
 - Brand-consistent colors and fonts
@@ -93,6 +100,7 @@ Develop 3-5 creative concepts per campaign:
 - Human faces in ads increase engagement (especially on Meta)
 
 **Copy guidelines**:
+
 - Lead with the benefit, not the feature
 - Use numbers and specifics over vague claims
 - Include a clear CTA that matches the landing page
@@ -102,6 +110,7 @@ Develop 3-5 creative concepts per campaign:
 ### Step 5: Creative Testing Framework
 
 **Test hierarchy** (test one element at a time):
+
 1. Creative concept (biggest impact)
 2. Ad format (image vs. video vs. carousel)
 3. Headline/hook (first thing people see)
@@ -110,6 +119,7 @@ Develop 3-5 creative concepts per campaign:
 6. Visual elements (color, layout, imagery)
 
 **Testing process**:
+
 - Launch 3-5 creative variants per ad set
 - Minimum 1,000 impressions per variant before judging
 - Kill underperformers at 2x target CPA
@@ -119,6 +129,7 @@ Develop 3-5 creative concepts per campaign:
 ## Output Format
 
 Deliver ad creatives as:
+
 1. Creative brief summary
 2. 3-5 creative concepts with rationale
 3. Full ad copy for each concept (all required fields per platform)

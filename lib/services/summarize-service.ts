@@ -5,7 +5,11 @@
 
 import axios from 'axios';
 import featureFlags from '@/lib/featureFlags';
-import { isGatewayEnabled, gatewayPost, shouldFallbackToDirectCalls } from '@/lib/clients/sluice-gateway';
+import {
+  isGatewayEnabled,
+  gatewayPost,
+  shouldFallbackToDirectCalls,
+} from '@/lib/clients/sluice-gateway';
 
 // Helper function to get API configuration
 const getApiConfig = () => {
@@ -40,13 +44,17 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
   // Try Sluice gateway first if enabled
   if (isGatewayEnabled()) {
     const implementation = featureFlags.summarization?.implementation || 'huggingface';
-    const gatewayResult = await gatewayPost('/v1/responses', {
-      model: implementation,
-      messages: [
-        { role: 'system', content: 'Summarize the following text concisely.' },
-        { role: 'user', content: rawText },
-      ],
-    }, { operation: 'summarize_text' });
+    const gatewayResult = await gatewayPost(
+      '/v1/responses',
+      {
+        model: implementation,
+        messages: [
+          { role: 'system', content: 'Summarize the following text concisely.' },
+          { role: 'user', content: rawText },
+        ],
+      },
+      { operation: 'summarize_text' }
+    );
 
     if (gatewayResult.success) {
       return { success: true, data: gatewayResult.data };
@@ -63,7 +71,11 @@ export async function summarizeText(rawText: string): Promise<SummarizeServiceRe
 
   try {
     const apiConfig = getApiConfig();
-    const response = await axios.post(apiConfig.summarizationUrl, { text: rawText }, { timeout: 30000 });
+    const response = await axios.post(
+      apiConfig.summarizationUrl,
+      { text: rawText },
+      { timeout: 30000 }
+    );
 
     return {
       success: true,

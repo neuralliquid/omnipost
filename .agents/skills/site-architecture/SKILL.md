@@ -59,6 +59,7 @@ omnipost.com/
 ### Step 2: URL Structure Conventions
 
 **Rules**:
+
 - Lowercase, hyphen-separated: `/features/ai-content-formatting`
 - No trailing slashes (pick one convention and enforce)
 - No dates in blog URLs (allows evergreen updating)
@@ -79,6 +80,7 @@ omnipost.com/
 ### Step 3: Navigation Design
 
 **Primary navigation** (visible on all pages):
+
 - Features (dropdown with feature categories)
 - Pricing
 - Customers
@@ -86,6 +88,7 @@ omnipost.com/
 - Sign In | Start Free (CTA)
 
 **Footer navigation**:
+
 - Product: All feature pages, pricing, changelog, API docs
 - Resources: Blog, guides, tools, customer stories
 - Company: About, careers, contact, press
@@ -98,6 +101,7 @@ omnipost.com/
 ### Step 4: Internal Linking Strategy
 
 **Principles**:
+
 - Every page should be reachable within 3 clicks from the homepage
 - Pillar pages get the most internal links (50+)
 - New blog posts link to relevant feature pages and pillar content
@@ -105,6 +109,7 @@ omnipost.com/
 - Use descriptive anchor text (not "click here" or "read more")
 
 **Internal linking map**:
+
 ```
 Homepage → Feature pages → Related blog posts
 Homepage → Pricing → Feature pages
@@ -115,6 +120,7 @@ Customer stories → Feature pages → Signup
 ```
 
 **Automated linking rules**:
+
 - Every blog post must link to at least 2 other internal pages
 - Every feature page must link to at least 3 blog posts
 - Pillar pages must link to all cluster articles
@@ -159,6 +165,7 @@ Cluster: Multi-Platform Publishing
 ## Output Format
 
 Deliver site architecture plans as:
+
 1. Visual site map (tree structure)
 2. URL convention document
 3. Navigation wireframes (header, footer, mobile)

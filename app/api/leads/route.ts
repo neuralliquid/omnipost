@@ -171,7 +171,7 @@ export const POST = withErrorHandling(async (request: Request) => {
       title: data.title,
       contact: data.contact,
       company: data.company,
-      source: data.source as typeof VALID_LEAD_SOURCES[number],
+      source: data.source as (typeof VALID_LEAD_SOURCES)[number],
       sourceDetails: data.sourceDetails,
       tags: data.tags,
       notes: data.notes,

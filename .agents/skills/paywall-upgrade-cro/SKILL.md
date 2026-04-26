@@ -21,6 +21,7 @@ Optimize OmniPost's upgrade paths — pricing pages, in-app paywalls, trial expi
 ### Step 1: Map the Upgrade Journey
 
 Identify all upgrade touchpoints in OmniPost:
+
 - Pricing page (from marketing site)
 - In-app usage limits (e.g., platform connection limit, post volume cap)
 - Feature gates (e.g., analytics, team features, API access)
@@ -31,11 +32,13 @@ Identify all upgrade touchpoints in OmniPost:
 ### Step 2: Paywall Design Principles
 
 **Show Value Before the Gate**
+
 - Let users experience the feature partially before hitting the paywall
 - Show a preview of what they'd get (blurred analytics, locked features visible)
 - Frame the paywall as unlocking more, not restricting access
 
 **Paywall Copy Framework**:
+
 ```
 Heading: [Feature name] is a [Plan name] feature
 Value statement: [What this feature does for them]
@@ -47,6 +50,7 @@ Secondary: Learn more about plans
 ### Step 3: Pricing Page Optimization
 
 **Layout**:
+
 - 3 tiers maximum (Good-Better-Best)
 - Highlight the recommended plan with visual emphasis
 - Use annual/monthly toggle with savings callout ("Save 20%")
@@ -61,6 +65,7 @@ Secondary: Learn more about plans
 | Feature list | 3-5 core features | Everything in Free + 5-7 | Everything in Pro + 5-7 |
 
 **Pricing Psychology**:
+
 - Anchor with the highest plan first (right-to-left reading) or highlight middle
 - Use charm pricing ($19 not $20) for lower tiers
 - Show per-month price even for annual plans
@@ -71,17 +76,18 @@ Secondary: Learn more about plans
 
 Design contextual upgrade prompts at high-intent moments:
 
-| Moment | Prompt | Priority |
-|--------|--------|----------|
-| Hit platform connection limit | "Connect unlimited platforms with Pro" | High |
-| Try to access locked analytics | Preview with blur + upgrade CTA | High |
-| Successful first post | "Upgrade to schedule and automate" | Medium |
-| Team invite attempt on solo plan | "Add your team with Team plan" | Medium |
-| Export attempt on free plan | "Export your content with Pro" | Low |
+| Moment                           | Prompt                                 | Priority |
+| -------------------------------- | -------------------------------------- | -------- |
+| Hit platform connection limit    | "Connect unlimited platforms with Pro" | High     |
+| Try to access locked analytics   | Preview with blur + upgrade CTA        | High     |
+| Successful first post            | "Upgrade to schedule and automate"     | Medium   |
+| Team invite attempt on solo plan | "Add your team with Team plan"         | Medium   |
+| Export attempt on free plan      | "Export your content with Pro"         | Low      |
 
 ### Step 5: Trial Expiration Optimization
 
 **Trial timeline communications**:
+
 - Day 1: Welcome + key features to try
 - Day 7 (mid-trial): Usage summary + features not yet tried
 - Day 11: Trial ending in 3 days + value summary
@@ -111,6 +117,7 @@ Design contextual upgrade prompts at high-intent moments:
 ## Output Format
 
 Deliver paywall/upgrade optimization as:
+
 1. Current upgrade funnel analysis with conversion rates
 2. Prioritized list of paywall improvements
 3. Copy and design specifications for upgrade prompts

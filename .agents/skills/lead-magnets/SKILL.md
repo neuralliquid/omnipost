@@ -21,6 +21,7 @@ Ideate, create, and optimize lead magnets for OmniPost that capture email addres
 ### Step 1: Lead Magnet Criteria
 
 Every lead magnet must:
+
 - **Solve a specific problem** for the target audience
 - **Deliver immediate value** upon download/access
 - **Be relevant to OmniPost** — recipients should be potential users
@@ -29,21 +30,22 @@ Every lead magnet must:
 
 ### Step 2: Lead Magnet Types for OmniPost
 
-| Type | Example | Effort | Conversion Potential |
-|------|---------|--------|---------------------|
-| Checklist | "Cross-Platform Publishing Checklist" | Low | Medium |
-| Template | "30-Day Content Calendar Template" | Low | High |
-| Guide/Ebook | "The Content Repurposing Playbook" | High | High |
-| Toolkit | "Social Media Toolkit: Templates + Guides" | Medium | High |
-| Swipe file | "50 High-Performing Social Media Hooks" | Medium | Medium |
-| Calculator | "Content ROI Calculator" (interactive) | Medium | Medium |
-| Mini-course | "5-Day Content Publishing Masterclass" (email) | High | Very High |
-| Report | "State of Multi-Platform Publishing 2026" | High | High |
-| Quiz | "What's Your Content Publishing Style?" | Medium | Medium |
+| Type        | Example                                        | Effort | Conversion Potential |
+| ----------- | ---------------------------------------------- | ------ | -------------------- |
+| Checklist   | "Cross-Platform Publishing Checklist"          | Low    | Medium               |
+| Template    | "30-Day Content Calendar Template"             | Low    | High                 |
+| Guide/Ebook | "The Content Repurposing Playbook"             | High   | High                 |
+| Toolkit     | "Social Media Toolkit: Templates + Guides"     | Medium | High                 |
+| Swipe file  | "50 High-Performing Social Media Hooks"        | Medium | Medium               |
+| Calculator  | "Content ROI Calculator" (interactive)         | Medium | Medium               |
+| Mini-course | "5-Day Content Publishing Masterclass" (email) | High   | Very High            |
+| Report      | "State of Multi-Platform Publishing 2026"      | High   | High                 |
+| Quiz        | "What's Your Content Publishing Style?"        | Medium | Medium               |
 
 ### Step 3: Design the Lead Magnet
 
 **Content structure** (for guides/ebooks):
+
 1. Cover page with title and OmniPost branding
 2. Introduction: Why this topic matters now
 3. Core content: 5-7 actionable sections
@@ -53,6 +55,7 @@ Every lead magnet must:
 7. About OmniPost: Brief product overview with CTA
 
 **Design principles**:
+
 - Professional, branded design (not a plain PDF)
 - Scannable: Headers, bullet points, callout boxes
 - Visual: Screenshots, diagrams, charts
@@ -62,6 +65,7 @@ Every lead magnet must:
 ### Step 4: Landing Page & Delivery
 
 **Lead magnet landing page structure**:
+
 ```
 H1: [Benefit-driven title]
 Subheadline: [What they'll learn/get + format + time to consume]
@@ -73,6 +77,7 @@ Preview: [Sample page or table of contents]
 ```
 
 **Delivery mechanism**:
+
 1. Form submission triggers thank-you page with download link
 2. Confirmation email with download link (backup delivery)
 3. Tag subscriber in email platform with lead magnet name
@@ -82,6 +87,7 @@ Preview: [Sample page or table of contents]
 ### Step 5: Promotion Strategy
 
 **On-site**:
+
 - Popup on related blog posts (see **popup-cro** skill)
 - Inline content upgrades within blog posts
 - Sidebar widget on blog
@@ -89,6 +95,7 @@ Preview: [Sample page or table of contents]
 - Resource library page with all lead magnets
 
 **Off-site**:
+
 - Social media posts promoting the lead magnet
 - Guest blog posts with lead magnet as CTA
 - Partnership cross-promotion
@@ -97,15 +104,16 @@ Preview: [Sample page or table of contents]
 
 ### Step 6: Optimization & Measurement
 
-| Metric | Target | Action if Below |
-|--------|--------|-----------------|
-| Landing page conversion | 30-50% | Improve headline, reduce form fields |
-| Email open rate (delivery) | 80%+ | Check deliverability, subject line |
-| Nurture sequence engagement | 25%+ opens | Improve email content |
-| Lead-to-trial conversion | 5-10% | Strengthen nurture sequence |
-| Cost per lead (if paid) | < $3 | Improve targeting, landing page |
+| Metric                      | Target     | Action if Below                      |
+| --------------------------- | ---------- | ------------------------------------ |
+| Landing page conversion     | 30-50%     | Improve headline, reduce form fields |
+| Email open rate (delivery)  | 80%+       | Check deliverability, subject line   |
+| Nurture sequence engagement | 25%+ opens | Improve email content                |
+| Lead-to-trial conversion    | 5-10%      | Strengthen nurture sequence          |
+| Cost per lead (if paid)     | < $3       | Improve targeting, landing page      |
 
 **A/B tests to run**:
+
 - Lead magnet title and positioning
 - Landing page headline and layout
 - Form fields (email only vs. email + name)
@@ -115,6 +123,7 @@ Preview: [Sample page or table of contents]
 ## Output Format
 
 Deliver lead magnet plans as:
+
 1. Lead magnet concept and outline
 2. Full content draft or content brief
 3. Landing page copy and layout

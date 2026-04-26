@@ -7,14 +7,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { leadsClient } from '@/lib/data/leads';
-import {
-  VALID_LEAD_STATUSES,
-  VALID_LEAD_TEMPERATURES,
-} from '@/app/api/_utils/constants';
-import {
-  checkAuthAndRateLimit,
-  withErrorHandling,
-} from '@/app/api/_utils/middleware';
+import { VALID_LEAD_STATUSES, VALID_LEAD_TEMPERATURES } from '@/app/api/_utils/constants';
+import { checkAuthAndRateLimit, withErrorHandling } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 
 // Valid bulk operations
@@ -64,14 +58,22 @@ export const POST = withErrorHandling(async (request: Request) => {
       }
 
       // Validate status if provided
-      if (data.status && !VALID_LEAD_STATUSES.includes(data.status as typeof VALID_LEAD_STATUSES[number])) {
+      if (
+        data.status &&
+        !VALID_LEAD_STATUSES.includes(data.status as (typeof VALID_LEAD_STATUSES)[number])
+      ) {
         return ErrorResponses.badRequest(
           `status must be one of: ${VALID_LEAD_STATUSES.join(', ')}`
         );
       }
 
       // Validate temperature if provided
-      if (data.temperature && !VALID_LEAD_TEMPERATURES.includes(data.temperature as typeof VALID_LEAD_TEMPERATURES[number])) {
+      if (
+        data.temperature &&
+        !VALID_LEAD_TEMPERATURES.includes(
+          data.temperature as (typeof VALID_LEAD_TEMPERATURES)[number]
+        )
+      ) {
         return ErrorResponses.badRequest(
           `temperature must be one of: ${VALID_LEAD_TEMPERATURES.join(', ')}`
         );

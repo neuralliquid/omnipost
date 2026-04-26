@@ -5,14 +5,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
-import {
-  checkAuthAndRateLimit,
-  withErrorHandling,
-} from '@/app/api/_utils/middleware';
-import {
-  getOrgHealth,
-  PhoenixFlowUnavailableError,
-} from '@/lib/integrations/phoenix-flow';
+import { checkAuthAndRateLimit, withErrorHandling } from '@/app/api/_utils/middleware';
+import { getOrgHealth, PhoenixFlowUnavailableError } from '@/lib/integrations/phoenix-flow';
 
 /**
  * GET /api/org/health
@@ -24,7 +18,7 @@ export const GET = withErrorHandling(async (request: Request) => {
   const checkError = await checkAuthAndRateLimit(
     nextRequest,
     '/api/org/health',
-    RateLimitPresets.GENERAL,
+    RateLimitPresets.GENERAL
   );
   if (checkError) return checkError;
 
@@ -35,7 +29,7 @@ export const GET = withErrorHandling(async (request: Request) => {
     if (error instanceof PhoenixFlowUnavailableError) {
       return NextResponse.json(
         { error: 'Organizational health service is unavailable' },
-        { status: 503 },
+        { status: 503 }
       );
     }
     throw error;

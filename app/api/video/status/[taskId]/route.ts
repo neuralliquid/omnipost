@@ -2,10 +2,7 @@ import { NextResponse } from 'next/server';
 import { isAuthenticated } from '../../../_utils/auth';
 import { createLogEntry, logToAuditTrail } from '../../../_utils/audit';
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ taskId: string }> }
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ taskId: string }> }) {
   try {
     if (!(await isAuthenticated())) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 });

@@ -12,7 +12,9 @@ interface ScrollLinkProps {
 }
 
 export function ScrollLink({ targetId, className, children }: ScrollLinkProps) {
-  const handleScroll = (e: React.MouseEvent<HTMLAnchorElement> | React.KeyboardEvent<HTMLAnchorElement>) => {
+  const handleScroll = (
+    e: React.MouseEvent<HTMLAnchorElement> | React.KeyboardEvent<HTMLAnchorElement>
+  ) => {
     // Only handle Enter/Space for keyboard events
     if ('key' in e && e.key !== 'Enter' && e.key !== ' ') {
       return;
@@ -29,12 +31,7 @@ export function ScrollLink({ targetId, className, children }: ScrollLinkProps) {
   };
 
   return (
-    <a
-      href={`#${targetId}`}
-      className={className}
-      onClick={handleScroll}
-      onKeyDown={handleScroll}
-    >
+    <a href={`#${targetId}`} className={className} onClick={handleScroll} onKeyDown={handleScroll}>
       {children}
     </a>
   );

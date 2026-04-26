@@ -21,6 +21,7 @@ Write compelling marketing copy for OmniPost across all channels — landing pag
 ### Step 1: Creative Brief
 
 Before writing, define:
+
 - **Objective**: What action should the reader take?
 - **Audience**: Who is reading this? What do they care about?
 - **Key message**: What is the single most important thing to communicate?
@@ -31,6 +32,7 @@ Before writing, define:
 ### Step 2: Research the Audience
 
 Understand the reader's:
+
 - **Current state**: What are they doing now? (manual cross-posting, using a competitor)
 - **Desired state**: What do they want? (more reach, less effort, consistent brand)
 - **Fears**: What might stop them? (learning curve, cost, platform quality)
@@ -41,6 +43,7 @@ Pull language from: customer interviews, support tickets, G2 reviews, Reddit pos
 ### Step 3: Write Using Proven Frameworks
 
 **PAS (Problem-Agitate-Solution)** — best for awareness content:
+
 ```
 Problem: You're spending hours reformatting content for each platform.
 Agitate: That's 6+ hours a week — 300+ hours a year — on copy-paste busywork.
@@ -48,6 +51,7 @@ Solution: OmniPost publishes to 8 platforms simultaneously with native formattin
 ```
 
 **AIDA (Attention-Interest-Desire-Action)** — best for landing pages:
+
 ```
 Attention: Publish everywhere. Write once.
 Interest: OmniPost reformats your content for Twitter, LinkedIn, Instagram, and 5 more platforms automatically.
@@ -56,6 +60,7 @@ Action: Start your free trial — no credit card required.
 ```
 
 **BAB (Before-After-Bridge)** — best for emails:
+
 ```
 Before: You write a great blog post, then spend an hour turning it into tweets, LinkedIn posts, and Instagram captions.
 After: You hit "publish" once and your content goes live everywhere, perfectly formatted.
@@ -63,6 +68,7 @@ Bridge: OmniPost is the bridge. Try it free for 14 days.
 ```
 
 **4 U's** — best for headlines and subject lines:
+
 - **Useful**: Does it offer a clear benefit?
 - **Ultra-specific**: Does it include concrete details?
 - **Unique**: Does it stand out from similar messages?
@@ -82,6 +88,7 @@ Write 10+ headline variants for every project. Categories:
 ### Step 5: Write Body Copy
 
 **Principles**:
+
 - Lead with benefits, support with features
 - Use "you" more than "we"
 - One idea per paragraph
@@ -98,6 +105,7 @@ Write 10+ headline variants for every project. Categories:
 CTA formula: **[Action Verb] + [What They Get] + [Risk Reducer]**
 
 Examples:
+
 - "Start Publishing Free — No Credit Card Required"
 - "Try OmniPost Free for 14 Days"
 - "See How It Works in 2 Minutes"
@@ -105,18 +113,19 @@ Examples:
 
 ## Copy by Channel
 
-| Channel | Length | Key Focus |
-|---------|--------|-----------|
-| Landing page headline | 6-12 words | Clear benefit |
-| Email subject line | 4-8 words | Curiosity + relevance |
-| Google ad headline | 30 characters | Keyword + benefit |
-| Social media post | Platform-specific | Hook in first line |
-| In-app message | 1-2 sentences | Contextual action |
-| Push notification | < 50 characters | Urgency + clarity |
+| Channel               | Length            | Key Focus             |
+| --------------------- | ----------------- | --------------------- |
+| Landing page headline | 6-12 words        | Clear benefit         |
+| Email subject line    | 4-8 words         | Curiosity + relevance |
+| Google ad headline    | 30 characters     | Keyword + benefit     |
+| Social media post     | Platform-specific | Hook in first line    |
+| In-app message        | 1-2 sentences     | Contextual action     |
+| Push notification     | < 50 characters   | Urgency + clarity     |
 
 ## Output Format
 
 Deliver copy as:
+
 1. 3-5 headline options (ranked by recommendation)
 2. Full body copy in the requested format
 3. 2-3 CTA options

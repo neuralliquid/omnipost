@@ -5,9 +5,7 @@ test.describe('Content creation flow', () => {
     // ── 1. Navigate to the new-content page ──────────────────────────
     await page.goto('/content/new');
     await expect(page).toHaveURL(/\/content\/new/);
-    await expect(
-      page.getByRole('heading', { name: /new|create|compose/i })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /new|create|compose/i })).toBeVisible();
 
     // ── 2. Fill in title and body ────────────────────────────────────
     const title = `E2E Test Post ${Date.now()}`;
@@ -15,12 +13,12 @@ test.describe('Content creation flow', () => {
     await page.getByLabel(/title/i).fill(title);
 
     // The body editor could be a textarea or a contenteditable div
-    const bodyField = page.getByLabel(/body|content|editor/i).or(
-      page.locator('[data-testid="content-editor"]')
-    );
+    const bodyField = page
+      .getByLabel(/body|content|editor/i)
+      .or(page.locator('[data-testid="content-editor"]'));
     await bodyField.fill(
       'This is an automated end-to-end test post created by Playwright. ' +
-      'It verifies the full content creation pipeline works correctly.'
+        'It verifies the full content creation pipeline works correctly.'
     );
 
     // ── 3. Advance to the platform-adaptation step ───────────────────
@@ -47,9 +45,9 @@ test.describe('Content creation flow', () => {
     await scheduleButton.click();
 
     await expect(
-      page.getByRole('heading', { name: /schedule|publish|when/i }).or(
-        page.locator('[data-testid="schedule-step"]')
-      )
+      page
+        .getByRole('heading', { name: /schedule|publish|when/i })
+        .or(page.locator('[data-testid="schedule-step"]'))
     ).toBeVisible({ timeout: 5_000 });
 
     // ── 6. Click "Publish Now" ───────────────────────────────────────
@@ -76,9 +74,9 @@ test.describe('Content creation flow', () => {
     await nextButton.click();
 
     // Validation error should appear for the title
-    const titleError = page.getByText(/title.*required|required.*title|please.*title/i).or(
-      page.locator('[data-testid="title-error"]')
-    );
+    const titleError = page
+      .getByText(/title.*required|required.*title|please.*title/i)
+      .or(page.locator('[data-testid="title-error"]'));
     await expect(titleError).toBeVisible({ timeout: 5_000 });
   });
 
@@ -88,15 +86,15 @@ test.describe('Content creation flow', () => {
     const draftTitle = `Draft ${Date.now()}`;
     await page.getByLabel(/title/i).fill(draftTitle);
 
-    const bodyField = page.getByLabel(/body|content|editor/i).or(
-      page.locator('[data-testid="content-editor"]')
-    );
+    const bodyField = page
+      .getByLabel(/body|content|editor/i)
+      .or(page.locator('[data-testid="content-editor"]'));
     await bodyField.fill('Auto-save draft body text.');
 
     // Wait for auto-save indicator
-    const savedIndicator = page.getByText(/saved|draft.*saved/i).or(
-      page.locator('[data-testid="save-indicator"]')
-    );
+    const savedIndicator = page
+      .getByText(/saved|draft.*saved/i)
+      .or(page.locator('[data-testid="save-indicator"]'));
     await expect(savedIndicator).toBeVisible({ timeout: 10_000 });
 
     // Navigate away and come back
@@ -104,9 +102,7 @@ test.describe('Content creation flow', () => {
     await page.goto('/content/new');
 
     // Draft should be recoverable -- look for the title or a "resume draft" prompt
-    const resumePrompt = page.getByText(/resume|restore|draft/i).or(
-      page.getByLabel(/title/i)
-    );
+    const resumePrompt = page.getByText(/resume|restore|draft/i).or(page.getByLabel(/title/i));
     await expect(resumePrompt).toBeVisible({ timeout: 5_000 });
   });
 });

@@ -21,6 +21,7 @@ Design and optimize OmniPost's onboarding experience to maximize activation rate
 ### Step 1: Define the Activation Metric
 
 Identify OmniPost's key activation events:
+
 - **Primary**: User publishes their first post to at least 2 platforms
 - **Secondary**: User connects 3+ social accounts
 - **Tertiary**: User schedules a future post
@@ -31,20 +32,22 @@ Map the critical path from signup to each activation event. Count the minimum st
 
 Segment new users by intent and tailor onboarding:
 
-| Segment | Signal | Onboarding Focus |
-|---------|--------|-----------------|
-| Content Creator | Signs up from blog/social content | Quick platform connection, first post |
-| Agency/Team | Signs up for team plan | Workspace setup, team invites, client accounts |
-| Enterprise | Signs up from sales demo | SSO, integrations, compliance features |
-| Explorer | Signs up from free tool | Demonstrate core value, convert to active use |
+| Segment         | Signal                            | Onboarding Focus                               |
+| --------------- | --------------------------------- | ---------------------------------------------- |
+| Content Creator | Signs up from blog/social content | Quick platform connection, first post          |
+| Agency/Team     | Signs up for team plan            | Workspace setup, team invites, client accounts |
+| Enterprise      | Signs up from sales demo          | SSO, integrations, compliance features         |
+| Explorer        | Signs up from free tool           | Demonstrate core value, convert to active use  |
 
 ### Step 3: Design the Onboarding Flow
 
 **Welcome Screen**
+
 - Personalization question: "What best describes you?" (solo creator, small team, agency)
 - Sets the onboarding path and default settings
 
 **Guided Setup Checklist**
+
 1. Connect your first platform (OAuth flow — make it one-click)
 2. Import or create your first piece of content
 3. Preview how it looks on each platform
@@ -52,6 +55,7 @@ Segment new users by intent and tailor onboarding:
 5. Invite a team member (if applicable)
 
 **Progressive Disclosure Principles**
+
 - Show only what's needed at each step
 - Defer advanced features (analytics, automation, API) to post-activation
 - Use tooltips and contextual help, not lengthy tutorials
@@ -69,16 +73,17 @@ Segment new users by intent and tailor onboarding:
 
 Design triggered interventions for users who stall:
 
-| Trigger | Timing | Channel | Message |
-|---------|--------|---------|---------|
-| Signed up, no platform connected | +1 hour | In-app + email | "Connect your first platform in 30 seconds" |
-| Connected platform, no post | +24 hours | Email | "Your first cross-post is one click away" |
-| Created post, didn't publish | +4 hours | In-app | "Your draft is ready — publish now?" |
-| Completed onboarding, didn't return | +3 days | Email | "Here's what you missed this week" |
+| Trigger                             | Timing    | Channel        | Message                                     |
+| ----------------------------------- | --------- | -------------- | ------------------------------------------- |
+| Signed up, no platform connected    | +1 hour   | In-app + email | "Connect your first platform in 30 seconds" |
+| Connected platform, no post         | +24 hours | Email          | "Your first cross-post is one click away"   |
+| Created post, didn't publish        | +4 hours  | In-app         | "Your draft is ready — publish now?"        |
+| Completed onboarding, didn't return | +3 days   | Email          | "Here's what you missed this week"          |
 
 ### Step 6: Measure & Iterate
 
 Track these onboarding metrics:
+
 - **Activation rate**: % of signups who reach primary activation event
 - **Time to activate**: Median time from signup to activation
 - **Step completion rates**: % completing each onboarding step
@@ -96,6 +101,7 @@ Track these onboarding metrics:
 ## Output Format
 
 Deliver onboarding optimization as:
+
 1. Current activation funnel with drop-off analysis
 2. Recommended onboarding flow (step-by-step with wireframe notes)
 3. Email/notification sequence for re-engagement

@@ -22,15 +22,16 @@ Plan and execute launches for OmniPost — major product launches, feature relea
 
 Determine launch tier to calibrate effort:
 
-| Tier | Examples | Timeline | Channels |
-|------|---------|----------|----------|
-| Tier 1 (Major) | New product, rebrand, funding | 6-8 weeks prep | All channels, PR, paid |
-| Tier 2 (Feature) | Major feature, integration | 3-4 weeks prep | Owned channels, Product Hunt |
-| Tier 3 (Minor) | Small feature, update, tool | 1-2 weeks prep | Blog, social, email |
+| Tier             | Examples                      | Timeline       | Channels                     |
+| ---------------- | ----------------------------- | -------------- | ---------------------------- |
+| Tier 1 (Major)   | New product, rebrand, funding | 6-8 weeks prep | All channels, PR, paid       |
+| Tier 2 (Feature) | Major feature, integration    | 3-4 weeks prep | Owned channels, Product Hunt |
+| Tier 3 (Minor)   | Small feature, update, tool   | 1-2 weeks prep | Blog, social, email          |
 
 ### Step 2: Pre-Launch Phase
 
 **6-8 weeks before (Tier 1)**:
+
 - Build a launch landing page with email waitlist
 - Create teaser content (behind-the-scenes, sneak peeks)
 - Brief press and influencers under embargo
@@ -38,6 +39,7 @@ Determine launch tier to calibrate effort:
 - Set up tracking and attribution
 
 **3-4 weeks before**:
+
 - Email waitlist with updates and build anticipation
 - Engage beta testers for testimonials and feedback
 - Prepare Product Hunt submission (hunter, first comment, assets)
@@ -45,6 +47,7 @@ Determine launch tier to calibrate effort:
 - Brief internal team and partners
 
 **1 week before**:
+
 - Final asset review and approval
 - Test all links, forms, and tracking
 - Prepare launch day communications
@@ -54,6 +57,7 @@ Determine launch tier to calibrate effort:
 ### Step 3: Launch Day Execution
 
 **Launch day checklist**:
+
 - [ ] Flip the launch page live (6 AM target timezone)
 - [ ] Send launch email to full list
 - [ ] Post on Product Hunt (12:01 AM PT for PH)
@@ -67,6 +71,7 @@ Determine launch tier to calibrate effort:
 - [ ] Send press release to journalists
 
 **Product Hunt launch playbook**:
+
 1. Schedule for Tuesday-Thursday (best days)
 2. Have a known hunter submit (or self-hunt)
 3. First comment: founder's personal story behind the launch
@@ -79,21 +84,22 @@ Determine launch tier to calibrate effort:
 
 Prepare all content assets before launch:
 
-| Asset | Purpose | Timing |
-|-------|---------|--------|
-| Landing page | Conversion hub | Live at launch |
-| Blog post | Detailed announcement | Launch day |
-| Launch email | Reach existing audience | Launch day |
-| Social posts (10+) | Awareness across platforms | Launch day + week |
-| Product demo video | Show the product | Launch day |
-| Press release | Media coverage | Launch day |
-| FAQ document | Handle common questions | Launch day |
-| Case study / testimonial | Social proof | Launch day |
-| Founder post | Personal angle | Launch day |
+| Asset                    | Purpose                    | Timing            |
+| ------------------------ | -------------------------- | ----------------- |
+| Landing page             | Conversion hub             | Live at launch    |
+| Blog post                | Detailed announcement      | Launch day        |
+| Launch email             | Reach existing audience    | Launch day        |
+| Social posts (10+)       | Awareness across platforms | Launch day + week |
+| Product demo video       | Show the product           | Launch day        |
+| Press release            | Media coverage             | Launch day        |
+| FAQ document             | Handle common questions    | Launch day        |
+| Case study / testimonial | Social proof               | Launch day        |
+| Founder post             | Personal angle             | Launch day        |
 
 ### Step 5: Post-Launch (Week 1-4)
 
 **Week 1**:
+
 - Respond to all feedback and mentions
 - Fix any bugs reported by new users
 - Share launch metrics and milestones publicly ("We hit 1,000 signups!")
@@ -101,6 +107,7 @@ Prepare all content assets before launch:
 - Collect testimonials from new users
 
 **Week 2-3**:
+
 - Publish launch retrospective blog post
 - Follow up with journalists who didn't cover the launch
 - Retarget launch page visitors who didn't convert
@@ -108,6 +115,7 @@ Prepare all content assets before launch:
 - Continue social media content around the launch
 
 **Week 4**:
+
 - Launch retrospective: what worked, what didn't
 - Transition from launch mode to ongoing marketing
 - Set up evergreen campaigns for the new feature/product
@@ -126,6 +134,7 @@ Prepare all content assets before launch:
 ## Output Format
 
 Deliver launch plans as:
+
 1. Launch tier classification and timeline
 2. Pre-launch checklist with dates and owners
 3. Launch day minute-by-minute schedule

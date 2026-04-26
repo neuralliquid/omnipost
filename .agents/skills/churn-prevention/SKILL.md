@@ -21,12 +21,14 @@ Analyze churn patterns, build early warning systems, and design retention interv
 ### Step 1: Define Churn for OmniPost
 
 **Churn types**:
+
 - **Subscription churn**: Paid user cancels or doesn't renew
 - **Revenue churn**: User downgrades to a lower plan
 - **Usage churn**: User stops using the product but subscription is active
 - **Logo churn**: Team/organization leaves entirely
 
 **Churn calculation**:
+
 - Monthly churn rate = (Customers lost in month) / (Customers at start of month)
 - Revenue churn rate = (MRR lost in month) / (MRR at start of month)
 - Net revenue churn = (MRR lost - MRR gained from expansions) / (MRR at start)
@@ -35,16 +37,17 @@ Analyze churn patterns, build early warning systems, and design retention interv
 
 Build a customer health score from leading indicators:
 
-| Signal | Weight | Healthy | At-Risk | Critical |
-|--------|--------|---------|---------|----------|
-| Login frequency | 25% | Daily | < 2x/week | < 1x/week |
-| Posts published (weekly) | 25% | 5+ | 1-4 | 0 |
-| Platforms connected | 15% | 3+ | 2 | 1 or 0 |
-| Feature breadth | 15% | 4+ features used | 2-3 | 1 |
-| Support tickets (negative) | 10% | 0 | 1-2 complaints | 3+ |
-| Team members active | 10% | 80%+ | 50-79% | < 50% |
+| Signal                     | Weight | Healthy          | At-Risk        | Critical  |
+| -------------------------- | ------ | ---------------- | -------------- | --------- |
+| Login frequency            | 25%    | Daily            | < 2x/week      | < 1x/week |
+| Posts published (weekly)   | 25%    | 5+               | 1-4            | 0         |
+| Platforms connected        | 15%    | 3+               | 2              | 1 or 0    |
+| Feature breadth            | 15%    | 4+ features used | 2-3            | 1         |
+| Support tickets (negative) | 10%    | 0                | 1-2 complaints | 3+        |
+| Team members active        | 10%    | 80%+             | 50-79%         | < 50%     |
 
 **Health score ranges**:
+
 - 80-100: Healthy (expansion opportunity)
 - 60-79: Stable (monitor)
 - 40-59: At risk (proactive intervention)
@@ -54,18 +57,19 @@ Build a customer health score from leading indicators:
 
 Categorize and track churn reasons:
 
-| Category | Example Reasons | Intervention |
-|----------|----------------|-------------|
-| Value gap | "Not getting enough value" | Better onboarding, feature education |
-| Price sensitivity | "Too expensive for what I get" | Offer discount, show ROI |
-| Competitor switch | "Switching to [competitor]" | Competitive counter-offer, win-back |
-| Outgrew | "Need enterprise features" | Upsell enterprise plan |
-| Business change | "No longer need it" | Pause option, re-engage later |
-| UX issues | "Too hard to use" | UX improvements, personal training |
+| Category          | Example Reasons                | Intervention                         |
+| ----------------- | ------------------------------ | ------------------------------------ |
+| Value gap         | "Not getting enough value"     | Better onboarding, feature education |
+| Price sensitivity | "Too expensive for what I get" | Offer discount, show ROI             |
+| Competitor switch | "Switching to [competitor]"    | Competitive counter-offer, win-back  |
+| Outgrew           | "Need enterprise features"     | Upsell enterprise plan               |
+| Business change   | "No longer need it"            | Pause option, re-engage later        |
+| UX issues         | "Too hard to use"              | UX improvements, personal training   |
 
 ### Step 4: Retention Interventions
 
 **Proactive (before churn signals)**:
+
 - Onboarding optimization (see **onboarding-cro** skill)
 - Regular feature education emails
 - Usage milestone celebrations ("You published your 100th post!")
@@ -74,14 +78,15 @@ Categorize and track churn reasons:
 
 **Reactive (at-risk users)**:
 
-| Health Score | Action | Channel | Timing |
-|-------------|--------|---------|--------|
-| 50-59 | Feature recommendation | In-app + email | Automated |
-| 40-49 | Personal check-in | Email from CSM | Within 48 hours |
-| 30-39 | Offer assistance call | Email + in-app | Immediate |
-| < 30 | Retention offer | Personal email | Immediate |
+| Health Score | Action                 | Channel        | Timing          |
+| ------------ | ---------------------- | -------------- | --------------- |
+| 50-59        | Feature recommendation | In-app + email | Automated       |
+| 40-49        | Personal check-in      | Email from CSM | Within 48 hours |
+| 30-39        | Offer assistance call  | Email + in-app | Immediate       |
+| < 30         | Retention offer        | Personal email | Immediate       |
 
 **Cancel flow optimization**:
+
 1. Ask why they're canceling (required, dropdown)
 2. Offer a targeted save based on reason:
    - Price → discount or plan pause
@@ -96,30 +101,34 @@ Categorize and track churn reasons:
 ### Step 5: Win-Back Campaigns
 
 **30-day win-back**:
+
 - Email: "We've improved since you left" + specific improvements
 - Offer: 30% off for 3 months to return
 
 **60-day win-back**:
+
 - Email: Customer success story similar to their profile
 - Offer: Free month to try again
 
 **90-day win-back**:
+
 - Email: Major product update announcement
 - Offer: Reset their trial (14 days free)
 
 ### Step 6: Measure Retention Impact
 
-| Metric | Target | Measurement |
-|--------|--------|-------------|
-| Monthly churn rate | < 3% | Monthly |
-| Net revenue retention | > 110% | Monthly |
-| Save rate (cancel flow) | > 15% | Weekly |
-| Win-back conversion | > 5% | Monthly |
-| Health score accuracy | > 70% predictive | Quarterly |
+| Metric                  | Target           | Measurement |
+| ----------------------- | ---------------- | ----------- |
+| Monthly churn rate      | < 3%             | Monthly     |
+| Net revenue retention   | > 110%           | Monthly     |
+| Save rate (cancel flow) | > 15%            | Weekly      |
+| Win-back conversion     | > 5%             | Monthly     |
+| Health score accuracy   | > 70% predictive | Quarterly   |
 
 ## Output Format
 
 Deliver churn prevention plans as:
+
 1. Churn analysis with rates, trends, and top reasons
 2. Health scoring model specification
 3. Intervention playbook by health score tier

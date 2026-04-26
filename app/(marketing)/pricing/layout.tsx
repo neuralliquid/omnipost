@@ -43,8 +43,7 @@ const pricingStructuredData = {
   '@type': 'WebPage',
   name: 'OmniPost Pricing',
   url: 'https://omnipost.dev/pricing',
-  description:
-    'Simple, transparent pricing for multi-platform content publishing.',
+  description: 'Simple, transparent pricing for multi-platform content publishing.',
   mainEntity: {
     '@type': 'SoftwareApplication',
     name: 'OmniPost',
@@ -64,8 +63,7 @@ const pricingStructuredData = {
         price: '19',
         priceCurrency: 'USD',
         billingIncrement: 'P1M',
-        description:
-          'Unlimited platforms and posts, AI formatting, advanced scheduling',
+        description: 'Unlimited platforms and posts, AI formatting, advanced scheduling',
       },
       {
         '@type': 'Offer',
@@ -97,7 +95,7 @@ const faqStructuredData = {
       name: 'How does the 14-day free trial work?',
       acceptedAnswer: {
         '@type': 'Answer',
-        text: 'When you sign up for Pro or Team, you get full access for 14 days. No credit card required. Your account reverts to Free if you don\'t continue.',
+        text: "When you sign up for Pro or Team, you get full access for 14 days. No credit card required. Your account reverts to Free if you don't continue.",
       },
     },
     {

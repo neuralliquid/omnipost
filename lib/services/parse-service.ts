@@ -5,7 +5,11 @@
 
 import axios from 'axios';
 import featureFlags from '@/lib/featureFlags';
-import { isGatewayEnabled, gatewayPost, shouldFallbackToDirectCalls } from '@/lib/clients/sluice-gateway';
+import {
+  isGatewayEnabled,
+  gatewayPost,
+  shouldFallbackToDirectCalls,
+} from '@/lib/clients/sluice-gateway';
 
 // Helper function to get API endpoints with fallbacks
 const getApiEndpoints = () => {
@@ -139,12 +143,14 @@ export async function parseText(rawInput: string): Promise<ParseServiceResult> {
 
   // Try Sluice gateway first if enabled
   if (isGatewayEnabled()) {
-    const gatewayResult = await gatewayPost('/v1/responses', {
-      model: implementation,
-      messages: [
-        { role: 'user', content: JSON.stringify(parsedData) },
-      ],
-    }, { operation: 'parse_text' });
+    const gatewayResult = await gatewayPost(
+      '/v1/responses',
+      {
+        model: implementation,
+        messages: [{ role: 'user', content: JSON.stringify(parsedData) }],
+      },
+      { operation: 'parse_text' }
+    );
 
     if (gatewayResult.success) {
       return { success: true, data: gatewayResult.data };

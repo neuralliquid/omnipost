@@ -7,11 +7,7 @@
 
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import styles from '@/styles/Tasks.module.css';
-import type {
-  Task,
-  Project,
-  CreateTaskInput,
-} from '@/lib/integrations/phoenix-flow';
+import type { Task, Project, CreateTaskInput } from '@/lib/integrations/phoenix-flow';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -59,7 +55,7 @@ const PRIORITY_STYLE_MAP: Record<TaskPriority, string> = {
 
 function TaskCard({ task }: { task: Task }) {
   const checklistTotal = task.checklist?.length ?? 0;
-  const checklistDone = task.checklist?.filter((c) => c.done).length ?? 0;
+  const checklistDone = task.checklist?.filter(c => c.done).length ?? 0;
   const progressPercent =
     checklistTotal > 0 ? Math.round((checklistDone / checklistTotal) * 100) : 0;
 
@@ -104,7 +100,7 @@ function KanbanColumn({
   className: string;
   tasks: Task[];
 }) {
-  const columnTasks = tasks.filter((t) => t.status === status);
+  const columnTasks = tasks.filter(t => t.status === status);
 
   return (
     <div className={`${styles.column} ${className}`}>
@@ -116,7 +112,7 @@ function KanbanColumn({
         {columnTasks.length === 0 ? (
           <div className={styles.emptyColumn}>No tasks</div>
         ) : (
-          columnTasks.map((task) => <TaskCard key={task.id} task={task} />)
+          columnTasks.map(task => <TaskCard key={task.id} task={task} />)
         )}
       </div>
     </div>
@@ -176,7 +172,7 @@ function CreateTaskModal({
   return (
     <div
       className={styles.modalOverlay}
-      onClick={(e) => {
+      onClick={e => {
         if (e.target === e.currentTarget) onClose();
       }}
       role="dialog"
@@ -186,12 +182,7 @@ function CreateTaskModal({
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
           <h2>Create Task</h2>
-          <button
-            className={styles.closeButton}
-            onClick={onClose}
-            aria-label="Close"
-            type="button"
-          >
+          <button className={styles.closeButton} onClick={onClose} aria-label="Close" type="button">
             &times;
           </button>
         </div>
@@ -225,7 +216,7 @@ function CreateTaskModal({
               <label htmlFor="task-project">Project *</label>
               <select id="task-project" name="projectId" required>
                 <option value="">Select a project</option>
-                {projects.map((p) => (
+                {projects.map(p => (
                   <option key={p.id} value={p.id}>
                     {p.name}
                   </option>
@@ -350,11 +341,11 @@ export default function TasksPage() {
 
   // Client-side assignee filter
   const filteredTasks = filterAssignee
-    ? tasks.filter((t) => t.assignee?.toLowerCase().includes(filterAssignee.toLowerCase()))
+    ? tasks.filter(t => t.assignee?.toLowerCase().includes(filterAssignee.toLowerCase()))
     : tasks;
 
   // Extract unique assignees from loaded tasks
-  const assignees = Array.from(new Set(tasks.map((t) => t.assignee).filter(Boolean))) as string[];
+  const assignees = Array.from(new Set(tasks.map(t => t.assignee).filter(Boolean))) as string[];
 
   if (loading) {
     return (
@@ -379,9 +370,9 @@ export default function TasksPage() {
           <h2>Service Unavailable</h2>
           <p>{error}</p>
           <p>
-            Phoenix-Flow task management is not configured or the service is currently
-            unreachable. Enable it via the phoenixFlow feature flag and configure the
-            PHOENIX_FLOW_MCP_URL environment variable.
+            Phoenix-Flow task management is not configured or the service is currently unreachable.
+            Enable it via the phoenixFlow feature flag and configure the PHOENIX_FLOW_MCP_URL
+            environment variable.
           </p>
         </div>
       </div>
@@ -396,11 +387,11 @@ export default function TasksPage() {
           <select
             className={styles.filterSelect}
             value={filterProject}
-            onChange={(e) => setFilterProject(e.target.value)}
+            onChange={e => setFilterProject(e.target.value)}
             aria-label="Filter by project"
           >
             <option value="">All Projects</option>
-            {projects.map((p) => (
+            {projects.map(p => (
               <option key={p.id} value={p.id}>
                 {p.name}
               </option>
@@ -410,11 +401,11 @@ export default function TasksPage() {
           <select
             className={styles.filterSelect}
             value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
+            onChange={e => setFilterStatus(e.target.value)}
             aria-label="Filter by status"
           >
             <option value="">All Statuses</option>
-            {STATUS_COLUMNS.map((col) => (
+            {STATUS_COLUMNS.map(col => (
               <option key={col.key} value={col.key}>
                 {col.label}
               </option>
@@ -424,11 +415,11 @@ export default function TasksPage() {
           <select
             className={styles.filterSelect}
             value={filterAssignee}
-            onChange={(e) => setFilterAssignee(e.target.value)}
+            onChange={e => setFilterAssignee(e.target.value)}
             aria-label="Filter by assignee"
           >
             <option value="">All Assignees</option>
-            {assignees.map((a) => (
+            {assignees.map(a => (
               <option key={a} value={a}>
                 {a}
               </option>
@@ -448,7 +439,7 @@ export default function TasksPage() {
       {error && <div className={styles.errorBanner}>{error}</div>}
 
       <div className={styles.board}>
-        {STATUS_COLUMNS.map((col) => (
+        {STATUS_COLUMNS.map(col => (
           <KanbanColumn
             key={col.key}
             status={col.key}
@@ -463,8 +454,8 @@ export default function TasksPage() {
         <CreateTaskModal
           projects={projects}
           onClose={() => setShowCreateModal(false)}
-          onCreated={(task) => {
-            setTasks((prev) => [...prev, task]);
+          onCreated={task => {
+            setTasks(prev => [...prev, task]);
           }}
         />
       )}

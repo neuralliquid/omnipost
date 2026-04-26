@@ -162,10 +162,14 @@ export async function gatewayCompletion(
   messages: Array<{ role: string; content: string }>,
   options: SluiceRequestOptions = {}
 ): Promise<SluiceResponse> {
-  return gatewayPost('/v1/responses', {
-    model: options.model || 'gpt-4',
-    messages,
-  }, options);
+  return gatewayPost(
+    '/v1/responses',
+    {
+      model: options.model || 'gpt-4',
+      messages,
+    },
+    options
+  );
 }
 
 /**
@@ -175,10 +179,14 @@ export async function gatewayEmbedding(
   input: string,
   options: SluiceRequestOptions = {}
 ): Promise<SluiceResponse<{ data: Array<{ embedding: number[] }> }>> {
-  return gatewayPost('/v1/embeddings', {
-    model: options.model || 'text-embedding-ada-002',
-    input,
-  }, options);
+  return gatewayPost(
+    '/v1/embeddings',
+    {
+      model: options.model || 'text-embedding-ada-002',
+      input,
+    },
+    options
+  );
 }
 
 /**

@@ -1,6 +1,6 @@
 # Introducing OmniPost: Publish Once, Reach Every Platform
 
-*Posted on March 30, 2026 | 6 min read*
+_Posted on March 30, 2026 | 6 min read_
 
 ---
 
@@ -80,4 +80,4 @@ Welcome to OmniPost. Publish everywhere, manage anywhere.
 
 ---
 
-*OmniPost is created by JustAGhosT. Try the live demo at [nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net).*
+_OmniPost is created by JustAGhosT. Try the live demo at [nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)._

@@ -58,22 +58,27 @@ I'd love your feedback. What platforms should we support next? What features wou
 ## Gallery Image Descriptions
 
 ### Image 1 -- Hero
+
 **Content:** OmniPost dashboard showing the content editor with a post being adapted for four platforms simultaneously. Split-screen view with the original text on the left and platform-specific previews (Twitter, LinkedIn, Instagram, Facebook) on the right.
 **Caption:** Write once. Publish everywhere.
 
 ### Image 2 -- AI Adaptation
+
 **Content:** Close-up of the AI adaptation panel showing a long-form paragraph being transformed into four platform-specific versions. Visual diff highlighting what changed for each platform.
 **Caption:** AI adapts your tone, length, and format for each platform.
 
 ### Image 3 -- Scheduling
+
 **Content:** Calendar view showing scheduled posts across platforms with color-coded indicators. Heatmap overlay showing optimal posting times.
 **Caption:** Smart scheduling based on your audience's engagement patterns.
 
 ### Image 4 -- Analytics
+
 **Content:** Unified analytics dashboard showing engagement metrics across all connected platforms. Charts comparing performance by platform, content type, and time period.
 **Caption:** All your analytics in one place. No more switching dashboards.
 
 ### Image 5 -- Open Source
+
 **Content:** GitHub repository page showing the OmniPost source code with contributor activity, stars, and MIT license badge. Terminal window showing the local development setup.
 **Caption:** Fully open source. MIT-licensed. Built in the open.
 

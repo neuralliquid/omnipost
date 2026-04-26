@@ -19,3 +19,6 @@ coverage
 *.lock
 package-lock.json
 pnpm-lock.yaml
+
+# Ephemeral Claude Code worktree clones — formatted by their parent tree
+.claude/worktrees/

@@ -36,16 +36,18 @@ export default async function PerformanceDashboardPage() {
       <div className={styles.section}>
         <div className={dashboardStyles.dashboardGrid}>
           {/* Engagement Metrics - Server rendered with client refresh */}
-          <Suspense fallback={
-            <div className={dashboardStyles.metricsCard}>
-              <div className={dashboardStyles.cardHeader}>
-                <h2>Engagement Metrics</h2>
+          <Suspense
+            fallback={
+              <div className={dashboardStyles.metricsCard}>
+                <div className={dashboardStyles.cardHeader}>
+                  <h2>Engagement Metrics</h2>
+                </div>
+                <div className={dashboardStyles.cardContent}>
+                  <PageSkeleton rows={3} />
+                </div>
               </div>
-              <div className={dashboardStyles.cardContent}>
-                <PageSkeleton rows={3} />
-              </div>
-            </div>
-          }>
+            }
+          >
             <DashboardMetrics initialMetrics={metrics} />
           </Suspense>
 

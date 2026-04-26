@@ -125,7 +125,9 @@
   font-family: var(--font-family-base);
   color: var(--color-text-primary);
   background-color: var(--color-bg-primary);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
   width: 100%;
 }
 
@@ -342,7 +344,9 @@
 .charBarFill {
   height: 100%;
   border-radius: var(--radius-full);
-  transition: width var(--transition-fast), background-color var(--transition-fast);
+  transition:
+    width var(--transition-fast),
+    background-color var(--transition-fast);
 }
 
 .charBarFill.green {

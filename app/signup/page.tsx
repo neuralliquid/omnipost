@@ -93,7 +93,9 @@ export default function SignupPage() {
       }
     }
     void fetchProviders();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   // Redirect if already authenticated
@@ -105,7 +107,8 @@ export default function SignupPage() {
 
   const handleProviderLogin = (providerId: string) => {
     const callbackUrl = `${window.location.origin}/api/auth/callback/${encodeURIComponent(providerId)}`;
-    window.location.href = callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/onboarding')}`;
+    window.location.href =
+      callbackUrl + `?redirect=${encodeURIComponent(window.location.origin + '/onboarding')}`;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,21 +189,25 @@ export default function SignupPage() {
       <main className={styles.main}>
         <div className={styles.container}>
           <h1 className={styles.headline}>Start Publishing Everywhere</h1>
-          <p className={styles.subheadline}>
-            Create once, publish to every platform in seconds.
-          </p>
+          <p className={styles.subheadline}>Create once, publish to every platform in seconds.</p>
 
           <ul className={styles.benefits}>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">
+                &#10003;
+              </span>
               Multi-platform publishing
             </li>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">
+                &#10003;
+              </span>
               AI-powered formatting
             </li>
             <li className={styles.benefitItem}>
-              <span className={styles.benefitIcon} aria-hidden="true">&#10003;</span>
+              <span className={styles.benefitIcon} aria-hidden="true">
+                &#10003;
+              </span>
               Analytics dashboard
             </li>
           </ul>
@@ -208,7 +215,7 @@ export default function SignupPage() {
           {!providersLoading && providers.length > 0 && (
             <>
               <div className={styles.socialButtons}>
-                {providers.map((provider) => (
+                {providers.map(provider => (
                   <button
                     key={provider.id}
                     type="button"
@@ -229,7 +236,12 @@ export default function SignupPage() {
           )}
 
           {error && (
-            <div className={styles.errorMessage} role="alert" aria-live="assertive" aria-atomic="true">
+            <div
+              className={styles.errorMessage}
+              role="alert"
+              aria-live="assertive"
+              aria-atomic="true"
+            >
               {escapeHtml(error)}
             </div>
           )}
@@ -292,8 +304,11 @@ export default function SignupPage() {
                       className={`${styles.strengthFill} ${styles[`strength_${passwordStrength.level}`]}`}
                       role="progressbar"
                       aria-valuenow={
-                        passwordStrength.level === 'weak' ? 33 :
-                        passwordStrength.level === 'fair' ? 66 : 100
+                        passwordStrength.level === 'weak'
+                          ? 33
+                          : passwordStrength.level === 'fair'
+                            ? 66
+                            : 100
                       }
                       aria-valuemin={0}
                       aria-valuemax={100}
@@ -313,7 +328,12 @@ export default function SignupPage() {
               </p>
             </div>
 
-            <button type="submit" disabled={loading} className={styles.submitButton} aria-busy={loading}>
+            <button
+              type="submit"
+              disabled={loading}
+              className={styles.submitButton}
+              aria-busy={loading}
+            >
               {loading ? 'Creating account...' : 'Create Free Account'}
             </button>
           </form>

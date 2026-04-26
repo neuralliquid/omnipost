@@ -5,7 +5,8 @@
 
 import type { MetadataRoute } from 'next';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://nl-dev-omnipost-app-euw.azurewebsites.net';
+const BASE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://nl-dev-omnipost-app-euw.azurewebsites.net';
 const lastModified = new Date('2026-03-30');
 
 export default function sitemap(): MetadataRoute.Sitemap {

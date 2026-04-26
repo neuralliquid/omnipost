@@ -144,7 +144,11 @@ describe('Sluice Gateway Client', () => {
       abortError.name = 'AbortError';
       mockFetch.mockRejectedValueOnce(abortError);
 
-      const result = await mod.gatewayPost('/v1/responses', { model: 'gpt-4' }, { timeoutMs: 5000 });
+      const result = await mod.gatewayPost(
+        '/v1/responses',
+        { model: 'gpt-4' },
+        { timeoutMs: 5000 }
+      );
 
       expect(result.success).toBe(false);
       expect(result.statusCode).toBe(408);
