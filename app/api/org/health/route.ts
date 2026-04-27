@@ -1,16 +1,16 @@
 /**
  * Org Health API Route
- * GET - Organizational health metrics from mcp-org via phoenix-flow
+ * GET - Organizational health metrics from mcp-org via baton
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { checkAuthAndRateLimit, withErrorHandling } from '@/app/api/_utils/middleware';
-import { getOrgHealth, PhoenixFlowUnavailableError } from '@/lib/integrations/phoenix-flow';
+import { getOrgHealth, BatonUnavailableError } from '@/lib/integrations/baton';
 
 /**
  * GET /api/org/health
- * Returns org health metrics (proxied from mcp-org via phoenix-flow)
+ * Returns org health metrics (proxied from mcp-org via baton)
  */
 export const GET = withErrorHandling(async (request: Request) => {
   const nextRequest = request as NextRequest;
@@ -26,7 +26,7 @@ export const GET = withErrorHandling(async (request: Request) => {
     const health = await getOrgHealth();
     return NextResponse.json({ health });
   } catch (error: unknown) {
-    if (error instanceof PhoenixFlowUnavailableError) {
+    if (error instanceof BatonUnavailableError) {
       return NextResponse.json(
         { error: 'Organizational health service is unavailable' },
         { status: 503 }

@@ -17,7 +17,7 @@
 | **Azure PostgreSQL**     | `infra/postgresql.bicep`                              | Free-tier Flexible Server (B1ms) for persistent user storage.                                                     |
 | **Retort Orchestration** | `.agentkit/spec/*.yaml`                               | Single-source YAML spec generating configs for 16+ AI tools.                                                      |
 | **Agent Rules**          | `.cursor/rules/` (10), `.windsurf/rules/` (10)        | Team-scoped coding rules for Claude, Cursor, Windsurf, Copilot.                                                   |
-| **Phoenix-Flow**         | `lib/integrations/phoenix-flow.ts`                    | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`phoenixFlow`).                  |
+| **Baton**                | `lib/integrations/baton.ts`                           | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`baton`). Formerly phoenix-flow. |
 
 ### Application Layer
 
@@ -28,7 +28,7 @@
 | **User Persistence**  | `app/api/auth/route.ts`, `prisma/schema.prisma`                                      | Registration/login backed by Prisma/PostgreSQL (replaced in-memory Map).                                                 |
 | **Analytics**         | `lib/analytics/`, `app/api/analytics/events/`, `hooks/useAnalytics.ts`               | AARRR event tracking with batched client tracker, wired into all pages.                                                  |
 | **Content Creation**  | `app/(dashboard)/content/new/`, `app/(dashboard)/content/`                           | Write → adapt per platform → schedule/publish flow.                                                                      |
-| **Task Board**        | `app/(dashboard)/tasks/`, `app/api/tasks/`                                           | Kanban board connected to phoenix-flow MCP.                                                                              |
+| **Task Board**        | `app/(dashboard)/tasks/`, `app/api/tasks/`                                           | Kanban board connected to baton MCP.                                                                                     |
 | **Platform Settings** | `app/(dashboard)/settings/platforms/`                                                | Connect/disconnect platforms with mock OAuth (real OAuth ready).                                                         |
 
 ### Marketing Layer
@@ -52,7 +52,7 @@
 | Dashboard         | `/dashboard`          | Client, metrics + Airtable                       |
 | Content List      | `/content`            | Client, draft/scheduled/published list           |
 | Content Create    | `/content/new`        | Client, write → adapt → schedule                 |
-| Tasks             | `/tasks`              | Client, Kanban board (phoenix-flow)              |
+| Tasks             | `/tasks`              | Client, Kanban board (baton)                     |
 | Settings          | `/settings`           | Client, settings hub                             |
 | Platform Settings | `/settings/platforms` | Client, connect/disconnect platforms             |
 
@@ -70,17 +70,17 @@
 
 ## Feature Flags
 
-| Flag                       | Default | Controls                                 |
-| -------------------------- | ------- | ---------------------------------------- |
-| `aiGateway`                | `false` | Sluice AI gateway routing                |
-| `externalIdentityProvider` | `false` | Social login via external identity API   |
-| `phoenixFlow`              | `false` | Task board + org context via MCP         |
-| `textParser`               | `true`  | AI text parsing (OpenAI/DeepSeek/Azure)  |
-| `imageGeneration`          | `true`  | AI image generation (HuggingFace/DALL-E) |
-| `summarization`            | `true`  | AI text summarization                    |
-| `leadManagement`           | `true`  | CRM lead management                      |
-| `outreachSequences`        | `true`  | Email/LinkedIn sequences                 |
-| `crmDashboard`             | `true`  | CRM analytics dashboard                  |
+| Flag                       | Default | Controls                                                |
+| -------------------------- | ------- | ------------------------------------------------------- |
+| `aiGateway`                | `false` | Sluice AI gateway routing                               |
+| `externalIdentityProvider` | `false` | Social login via external identity API                  |
+| `baton`                    | `false` | Task board + org context via MCP (formerly phoenixFlow) |
+| `textParser`               | `true`  | AI text parsing (OpenAI/DeepSeek/Azure)                 |
+| `imageGeneration`          | `true`  | AI image generation (HuggingFace/DALL-E)                |
+| `summarization`            | `true`  | AI text summarization                                   |
+| `leadManagement`           | `true`  | CRM lead management                                     |
+| `outreachSequences`        | `true`  | Email/LinkedIn sequences                                |
+| `crmDashboard`             | `true`  | CRM analytics dashboard                                 |
 
 ---
 
@@ -104,9 +104,9 @@ SLUICE_API_KEY=
 IDENTITY_API_URL=
 IDENTITY_API_KEY=
 
-# Optional — Phoenix-Flow
-PHOENIX_FLOW_MCP_URL=
-PHOENIX_FLOW_MCP_SECRET=
+# Optional — Baton (formerly phoenix-flow)
+BATON_MCP_URL=
+BATON_MCP_SECRET=
 
 # Optional — Platforms
 FACEBOOK_API_KEY=
@@ -171,14 +171,14 @@ pnpm test:e2e               # Playwright E2E tests (needs running dev server)
 
 ## Ecosystem Integrations
 
-| System               | Status                   | Connection                                             |
-| -------------------- | ------------------------ | ------------------------------------------------------ |
-| **Retort**           | Active                   | `.agentkit/spec/` → generates agent configs            |
-| **MarketingSkills**  | Active                   | 34 skills in `.agents/skills/`, validated              |
-| **Sluice**           | Ready (flag off)         | `lib/clients/sluice-gateway.ts` + `infra/sluice.bicep` |
-| **Phoenix-Flow**     | Ready (flag off)         | `lib/integrations/phoenix-flow.ts` + task board UI     |
-| **mcp-org**          | Ready (via phoenix-flow) | Org context proxied through phoenix-flow MCP           |
-| **Azure PostgreSQL** | Ready                    | `infra/postgresql.bicep` (free tier)                   |
+| System               | Status            | Connection                                                          |
+| -------------------- | ----------------- | ------------------------------------------------------------------- |
+| **Retort**           | Active            | `.agentkit/spec/` → generates agent configs                         |
+| **MarketingSkills**  | Active            | 34 skills in `.agents/skills/`, validated                           |
+| **Sluice**           | Ready (flag off)  | `lib/clients/sluice-gateway.ts` + `infra/sluice.bicep`              |
+| **Baton**            | Ready (flag off)  | `lib/integrations/baton.ts` + task board UI (formerly phoenix-flow) |
+| **mcp-org**          | Ready (via baton) | Org context proxied through baton MCP                               |
+| **Azure PostgreSQL** | Ready             | `infra/postgresql.bicep` (free tier)                                |
 
 ---
 
