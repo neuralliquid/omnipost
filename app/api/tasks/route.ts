@@ -1,7 +1,7 @@
 /**
  * Tasks API Routes
- * GET  - List tasks from phoenix-flow MCP
- * POST - Create a new task via phoenix-flow MCP
+ * GET  - List tasks from baton MCP
+ * POST - Create a new task via baton MCP
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -10,7 +10,7 @@ import { RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { checkAuthAndRateLimit, withErrorHandling } from '@/app/api/_utils/middleware';
 import { ErrorResponses } from '@/app/api/_utils/responses';
 import { sanitizeText } from '@/app/api/_utils/sanitize';
-import { getTasks, createTask, PhoenixFlowUnavailableError } from '@/lib/integrations/phoenix-flow';
+import { getTasks, createTask, BatonUnavailableError } from '@/lib/integrations/baton';
 
 // Valid status and priority values
 const VALID_TASK_STATUSES = ['todo', 'in_progress', 'done', 'blocked'] as const;
@@ -69,7 +69,7 @@ export const GET = withErrorHandling(async (request: Request) => {
     const tasks = await getTasks(projectId, status);
     return NextResponse.json({ tasks });
   } catch (error: unknown) {
-    if (error instanceof PhoenixFlowUnavailableError) {
+    if (error instanceof BatonUnavailableError) {
       return NextResponse.json(
         { error: 'Task management service is unavailable', tasks: [] },
         { status: 503 }
@@ -108,7 +108,7 @@ export const POST = withErrorHandling(async (request: Request) => {
     const task = await createTask(parseResult.data);
     return NextResponse.json({ task }, { status: 201 });
   } catch (error: unknown) {
-    if (error instanceof PhoenixFlowUnavailableError) {
+    if (error instanceof BatonUnavailableError) {
       return NextResponse.json(
         { error: 'Task management service is unavailable' },
         { status: 503 }

@@ -2,12 +2,12 @@
 
 /**
  * Task Board Page
- * Kanban-style task management board powered by phoenix-flow MCP.
+ * Kanban-style task management board powered by baton MCP.
  */
 
 import { useState, useEffect, useCallback, type FormEvent } from 'react';
 import styles from '@/styles/Tasks.module.css';
-import type { Task, Project, CreateTaskInput } from '@/lib/integrations/phoenix-flow';
+import type { Task, Project, CreateTaskInput } from '@/lib/integrations/baton';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -370,9 +370,8 @@ export default function TasksPage() {
           <h2>Service Unavailable</h2>
           <p>{error}</p>
           <p>
-            Phoenix-Flow task management is not configured or the service is currently unreachable.
-            Enable it via the phoenixFlow feature flag and configure the PHOENIX_FLOW_MCP_URL
-            environment variable.
+            Baton task management is not configured or the service is currently unreachable. Enable
+            it via the `baton` feature flag and configure the BATON_MCP_URL environment variable.
           </p>
         </div>
       </div>

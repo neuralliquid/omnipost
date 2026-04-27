@@ -74,7 +74,7 @@ export interface ExternalIdentityProviderFeatureFlag {
   apiUrl?: string;
 }
 
-export interface PhoenixFlowFeatureFlag {
+export interface BatonFeatureFlag {
   enabled: boolean;
   mcpUrl?: string;
 }
@@ -99,8 +99,8 @@ interface BaseFeatureFlags {
   aiGateway: AIGatewayFeatureFlag;
   // External Identity Provider
   externalIdentityProvider: ExternalIdentityProviderFeatureFlag;
-  // Phoenix-Flow Task Management (MCP)
-  phoenixFlow: PhoenixFlowFeatureFlag;
+  // Baton Task Management (MCP) — formerly phoenix-flow
+  baton: BatonFeatureFlag;
 }
 
 // Extend the base interface with an index signature for dynamic access
@@ -226,8 +226,8 @@ const featureFlags: FeatureFlags = {
   externalIdentityProvider: {
     enabled: false,
   },
-  // Phoenix-Flow Task Management - disabled by default
-  phoenixFlow: {
+  // Baton Task Management - disabled by default (formerly phoenix-flow)
+  baton: {
     enabled: false,
   },
 };

@@ -1,9 +1,11 @@
 /**
- * Phoenix-Flow MCP Client Integration
+ * Baton MCP Client Integration
  *
- * Connects to phoenix-flow's MCP server for task management
+ * Connects to baton's MCP server for task management
  * with Portfolio -> Project -> Task hierarchy.
- * Phoenix-flow proxies org-level data from mcp-org.
+ * Baton proxies org-level data from mcp-org.
+ *
+ * Note: baton is the renamed phoenixvc/phoenix-flow service.
  */
 
 import featureFlags from '@/lib/featureFlags';
@@ -12,7 +14,7 @@ import featureFlags from '@/lib/featureFlags';
 // Types
 // ---------------------------------------------------------------------------
 
-export interface PhoenixFlowConfig {
+export interface BatonConfig {
   mcpUrl: string;
   mcpSecret: string;
 }
@@ -83,15 +85,15 @@ interface McpToolResult<T> {
 
 const REQUEST_TIMEOUT_MS = 10_000;
 
-function getConfig(): PhoenixFlowConfig | null {
-  const phoenixFlow = featureFlags.phoenixFlow as { enabled: boolean; mcpUrl?: string } | undefined;
+function getConfig(): BatonConfig | null {
+  const baton = featureFlags.baton as { enabled: boolean; mcpUrl?: string } | undefined;
 
-  if (!phoenixFlow?.enabled) {
+  if (!baton?.enabled) {
     return null;
   }
 
-  const mcpUrl = phoenixFlow.mcpUrl || process.env.PHOENIX_FLOW_MCP_URL;
-  const mcpSecret = process.env.PHOENIX_FLOW_MCP_SECRET;
+  const mcpUrl = baton.mcpUrl || process.env.BATON_MCP_URL;
+  const mcpSecret = process.env.BATON_MCP_SECRET;
 
   if (!mcpUrl || !mcpSecret) {
     return null;
@@ -107,7 +109,7 @@ function getConfig(): PhoenixFlowConfig | null {
 async function callMcpTool<T>(toolName: string, params: Record<string, unknown> = {}): Promise<T> {
   const config = getConfig();
   if (!config) {
-    throw new PhoenixFlowUnavailableError('Phoenix-Flow integration is not configured or disabled');
+    throw new BatonUnavailableError('Baton integration is not configured or disabled');
   }
 
   const controller = new AbortController();
@@ -126,24 +128,22 @@ async function callMcpTool<T>(toolName: string, params: Record<string, unknown> 
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'Unknown error');
-      throw new Error(
-        `Phoenix-Flow MCP call "${toolName}" failed: ${response.status} ${errorText}`
-      );
+      throw new Error(`Baton MCP call "${toolName}" failed: ${response.status} ${errorText}`);
     }
 
     const data = (await response.json()) as McpToolResult<T>;
     return data.result;
   } catch (error: unknown) {
-    if (error instanceof PhoenixFlowUnavailableError) {
+    if (error instanceof BatonUnavailableError) {
       throw error;
     }
     if (error instanceof DOMException && error.name === 'AbortError') {
-      throw new PhoenixFlowUnavailableError(
-        `Phoenix-Flow MCP call "${toolName}" timed out after ${REQUEST_TIMEOUT_MS}ms`
+      throw new BatonUnavailableError(
+        `Baton MCP call "${toolName}" timed out after ${REQUEST_TIMEOUT_MS}ms`
       );
     }
-    throw new PhoenixFlowUnavailableError(
-      `Phoenix-Flow MCP call "${toolName}" failed: ${error instanceof Error ? error.message : String(error)}`
+    throw new BatonUnavailableError(
+      `Baton MCP call "${toolName}" failed: ${error instanceof Error ? error.message : String(error)}`
     );
   } finally {
     clearTimeout(timeout);
@@ -154,10 +154,10 @@ async function callMcpTool<T>(toolName: string, params: Record<string, unknown> 
 // Error class
 // ---------------------------------------------------------------------------
 
-export class PhoenixFlowUnavailableError extends Error {
+export class BatonUnavailableError extends Error {
   constructor(message: string) {
     super(message);
-    this.name = 'PhoenixFlowUnavailableError';
+    this.name = 'BatonUnavailableError';
   }
 }
 
@@ -166,7 +166,7 @@ export class PhoenixFlowUnavailableError extends Error {
 // ---------------------------------------------------------------------------
 
 /**
- * List all projects from phoenix-flow.
+ * List all projects from baton.
  */
 export async function listProjects(): Promise<Project[]> {
   return callMcpTool<Project[]>('list_projects');
@@ -221,8 +221,8 @@ export async function syncToYaml(): Promise<{ success: boolean }> {
 }
 
 /**
- * Check whether phoenix-flow is available and enabled.
+ * Check whether baton is available and enabled.
  */
-export function isPhoenixFlowEnabled(): boolean {
+export function isBatonEnabled(): boolean {
   return getConfig() !== null;
 }
