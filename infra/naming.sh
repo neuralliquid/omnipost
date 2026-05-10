@@ -43,8 +43,7 @@ generate_names() {
   local o=$1
   local e=$2
   local p=$3
-  # shellcheck disable=SC2034
-  local r=$4  # retained for backward compat / tags; not in names
+  _=$4  # region: retained for backward compat / tags; not in names
 
   local base="${o}-${e}-${p}"
 

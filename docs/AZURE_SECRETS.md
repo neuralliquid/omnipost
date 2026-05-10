@@ -124,13 +124,23 @@ az webapp config appsettings set \
 
 ### Sluice AI Gateway
 
+The Sluice gateway is deployed as an Azure Container App. ACA hostnames include a
+managed-environment hash that is allocated at deploy time and cannot be predicted
+statically — fetch the FQDN after the gateway is deployed:
+
 ```bash
-# Sluice gateway URL and API key
+# Look up the actual FQDN after deploy (replace <rg> with your resource group)
+SLUICE_GATEWAY_URL="https://$(az containerapp show \
+  -n nl-dev-omnipost-sluice \
+  -g nl-dev-omnipost-rg \
+  --query properties.configuration.ingress.fqdn -o tsv)"
+
+# Then apply it to the app settings
 az webapp config appsettings set \
   --name nl-dev-omnipost-app \
   --resource-group nl-dev-omnipost-rg \
   --settings \
-    SLUICE_GATEWAY_URL="https://nl-dev-omnipost-sluice-euw.azurecontainerapps.io" \
+    SLUICE_GATEWAY_URL="$SLUICE_GATEWAY_URL" \
     SLUICE_API_KEY="your-gateway-api-key"
 ```
 

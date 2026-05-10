@@ -159,6 +159,8 @@ If automatic DNS fails, configure manually:
 # Set variables
 DNS_ZONE="nexamesh.ai"
 DNS_RG="rg-dns-global"
+# Azure default App Service hostnames are region-independent — `<app>.azurewebsites.net`
+# resolves regardless of where the app is deployed (prod currently runs in westeurope).
 APP_HOSTNAME="nl-prod-omnipost-app.azurewebsites.net"
 
 # Create CNAME for main app

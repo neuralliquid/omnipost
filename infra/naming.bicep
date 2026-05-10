@@ -78,8 +78,9 @@ output name_subnet string = '${base}-subnet'
 output name_dns string = '${base}-dns'
 
 // Monitoring Resources
+// NOTE: previous releases also exposed `name_log` (type code `log`); that type code was
+// merged into `law` per ADR-0027, and the alias has been removed (no remaining consumers).
 output name_law string = '${base}-law'
-output name_log string = '${base}-law' // alias, kept for backward-compat with consumers using name_log
 
 // Container Resources
 output name_acr string = '${base}-acr'

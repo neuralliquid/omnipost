@@ -81,10 +81,12 @@ embedding the region into every resource name.
 For NeuralLiquid (`nl`):
 
 - `omnipost` - This project (was `content-creation` / `cc` before 2026-05-10)
-- `rooivalk` - Counter-UAS platform (now spun out to Nexamesh org as `nexamesh-core`)
+- `rooivalk` - Counter-UAS platform [^rooivalk]
 - `autopr` - Autopr automation platform
 - `nl-core` - Shared NL foundation services
 - `nl-ai` - Shared NL AI services
+
+[^rooivalk]: `rooivalk` has since been spun out to the Nexamesh org as `nexamesh-core`; the code remains valid for any historical NL-owned resources.
 
 ### Type Codes
 
