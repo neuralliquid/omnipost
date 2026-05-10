@@ -99,7 +99,7 @@ jest.mock('next/server', () => {
       result._requestHeaders = opts.request.headers;
     }
     return result;
-  });
+  }) as jest.Mock;
 
   return {
     NextResponse,
