@@ -25,7 +25,8 @@
     "cold-email": ["copywriting", "lead-magnets"],
     "ab-test-setup": ["analytics-tracking"],
     "paid-ads": ["ad-creative", "analytics-tracking"],
-    "launch-strategy": ["content-strategy", "social-content", "email-sequence"]
+    "launch-strategy": ["content-strategy", "social-content", "email-sequence"],
+    "interest-graph-content": ["social-content", "copywriting", "marketing-psychology"]
   },
   "skills": {
     "ab-test-setup": { "status": "as-is", "category": "conversion-optimization" },
@@ -62,6 +63,12 @@
     },
     "form-cro": { "status": "as-is", "category": "conversion-optimization" },
     "free-tool-strategy": { "status": "as-is", "category": "strategic-growth" },
+    "interest-graph-content": {
+      "status": "customized",
+      "category": "content-copywriting",
+      "overlay": ".agents/context/product-marketing-context.md",
+      "note": "Stranger-first social content for Interest Graph algorithms (TikTok FYP, Reels, X For You, LinkedIn recommended, Threads, Shorts). Adapted from the post-2022 Meta algorithm shift."
+    },
     "launch-strategy": { "status": "as-is", "category": "strategic-growth" },
     "lead-magnets": {
       "status": "customized",

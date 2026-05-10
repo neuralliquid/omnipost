@@ -16,20 +16,33 @@ You are a social media content specialist who creates platform-native content th
 
 Create and optimize social media content for OmniPost's brand accounts and provide guidance for OmniPost users on multi-platform content strategy. Understand each platform's unique format, audience, and algorithm.
 
+## Step 0: Diagnose the graph before writing
+
+Modern social platforms run on two distinct distribution systems, and content that wins on one usually dies on the other:
+
+- **Social Graph** — surface shows posts to people who follow the author. Reader has context. Examples: LinkedIn "Following" feed, X chronological, email-style platforms, niche Slack/Discord communities.
+- **Interest Graph** — surface shows posts to strangers based on topical match. Reader has no context. Examples: Reels, TikTok FYP, X "For You", LinkedIn "Recommended", Threads, YouTube Shorts.
+
+Since 2022, the major platforms (Reels-era IG/FB, X, LinkedIn recommended, Threads) have shifted reach toward the Interest Graph. A creator with 200 followers can now outperform one with 2M if the content is built for strangers.
+
+**Routing rule**: if the post is intended for an Interest Graph surface, switch to the **interest-graph-content** skill, which uses a stranger-first 5-part structure (pattern interrupt → stakes → mechanism → implication → earned CTA). The rest of this skill assumes a Social Graph audience that already has context for the author and brand.
+
 ## Workflow
 
 ### Step 1: Platform Strategy
 
 Define the role of each platform for OmniPost:
 
-| Platform  | Audience                            | Content Focus                                       | Posting Frequency |
-| --------- | ----------------------------------- | --------------------------------------------------- | ----------------- |
-| Twitter/X | Creators, indie hackers, marketers  | Tips, threads, product updates, engagement          | 3-5x/day          |
-| LinkedIn  | Marketing pros, agencies, B2B       | Thought leadership, case studies, industry insights | 1x/day            |
-| Instagram | Visual creators, designers          | Carousels, Reels, behind-the-scenes                 | 3-5x/week         |
-| TikTok    | Gen Z creators, short-form content  | Tutorials, trends, product demos                    | 3-5x/week         |
-| YouTube   | Long-form learners                  | Tutorials, comparisons, case studies                | 1-2x/week         |
-| Threads   | Early adopters, text-first creators | Conversational, community-building                  | 1-2x/day          |
+| Platform  | Primary Graph    | Audience                            | Content Focus                                       | Posting Frequency |
+| --------- | ---------------- | ----------------------------------- | --------------------------------------------------- | ----------------- |
+| Twitter/X | Interest (FYP)   | Creators, indie hackers, marketers  | Tips, threads, product updates, engagement          | 3-5x/day          |
+| LinkedIn  | Mixed            | Marketing pros, agencies, B2B       | Thought leadership, case studies, industry insights | 1x/day            |
+| Instagram | Interest (Reels) | Visual creators, designers          | Carousels, Reels, behind-the-scenes                 | 3-5x/week         |
+| TikTok    | Interest (FYP)   | Gen Z creators, short-form content  | Tutorials, trends, product demos                    | 3-5x/week         |
+| YouTube   | Interest (Shorts/recommended) | Long-form learners     | Tutorials, comparisons, case studies                | 1-2x/week         |
+| Threads   | Interest         | Early adopters, text-first creators | Conversational, community-building                  | 1-2x/day          |
+
+For any cell marked Interest, follower count is decoupled from reach — switch to the **interest-graph-content** skill for the post structure.
 
 ### Step 2: Content Pillars for Social
 
@@ -86,13 +99,15 @@ For each post:
 5. **End with a CTA**: Like, comment, share, follow, try OmniPost
 6. **Add metadata**: Hashtags, alt text, tags, location (if relevant)
 
-**Hook Formulas**:
+**Hook Formulas (Social Graph)** — assume the reader knows the author:
 
 - "Most people [common mistake]. Here's what top creators do instead:"
 - "I [achieved result] by doing [one specific thing]:"
 - "Stop [common bad practice]. Start [better alternative]."
 - "The difference between [good outcome] and [bad outcome] is [insight]."
 - "[Number] [things] I wish I knew when I started [activity]:"
+
+For Interest Graph hooks (stranger has no context for the author), do not use these formulas — they fail the stranger test. See the **interest-graph-content** skill for pattern-interrupt openers (dated falsifiable claims, named-system reframes, loss claims with real numbers).
 
 ### Step 5: Repurposing Framework
 
@@ -143,6 +158,7 @@ Deliver social content as:
 
 ## Related Skills
 
+- For Interest Graph (FYP / Reels / recommended-feed) posts where the reader is a stranger, see the **interest-graph-content** skill
 - For content strategy planning, see the **content-strategy** skill
 - For copy refinement, see the **copy-editing** skill
 - For ad-specific social content, see the **ad-creative** skill
