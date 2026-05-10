@@ -98,19 +98,10 @@ function requiresAuthentication(pathname: string): { auth: boolean; admin: boole
 }
 
 /**
- * Handle authenticated request
+ * Inject identity headers from a verified JWT payload so downstream route
+ * handlers (isAuthenticated, getCurrentUserId, ...) can read them.
  */
-function handleAuthenticatedRequest(
-  request: NextRequest,
-  decoded: jwt.JwtPayload,
-  requiresAdmin: boolean
-): NextResponse {
-  // Check admin privileges if needed
-  if (requiresAdmin && decoded.role !== 'admin') {
-    return createForbiddenResponse('Admin privileges required');
-  }
-
-  // Add user info to request headers
+function nextWithIdentityHeaders(request: NextRequest, decoded: jwt.JwtPayload): NextResponse {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-user-id', decoded.id as string);
   requestHeaders.set('x-user-role', decoded.role as string);
@@ -131,37 +122,35 @@ export default function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check if the path requires authentication
   const { auth: requiresAuth, admin: requiresAdmin } = requiresAuthentication(pathname);
 
-  if (!requiresAuth) {
-    return NextResponse.next();
-  }
-
-  // If JWT_SECRET is not configured, authentication cannot be performed
-  if (!JWT_SECRET) {
-    console.warn(
-      `JWT_SECRET not configured - authentication required for ${pathname} but unavailable`
-    );
-    return createUnauthorizedResponse(
-      'Authentication service unavailable - JWT_SECRET not configured'
-    );
-  }
-
-  // Get authentication token
+  // Best-effort token extraction for every /api/* request: even routes that don't
+  // require auth may consult x-user-id (e.g. forms accept optional identity).
+  // This matches the prior middleware.ts contract.
   const token = getToken(request);
-  if (!token) {
-    return createUnauthorizedResponse('Authentication required');
+  const decoded = token && JWT_SECRET ? verifyToken(token) : null;
+
+  if (requiresAuth) {
+    if (!JWT_SECRET) {
+      console.warn(
+        `JWT_SECRET not configured - authentication required for ${pathname} but unavailable`
+      );
+      return createUnauthorizedResponse(
+        'Authentication service unavailable - JWT_SECRET not configured'
+      );
+    }
+    if (!token) {
+      return createUnauthorizedResponse('Authentication required');
+    }
+    if (!decoded) {
+      return createUnauthorizedResponse('Invalid or expired authentication token');
+    }
+    if (requiresAdmin && decoded.role !== 'admin') {
+      return createForbiddenResponse('Admin privileges required');
+    }
   }
 
-  // Verify token
-  const decoded = verifyToken(token);
-  if (!decoded) {
-    return createUnauthorizedResponse('Invalid or expired authentication token');
-  }
-
-  // Handle authenticated request
-  return handleAuthenticatedRequest(request, decoded, requiresAdmin);
+  return decoded ? nextWithIdentityHeaders(request, decoded) : NextResponse.next();
 }
 
 // Configure the proxy to run only on API routes
