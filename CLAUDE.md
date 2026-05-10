@@ -134,3 +134,7 @@ Ensure `JWT_SECRET` is set in `.env.local` and `middleware.ts` is not excluded f
 - **Retort spec:** `.agentkit/spec/`
 - **Quality gates:** `QUALITY_GATES.md`
 - **Team ownership:** `AGENT_TEAMS.md`
+
+## Baton Integration
+
+Baton is the shared task graph for cross-repo work. When the `baton` MCP server is available, agents should check for existing work with `task_check` at the start of meaningful tasks, create or claim visible work with `task_notify`/`log_agent_message`, update the task when significant new information becomes available, and log completion or blockers before handing off.
