@@ -70,7 +70,7 @@ The Free tier gives you full access to core publishing features. When you're rea
 
 OmniPost is open source because we believe the best tools are built in the open. We're actively looking for early adopters, contributors, and feedback.
 
-- **Star us on GitHub**: [github.com/JustAGhosT/content_creation](https://github.com/JustAGhosT/content_creation)
+- **Star us on GitHub**: [github.com/phoenixvc/omnipost](https://github.com/phoenixvc/omnipost)
 - **Join the discussion**: File issues, suggest features, or submit a PR. Every contribution matters.
 - **Share your experience**: If OmniPost saves you time, tell us about it. Your feedback shapes the roadmap.
 

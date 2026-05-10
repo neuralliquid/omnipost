@@ -4,7 +4,7 @@
 
 **Publish everywhere, manage anywhere.**
 
-OmniPost is an AI-powered multi-platform content publishing SaaS. Repository: `JustAGhosT/content_creation`.
+OmniPost is an AI-powered multi-platform content publishing SaaS. Repository: `phoenixvc/omnipost`.
 
 ## Quick Commands
 

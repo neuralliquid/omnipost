@@ -85,7 +85,7 @@ OmniPost is a Next.js-based web application that enables users to create, manage
 ## Directory Structure
 
 ```
-content_creation/
+omnipost/
 ├── app/                      # Next.js App Router
 │   └── api/                  # API route handlers
 │       ├── _utils/           # Shared utilities

@@ -7,15 +7,15 @@
 **AI-powered multi-platform content publishing made simple**
 
 [![Alpha](https://img.shields.io/badge/status-alpha-orange)](./docs/ALPHA_LAUNCH_PLAN.md)
-[![CI](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/ci.yml)
-[![Azure Web App](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/JustAGhosT/content_creation/actions/workflows/azure-webapps-node.yml)
+[![CI](https://github.com/phoenixvc/omnipost/actions/workflows/ci.yml/badge.svg)](https://github.com/phoenixvc/omnipost/actions/workflows/ci.yml)
+[![Azure Web App](https://github.com/phoenixvc/omnipost/actions/workflows/azure-webapps-node.yml/badge.svg)](https://github.com/phoenixvc/omnipost/actions/workflows/azure-webapps-node.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/badge/node-18.20.0-brightgreen)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue)](https://www.typescriptlang.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-9.0.0-orange)](https://pnpm.io/)
 
-[🌐 Live Demo](https://nl-dev-omnipost-app-euw.azurewebsites.net) · [📖 Documentation](./docs/README.md) · [🐛 Report Bug](https://github.com/JustAGhosT/content_creation/issues) · [✨ Request Feature](https://github.com/JustAGhosT/content_creation/issues)
+[🌐 Live Demo](https://nl-dev-omnipost-app-euw.azurewebsites.net) · [📖 Documentation](./docs/README.md) · [🐛 Report Bug](https://github.com/phoenixvc/omnipost/issues) · [✨ Request Feature](https://github.com/phoenixvc/omnipost/issues)
 
 </div>
 
@@ -87,8 +87,8 @@ Before you begin, ensure you have the following installed:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/JustAGhosT/content_creation.git
-cd content_creation
+git clone https://github.com/phoenixvc/omnipost.git
+cd omnipost
 
 # 2. Install the correct Node.js version (if using nvm)
 nvm use
@@ -195,7 +195,7 @@ pnpm test:watch   # In another terminal
 ## 📁 Project Structure
 
 ```
-content_creation/
+omnipost/
 ├── 📂 app/                    # Next.js App Router
 │   ├── api/                  # New API route handlers (App Router)
 │   └── ...                   # App Router pages and layouts
@@ -860,15 +860,15 @@ For more details, see:
 
 If you're still experiencing problems:
 
-1. **Check existing issues**: [GitHub Issues](https://github.com/JustAGhosT/content_creation/issues)
+1. **Check existing issues**: [GitHub Issues](https://github.com/phoenixvc/omnipost/issues)
 2. **Review documentation**: [Documentation Hub](./docs/README.md)
 3. **Create a new issue**: Provide detailed error messages and steps to reproduce
 4. **Check logs**: Look at browser console and terminal output for error details
 
 ### 📞 Getting Support
 
-- **GitHub Issues**: [Report bugs or request features](https://github.com/JustAGhosT/content_creation/issues)
-- **Discussions**: [Ask questions and share ideas](https://github.com/JustAGhosT/content_creation/discussions)
+- **GitHub Issues**: [Report bugs or request features](https://github.com/phoenixvc/omnipost/issues)
+- **Discussions**: [Ask questions and share ideas](https://github.com/phoenixvc/omnipost/discussions)
 - **Documentation**: [Browse the docs](./docs/README.md)
 
 ## 🤝 Contributing
@@ -918,15 +918,15 @@ For detailed contribution guidelines, please read [CONTRIBUTING.md](./CONTRIBUTI
 
 Found a bug or have a feature request?
 
-- **Bug Reports**: [Create an issue](https://github.com/JustAGhosT/content_creation/issues/new) with detailed reproduction steps
-- **Feature Requests**: [Create an issue](https://github.com/JustAGhosT/content_creation/issues/new) describing the feature and use case
+- **Bug Reports**: [Create an issue](https://github.com/phoenixvc/omnipost/issues/new) with detailed reproduction steps
+- **Feature Requests**: [Create an issue](https://github.com/phoenixvc/omnipost/issues/new) describing the feature and use case
 - **Security Issues**: See our [Security Policy](./SECURITY.md) for responsible disclosure
 
 ### 💬 Getting Help
 
 - **Documentation**: Check the [docs folder](./docs/) for guides
-- **Issues**: Search [existing issues](https://github.com/JustAGhosT/content_creation/issues) for similar questions
-- **Discussions**: Start a [GitHub Discussion](https://github.com/JustAGhosT/content_creation/discussions) for general questions
+- **Issues**: Search [existing issues](https://github.com/phoenixvc/omnipost/issues) for similar questions
+- **Discussions**: Start a [GitHub Discussion](https://github.com/phoenixvc/omnipost/discussions) for general questions
 
 ### 🌟 Ways to Contribute
 
@@ -960,7 +960,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **JustAGhosT** - _Creator and Lead Developer_
 
 - GitHub: [@JustAGhosT](https://github.com/JustAGhosT)
-- Repository: [content_creation](https://github.com/JustAGhosT/content_creation)
+- Repository: [content_creation](https://github.com/phoenixvc/omnipost)
 
 ### Acknowledgments
 
@@ -1025,7 +1025,7 @@ This project builds upon these amazing open-source technologies:
 
 </details>
 
-See [CHANGELOG.md](./CHANGELOG.md) for version history and [GitHub Projects](https://github.com/JustAGhosT/content_creation/projects) for current progress.
+See [CHANGELOG.md](./CHANGELOG.md) for version history and [GitHub Projects](https://github.com/phoenixvc/omnipost/projects) for current progress.
 
 ---
 
@@ -1034,15 +1034,15 @@ See [CHANGELOG.md](./CHANGELOG.md) for version history and [GitHub Projects](htt
 ### Project Links
 
 - **🌐 Live Demo**: [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
-- **📦 Repository**: [github.com/JustAGhosT/content_creation](https://github.com/JustAGhosT/content_creation)
-- **🐛 Issues**: [GitHub Issues](https://github.com/JustAGhosT/content_creation/issues)
-- **💬 Discussions**: [GitHub Discussions](https://github.com/JustAGhosT/content_creation/discussions)
+- **📦 Repository**: [github.com/phoenixvc/omnipost](https://github.com/phoenixvc/omnipost)
+- **🐛 Issues**: [GitHub Issues](https://github.com/phoenixvc/omnipost/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/phoenixvc/omnipost/discussions)
 - **📖 Documentation**: [Documentation Hub](./docs/README.md)
 
 ### Community
 
-- **💡 Feature Requests**: [Request a Feature](https://github.com/JustAGhosT/content_creation/issues/new?template=feature_request.md)
-- **🐛 Bug Reports**: [Report a Bug](https://github.com/JustAGhosT/content_creation/issues/new?template=bug_report.md)
+- **💡 Feature Requests**: [Request a Feature](https://github.com/phoenixvc/omnipost/issues/new?template=feature_request.md)
+- **🐛 Bug Reports**: [Report a Bug](https://github.com/phoenixvc/omnipost/issues/new?template=bug_report.md)
 - **🔒 Security**: [Security Policy](./SECURITY.md)
 - **🤝 Contributing**: [Contributing Guidelines](./CONTRIBUTING.md)
 

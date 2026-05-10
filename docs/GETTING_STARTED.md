@@ -25,8 +25,8 @@ git --version    # Any recent version
 ### Step 1: Clone the repository
 
 ```bash
-git clone https://github.com/JustAGhosT/content_creation.git
-cd content_creation
+git clone https://github.com/phoenixvc/omnipost.git
+cd omnipost
 ```
 
 ### Step 2: Install dependencies
@@ -220,7 +220,7 @@ See [PROJECT_STRUCTURE.md](../PROJECT_STRUCTURE.md) for a detailed breakdown of 
 - **Explore the API**: Review the route handlers in `app/api/` to understand the backend.
 - **Read the architecture docs**: [ARCHITECTURE.md](./ARCHITECTURE.md) covers the full system design.
 - **Contribute**: See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on submitting changes.
-- **Join the discussion**: Open an issue or start a [GitHub Discussion](https://github.com/JustAGhosT/content_creation/discussions) if you have questions.
+- **Join the discussion**: Open an issue or start a [GitHub Discussion](https://github.com/phoenixvc/omnipost/discussions) if you have questions.
 
 ---
 

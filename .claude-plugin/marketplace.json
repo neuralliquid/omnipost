@@ -3,7 +3,7 @@
   "creator": "OmniPost",
   "version": "1.0.0",
   "description": "34 marketing skills for AI agents working on OmniPost — covering CRO, SEO, content strategy, copywriting, ads, analytics, pricing, and more.",
-  "repository": "https://github.com/JustAGhosT/content_creation",
+  "repository": "https://github.com/phoenixvc/omnipost",
   "plugins": [
     {
       "name": "marketing-skills",

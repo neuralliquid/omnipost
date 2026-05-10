@@ -5,7 +5,7 @@ This document provides an overview of the project's directory structure and orga
 ## Directory Overview
 
 ```
-content_creation/
+omnipost/
 ├── .agentkit/             # Retort project specification
 │   └── spec/             # YAML specification files
 │

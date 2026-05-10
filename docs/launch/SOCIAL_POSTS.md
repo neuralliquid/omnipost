@@ -27,7 +27,7 @@ _Brand voice: Professional, approachable, technically confident, clear._
 >
 > If you've wanted a modern, self-hostable alternative to Buffer/Hootsuite -- this is it.
 >
-> GitHub: github.com/JustAGhosT/content_creation
+> GitHub: github.com/phoenixvc/omnipost
 
 ---
 
@@ -89,7 +89,7 @@ Open source means:
 
 We're betting that building in the open creates better products and stronger relationships with users. The alpha is live now.
 
-GitHub: github.com/JustAGhosT/content_creation
+GitHub: github.com/phoenixvc/omnipost
 
 ---
 
@@ -142,7 +142,7 @@ Hey everyone -- I've been working on OmniPost, a multi-platform content publishi
 **What I'm looking for**: Honest feedback from people who manage content across multiple platforms. What works? What's missing? What would make you switch from your current tool?
 
 Live demo: https://nl-dev-omnipost-app-euw.azurewebsites.net
-GitHub: github.com/JustAGhosT/content_creation
+GitHub: github.com/phoenixvc/omnipost
 
 Happy to answer any questions about the tech or the product.
 
@@ -164,4 +164,4 @@ Key technical decisions:
 This is an alpha release. Looking for feedback on the core workflow and contributions from anyone interested in the stack.
 
 Demo: https://nl-dev-omnipost-app-euw.azurewebsites.net
-Source: https://github.com/JustAGhosT/content_creation
+Source: https://github.com/phoenixvc/omnipost
