@@ -2,7 +2,7 @@
 
 ## 📌 Quick Reference
 
-**Repository:** JustAGhosT/content_creation  
+**Repository:** phoenixvc/omnipost  
 **Live Demo:** [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
 
 ## Project Overview
@@ -850,7 +850,7 @@ pnpm install
 
 ## 📚 Additional Resources
 
-- **Repository:** [GitHub](https://github.com/JustAGhosT/content_creation)
+- **Repository:** [GitHub](https://github.com/phoenixvc/omnipost)
 - **Documentation Hub:** [docs/README.md](../docs/README.md)
 - **Architecture Guide:** [docs/ARCHITECTURE.md](../docs/ARCHITECTURE.md)
 - **API Best Practices:** [docs/api/next-api-best-practices.md](../docs/api/next-api-best-practices.md)

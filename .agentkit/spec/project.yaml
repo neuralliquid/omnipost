@@ -6,7 +6,7 @@ project:
   description: "AI-powered multi-platform content publishing. Publish everywhere, manage anywhere."
   tagline: "One platform. All channels."
   type: SaaS
-  repository: https://github.com/JustAGhosT/content_creation
+  repository: https://github.com/phoenixvc/omnipost
   live_url: https://nl-dev-omnipost-app-euw.azurewebsites.net
 
 stack:

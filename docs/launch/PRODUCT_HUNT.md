@@ -28,7 +28,7 @@ Write once, publish to Facebook, Instagram, LinkedIn, and Twitter. OmniPost's AI
 ## Links
 
 - **Website:** https://nl-dev-omnipost-app-euw.azurewebsites.net
-- **GitHub:** https://github.com/JustAGhosT/content_creation
+- **GitHub:** https://github.com/phoenixvc/omnipost
 
 ---
 
@@ -105,7 +105,7 @@ A: We use a combination of models optimized for different tasks -- content adapt
 A: Your content data is stored in a PostgreSQL database with standard encryption. We don't use your content to train models. Since we're open source, you can audit the entire data handling pipeline yourself.
 
 **Q: I found a bug. Where do I report it?**
-A: GitHub Issues is the best place: github.com/JustAGhosT/content_creation/issues. We're actively monitoring and triaging during launch week.
+A: GitHub Issues is the best place: github.com/phoenixvc/omnipost/issues. We're actively monitoring and triaging during launch week.
 
 **Q: Are you looking for contributors?**
 A: Yes! We welcome contributions of all kinds -- code, documentation, bug reports, feature suggestions. Check the GitHub repo for open issues tagged "good first issue."

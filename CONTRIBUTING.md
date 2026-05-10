@@ -25,8 +25,8 @@ Thank you for your interest in contributing! This document provides guidelines a
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/JustAGhosT/content_creation.git
-   cd content_creation
+   git clone https://github.com/phoenixvc/omnipost.git
+   cd omnipost
    ```
 
 2. **Install dependencies:**

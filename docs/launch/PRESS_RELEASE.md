@@ -25,7 +25,7 @@ OmniPost is available in three tiers: Free (core publishing and AI adaptation), 
 OmniPost is an AI-powered multi-platform content publishing platform that lets users write once and publish everywhere. Built on modern open-source technology and released under the MIT license, OmniPost combines content adaptation, smart scheduling, AI image generation, unified analytics, and CRM features in a single dashboard. The platform currently supports Facebook, Instagram, LinkedIn, and Twitter, with additional platforms planned.
 
 - **Website:** https://nl-dev-omnipost-app-euw.azurewebsites.net
-- **GitHub:** https://github.com/JustAGhosT/content_creation
+- **GitHub:** https://github.com/phoenixvc/omnipost
 
 ---
 
@@ -33,6 +33,6 @@ OmniPost is an AI-powered multi-platform content publishing platform that lets u
 
 **Name:** OmniPost Team
 **Email:** press@omnipost.app <!-- TODO: Verify this email is configured before launch -->
-**GitHub:** https://github.com/JustAGhosT/content_creation
+**GitHub:** https://github.com/phoenixvc/omnipost
 
 _For press inquiries, product demos, or interview requests, please contact the email above._

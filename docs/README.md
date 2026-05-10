@@ -1,6 +1,6 @@
 # Documentation Directory
 
-> **🌐 Live Demo:** [https://nl-dev-content-creation-app-euw.azurewebsites.net](https://nl-dev-content-creation-app-euw.azurewebsites.net)
+> **🌐 Live Demo:** [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
 
 This directory contains all project documentation organized by type and purpose.
 
@@ -110,7 +110,7 @@ Documentation should be reviewed:
 If you can't find what you're looking for:
 
 1. Check the [FAQ section in CONTRIBUTING.md](../CONTRIBUTING.md)
-2. Search existing [GitHub Issues](https://github.com/JustAGhosT/content_creation/issues)
+2. Search existing [GitHub Issues](https://github.com/phoenixvc/omnipost/issues)
 3. Create a new issue with the `documentation` label
 
 ---

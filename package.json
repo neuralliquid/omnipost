@@ -87,13 +87,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/JustAGhosT/content_creation.git"
+    "url": "https://github.com/phoenixvc/omnipost.git"
   },
   "keywords": [
     "omnipost",
     "multi-platform",
     "publishing",
-    "content-creation",
     "nextjs",
     "react",
     "ai",

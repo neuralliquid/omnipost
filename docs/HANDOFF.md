@@ -120,8 +120,8 @@ TWITTER_API_KEY=
 ## Setup Instructions
 
 ```bash
-git clone https://github.com/JustAGhosT/content_creation.git
-cd content_creation
+git clone https://github.com/phoenixvc/omnipost.git
+cd omnipost
 git checkout claude/review-repo-structure-9D1gP
 pnpm install
 pnpm db:generate

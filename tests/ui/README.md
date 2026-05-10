@@ -191,7 +191,7 @@ test.describe('Authentication Flow', () => {
 ### Flow 2: Content Creation Tests
 
 ```typescript
-// tests/ui/content-creation.spec.ts
+// tests/ui/omnipost.spec.ts
 import { test, expect } from '@playwright/test';
 
 test.use({ viewport: { width: 1280, height: 720 } });
