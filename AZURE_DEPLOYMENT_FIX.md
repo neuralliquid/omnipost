@@ -100,7 +100,7 @@ The fix will be applied automatically on the next deployment:
 3. **Verify Health Endpoint**:
 
    ```bash
-   curl https://nl-dev-omnipost-app-euw.azurewebsites.net/api/health
+   curl https://nl-dev-omnipost-app.azurewebsites.net/api/health
    ```
 
    Expected response:
@@ -118,8 +118,8 @@ The fix will be applied automatically on the next deployment:
 4. **Check Azure Logs**:
 
    ```bash
-   az webapp log tail --name nl-dev-omnipost-app-euw \
-     --resource-group nl-dev-omnipost-rg-euw
+   az webapp log tail --name nl-dev-omnipost-app \
+     --resource-group nl-dev-omnipost-rg
    ```
 
    You should see:
@@ -138,13 +138,13 @@ The fix will be applied automatically on the next deployment:
 If you need to fix an existing deployment immediately without redeploying infrastructure:
 
 ```bash
-az webapp config set --name nl-dev-omnipost-app-euw \
-  --resource-group nl-dev-omnipost-rg-euw \
+az webapp config set --name nl-dev-omnipost-app \
+  --resource-group nl-dev-omnipost-rg \
   --startup-file "node server.js"
 
 # Restart the app
-az webapp restart --name nl-dev-omnipost-app-euw \
-  --resource-group nl-dev-omnipost-rg-euw
+az webapp restart --name nl-dev-omnipost-app \
+  --resource-group nl-dev-omnipost-rg
 ```
 
 **Note**: This is temporary. The next infrastructure deployment will apply the permanent fix from the Bicep template.

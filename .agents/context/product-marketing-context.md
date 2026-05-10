@@ -10,7 +10,7 @@ AI agents should read this before using any marketing skill.
 - **Category**: SaaS Multi-Platform Content Publishing
 - **Type**: B2B/B2C web application
 - **License**: MIT (open-source)
-- **Live Demo**: https://nl-dev-omnipost-app-euw.azurewebsites.net
+- **Live Demo**: https://nl-dev-omnipost-app.azurewebsites.net
 
 ## Target Users
 

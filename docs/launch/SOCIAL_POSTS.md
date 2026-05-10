@@ -11,7 +11,7 @@ _Brand voice: Professional, approachable, technically confident, clear._
 
 > We just launched OmniPost -- write once, publish to Facebook, Instagram, LinkedIn, and Twitter simultaneously. AI adapts your content to each platform automatically. Free and open source.
 >
-> Try it: https://nl-dev-omnipost-app-euw.azurewebsites.net
+> Try it: https://nl-dev-omnipost-app.azurewebsites.net
 
 ### Tweet 2 -- Problem Hook
 
@@ -54,7 +54,7 @@ We're in alpha. The Free tier is available now with no credit card required.
 
 If you're a content creator, social media manager, or marketing team lead, I'd genuinely appreciate you taking it for a spin and sharing your honest feedback.
 
-Try it: https://nl-dev-omnipost-app-euw.azurewebsites.net
+Try it: https://nl-dev-omnipost-app.azurewebsites.net
 
 #ContentCreation #SaaS #OpenSource #MarketingTools #Launch
 
@@ -70,7 +70,7 @@ The result: content teams get back an entire workday each week. And because Omni
 
 Currently in alpha -- free to use, open source, and actively looking for feedback from marketing professionals.
 
-https://nl-dev-omnipost-app-euw.azurewebsites.net
+https://nl-dev-omnipost-app.azurewebsites.net
 
 ### LinkedIn 3 -- Open Source Angle
 
@@ -141,7 +141,7 @@ Hey everyone -- I've been working on OmniPost, a multi-platform content publishi
 
 **What I'm looking for**: Honest feedback from people who manage content across multiple platforms. What works? What's missing? What would make you switch from your current tool?
 
-Live demo: https://nl-dev-omnipost-app-euw.azurewebsites.net
+Live demo: https://nl-dev-omnipost-app.azurewebsites.net
 GitHub: github.com/phoenixvc/omnipost
 
 Happy to answer any questions about the tech or the product.
@@ -163,5 +163,5 @@ Key technical decisions:
 
 This is an alpha release. Looking for feedback on the core workflow and contributions from anyone interested in the stack.
 
-Demo: https://nl-dev-omnipost-app-euw.azurewebsites.net
+Demo: https://nl-dev-omnipost-app.azurewebsites.net
 Source: https://github.com/phoenixvc/omnipost

@@ -155,7 +155,7 @@ If automatic DNS fails, configure manually:
 # Set variables
 DNS_ZONE="nexamesh.ai"
 DNS_RG="rg-dns-global"
-APP_HOSTNAME="nl-prod-content-creation-app-euw.azurewebsites.net"
+APP_HOSTNAME="nl-prod-omnipost-app.azurewebsites.net"
 
 # Create CNAME for main app
 az network dns record-set cname create \
@@ -225,8 +225,8 @@ If you encounter this issue:
 2. Redeploy infrastructure: The GitHub Actions workflow will update this automatically
 3. Manual fix (temporary):
    ```bash
-   az webapp config set --name nl-dev-omnipost-app-euw \
-     --resource-group nl-dev-omnipost-rg-euw \
+   az webapp config set --name nl-dev-omnipost-app \
+     --resource-group nl-dev-omnipost-rg \
      --startup-file "node server.js"
    ```
 
@@ -281,17 +281,17 @@ If you encounter this issue:
 
 ```bash
 # View app logs
-az webapp log tail --name nl-prod-content-creation-app-euw \
-  --resource-group nl-prod-content-creation-rg-euw
+az webapp log tail --name nl-prod-omnipost-app \
+  --resource-group nl-prod-omnipost-rg
 
 # Check app status
-az webapp show --name nl-prod-content-creation-app-euw \
-  --resource-group nl-prod-content-creation-rg-euw \
+az webapp show --name nl-prod-omnipost-app \
+  --resource-group nl-prod-omnipost-rg \
   --query state
 
 # List custom domains
-az webapp show --name nl-prod-content-creation-app-euw \
-  --resource-group nl-prod-content-creation-rg-euw \
+az webapp show --name nl-prod-omnipost-app \
+  --resource-group nl-prod-omnipost-rg \
   --query hostNames
 
 # View DNS records
@@ -299,8 +299,8 @@ az network dns record-set list --zone-name nexamesh.ai \
   --resource-group rg-dns-global --output table
 
 # Restart app
-az webapp restart --name nl-prod-content-creation-app-euw \
-  --resource-group nl-prod-content-creation-rg-euw
+az webapp restart --name nl-prod-omnipost-app \
+  --resource-group nl-prod-omnipost-rg
 ```
 
 ### Support Resources
@@ -315,17 +315,17 @@ az webapp restart --name nl-prod-content-creation-app-euw \
 
 ### URLs
 
-| Environment   | URL                                                          |
-| ------------- | ------------------------------------------------------------ |
-| Dev           | `https://nl-dev-content-creation-app-euw.azurewebsites.net`  |
-| Prod (Azure)  | `https://nl-prod-content-creation-app-euw.azurewebsites.net` |
-| Prod (Custom) | `https://omnipost.nexamesh.ai`                               |
-| API (Custom)  | `https://api.omnipost.nexamesh.ai`                           |
+| Environment   | URL                                              |
+| ------------- | ------------------------------------------------ |
+| Dev           | `https://nl-dev-omnipost-app.azurewebsites.net`  |
+| Prod (Azure)  | `https://nl-prod-omnipost-app.azurewebsites.net` |
+| Prod (Custom) | `https://omnipost.nexamesh.ai`                   |
+| API (Custom)  | `https://api.omnipost.nexamesh.ai`               |
 
 ### Resource Groups
 
-| Environment | Resource Group                    |
-| ----------- | --------------------------------- |
-| Dev         | `nl-dev-content-creation-rg-euw`  |
-| Prod        | `nl-prod-content-creation-rg-euw` |
-| DNS         | `rg-dns-global`                   |
+| Environment | Resource Group        |
+| ----------- | --------------------- |
+| Dev         | `nl-dev-omnipost-rg`  |
+| Prod        | `nl-prod-omnipost-rg` |
+| DNS         | `rg-dns-global`       |

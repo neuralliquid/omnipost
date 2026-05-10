@@ -46,44 +46,47 @@ param project string
 param region string
 
 // Base naming pattern: [org]-[env]-[project]
+// Region suffix dropped per ADR-0027 (mystira) applied to omnipost. The `region` param is
+// retained for tags + future multi-region disambiguation but is no longer in resource names.
 var base = '${org}-${env}-${project}'
 
-// Resource Group: [org]-[env]-[project]-rg-[region]
-output rgName string = '${base}-rg-${region}'
+// Resource Group: [org]-[env]-[project]-rg
+output rgName string = '${base}-rg'
 
 // Compute Resources
-output name_app string = '${base}-app-${region}'
-output name_api string = '${base}-api-${region}'
-output name_func string = '${base}-func-${region}'
-output name_swa string = '${base}-swa-${region}'
-output name_asp string = '${base}-asp-${region}'
+output name_app string = '${base}-app'
+output name_api string = '${base}-api'
+output name_func string = '${base}-func'
+output name_swa string = '${base}-swa'
+output name_asp string = '${base}-asp'
 
 // Data Resources
-output name_db string = '${base}-db-${region}'
-output name_storage string = '${base}-storage-${region}'
-output name_cache string = '${base}-cache-${region}'
-output name_queue string = '${base}-queue-${region}'
+output name_db string = '${base}-db'
+output name_storage string = '${base}-storage'
+output name_cache string = '${base}-cache'
+output name_queue string = '${base}-queue'
 
 // Security Resources
-output name_kv string = '${base}-kv-${region}'
+output name_kv string = '${base}-kv'
 
 // AI Resources
-output name_ai string = '${base}-ai-${region}'
+output name_ai string = '${base}-ai'
 
 // Networking Resources
-output name_vnet string = '${base}-vnet-${region}'
-output name_subnet string = '${base}-subnet-${region}'
-output name_dns string = '${base}-dns-${region}'
+output name_vnet string = '${base}-vnet'
+output name_subnet string = '${base}-subnet'
+output name_dns string = '${base}-dns'
 
 // Monitoring Resources
-output name_log string = '${base}-log-${region}'
+output name_law string = '${base}-law'
+output name_log string = '${base}-law' // alias, kept for backward-compat with consumers using name_log
 
 // Container Resources
-output name_acr string = '${base}-acr-${region}'
+output name_acr string = '${base}-acr'
 
 // Metadata outputs
 output base string = base
-output fullPattern string = '[org]-[env]-[project]-[type]-[region]'
+output fullPattern string = '[org]-[env]-[project]-[type]'
 output tags object = {
   org: org
   environment: env

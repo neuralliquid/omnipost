@@ -8,7 +8,7 @@ _New tool lets content creators write once and publish to Facebook, Instagram, L
 
 ---
 
-**REMOTE -- March 30, 2026** -- OmniPost, an open-source content publishing platform, launched today in alpha, offering content creators and marketing teams an AI-powered solution for publishing across multiple social media platforms from a single dashboard. The platform is available immediately with a free tier at [omnipost.app](https://nl-dev-omnipost-app-euw.azurewebsites.net).
+**REMOTE -- March 30, 2026** -- OmniPost, an open-source content publishing platform, launched today in alpha, offering content creators and marketing teams an AI-powered solution for publishing across multiple social media platforms from a single dashboard. The platform is available immediately with a free tier at [omnipost.app](https://nl-dev-omnipost-app.azurewebsites.net).
 
 OmniPost addresses a persistent pain point for anyone managing a multi-platform social media presence: the hours spent reformatting the same content for different platforms. Rather than requiring users to manually adjust tone, character limits, image dimensions, and formatting for each destination, OmniPost's AI engine automatically adapts a single piece of content for Facebook, Instagram, LinkedIn, and Twitter. The platform also includes smart scheduling based on audience engagement patterns, AI image generation, unified cross-platform analytics, and built-in CRM features for connecting content performance to business outcomes.
 
@@ -24,7 +24,7 @@ OmniPost is available in three tiers: Free (core publishing and AI adaptation), 
 
 OmniPost is an AI-powered multi-platform content publishing platform that lets users write once and publish everywhere. Built on modern open-source technology and released under the MIT license, OmniPost combines content adaptation, smart scheduling, AI image generation, unified analytics, and CRM features in a single dashboard. The platform currently supports Facebook, Instagram, LinkedIn, and Twitter, with additional platforms planned.
 
-- **Website:** https://nl-dev-omnipost-app-euw.azurewebsites.net
+- **Website:** https://nl-dev-omnipost-app.azurewebsites.net
 - **GitHub:** https://github.com/phoenixvc/omnipost
 
 ---

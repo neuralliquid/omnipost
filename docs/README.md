@@ -1,6 +1,6 @@
 # Documentation Directory
 
-> **🌐 Live Demo:** [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
+> **🌐 Live Demo:** [https://nl-dev-omnipost-app.azurewebsites.net](https://nl-dev-omnipost-app.azurewebsites.net)
 
 This directory contains all project documentation organized by type and purpose.
 

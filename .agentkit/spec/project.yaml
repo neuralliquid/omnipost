@@ -7,7 +7,7 @@ project:
   tagline: "One platform. All channels."
   type: SaaS
   repository: https://github.com/phoenixvc/omnipost
-  live_url: https://nl-dev-omnipost-app-euw.azurewebsites.net
+  live_url: https://nl-dev-omnipost-app.azurewebsites.net
 
 stack:
   framework: Next.js 16

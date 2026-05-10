@@ -17,7 +17,7 @@
     Short code for the location (e.g., 'euw' for West Europe). Default is 'euw'.
 
 .PARAMETER ProjectName
-    The name of the project. Default is 'content-creation'.
+    The name of the project. Default is 'omnipost'.
 
 .PARAMETER Sku
     The SKU for the App Service Plan. Default is 'B1'.
@@ -54,7 +54,7 @@ param(
     [string]$LocationCode = 'euw',
 
     [Parameter()]
-    [string]$ProjectName = 'content-creation',
+    [string]$ProjectName = 'omnipost',
 
     [Parameter()]
     [ValidateSet('B1', 'B2', 'B3', 'S1', 'S2', 'S3', 'P1v2', 'P2v2', 'P3v2')]
@@ -77,9 +77,11 @@ $InfraPath = Join-Path -Path (Split-Path -Parent $ScriptRoot) -ChildPath 'infra'
 $BicepFile = Join-Path -Path $InfraPath -ChildPath 'main.bicep'
 
 # Generate resource names following the naming convention
-$ResourceGroupName = "$Environment-$LocationCode-rg-$ProjectName"
-$AppName = "$Environment-$LocationCode-app-$ProjectName"
-$AppServicePlanName = "$AppName-asp"
+# Pattern: nl-<env>-<project>-<type> (region suffix dropped per ADR-0027)
+$OrgCode = 'nl'
+$ResourceGroupName = "$OrgCode-$Environment-$ProjectName-rg"
+$AppName = "$OrgCode-$Environment-$ProjectName-app"
+$AppServicePlanName = "$OrgCode-$Environment-$ProjectName-asp"
 
 function Write-Header {
     param([string]$Message)

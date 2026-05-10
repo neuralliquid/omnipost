@@ -42,11 +42,11 @@ param azureOpenAIApiKey string
 @secure()
 param sluiceApiKey string
 
-// Naming convention: [org]-[env]-[project]-[type]-[region]
+// Naming convention: [org]-[env]-[project]-[type] (region suffix dropped per ADR-0027)
 var base = '${org}-${env}-${project}'
-var containerAppEnvName = '${base}-cae-${region}'
-var containerAppName = '${base}-sluice-${region}'
-var logAnalyticsName = '${base}-log-${region}'
+var containerAppEnvName = '${base}-cae'
+var containerAppName = '${base}-sluice'
+var logAnalyticsName = '${base}-law'
 
 // Reference existing Log Analytics workspace (created by monitoring.bicep)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2023-09-01' existing = {

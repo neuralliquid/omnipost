@@ -1,6 +1,8 @@
 # Azure Infrastructure - Naming Conventions
 
-This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**.
+This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**, with
+the **region suffix dropped per [ADR-0027](https://github.com/JustAGhosT/mystira-workspace/blob/main/docs/architecture/adr/0027-azure-resource-naming-convention.md)**
+(originally a mystira ADR; adopted for omnipost on 2026-05-10).
 
 ## Recent Changes (December 2024)
 
@@ -40,14 +42,24 @@ See `main.bicep` for usage example.
 All resources follow the pattern:
 
 ```
-[org]-[env]-[project]-[type]-[region]
+[org]-[env]-[project]-[type]
 ```
 
 Resource groups use:
 
 ```
-[org]-[env]-[project]-rg-[region]
+[org]-[env]-[project]-rg
 ```
+
+The region is no longer encoded in the resource name. It is expressed by:
+
+- The Azure resource group's `location` property (authoritative)
+- The `region` tag on every resource (derived from the `region` parameter)
+
+Multi-region disambiguation, when needed, is handled by deploying into
+distinct resource groups (e.g. `nl-prod-omnipost-rg` in `westeurope`
+vs a future `nl-prod-omnipost-rg-2` in another region) rather than
+embedding the region into every resource name.
 
 ## Valid Values
 
@@ -68,8 +80,8 @@ Resource groups use:
 
 For NeuralLiquid (`nl`):
 
-- `content-creation` - This project
-- `rooivalk` - Counter-UAS platform
+- `omnipost` - This project (was `content-creation` / `cc` before 2026-05-10)
+- `rooivalk` - Counter-UAS platform (now spun out to Nexamesh org as `nexamesh-core`)
 - `autopr` - Autopr automation platform
 - `nl-core` - Shared NL foundation services
 - `nl-ai` - Shared NL AI services
@@ -112,26 +124,26 @@ For NeuralLiquid (`nl`):
 ### Development Environment (West Europe)
 
 ```
-nl-dev-content-creation-rg-euw         # Resource Group
-nl-dev-content-creation-app-euw        # App Service
-nl-dev-content-creation-asp-euw        # App Service Plan
-nl-dev-content-creation-api-euw        # API Service
-nl-dev-content-creation-db-euw         # Database
+nl-dev-omnipost-rg         # Resource Group
+nl-dev-omnipost-app        # App Service
+nl-dev-omnipost-asp        # App Service Plan
+nl-dev-omnipost-api        # API Service
+nl-dev-omnipost-db         # Database
 ```
 
 ### Production Environment (South Africa North)
 
 ```
-nl-prod-content-creation-rg-san        # Resource Group
-nl-prod-content-creation-app-san       # App Service
-nl-prod-content-creation-asp-san       # App Service Plan
+nl-prod-omnipost-rg        # Resource Group (location: southafricanorth)
+nl-prod-omnipost-app       # App Service
+nl-prod-omnipost-asp       # App Service Plan
 ```
 
 ### Staging Environment (West Europe)
 
 ```
-nl-staging-content-creation-rg-euw     # Resource Group
-nl-staging-content-creation-app-euw    # App Service
+nl-staging-omnipost-rg     # Resource Group
+nl-staging-omnipost-app    # App Service
 ```
 
 ## Usage
@@ -144,20 +156,21 @@ The `naming.sh` script generates standardized names:
 ./infra/naming.sh <org> <env> <project> <region>
 
 # Example:
-./infra/naming.sh nl dev content-creation euw
+./infra/naming.sh nl dev omnipost euw
 ```
 
-Output (as environment variables):
+The `<region>` argument is still required for backward compatibility but is
+no longer encoded in resource names (see ADR-0027). Output (as environment variables):
 
 ```bash
-RESOURCE_GROUP=nl-dev-content-creation-rg-euw
-APP_NAME=nl-dev-content-creation-app-euw
-ASP_NAME=nl-dev-content-creation-asp-euw
-API_NAME=nl-dev-content-creation-api-euw
-FUNC_NAME=nl-dev-content-creation-func-euw
-STORAGE_NAME=nl-dev-content-creation-storage-euw
-KV_NAME=nl-dev-content-creation-kv-euw
-DB_NAME=nl-dev-content-creation-db-euw
+RESOURCE_GROUP=nl-dev-omnipost-rg
+APP_NAME=nl-dev-omnipost-app
+ASP_NAME=nl-dev-omnipost-asp
+API_NAME=nl-dev-omnipost-api
+FUNC_NAME=nl-dev-omnipost-func
+STORAGE_NAME=nl-dev-omnipost-storage
+KV_NAME=nl-dev-omnipost-kv
+DB_NAME=nl-dev-omnipost-db
 ```
 
 ### Bicep Module (naming.bicep)
@@ -176,16 +189,16 @@ param org string = 'nl'
 param env string = 'dev'
 
 @description('Project name')
-param project string = 'content-creation'
+param project string = 'omnipost'
 
-@description('Region code')
+@description('Region code (kept for tags + future multi-region disambiguation; not used in resource names)')
 @allowed(['euw', 'san', 'saf', 'swe', 'eun', 'wus', 'eus', 'uks', 'usw', 'glob'])
 param region string = 'euw'
 
 // Generate names directly (available at deployment start)
 var base = '${org}-${env}-${project}'
-var appName = '${base}-app-${region}'
-var aspName = '${base}-asp-${region}'
+var appName = '${base}-app'
+var aspName = '${base}-asp'
 
 // Optional: Deploy naming module for validation
 module naming 'naming.bicep' = {
@@ -215,7 +228,7 @@ The workflow automatically generates names:
 ```yaml
 env:
   ORG_CODE: 'nl'
-  PROJECT_NAME: 'content-creation'
+  PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw'
 
 steps:
@@ -240,41 +253,71 @@ The naming script validates all inputs:
 
 ```bash
 # Valid
-./infra/naming.sh nl dev content-creation euw  # ✅
+./infra/naming.sh nl dev omnipost euw  # ✅
 
 # Invalid org code
-./infra/naming.sh xyz dev content-creation euw  # ❌ Error
+./infra/naming.sh xyz dev omnipost euw  # ❌ Error
 
 # Invalid environment
-./infra/naming.sh nl test content-creation euw  # ❌ Error (should be 'staging')
+./infra/naming.sh nl test omnipost euw  # ❌ Error (should be 'staging')
 
 # Invalid region
-./infra/naming.sh nl dev content-creation xyz   # ❌ Error
+./infra/naming.sh nl dev omnipost xyz   # ❌ Error
 ```
 
 ## Migration Notes
 
-### From Old Pattern
+### From legacy `cc` + region-suffixed names (2026-05-10)
 
-**Old (incorrect):**
+**Legacy (deployed to dev as `nl-dev-cc-rg-euw`, with parallel
+`nl-dev-omnipost-rg-euw`):**
+
+```
+nl-dev-cc-rg-euw
+nl-dev-cc-app-euw
+nl-dev-omnipost-rg-euw       # parallel deploy under new project name
+```
+
+**New (per ADR-0027 application; deployed afresh):**
+
+```
+nl-dev-omnipost-rg
+nl-dev-omnipost-app
+```
+
+**Changes:**
+
+1. Project code consolidated: `cc` (and the parallel `omnipost`) → `omnipost`
+2. Region suffix dropped from resource names (region is on the resource group's
+   `location` property and on the `region` resource tag)
+
+**Cutover:** the legacy `nl-dev-cc-rg-euw` and the parallel
+`nl-dev-omnipost-rg-euw` are decommissioned in a separate manual ops step
+once the new `nl-dev-omnipost-rg` deploy is healthy. Neither legacy RG had a
+custom domain, so DNS migration is not required.
+
+### Earlier (pre-NL-standards)
+
+**Pre-standard:**
 
 ```
 dev-euw-rg-content-creation
 dev-euw-app-content-creation
 ```
 
-**New (correct):**
+**NL-standard with region suffix (intermediate):**
 
 ```
 nl-dev-content-creation-rg-euw
 nl-dev-content-creation-app-euw
 ```
 
-**Changes:**
+**Current (this doc):**
 
-1. Added `nl` org code prefix
-2. Moved type code before region code
-3. Standardized segment order
+```
+nl-dev-omnipost-rg
+nl-dev-omnipost-app
+```
 
 ### Renaming Resources
 
@@ -297,11 +340,15 @@ All resources are automatically tagged:
 {
   "org": "nl",
   "environment": "dev",
-  "project": "content-creation",
+  "project": "omnipost",
   "region": "euw",
   "managedBy": "bicep"
 }
 ```
+
+The `region` tag is the canonical place to read the deployment region from a
+resource (in addition to the resource group's `location` property), since it
+is no longer in the resource name itself.
 
 ## References
 
