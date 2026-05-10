@@ -57,13 +57,17 @@ infra/
 
 ### Resources Created
 
-| Resource             | Naming Pattern                       | Purpose                     |
-| -------------------- | ------------------------------------ | --------------------------- |
-| Resource Group       | `{org}-{env}-{project}-rg-{region}`  | Container for all resources |
-| App Service Plan     | `{org}-{env}-{project}-asp-{region}` | Hosting plan (Linux)        |
-| Web App              | `{org}-{env}-{project}-app-{region}` | Application hosting         |
-| Application Insights | `{org}-{env}-{project}-ai-{region}`  | Monitoring                  |
-| Log Analytics        | `{org}-{env}-{project}-law-{region}` | Logging                     |
+| Resource             | Naming Pattern              | Purpose                     |
+| -------------------- | --------------------------- | --------------------------- |
+| Resource Group       | `{org}-{env}-{project}-rg`  | Container for all resources |
+| App Service Plan     | `{org}-{env}-{project}-asp` | Hosting plan (Linux)        |
+| Web App              | `{org}-{env}-{project}-app` | Application hosting         |
+| Application Insights | `{org}-{env}-{project}-ai`  | Monitoring                  |
+| Log Analytics        | `{org}-{env}-{project}-law` | Logging                     |
+
+Region is no longer encoded in the resource name (per ADR-0027). It is
+expressed by the resource group's `location` property and by the `region`
+tag on every resource.
 
 ### Environment Configuration
 
