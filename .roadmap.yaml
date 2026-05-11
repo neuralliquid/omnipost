@@ -1,0 +1,36 @@
+version: "1.0"
+scope: roadmap
+repo: neuralliquid/omnipost
+updated_at: 2026-05-11
+
+tasks:
+  - id: alpha-launch
+    title: "Alpha launch — Phases 1-4 of ALPHA_LAUNCH_PLAN.md"
+    description: "Auth/middleware unblock, core flow polish, analytics & tracking, launch prep. All four phases marked COMPLETED in docs/ALPHA_LAUNCH_PLAN.md."
+    priority: high
+    status: done
+    quarter: "2026-Q2"
+    tags: [alpha, launch]
+
+  - id: post-alpha-cost-ops
+    title: "Post-alpha — route all AI calls through sluice for per-call cost attribution in docket"
+    description: "aiGateway feature flag exists. Flip on once verified in prod and confirm spend appears in docket."
+    priority: medium
+    status: todo
+    quarter: "2026-Q2"
+    tags: [sluice, docket, cost-ops]
+
+  - id: post-alpha-real-platforms
+    title: "Post-alpha — replace mock platform OAuth with real provider flows"
+    priority: medium
+    status: todo
+    quarter: "2026-Q3"
+    tags: [oauth, platforms]
+
+  - id: post-alpha-baton-integration
+    title: "Post-alpha — deepen baton integration: bidirectional task sync, agent assignments"
+    description: "lib/integrations/baton.ts already wired with feature flag. app/(dashboard)/tasks/ is a Kanban board backed by baton. Next: expand beyond view-only to write paths."
+    priority: medium
+    status: todo
+    quarter: "2026-Q3"
+    tags: [baton, integration, agents]

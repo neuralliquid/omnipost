@@ -1,0 +1,35 @@
+version: "1.0"
+scope: todo
+repo: neuralliquid/omnipost
+updated_at: 2026-05-11
+# Alpha launch (Phases 1-4 in docs/ALPHA_LAUNCH_PLAN.md) complete. This file
+# tracks remaining/follow-up items, not the launch-prep work itself.
+
+tasks:
+  - id: open-graph-tags
+    title: "Add Open Graph tags for social sharing"
+    description: "Outstanding item from ALPHA_LAUNCH_PLAN.md Phase 4. Most launch work shipped; OG tags noted but not yet implemented."
+    priority: medium
+    status: todo
+    tags: [seo, marketing, alpha]
+
+  - id: fix-stale-ci-badge
+    title: "Fix stale phoenixvc/omnipost CI badge in README"
+    description: "README references github.com/phoenixvc/omnipost/actions but the canonical repo is neuralliquid/omnipost. Update badge URLs."
+    priority: low
+    status: todo
+    tags: [docs, neuralliquid, hygiene]
+
+  - id: real-oauth-platforms
+    title: "Replace mock OAuth in platform settings with real provider flows"
+    description: "app/(dashboard)/settings/platforms/ ships with mock OAuth — wiring real OAuth is the next logical step now that auth middleware is hardened."
+    priority: medium
+    status: todo
+    tags: [oauth, platforms]
+
+  - id: verify-sluice-baton-flags
+    title: "Verify aiGateway (sluice) + baton feature flags work end-to-end in prod"
+    description: "Both integrations are feature-flagged. Confirm flag toggling actually swaps the path correctly in deployed env (lib/clients/sluice-gateway.ts, lib/integrations/baton.ts)."
+    priority: medium
+    status: todo
+    tags: [sluice, baton, feature-flags, integration]
