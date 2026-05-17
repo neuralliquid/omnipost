@@ -84,6 +84,12 @@ Write 10+ headline variants for every project. Categories:
 - **Social proof**: "Why 10,000+ Creators Switched to OmniPost"
 - **How-to**: "How to Publish Everywhere Without the Busywork"
 - **Question**: "Still Cross-Posting Manually?"
+- **Pattern-interrupt (Interest Graph)**: a dated, falsifiable claim that contradicts the reader's worldview. Use when the headline will run on a surface that delivers traffic from strangers (FYP, Reels, recommended feeds, cold paid social, programmatic display).
+  - "In 2022, Meta killed the Social Graph — and most marketers still haven't noticed."
+  - "Social media isn't social anymore."
+  - "TikTok users spent 95 minutes a day on the app. Facebook was at 33."
+
+Pattern-interrupt headlines do not promise a benefit; they assert a reality the reader didn't know about. The benefit is delivered by the body. See the **interest-graph-content** skill for the full opener taxonomy.
 
 ### Step 5: Write Body Copy
 
@@ -139,3 +145,4 @@ Always check `.agents/context/product-marketing-context.md` for current OmniPost
 - For email campaigns, see the **email-sequence** skill
 - For ad copy specifically, see the **ad-creative** skill
 - For psychological principles, see the **marketing-psychology** skill
+- For organic social copy that reaches strangers via Interest Graph algorithms, see the **interest-graph-content** skill

@@ -20,14 +20,22 @@ Develop and maintain OmniPost's content strategy — defining content pillars, p
 
 ### Step 1: Audience & Intent Mapping
 
-Define content audiences and their information needs:
+Define content audiences and their information needs, and tag each with the
+**graph type** the content will reach them through:
 
-| Audience Segment      | Stage         | Content Need                      | Content Type              |
-| --------------------- | ------------- | --------------------------------- | ------------------------- |
-| Solo content creators | Awareness     | How to grow on multiple platforms | Blog posts, guides        |
-| Marketing managers    | Consideration | How to scale content operations   | Case studies, comparisons |
-| Agency owners         | Decision      | ROI of multi-platform tools       | Whitepapers, demos        |
-| Existing users        | Retention     | How to get more from OmniPost     | Tutorials, best practices |
+| Audience Segment      | Stage         | Graph          | Content Need                      | Content Type              |
+| --------------------- | ------------- | -------------- | --------------------------------- | ------------------------- |
+| Solo content creators | Awareness     | Interest Graph | How to grow on multiple platforms | Blog posts, guides        |
+| Marketing managers    | Consideration | Mixed          | How to scale content operations   | Case studies, comparisons |
+| Agency owners         | Decision      | Social Graph   | ROI of multi-platform tools       | Whitepapers, demos        |
+| Existing users        | Retention     | Social Graph   | How to get more from OmniPost     | Tutorials, best practices |
+
+Awareness-stage readers reach our content through Interest Graph surfaces
+(TikTok FYP, Reels, X "For You", LinkedIn recommended). They do not know
+OmniPost. Strategy must produce **mechanism-rich source material** that can be
+turned into stranger-first social posts — not generic "tips" content. See the
+**interest-graph-content** skill for the post structure that consumes this
+source material.
 
 ### Step 2: Content Pillars
 
@@ -105,11 +113,13 @@ Track content effectiveness:
 
 ## Content Quality Standards
 
+- **Mechanism over tips**: Every pillar piece must contain at least one named system, dated fact, or counterintuitive cause-and-effect. Strangers stop scrolling for mechanisms; they ignore tip lists. Surface the mechanism as the lede, not buried in paragraph 4.
 - **Originality**: Include unique data, perspectives, or frameworks — not just rewritten competitors
 - **Actionability**: Every post should have clear takeaways the reader can implement
 - **Product integration**: Naturally reference OmniPost where relevant (not forced)
 - **SEO optimization**: Target a primary keyword, include related terms, optimize structure
 - **Visual assets**: Include screenshots, diagrams, or data visualizations
+- **Stranger-first repurposability**: Each long-form piece should yield at least three mechanism-anchored social hooks suitable for Interest Graph distribution (see the **interest-graph-content** skill)
 
 ## Output Format
 
@@ -125,6 +135,7 @@ Deliver content strategy as:
 
 - For SEO keyword research, see the **seo-audit** skill
 - For writing the content, see the **copywriting** skill
-- For social media content, see the **social-content** skill
+- For social media content aimed at the existing audience, see the **social-content** skill
+- For stranger-first social content (FYP / Reels / recommended-feed), see the **interest-graph-content** skill
 - For competitive content analysis, see the **competitor-alternatives** skill
 - For AI search optimization, see the **ai-seo** skill
