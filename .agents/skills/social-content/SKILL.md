@@ -33,14 +33,14 @@ Since 2022, the major platforms (Reels-era IG/FB, X, LinkedIn recommended, Threa
 
 Define the role of each platform for OmniPost:
 
-| Platform  | Primary Graph    | Audience                            | Content Focus                                       | Posting Frequency |
-| --------- | ---------------- | ----------------------------------- | --------------------------------------------------- | ----------------- |
-| Twitter/X | Interest (FYP)   | Creators, indie hackers, marketers  | Tips, threads, product updates, engagement          | 3-5x/day          |
-| LinkedIn  | Mixed            | Marketing pros, agencies, B2B       | Thought leadership, case studies, industry insights | 1x/day            |
-| Instagram | Interest (Reels) | Visual creators, designers          | Carousels, Reels, behind-the-scenes                 | 3-5x/week         |
-| TikTok    | Interest (FYP)   | Gen Z creators, short-form content  | Tutorials, trends, product demos                    | 3-5x/week         |
-| YouTube   | Interest (Shorts/recommended) | Long-form learners     | Tutorials, comparisons, case studies                | 1-2x/week         |
-| Threads   | Interest         | Early adopters, text-first creators | Conversational, community-building                  | 1-2x/day          |
+| Platform  | Primary Graph                 | Audience                            | Content Focus                                       | Posting Frequency |
+| --------- | ----------------------------- | ----------------------------------- | --------------------------------------------------- | ----------------- |
+| Twitter/X | Interest (FYP)                | Creators, indie hackers, marketers  | Tips, threads, product updates, engagement          | 3-5x/day          |
+| LinkedIn  | Mixed                         | Marketing pros, agencies, B2B       | Thought leadership, case studies, industry insights | 1x/day            |
+| Instagram | Interest (Reels)              | Visual creators, designers          | Carousels, Reels, behind-the-scenes                 | 3-5x/week         |
+| TikTok    | Interest (FYP)                | Gen Z creators, short-form content  | Tutorials, trends, product demos                    | 3-5x/week         |
+| YouTube   | Interest (Shorts/recommended) | Long-form learners                  | Tutorials, comparisons, case studies                | 1-2x/week         |
+| Threads   | Interest                      | Early adopters, text-first creators | Conversational, community-building                  | 1-2x/day          |
 
 For any cell marked Interest, follower count is decoupled from reach — switch to the **interest-graph-content** skill for the post structure.
 
