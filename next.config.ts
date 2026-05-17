@@ -3,10 +3,6 @@ import { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   output: 'standalone', // Optimized production build with minimal dependencies
-  experimental: {
-    // Enable system TLS certificates for Turbopack (fixes Google Fonts fetch in restricted environments)
-    turbopackUseSystemTlsCerts: true,
-  },
   images: {
     remotePatterns: [
       {
