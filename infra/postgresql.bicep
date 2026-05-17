@@ -50,8 +50,8 @@ param storageSizeGB int = 32
 @maxValue(35)
 param backupRetentionDays int = 7
 
-// Naming convention: [org]-[env]-[project]-psql-[region]
-var serverName = '${org}-${env}-${project}-psql-${region}'
+// Naming convention: [org]-[env]-[project]-psql (region suffix dropped per ADR-0027)
+var serverName = '${org}-${env}-${project}-psql'
 
 resource postgresServer 'Microsoft.DBforPostgreSQL/flexibleServers@2023-12-01-preview' = {
   name: serverName

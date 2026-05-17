@@ -22,10 +22,10 @@ param tags object = {}
 @description('Web App resource ID for diagnostic settings')
 param webAppId string
 
-// Generate names
+// Generate names (region suffix dropped per ADR-0027; region param retained for tags/future multi-region)
 var base = '${org}-${env}-${project}'
-var appInsightsName = '${base}-ai-${region}'
-var logAnalyticsName = '${base}-law-${region}'
+var appInsightsName = '${base}-ai'
+var logAnalyticsName = '${base}-law'
 
 // Log Analytics Workspace (required for Application Insights)
 resource logAnalytics 'Microsoft.OperationalInsights/workspaces@2022-10-01' = {

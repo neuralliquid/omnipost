@@ -60,7 +60,7 @@ You're managing social presence for one or more brands, and your tool stack is g
 
 OmniPost is available now in alpha. Here's how to get up and running:
 
-1. **Sign up** at [omnipost.app](https://nl-dev-omnipost-app-euw.azurewebsites.net) -- it's free, no credit card required.
+1. **Sign up** at [omnipost.app](https://nl-dev-omnipost-app.azurewebsites.net) -- it's free, no credit card required.
 2. **Connect your platforms** -- link your Facebook, Instagram, LinkedIn, or Twitter accounts in under a minute.
 3. **Create your first post** -- write your content, let the AI adapt it, review the results, and hit publish.
 
@@ -80,4 +80,4 @@ Welcome to OmniPost. Publish everywhere, manage anywhere.
 
 ---
 
-_OmniPost is created by JustAGhosT. Try the live demo at [nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)._
+_OmniPost is created by JustAGhosT. Try the live demo at [nl-dev-omnipost-app.azurewebsites.net](https://nl-dev-omnipost-app.azurewebsites.net)._

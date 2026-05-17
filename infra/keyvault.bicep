@@ -33,8 +33,9 @@ param jwtSecretValue string
 param jwtSecretExpirationEpoch int = dateTimeToEpoch(dateTimeAdd(utcNow(), 'P1Y'))
 
 // Generate Key Vault name (max 24 chars, alphanumeric + hyphens)
+// Region suffix dropped per ADR-0027; region param retained for tags/future multi-region
 var base = '${org}-${env}-${project}'
-var kvName = '${base}-kv-${region}'
+var kvName = '${base}-kv'
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
   name: kvName

@@ -3,7 +3,7 @@
 ## 📌 Quick Reference
 
 **Repository:** phoenixvc/omnipost  
-**Live Demo:** [https://nl-dev-omnipost-app-euw.azurewebsites.net](https://nl-dev-omnipost-app-euw.azurewebsites.net)
+**Live Demo:** [https://nl-dev-omnipost-app.azurewebsites.net](https://nl-dev-omnipost-app.azurewebsites.net)
 
 ## Project Overview
 
@@ -862,7 +862,7 @@ pnpm install
 **Last Updated:** March 30, 2026
 **Maintained By:** Development Team
 **Questions?** See CONTRIBUTING.md or create an issue
-**Live Demo:** https://nl-dev-omnipost-app-euw.azurewebsites.net
+**Live Demo:** https://nl-dev-omnipost-app.azurewebsites.net
 
 ---
 

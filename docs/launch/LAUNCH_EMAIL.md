@@ -38,7 +38,7 @@ Here's what you get:
 
 **Getting started takes about 2 minutes:**
 
-1. Go to [omnipost.app](https://nl-dev-omnipost-app-euw.azurewebsites.net)
+1. Go to [omnipost.app](https://nl-dev-omnipost-app.azurewebsites.net)
 2. Sign up (free, no credit card)
 3. Connect your first platform
 4. Create and publish your first cross-platform post
@@ -47,7 +47,7 @@ The Free tier gives you full access to core publishing and adaptation features. 
 
 This is an alpha. We're shipping early because we'd rather build with real user feedback than guess in private. If something breaks, if something's confusing, if something's missing -- tell us. Every piece of feedback goes directly to the team building the product.
 
-[Start Publishing Now](https://nl-dev-omnipost-app-euw.azurewebsites.net)
+[Start Publishing Now](https://nl-dev-omnipost-app.azurewebsites.net)
 
 Thanks for being here from the beginning. You're the reason we built this.
 

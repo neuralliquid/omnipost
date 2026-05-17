@@ -36,30 +36,32 @@ case "$region" in
     ;;
 esac
 
-# Function to generate resource names following [org]-[env]-[project]-[type]-[region]
+# Function to generate resource names following [org]-[env]-[project]-[type]
+# Region suffix dropped per ADR-0027 (mystira) applied to omnipost. The `region` arg is
+# retained for tag emission + backward-compat with callers; it no longer appears in names.
 generate_names() {
   local o=$1
   local e=$2
   local p=$3
-  local r=$4
-  
+  _=$4  # region: retained for backward compat / tags; not in names
+
   local base="${o}-${e}-${p}"
-  
-  # Resource Group: [org]-[env]-[project]-rg-[region]
-  echo "RESOURCE_GROUP=${base}-rg-${r}"
-  
-  # App Service: [org]-[env]-[project]-app-[region]
-  echo "APP_NAME=${base}-app-${r}"
-  
-  # App Service Plan: [org]-[env]-[project]-asp-[region]
-  echo "ASP_NAME=${base}-asp-${r}"
-  
+
+  # Resource Group: [org]-[env]-[project]-rg
+  echo "RESOURCE_GROUP=${base}-rg"
+
+  # App Service: [org]-[env]-[project]-app
+  echo "APP_NAME=${base}-app"
+
+  # App Service Plan: [org]-[env]-[project]-asp
+  echo "ASP_NAME=${base}-asp"
+
   # Additional resource types (for future use)
-  echo "API_NAME=${base}-api-${r}"
-  echo "FUNC_NAME=${base}-func-${r}"
-  echo "STORAGE_NAME=${base}-storage-${r}"
-  echo "KV_NAME=${base}-kv-${r}"
-  echo "DB_NAME=${base}-db-${r}"
+  echo "API_NAME=${base}-api"
+  echo "FUNC_NAME=${base}-func"
+  echo "STORAGE_NAME=${base}-storage"
+  echo "KV_NAME=${base}-kv"
+  echo "DB_NAME=${base}-db"
 }
 
 # Generate and export names

@@ -27,7 +27,7 @@ Write once, publish to Facebook, Instagram, LinkedIn, and Twitter. OmniPost's AI
 
 ## Links
 
-- **Website:** https://nl-dev-omnipost-app-euw.azurewebsites.net
+- **Website:** https://nl-dev-omnipost-app.azurewebsites.net
 - **GitHub:** https://github.com/phoenixvc/omnipost
 
 ---

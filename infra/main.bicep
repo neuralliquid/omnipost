@@ -7,9 +7,9 @@ param org string = 'nl'
 param env string = 'dev'
 
 @description('Project name')
-param project string = 'cc'
+param project string = 'omnipost'
 
-@description('Region code (euw, san, saf, swe, etc.)')
+@description('Region code (kept for tags + future multi-region disambiguation; not used in resource names per ADR-0027)')
 @allowed(['euw', 'eun', 'wus', 'eus', 'san', 'saf', 'swe', 'uks', 'usw', 'glob'])
 param region string = 'euw'
 
@@ -45,9 +45,11 @@ param appSubdomain string = 'omnipost'
 param apiSubdomain string = 'api.omnipost'
 
 // Generate names directly (required for resource names - must be available at deployment start)
+// Region suffix dropped per ADR-0027 (mystira) applied to omnipost: region is already
+// expressed by the resource group's location property; the suffix added noise without value.
 var base = '${org}-${env}-${project}'
-var appName = '${base}-app-${region}'
-var appServicePlanName = '${base}-asp-${region}'
+var appName = '${base}-app'
+var appServicePlanName = '${base}-asp'
 
 // Generate tags
 var tags = {
