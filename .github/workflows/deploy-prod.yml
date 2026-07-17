@@ -25,6 +25,7 @@ env:
   DNS_ZONE_RG: 'rg-dns-global'
   APP_SUBDOMAIN: 'omnipost'
   API_SUBDOMAIN: 'api.omnipost'
+  AZURE_SUBSCRIPTION_ID: 'bb4e3882-2079-4bab-8974-611bc0b8bb58'
 
 jobs:
   build:
@@ -71,13 +72,13 @@ jobs:
           cp -r .next/static/. deploy/.next/static/
           cp -r public deploy/public || true
           cp -r data deploy/data || true
-          
+
           # Fix package.json start script for standalone mode
           if [ -f deploy/package.json ]; then
             node -e "const pkg = require('./deploy/package.json'); pkg.scripts = pkg.scripts || {}; pkg.scripts.start = 'node server.js'; require('fs').writeFileSync('./deploy/package.json', JSON.stringify(pkg, null, 2));"
             echo "✓ Updated package.json start script for standalone mode"
           fi
-          
+
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
           echo "✓ Standalone deployment package contents:"
@@ -104,10 +105,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Check DNS Zone
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
+            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
             echo "Checking DNS zone: ${{ env.DNS_ZONE }}"
 
             # Check if DNS zone exists
@@ -168,10 +173,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Create Resource Group
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
+            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
             az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
 
       - name: Deploy Bicep template
@@ -205,11 +214,15 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Get Web App Hostname and Verification ID
         id: get-hostname
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
+            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
             # Get the default hostname
             HOSTNAME=$(az webapp show --name ${{ needs.infrastructure.outputs.app_name }} --resource-group ${{ env.ORG_CODE }}-prod-${{ env.PROJECT_NAME }}-rg --query defaultHostName -o tsv)
             echo "WEBAPP_HOSTNAME=${HOSTNAME}" >> $GITHUB_OUTPUT
@@ -224,6 +237,7 @@ jobs:
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
+            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
             HOSTNAME=${{ steps.get-hostname.outputs.WEBAPP_HOSTNAME }}
 
             echo "📝 Configuring DNS records for ${{ env.DNS_ZONE }}..."
@@ -341,6 +355,9 @@ jobs:
         uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - name: Generate Resource Names
         id: generate-names
