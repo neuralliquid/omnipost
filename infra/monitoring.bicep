@@ -10,9 +10,6 @@ param env string
 @description('Project name')
 param project string
 
-@description('Region code')
-param region string
-
 @description('The location to deploy Application Insights')
 param location string = resourceGroup().location
 
@@ -22,7 +19,7 @@ param tags object = {}
 @description('Web App resource ID for diagnostic settings')
 param webAppId string
 
-// Generate names (region suffix dropped per ADR-0027; region param retained for tags/future multi-region)
+// Generate names (region suffix dropped per ADR-0027)
 var base = '${org}-${env}-${project}'
 var appInsightsName = '${base}-ai'
 var logAnalyticsName = '${base}-law'
