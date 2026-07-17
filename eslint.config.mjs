@@ -12,6 +12,8 @@ export default [
       '**/dist/**',
       '**/build/**',
       '**/.git/**',
+      '**/.claude/worktrees/**',
+      '**/.serena/**',
       '**/coverage/**',
       '**/*.config.js',
       '**/*.config.ts',
