@@ -2,7 +2,7 @@ name: Azure Web App - Node.js CI/CD
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
     inputs:
       environment:
@@ -22,6 +22,7 @@ env:
   PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw'
   LOCATION: 'westeurope'
+  AZURE_SUBSCRIPTION_ID: 'bb4e3882-2079-4bab-8974-611bc0b8bb58'
 
 jobs:
   build:
@@ -64,20 +65,20 @@ jobs:
         run: |
           # Create deployment directory
           mkdir -p deploy
-          
+
           # Copy standalone server (includes minimal dependencies)
           cp -r .next/standalone/. deploy/
-          
+
           # Copy static assets
           mkdir -p deploy/.next/static
           cp -r .next/static/. deploy/.next/static/
-          
+
           # Copy public directory
           cp -r public deploy/public || true
-          
+
           # Copy data directory (required for feature flags and configuration)
           cp -r data deploy/data || true
-          
+
           # Fix package.json start script for standalone mode
           # The standalone build includes a server.js that should be run directly
           if [ -f deploy/package.json ]; then
@@ -85,11 +86,11 @@ jobs:
             node -e "const pkg = require('./deploy/package.json'); pkg.scripts = pkg.scripts || {}; pkg.scripts.start = 'node server.js'; require('fs').writeFileSync('./deploy/package.json', JSON.stringify(pkg, null, 2));"
             echo "✓ Updated package.json start script for standalone mode"
           fi
-          
+
           # Copy startup script (backup option)
           cp startup.sh deploy/
           chmod +x deploy/startup.sh
-          
+
           echo "✓ Standalone deployment package contents:"
           find deploy -maxdepth 2 -print | head -20
           echo "✓ Package size:"
@@ -136,10 +137,14 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Create Resource Group
         uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
         with:
           inlineScript: |
+            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
             az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
 
       - name: Deploy Bicep template
@@ -183,6 +188,9 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Select Azure Subscription
+        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+
       - name: Generate Resource Names
         id: generate-names
         run: |
@@ -202,13 +210,13 @@ jobs:
         run: |
           echo "Waiting 30 seconds for app to start..."
           sleep 30
-          
+
           APP_URL="https://${{ env.APP_NAME }}.azurewebsites.net"
           echo "Testing health endpoint: ${APP_URL}/api/health"
-          
+
           MAX_RETRIES=5
           RETRY_COUNT=0
-          
+
           while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
             HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "${APP_URL}/api/health" || echo "000")
             
@@ -225,7 +233,7 @@ jobs:
               fi
             fi
           done
-          
+
           echo "❌ Health check failed after $MAX_RETRIES attempts"
           echo "Deployment may have issues. Check Azure logs:"
           echo "az webapp log tail --name ${{ env.APP_NAME }} --resource-group ${{ env.RESOURCE_GROUP }}"
