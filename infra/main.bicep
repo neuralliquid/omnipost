@@ -162,7 +162,6 @@ module monitoring 'monitoring.bicep' = if (enableMonitoring) {
     org: org
     env: env
     project: project
-    region: region
     location: location
     tags: tags
     webAppId: webApp.id
