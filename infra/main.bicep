@@ -48,7 +48,7 @@ param apiSubdomain string = 'api.omnipost'
 // Region suffix dropped per ADR-0027 (mystira) applied to omnipost: region is already
 // expressed by the resource group's location property; the suffix added noise without value.
 var base = '${org}-${env}-${project}'
-var appName = '${base}-app'
+var appName = '${base}-web'
 var appServicePlanName = '${base}-asp'
 
 // Generate tags
@@ -106,6 +106,10 @@ resource webApp 'Microsoft.Web/sites@2022-09-01' = {
         {
           name: 'NODE_ENV'
           value: 'production'
+        }
+        {
+          name: 'NEXT_PUBLIC_SITE_URL'
+          value: 'https://${appName}.azurewebsites.net'
         }
         // IMPORTANT: Application secrets (JWT_SECRET, API keys) must be configured separately
         // See docs/AZURE_SECRETS.md for configuration instructions

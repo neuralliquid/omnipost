@@ -6,7 +6,7 @@
 import type { MetadataRoute } from 'next';
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || 'https://nl-dev-omnipost-app.azurewebsites.net';
+  process.env.NEXT_PUBLIC_SITE_URL || 'https://nl-dev-omnipost-web.azurewebsites.net';
 
 export default function robots(): MetadataRoute.Robots {
   const isProduction = process.env.NODE_ENV === 'production';
