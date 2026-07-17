@@ -50,8 +50,8 @@ generate_names() {
   # Resource Group: [org]-[env]-[project]-rg
   echo "RESOURCE_GROUP=${base}-rg"
 
-  # App Service: [org]-[env]-[project]-app
-  echo "APP_NAME=${base}-app"
+  # App Service: [org]-[env]-[project]-web
+  echo "APP_NAME=${base}-web"
 
   # App Service Plan: [org]-[env]-[project]-asp
   echo "ASP_NAME=${base}-asp"

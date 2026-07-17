@@ -22,7 +22,7 @@ The application requires several environment variables and secrets to function p
 - **How to Set:**
   ```bash
   az webapp config appsettings set \
-    --name nl-dev-omnipost-app \
+    --name nl-dev-omnipost-web \
     --resource-group nl-dev-omnipost-rg \
     --settings JWT_SECRET="your-generated-secret-here"
   ```
@@ -35,7 +35,7 @@ Configure these only if you're using the respective integrations:
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     AIRTABLE_API_KEY="your-api-key" \
@@ -47,7 +47,7 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings HUGGING_FACE_API_KEY="your-api-key"
 ```
@@ -56,7 +56,7 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     EMAIL_USER="your-email@gmail.com" \
@@ -69,7 +69,7 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings SLACK_TOKEN="xoxb-your-slack-bot-token"
 ```
@@ -78,7 +78,7 @@ az webapp config appsettings set \
 
 ```bash
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     TWILIO_ACCOUNT_SID="your-account-sid" \
@@ -91,7 +91,7 @@ az webapp config appsettings set \
 ```bash
 # Facebook
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     FACEBOOK_API_URL="https://graph.facebook.com" \
@@ -99,7 +99,7 @@ az webapp config appsettings set \
 
 # Instagram
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     INSTAGRAM_API_URL="https://graph.instagram.com" \
@@ -107,7 +107,7 @@ az webapp config appsettings set \
 
 # LinkedIn
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     LINKEDIN_API_URL="https://api.linkedin.com" \
@@ -115,7 +115,7 @@ az webapp config appsettings set \
 
 # Twitter/X
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     TWITTER_API_URL="https://api.twitter.com" \
@@ -137,7 +137,7 @@ SLUICE_GATEWAY_URL="https://$(az containerapp show \
 
 # Then apply it to the app settings
 az webapp config appsettings set \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --settings \
     SLUICE_GATEWAY_URL="$SLUICE_GATEWAY_URL" \
@@ -150,7 +150,7 @@ az webapp config appsettings set \
 
 Alternatively, you can configure these via the Azure Portal:
 
-1. Navigate to your App Service: `nl-dev-omnipost-app`
+1. Navigate to your App Service: `nl-dev-omnipost-web`
 2. Go to **Settings** → **Configuration**
 3. Click **+ New application setting**
 4. Add each setting with its value
@@ -173,7 +173,7 @@ For production environments, store secrets in Azure Key Vault and reference them
 
    ```bash
    az webapp config appsettings set \
-     --name nl-prod-omnipost-app \
+     --name nl-prod-omnipost-web \
      --resource-group nl-prod-omnipost-rg \
      --settings JWT_SECRET="@Microsoft.KeyVault(VaultName=nl-prod-omnipost-kv;SecretName=JWT-SECRET)"
    ```
@@ -183,12 +183,12 @@ For production environments, store secrets in Azure Key Vault and reference them
    ```bash
    # Enable managed identity
    az webapp identity assign \
-     --name nl-prod-omnipost-app \
+     --name nl-prod-omnipost-web \
      --resource-group nl-prod-omnipost-rg
 
    # Get the principal ID
    PRINCIPAL_ID=$(az webapp identity show \
-     --name nl-prod-omnipost-app \
+     --name nl-prod-omnipost-web \
      --resource-group nl-prod-omnipost-rg \
      --query principalId -o tsv)
 
@@ -206,13 +206,13 @@ After setting secrets, verify they're available:
 ```bash
 # List all app settings
 az webapp config appsettings list \
-  --name nl-dev-omnipost-app \
+  --name nl-dev-omnipost-web \
   --resource-group nl-dev-omnipost-rg \
   --query "[].{Name:name, Value:value}" \
   --output table
 
 # Test the health endpoint
-curl https://nl-dev-omnipost-app.azurewebsites.net/api/health
+curl https://nl-dev-omnipost-web.azurewebsites.net/api/health
 ```
 
 ## GitHub Secrets for CI/CD
