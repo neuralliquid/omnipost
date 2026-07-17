@@ -69,3 +69,5 @@ e2e/.auth/
 
 # Retort ephemeral state
 .claude/state/
+.claude/worktrees/
+.serena/

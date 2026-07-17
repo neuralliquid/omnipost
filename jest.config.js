@@ -40,6 +40,8 @@ const customJestConfig = {
   testPathIgnorePatterns: [
     '<rootDir>/node_modules/',
     '<rootDir>/.next/',
+    '<rootDir>/.claude/worktrees/',
+    '<rootDir>/.serena/',
     '<rootDir>/e2e/',
     '<rootDir>/__tests__/a11y/a11y-setup.ts',
   ],
@@ -51,6 +53,8 @@ const customJestConfig = {
     'lib/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
+    '!**/.claude/worktrees/**',
+    '!**/.serena/**',
   ],
 
   // Verbose output
