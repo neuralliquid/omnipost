@@ -61,7 +61,7 @@ the app package to the existing dev Web App.
 ```bash
 curl -I https://omnipost.neuralliquid.ai/api/health
 curl -I https://nl-dev-omnipost-web.azurewebsites.net/api/health
-curl https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io/health/readiness
+curl https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io/health/liveliness
 ```
 
 Expected result: HTTP `200 OK`.

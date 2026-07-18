@@ -329,7 +329,7 @@ resource "azurerm_container_app" "sluice" {
 
       readiness_probe {
         transport        = "HTTP"
-        path             = "/health/readiness"
+        path             = "/health/liveliness"
         port             = 4000
         initial_delay    = 3
         interval_seconds = 5
