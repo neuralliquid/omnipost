@@ -23,8 +23,7 @@ const ToolCard: React.FC<ToolCardProps> = ({ tool, onSelect }) => {
           className="object-contain"
           // Fallback if images don't exist yet
           onError={e => {
-            // @ts-ignore
-            e.target.style.display = 'none';
+            e.currentTarget.style.display = 'none';
           }}
         />
       </div>

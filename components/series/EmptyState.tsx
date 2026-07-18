@@ -20,8 +20,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ onCreateClick }) => {
           height={120}
           // Fallback if image doesn't exist
           onError={e => {
-            // @ts-ignore
-            e.target.style.display = 'none';
+            e.currentTarget.style.display = 'none';
           }}
         />
       </div>
