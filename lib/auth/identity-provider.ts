@@ -80,13 +80,13 @@ function getConfig(): IdentityProviderConfig | null {
   const flag = featureFlags.externalIdentityProvider as
     | { enabled: boolean; apiUrl?: string }
     | undefined;
+  const apiUrl = flag?.apiUrl || process.env.IDENTITY_API_URL;
+  const apiKey = process.env.IDENTITY_API_KEY;
+  const envEnabled = process.env.EXTERNAL_IDENTITY_PROVIDER_ENABLED === 'true';
 
-  if (!flag?.enabled) {
+  if (!flag?.enabled && !envEnabled) {
     return null;
   }
-
-  const apiUrl = flag.apiUrl || process.env.IDENTITY_API_URL;
-  const apiKey = process.env.IDENTITY_API_KEY;
 
   if (!apiUrl || !apiKey) {
     return null;

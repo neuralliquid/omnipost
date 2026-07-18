@@ -218,8 +218,8 @@ export class AuthService {
       // Prisma not available, fall through to hardcoded user
     }
 
-    // Hardcoded admin user for development
-    if (username === 'admin') {
+    // Hardcoded admin user for local development and tests only
+    if (process.env.NODE_ENV !== 'production' && username === 'admin') {
       return {
         id: 'admin-1',
         username: 'admin',
@@ -299,8 +299,8 @@ export class AuthService {
       // Prisma not available, fall through to test credentials
     }
 
-    // Hardcoded admin/admin credentials for development
-    if (username === 'admin' && password === 'admin') {
+    // Hardcoded admin/admin credentials for local development and tests only
+    if (!isProduction && username === 'admin' && password === 'admin') {
       return true;
     }
 

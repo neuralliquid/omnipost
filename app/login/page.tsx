@@ -1,6 +1,6 @@
 /**
  * Login Page
- * Simple login page with admin/admin credentials
+ * Login page with optional external identity providers and local credentials
  */
 
 'use client';
@@ -42,7 +42,7 @@ export default function LoginPage() {
           }
         }
       } catch {
-        // External providers unavailable — email/password still works
+        // External providers unavailable - email/password still works when provisioned
       } finally {
         if (!cancelled) {
           setProvidersLoading(false);
@@ -174,9 +174,12 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className={pageStyles.hint}>
-            Use <strong>admin</strong> / <strong>admin</strong> to login
-          </p>
+          {!providersLoading && providers.length === 0 && (
+            <p className={pageStyles.hint}>
+              Mystira Identity sign-in is not configured for this environment yet. Use a provisioned
+              OmniPost account when one is available.
+            </p>
+          )}
         </div>
       </main>
     </>

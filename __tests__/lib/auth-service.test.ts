@@ -114,4 +114,25 @@ describe('AuthService', () => {
       expect(authService.isTokenBlacklisted(token)).toBe(false);
     });
   });
+
+  describe('development credential fallback', () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+
+    afterEach(() => {
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalNodeEnv,
+        configurable: true,
+      });
+    });
+
+    it('should reject hardcoded admin credentials in production', async () => {
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        configurable: true,
+      });
+
+      await expect(authService.findUserByUsername('admin')).resolves.toBeNull();
+      await expect(authService.verifyUserCredentials('admin', 'admin')).resolves.toBe(false);
+    });
+  });
 });
