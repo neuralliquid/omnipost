@@ -11,6 +11,7 @@
  */
 
 import featureFlags from '../featureFlags';
+import { createHash } from 'crypto';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -21,6 +22,22 @@ export interface IdentityProviderConfig {
   apiUrl: string;
   /** API key for authenticating with the identity service */
   apiKey: string;
+}
+
+interface OidcConfig {
+  enabled: boolean;
+  issuerUrl: string;
+  clientId: string;
+  clientSecret: string;
+  providerId: string;
+  providerName: string;
+  scope: string;
+}
+
+interface OidcDiscoveryDocument {
+  authorization_endpoint: string;
+  token_endpoint: string;
+  userinfo_endpoint?: string;
 }
 
 export interface AuthProvider {
@@ -71,6 +88,7 @@ interface CacheEntry<T> {
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 let providersCache: CacheEntry<AuthProvider[]> | null = null;
+let oidcDiscoveryCache: CacheEntry<OidcDiscoveryDocument> | null = null;
 
 // ---------------------------------------------------------------------------
 // Configuration helpers
@@ -93,6 +111,67 @@ function getConfig(): IdentityProviderConfig | null {
   }
 
   return { apiUrl, apiKey };
+}
+
+function getOidcConfig(): OidcConfig | null {
+  const issuerUrl = process.env.MYSTIRA_IDENTITY_ISSUER_URL;
+  const clientId = process.env.MYSTIRA_IDENTITY_CLIENT_ID;
+  const clientSecret = process.env.MYSTIRA_IDENTITY_CLIENT_SECRET;
+  const enabled = process.env.MYSTIRA_IDENTITY_ENABLED === 'true';
+
+  if (!enabled || !issuerUrl || !clientId || !clientSecret) {
+    return null;
+  }
+
+  return {
+    enabled,
+    issuerUrl: issuerUrl.replace(/\/+$/, ''),
+    clientId,
+    clientSecret,
+    providerId: process.env.MYSTIRA_IDENTITY_PROVIDER_ID || 'mystira',
+    providerName: process.env.MYSTIRA_IDENTITY_PROVIDER_NAME || 'Mystira Identity',
+    scope: process.env.MYSTIRA_IDENTITY_SCOPE || 'openid profile email',
+  };
+}
+
+async function getOidcDiscovery(config: OidcConfig): Promise<OidcDiscoveryDocument | null> {
+  if (oidcDiscoveryCache && Date.now() < oidcDiscoveryCache.expiresAt) {
+    return oidcDiscoveryCache.data;
+  }
+
+  try {
+    const response = await fetch(`${config.issuerUrl}/.well-known/openid-configuration`, {
+      method: 'GET',
+      signal: AbortSignal.timeout(5000),
+    });
+
+    if (!response.ok) {
+      console.warn(`[IdentityProvider] OIDC discovery returned ${response.status}`);
+      return null;
+    }
+
+    const data = (await response.json()) as Partial<OidcDiscoveryDocument>;
+    if (!data.authorization_endpoint || !data.token_endpoint) {
+      console.warn('[IdentityProvider] OIDC discovery document is missing required endpoints');
+      return null;
+    }
+
+    const discovery = {
+      authorization_endpoint: data.authorization_endpoint,
+      token_endpoint: data.token_endpoint,
+      userinfo_endpoint: data.userinfo_endpoint,
+    };
+
+    oidcDiscoveryCache = {
+      data: discovery,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    };
+
+    return discovery;
+  } catch (error) {
+    console.warn('[IdentityProvider] Failed to discover OIDC metadata', error);
+    return null;
+  }
 }
 
 /**
@@ -118,6 +197,28 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
   // Check cache first
   if (providersCache && Date.now() < providersCache.expiresAt) {
     return providersCache.data;
+  }
+
+  const oidcConfig = getOidcConfig();
+  if (oidcConfig) {
+    const discovery = await getOidcDiscovery(oidcConfig);
+    if (discovery) {
+      const providers = [
+        {
+          id: oidcConfig.providerId,
+          name: oidcConfig.providerName,
+          enabled: true,
+          type: 'oidc' as const,
+        },
+      ];
+
+      providersCache = {
+        data: providers,
+        expiresAt: Date.now() + CACHE_TTL_MS,
+      };
+
+      return providers;
+    }
   }
 
   const config = getConfig();
@@ -183,8 +284,28 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
  */
 export async function initiateExternalAuth(
   providerId: string,
-  redirectUrl: string
+  redirectUrl: string,
+  state?: string
 ): Promise<ExternalAuthRedirect | null> {
+  const oidcConfig = getOidcConfig();
+  if (oidcConfig && providerId === oidcConfig.providerId) {
+    const discovery = await getOidcDiscovery(oidcConfig);
+    if (!discovery) {
+      return null;
+    }
+
+    const authUrl = new URL(discovery.authorization_endpoint);
+    authUrl.searchParams.set('client_id', oidcConfig.clientId);
+    authUrl.searchParams.set('redirect_uri', redirectUrl);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('scope', oidcConfig.scope);
+    if (state) {
+      authUrl.searchParams.set('state', state);
+    }
+
+    return { redirectUrl: authUrl.toString() };
+  }
+
   const config = getConfig();
   if (!config) {
     return null;
@@ -233,8 +354,87 @@ export async function initiateExternalAuth(
  */
 export async function handleAuthCallback(
   providerId: string,
-  code: string
+  code: string,
+  redirectUrl?: string
 ): Promise<ExternalAuthResult> {
+  const oidcConfig = getOidcConfig();
+  if (oidcConfig && providerId === oidcConfig.providerId) {
+    if (!redirectUrl) {
+      return { success: false, error: 'Missing redirect URL for OIDC callback' };
+    }
+
+    const discovery = await getOidcDiscovery(oidcConfig);
+    if (!discovery) {
+      return { success: false, error: 'Mystira Identity metadata is unavailable' };
+    }
+
+    try {
+      const tokenBody = new URLSearchParams({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: redirectUrl,
+        client_id: oidcConfig.clientId,
+        client_secret: oidcConfig.clientSecret,
+      });
+
+      const tokenResponse = await fetch(discovery.token_endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: tokenBody.toString(),
+        signal: AbortSignal.timeout(10000),
+      });
+
+      if (!tokenResponse.ok) {
+        return { success: false, error: 'Mystira Identity token exchange failed' };
+      }
+
+      const tokenData = (await tokenResponse.json()) as Record<string, unknown>;
+      const accessToken =
+        typeof tokenData.access_token === 'string' ? tokenData.access_token : null;
+      const idToken = typeof tokenData.id_token === 'string' ? tokenData.id_token : null;
+
+      const claims =
+        accessToken && discovery.userinfo_endpoint
+          ? await fetchUserInfo(discovery.userinfo_endpoint, accessToken)
+          : decodeJwtPayload(idToken);
+
+      if (!claims) {
+        return { success: false, error: 'Mystira Identity did not return user claims' };
+      }
+
+      const externalId = stringClaim(claims, 'sub');
+      if (!externalId) {
+        return { success: false, error: 'Mystira Identity response is missing subject' };
+      }
+
+      const email =
+        stringClaim(claims, 'email') || `${stableSubjectAlias(externalId)}@identity.mystira.app`;
+      const name =
+        stringClaim(claims, 'name') ||
+        stringClaim(claims, 'preferred_username') ||
+        stringClaim(claims, 'given_name') ||
+        email.split('@')[0] ||
+        'Mystira User';
+
+      return {
+        success: true,
+        user: {
+          externalId,
+          email,
+          name,
+          avatar: stringClaim(claims, 'picture') ?? undefined,
+          provider: providerId,
+        },
+        token: idToken ?? undefined,
+      };
+    } catch (error) {
+      console.error('[IdentityProvider] Error handling Mystira Identity callback:', error);
+      return { success: false, error: 'Failed to communicate with Mystira Identity' };
+    }
+  }
+
   const config = getConfig();
   if (!config) {
     return { success: false, error: 'External identity provider is not configured' };
@@ -338,9 +538,64 @@ function validateProviderType(value: unknown): 'oauth' | 'saml' | 'oidc' {
   return 'oauth'; // default
 }
 
+async function fetchUserInfo(
+  userInfoEndpoint: string,
+  accessToken: string
+): Promise<Record<string, unknown> | null> {
+  try {
+    const response = await fetch(userInfoEndpoint, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return (await response.json()) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function decodeJwtPayload(token: string | null): Record<string, unknown> | null {
+  if (!token) {
+    return null;
+  }
+
+  const parts = token.split('.');
+  if (parts.length !== 3) {
+    return null;
+  }
+
+  try {
+    const payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const paddedPayload = payload.padEnd(payload.length + ((4 - (payload.length % 4)) % 4), '=');
+    return JSON.parse(Buffer.from(paddedPayload, 'base64').toString('utf8')) as Record<
+      string,
+      unknown
+    >;
+  } catch {
+    return null;
+  }
+}
+
+function stringClaim(claims: Record<string, unknown>, key: string): string | null {
+  const value = claims[key];
+  return typeof value === 'string' && value.trim() ? value : null;
+}
+
+function stableSubjectAlias(subject: string): string {
+  return createHash('sha256').update(subject).digest('hex').slice(0, 16);
+}
+
 /**
  * Clears the providers cache. Useful for testing or when configuration changes.
  */
 export function clearProvidersCache(): void {
   providersCache = null;
+  oidcDiscoveryCache = null;
 }
