@@ -101,14 +101,38 @@ interface BaseFeatureFlags {
   externalIdentityProvider: ExternalIdentityProviderFeatureFlag;
   // Baton Task Management (MCP) — formerly phoenix-flow
   baton: BatonFeatureFlag;
+  // Legacy pipeline flags used by parsing workflows
+  trigger?: PipelineFeatureFlagBranch;
+  scraping?: PipelineFeatureFlagBranch;
+  storage?: PipelineFeatureFlagBranch;
+  writing?: PipelineFeatureFlagBranch;
+  distribution?: PipelineFeatureFlagBranch;
 }
 
+interface DynamicFeatureFlagBranch {
+  enabled?: boolean;
+  [key: string]: DynamicFeatureFlagValue;
+}
+
+interface PipelineFeatureFlagBranch extends DynamicFeatureFlagBranch {
+  cron?: DynamicFeatureFlagBranch;
+  rss?: DynamicFeatureFlagBranch;
+  notion?: DynamicFeatureFlagBranch;
+  openai?: DynamicFeatureFlagBranch;
+  telegram?: DynamicFeatureFlagBranch;
+}
+
+type DynamicFeatureFlagValue =
+  | boolean
+  | string
+  | number
+  | null
+  | undefined
+  | DynamicFeatureFlagBranch;
+
 // Extend the base interface with an index signature for dynamic access
-// Note: 'any' is intentionally used here to support dynamic nested feature flag structures
-// (e.g., featureFlags.trigger.cron.enabled) without defining all possible nested types
 export interface FeatureFlags extends BaseFeatureFlags {
-  // biome-ignore lint/suspicious/noExplicitAny: Required for dynamic nested feature flag access
-  [key: string]: boolean | TextParserFeatureFlag | any;
+  [key: string]: BaseFeatureFlags[keyof BaseFeatureFlags] | DynamicFeatureFlagValue;
 }
 // Simple mutex implementation for synchronizing feature flag updates
 class Mutex {
