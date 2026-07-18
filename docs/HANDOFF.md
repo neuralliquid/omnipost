@@ -1,5 +1,68 @@
 # OmniPost Alpha — Handoff Document
 
+## 2026-07-18 Operations Handoff
+
+### Current State
+
+- **Production-like dev URL:** `https://omnipost.neuralliquid.ai`
+- **Azure default URL:** `https://nl-dev-omnipost-web.azurewebsites.net`
+- **Health endpoint:** `https://omnipost.neuralliquid.ai/api/health`
+- **Health result:** `200 OK`, body includes `{"status":"healthy","environment":"production"}`
+- **Git branch:** `main`
+- **Latest deployed commit:** `bce58a4c853645ea84635bdbe91338235bfce3bf`
+- **Deployment run:** <https://github.com/neuralliquid/omnipost/actions/runs/29620005585> completed successfully
+
+### What Changed In This Recovery
+
+- PR #135 selected the correct Azure subscription in deploy workflows.
+- GitHub secret `AZURE_CREDENTIALS` was replaced with a service principal for subscription `bb4e3882-2079-4bab-8974-611bc0b8bb58`.
+- PR #137 changed the Azure Web App resource name from `nl-*-omnipost-app` to `nl-*-omnipost-web` to avoid a global App Service name collision while keeping region out of resource names.
+- PR #137 also updated app URL fallbacks, Azure secret docs, deployment summary output, and `NEXT_PUBLIC_SITE_URL`.
+- PR #138 removed an unused `region` parameter from `infra/monitoring.bicep`; this stopped `azure/arm-deploy` from failing because a Bicep linter warning was written to stderr.
+- Azure DNS for `omnipost.neuralliquid.ai` now points to `nl-dev-omnipost-web.azurewebsites.net`.
+- Azure App Service custom hostname binding is configured for `omnipost.neuralliquid.ai`.
+- Managed certificate is created and bound with SNI.
+
+### Azure Resources
+
+| Resource         | Value                                       |
+| ---------------- | ------------------------------------------- |
+| Subscription     | `bb4e3882-2079-4bab-8974-611bc0b8bb58`      |
+| Tenant           | `9530cd32-9e33-47f0-9247-ed964730b580`      |
+| Resource group   | `nl-dev-omnipost-rg`                        |
+| Web App          | `nl-dev-omnipost-web`                       |
+| App Service Plan | `nl-dev-omnipost-asp`                       |
+| DNS zone         | `neuralliquid.ai` in `mys-global-shared-rg` |
+| Custom hostname  | `omnipost.neuralliquid.ai`                  |
+| SSL thumbprint   | `0A28D1D1C8B76B16744288187F084ED7135D9F35`  |
+
+### Verification Commands
+
+```bash
+curl -I https://omnipost.neuralliquid.ai/api/health
+curl -I https://nl-dev-omnipost-web.azurewebsites.net/api/health
+gh run view 29620005585 --repo neuralliquid/omnipost --json conclusion,status,url,headSha
+```
+
+Expected:
+
+- `conclusion: success`
+- HTTP `200 OK` for both health endpoints
+
+### Remaining Alpha Readiness Work
+
+- Configure required app secrets on `nl-dev-omnipost-web`. Current deployed settings include platform/runtime settings, but not `JWT_SECRET` or optional integration secrets.
+- Decide whether custom-domain DNS/cert binding should be codified in Bicep/workflows. It was completed live in Azure to unblock go-live.
+- Review `.github/workflows/deploy-prod.yml`: it still targets `nexamesh.ai` for the production custom-domain path. The current live domain is `neuralliquid.ai`.
+- Follow up on non-blocking CI annotations:
+  - GitHub Actions Node 20 deprecation warnings for pinned actions.
+  - Existing lint warnings emitted during build annotations, though CI is passing.
+- If alpha needs login/signup beyond health, set `JWT_SECRET` first and smoke-test `/signup`, `/login`, and protected dashboard routes.
+
+---
+
+## Historical March 2026 Alpha Build Handoff
+
 **Branch**: `claude/review-repo-structure-9D1gP`
 **Date**: 2026-03-30
 **Commits**: 59 on branch
