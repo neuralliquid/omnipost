@@ -285,7 +285,8 @@ export async function getAvailableProviders(): Promise<AuthProvider[]> {
 export async function initiateExternalAuth(
   providerId: string,
   redirectUrl: string,
-  state?: string
+  state?: string,
+  codeChallenge?: string
 ): Promise<ExternalAuthRedirect | null> {
   const oidcConfig = getOidcConfig();
   if (oidcConfig && providerId === oidcConfig.providerId) {
@@ -301,6 +302,10 @@ export async function initiateExternalAuth(
     authUrl.searchParams.set('scope', oidcConfig.scope);
     if (state) {
       authUrl.searchParams.set('state', state);
+    }
+    if (codeChallenge) {
+      authUrl.searchParams.set('code_challenge', codeChallenge);
+      authUrl.searchParams.set('code_challenge_method', 'S256');
     }
 
     return { redirectUrl: authUrl.toString() };
@@ -355,12 +360,16 @@ export async function initiateExternalAuth(
 export async function handleAuthCallback(
   providerId: string,
   code: string,
-  redirectUrl?: string
+  redirectUrl?: string,
+  codeVerifier?: string
 ): Promise<ExternalAuthResult> {
   const oidcConfig = getOidcConfig();
   if (oidcConfig && providerId === oidcConfig.providerId) {
     if (!redirectUrl) {
       return { success: false, error: 'Missing redirect URL for OIDC callback' };
+    }
+    if (!codeVerifier) {
+      return { success: false, error: 'Missing PKCE verifier for OIDC callback' };
     }
 
     const discovery = await getOidcDiscovery(oidcConfig);
@@ -375,6 +384,7 @@ export async function handleAuthCallback(
         redirect_uri: redirectUrl,
         client_id: oidcConfig.clientId,
         client_secret: oidcConfig.clientSecret,
+        code_verifier: codeVerifier,
       });
 
       const tokenResponse = await fetch(discovery.token_endpoint, {

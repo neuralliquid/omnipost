@@ -4,7 +4,7 @@
  * Starts and completes external identity provider callbacks.
  */
 
-import { randomBytes } from 'crypto';
+import { createHash, randomBytes } from 'crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createLogEntry, logToAuditTrail } from '../../../_utils/audit';
@@ -30,6 +30,7 @@ interface ExternalUserRecord {
 interface StoredOAuthState {
   state: string;
   redirect: string;
+  codeVerifier: string;
 }
 
 /**
@@ -85,13 +86,25 @@ function parseStoredOAuthState(value: string | undefined): StoredOAuthState | nu
 
   try {
     const parsed = JSON.parse(value) as Partial<StoredOAuthState>;
-    if (typeof parsed.state !== 'string' || typeof parsed.redirect !== 'string') {
+    if (
+      typeof parsed.state !== 'string' ||
+      typeof parsed.redirect !== 'string' ||
+      typeof parsed.codeVerifier !== 'string'
+    ) {
       return null;
     }
-    return { state: parsed.state, redirect: parsed.redirect };
+    return {
+      state: parsed.state,
+      redirect: parsed.redirect,
+      codeVerifier: parsed.codeVerifier,
+    };
   } catch {
     return null;
   }
+}
+
+function createCodeChallenge(verifier: string): string {
+  return createHash('sha256').update(verifier).digest('base64url');
 }
 
 async function handleCallback(
@@ -116,8 +129,10 @@ async function handleCallback(
 
   if (!code) {
     const state = randomBytes(24).toString('base64url');
+    const codeVerifier = randomBytes(32).toString('base64url');
+    const codeChallenge = createCodeChallenge(codeVerifier);
     const requestedRedirect = url.searchParams.get('redirect') || '/dashboard';
-    const redirect = await initiateExternalAuth(provider, callbackUrl, state);
+    const redirect = await initiateExternalAuth(provider, callbackUrl, state, codeChallenge);
 
     if (!redirect) {
       const loginUrl = new URL('/login', publicOrigin);
@@ -130,6 +145,7 @@ async function handleCallback(
       value: JSON.stringify({
         state,
         redirect: parseSafeRedirect(requestedRedirect, publicOrigin),
+        codeVerifier,
       }),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -147,7 +163,12 @@ async function handleCallback(
     return Errors.badRequest('Invalid OAuth state');
   }
 
-  const authResult = await handleAuthCallback(provider, code, callbackUrl);
+  const authResult = await handleAuthCallback(
+    provider,
+    code,
+    callbackUrl,
+    storedState.codeVerifier
+  );
 
   if (!authResult.success || !authResult.user) {
     await logToAuditTrail(
