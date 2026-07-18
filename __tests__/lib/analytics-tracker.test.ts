@@ -13,9 +13,6 @@ import { beforeEach, afterEach, describe, expect, jest, test } from '@jest/globa
 const mockFetch = jest.fn<() => Promise<Response>>();
 global.fetch = mockFetch as unknown as typeof fetch;
 
-// Set up sessionStorage data
-const SESSION_KEY = 'omnipost_session_id';
-
 describe('Analytics Tracker', () => {
   let tracker: {
     track: (name: string, properties?: Record<string, unknown>) => void;

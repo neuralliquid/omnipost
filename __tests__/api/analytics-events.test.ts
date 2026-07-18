@@ -109,7 +109,7 @@ describe('Analytics Events API', () => {
       // Override headers mock to simulate unauthenticated request
       const { headers } = require('next/headers');
       (headers as jest.Mock).mockReturnValueOnce({
-        get: (name: string) => {
+        get: (_name: string) => {
           // No x-user-id header means unauthenticated
           return null;
         },
