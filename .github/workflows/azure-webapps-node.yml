@@ -109,55 +109,39 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
     needs: build
     environment: ${{ github.event.inputs.environment || 'dev' }}
+    if: ${{ (github.event.inputs.environment || 'dev') == 'dev' }}
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Verify naming script exists
-        run: |
-          if [ ! -f "./infra/naming.sh" ]; then
-            echo "ERROR: naming.sh not found!"
-            ls -la infra/
-            exit 1
-          fi
-          echo "✓ naming.sh found"
-
-      - name: Generate Resource Names
-        id: generate-names
-        run: |
-          chmod +x ./infra/naming.sh
-          while IFS= read -r line; do
-            echo "$line" >> $GITHUB_ENV
-          done < <(./infra/naming.sh ${{ env.ORG_CODE }} ${{ github.event.inputs.environment || 'dev' }} ${{ env.PROJECT_NAME }} ${{ env.REGION_CODE }})
-
       - name: Azure Login
         uses: azure/login@cb79c773a3cfa27f31f25eb3f677781210c9ce3d # v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          client-id: 4fc0d52a-718a-49de-a709-a12ad3965d9d
+          tenant-id: 9530cd32-9e33-47f0-9247-ed964730b580
+          subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Select Azure Subscription
-        run: az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
 
-      - name: Create Resource Group
-        uses: azure/cli@4db43908b9df2e7ac93c8275a8f9a448c59338dd # v1
-        with:
-          inlineScript: |
-            az account set --subscription ${{ env.AZURE_SUBSCRIPTION_ID }}
-            az group create --name ${{ env.RESOURCE_GROUP }} --location ${{ env.LOCATION }}
+      - name: Terraform Init
+        run: terraform -chdir=infra/terraform/env/dev init
 
-      - name: Deploy Bicep template
-        uses: azure/arm-deploy@65ae74fb7aec7c680c88ef456811f353adae4d06 # v1
-        with:
-          resourceGroupName: ${{ env.RESOURCE_GROUP }}
-          template: ./infra/main.bicep
-          parameters: >
-            org=${{ env.ORG_CODE }}
-            env=${{ github.event.inputs.environment || 'dev' }}
-            project=${{ env.PROJECT_NAME }}
-            region=${{ env.REGION_CODE }}
-            location=${{ env.LOCATION }}
+      - name: Terraform Format
+        run: terraform -chdir=infra/terraform/env/dev fmt -check
+
+      - name: Terraform Validate
+        run: terraform -chdir=infra/terraform/env/dev validate
+
+      - name: Terraform Plan
+        run: terraform -chdir=infra/terraform/env/dev plan -no-color
+        env:
+          TF_VAR_sluice_azure_openai_endpoint: ${{ secrets.SLUICE_AZURE_OPENAI_ENDPOINT }}
+          TF_VAR_sluice_azure_openai_api_key: ${{ secrets.SLUICE_AZURE_OPENAI_API_KEY }}
+          TF_VAR_sluice_api_key: ${{ secrets.SLUICE_API_KEY }}
 
   deploy:
     permissions:
@@ -198,6 +182,11 @@ jobs:
           while IFS= read -r line; do
             echo "$line" >> $GITHUB_ENV
           done < <(./infra/naming.sh ${{ env.ORG_CODE }} ${{ github.event.inputs.environment || 'dev' }} ${{ env.PROJECT_NAME }} ${{ env.REGION_CODE }})
+
+          if [ "${{ github.event.inputs.environment || 'dev' }}" = "dev" ]; then
+            echo "APP_NAME=nl-dev-omnipost-web" >> $GITHUB_ENV
+            echo "RESOURCE_GROUP=nl-dev-omnipost-rg" >> $GITHUB_ENV
+          fi
 
       - name: 'Deploy to Azure WebApp'
         id: deploy-to-webapp

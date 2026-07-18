@@ -21,11 +21,34 @@ DNS records for `omnipost.neuralliquid.ai` are owned by
 - `nl-dev-omnipost-ai`
 - Omnipost metric alerts
 - `omnipost.neuralliquid.ai` hostname binding
+- `nl-dev-omnipost-kv`
+- `nl-dev-omnipost-cae`
+- `nl-dev-omnipost-sluice`
+
+PostgreSQL is modeled in Terraform but disabled by default with
+`enable_postgresql = false`.
 
 The existing App Service managed certificate remains live in Azure but is not
 managed by this first Terraform pass because importing it as
 `azurerm_app_service_managed_certificate` forced replacement in the provider
-plan. Normalize certificate lifecycle in a later, explicit pass.
+plan. Leave it Azure-managed until a no-replacement import can be proven.
+
+## Secret Inputs
+
+Sluice requires these secret variables at plan/apply time:
+
+- `TF_VAR_sluice_azure_openai_endpoint`
+- `TF_VAR_sluice_azure_openai_api_key`
+- `TF_VAR_sluice_api_key`
+
+The GitHub workflow maps those from repository/environment secrets named
+`SLUICE_AZURE_OPENAI_ENDPOINT`, `SLUICE_AZURE_OPENAI_API_KEY`, and
+`SLUICE_API_KEY`. The dev repo secrets are configured.
+
+## Bicep Status
+
+The active dev runtime path is Terraform. Legacy Bicep deployment is retained
+only as a disabled workflow path during quick iteration.
 
 ## Commands
 

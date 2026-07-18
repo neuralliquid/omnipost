@@ -24,6 +24,13 @@
 - Managed certificate is created and bound with SNI.
 - DNS ownership moved to `neuralliquid-org` Terraform.
 - Live Omnipost dev runtime was imported into `infra/terraform/env/dev` with `9 imported, 0 added, 0 changed, 0 destroyed`.
+- Active runtime infrastructure validation now runs through Terraform. The
+  legacy production Bicep workflow is retained but hard-disabled.
+- Key Vault and Sluice gateway are modeled as live Terraform resources.
+- PostgreSQL is modeled in Terraform with `enable_postgresql = false`.
+- Sluice gateway is live at
+  `https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io`;
+  Omnipost Web App settings include `SLUICE_GATEWAY_URL` and `SLUICE_API_KEY`.
 
 ### Azure Resources
 
@@ -54,8 +61,10 @@ Expected:
 ### Remaining Alpha Readiness Work
 
 - Configure required app secrets on `nl-dev-omnipost-web`. Current deployed settings include platform/runtime settings, but not `JWT_SECRET` or optional integration secrets.
-- Normalize remaining runtime Bicep helpers into Terraform as quick iteration stabilizes.
-- Decide whether the existing managed certificate should be imported into Terraform or left Azure-managed behind the imported hostname binding.
+- Monitor first Sluice-routed calls and adjust model aliases if Omnipost needs
+  names beyond `gpt-4o` and `text-embedding-3-large`.
+- Keep the existing managed certificate Azure-managed until a no-replacement
+  Terraform import can be proven.
 - Follow up on non-blocking CI annotations:
   - GitHub Actions Node 20 deprecation warnings for pinned actions.
   - Existing lint warnings emitted during build annotations, though CI is passing.
@@ -76,13 +85,13 @@ Expected:
 
 ### Infrastructure Layer
 
-| Component                | Files                                                 | Purpose                                                                                                           |
-| ------------------------ | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
-| **Sluice AI Gateway**    | `lib/clients/sluice-gateway.ts`, `infra/sluice.bicep` | OpenAI-compatible proxy for centralized AI cost tracking, model routing, failover. Feature-flagged (`aiGateway`). |
-| **Azure PostgreSQL**     | `infra/postgresql.bicep`                              | Free-tier Flexible Server (B1ms) for persistent user storage.                                                     |
-| **Retort Orchestration** | `.agentkit/spec/*.yaml`                               | Single-source YAML spec generating configs for 16+ AI tools.                                                      |
-| **Agent Rules**          | `.cursor/rules/` (10), `.windsurf/rules/` (10)        | Team-scoped coding rules for Claude, Cursor, Windsurf, Copilot.                                                   |
-| **Baton**                | `lib/integrations/baton.ts`                           | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`baton`). Formerly phoenix-flow. |
+| Component                | Files                                                      | Purpose                                                                                                           |
+| ------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Sluice AI Gateway**    | `lib/clients/sluice-gateway.ts`, `infra/terraform/env/dev` | OpenAI-compatible proxy for centralized AI cost tracking, model routing, failover. Feature-flagged (`aiGateway`). |
+| **Azure PostgreSQL**     | `infra/terraform/env/dev`                                  | Modeled in Terraform with `enable_postgresql = false`.                                                            |
+| **Retort Orchestration** | `.agentkit/spec/*.yaml`                                    | Single-source YAML spec generating configs for 16+ AI tools.                                                      |
+| **Agent Rules**          | `.cursor/rules/` (10), `.windsurf/rules/` (10)             | Team-scoped coding rules for Claude, Cursor, Windsurf, Copilot.                                                   |
+| **Baton**                | `lib/integrations/baton.ts`                                | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`baton`). Formerly phoenix-flow. |
 
 ### Application Layer
 
@@ -240,10 +249,10 @@ pnpm test:e2e               # Playwright E2E tests (needs running dev server)
 | -------------------- | ----------------- | ------------------------------------------------------------------- |
 | **Retort**           | Active            | `.agentkit/spec/` → generates agent configs                         |
 | **MarketingSkills**  | Active            | 34 skills in `.agents/skills/`, validated                           |
-| **Sluice**           | Ready (flag off)  | `lib/clients/sluice-gateway.ts` + `infra/sluice.bicep`              |
+| **Sluice**           | Ready (flag off)  | `lib/clients/sluice-gateway.ts` + `infra/terraform/env/dev`         |
 | **Baton**            | Ready (flag off)  | `lib/integrations/baton.ts` + task board UI (formerly phoenix-flow) |
 | **mcp-org**          | Ready (via baton) | Org context proxied through baton MCP                               |
-| **Azure PostgreSQL** | Ready             | `infra/postgresql.bicep` (free tier)                                |
+| **Azure PostgreSQL** | Modeled, disabled | `infra/terraform/env/dev` with `enable_postgresql = false`          |
 
 ---
 

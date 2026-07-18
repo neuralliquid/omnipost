@@ -12,8 +12,19 @@ Runtime infrastructure for the live dev app is now represented in Terraform at
 DNS records for `omnipost.neuralliquid.ai` are owned by the `neuralliquid-org`
 Terraform DNS stack. Do not manage `neuralliquid.ai` records from this repo.
 
-The remaining Bicep files are legacy/runtime helpers retained during quick
-iteration. DNS and custom-domain Bicep modules have been removed.
+The active dev runtime path is Terraform. DNS and custom-domain Bicep modules
+have been removed, and the legacy production Bicep workflow is hard-disabled.
+
+Active workflow ownership:
+
+- Dev runtime infrastructure: `infra/terraform/env/dev`
+- DNS: `neuralliquid-org/infra/terraform/dns`
+- Application package deploy: `.github/workflows/azure-webapps-node.yml`
+- Manual Terraform plan/apply: `.github/workflows/terraform-dev.yml`
+
+`deploy-prod.yml` is retained as a legacy Bicep workflow but hard-disabled.
+Key Vault and Sluice gateway are now modeled in Terraform. PostgreSQL is modeled
+with `enable_postgresql = false`.
 
 ## Recent Changes
 
@@ -28,10 +39,13 @@ The live dev runtime was imported into Terraform with no live Azure changes:
 - Application Insights
 - metric alerts
 - `omnipost.neuralliquid.ai` hostname binding
+- Key Vault
+- Sluice Container App Environment and internal gateway
+- PostgreSQL resources, disabled by default
 
 The existing App Service managed certificate remains live in Azure. Certificate
-lifecycle should be normalized in a later Terraform pass after validating the
-provider import behavior.
+lifecycle should remain Azure-managed until a no-replacement Terraform import
+can be proven.
 
 ### App Service Startup Command Configuration (Dec 10, 2024)
 

@@ -144,7 +144,7 @@ az webapp config appsettings set \
     SLUICE_API_KEY="your-gateway-api-key"
 ```
 
-> **Note:** The Sluice gateway is opt-in via the `aiGateway` feature flag. When enabled, AI requests are routed through the gateway for cost tracking and model abstraction. See `infra/sluice.bicep` for infrastructure deployment.
+> **Note:** The Sluice gateway is opt-in via the `aiGateway` feature flag. When enabled, AI requests are routed through the gateway for cost tracking and model abstraction. See `infra/terraform/env/dev` for infrastructure deployment.
 
 ## Configuration via Azure Portal
 
