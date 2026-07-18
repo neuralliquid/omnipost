@@ -217,9 +217,9 @@ const featureFlags: FeatureFlags = {
     analytics: true,
     pipelineView: true,
   },
-  // AI Gateway (Sluice) - disabled by default, opt-in
+  // AI Gateway (Sluice)
   aiGateway: {
-    enabled: false,
+    enabled: true,
     fallbackToDirectCalls: true,
   },
   // External Identity Provider - disabled by default

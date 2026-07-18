@@ -14,3 +14,19 @@ output "application_insights_connection_string" {
   value     = azurerm_application_insights.this.connection_string
   sensitive = true
 }
+
+output "key_vault_name" {
+  value = var.enable_key_vault ? azurerm_key_vault.this[0].name : null
+}
+
+output "sluice_gateway_name" {
+  value = var.enable_sluice_gateway ? azurerm_container_app.sluice[0].name : null
+}
+
+output "sluice_gateway_url" {
+  value = var.enable_sluice_gateway ? "https://${azurerm_container_app.sluice[0].ingress[0].fqdn}" : null
+}
+
+output "postgresql_server_name" {
+  value = var.enable_postgresql ? azurerm_postgresql_flexible_server.this[0].name : null
+}

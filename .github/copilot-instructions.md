@@ -77,7 +77,7 @@ pnpm check-all        # Run all quality checks
 ### Infrastructure
 
 - **Deployment:** Azure Web Apps
-- **IaC:** Bicep templates
+- **IaC:** Terraform for active Azure runtime; legacy Bicep workflow is disabled
 - **CI/CD:** GitHub Actions
 - **Testing:** Jest + React Testing Library
 
@@ -882,7 +882,7 @@ Marketing domain expertise is available in `.agents/skills/`. Each skill follows
 
 ### Sluice AI Gateway
 
-AI requests can be routed through the Sluice gateway for centralized cost tracking and model abstraction. Controlled via the `aiGateway` feature flag in `lib/featureFlags.ts`. See `lib/clients/sluice-gateway.ts` for the client and `infra/sluice.bicep` for infrastructure.
+AI requests can be routed through the Sluice gateway for centralized cost tracking and model abstraction. Controlled via the `aiGateway` feature flag in `lib/featureFlags.ts`. See `lib/clients/sluice-gateway.ts` for the client and `infra/terraform/env/dev` for infrastructure.
 
 ### Agent Teams
 

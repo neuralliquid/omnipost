@@ -72,7 +72,7 @@ OmniPost is a Next.js-based web application that enables users to create, manage
 ### Infrastructure
 
 - **Deployment**: Azure Web Apps
-- **IaC**: Bicep templates
+- **IaC**: Terraform for active Azure runtime; legacy Bicep workflow is disabled
 - **CI/CD**: GitHub Actions
 - **Testing**: Jest + React Testing Library
 
