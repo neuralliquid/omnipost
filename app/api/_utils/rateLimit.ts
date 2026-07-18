@@ -143,7 +143,6 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
       })
     );
 
-    console.log('[Rate Limit] Using Upstash Redis for distributed rate limiting');
     return upstashLimiters;
   } catch (error) {
     // Use safe error message to prevent sensitive data leaks
@@ -255,12 +254,6 @@ function safeEvict(now: number, targetSize: number): number {
         removed++;
       }
     }
-  }
-
-  if (removed > 0 && process.env.NODE_ENV !== 'production') {
-    console.debug(
-      `[Rate Limit] Safe-evicted ${removed} entries (store size: ${rateLimitStore.size})`
-    );
   }
 
   return removed;
