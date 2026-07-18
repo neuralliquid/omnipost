@@ -1,4 +1,16 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
+
+type ImagePayload = Record<string, unknown>;
+
+function createMockResponse(data: unknown): AxiosResponse<unknown> {
+  return {
+    data,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: { headers: {} } as InternalAxiosRequestConfig,
+  };
+}
 
 /**
  * Client for interacting with the HuggingFace API for image generation
@@ -35,16 +47,12 @@ export class HuggingFaceClient {
    * @param context The text prompt to generate an image from
    * @returns Response from the HuggingFace API
    */
-  async generateImage(context: string): Promise<AxiosResponse> {
+  async generateImage(context: string): Promise<AxiosResponse<unknown>> {
     // In test environment, return mock data
     if (this.isTestEnvironment) {
-      return Promise.resolve({
-        data: { url: 'https://example.com/generated-image.jpg' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      return Promise.resolve(
+        createMockResponse({ url: 'https://example.com/generated-image.jpg' })
+      );
     }
 
     // Use a text-to-image model like stable-diffusion
@@ -63,10 +71,10 @@ export class HuggingFaceClient {
    * @param image The image data to approve
    * @returns Success message
    */
-  async approveImage(image: Record<string, any>): Promise<{ success: boolean; message: string }> {
+  async approveImage(image: ImagePayload): Promise<{ success: boolean; message: string }> {
     // This would typically interact with your own database or service
     // Since there's no actual approval endpoint in HuggingFace API, we simulate it
-    console.log('Image approved:', image);
+    void image;
     return {
       success: true,
       message: 'Image approved successfully',
@@ -78,9 +86,9 @@ export class HuggingFaceClient {
    * @param image The image data to reject
    * @returns Success message
    */
-  async rejectImage(image: Record<string, any>): Promise<{ success: boolean; message: string }> {
+  async rejectImage(image: ImagePayload): Promise<{ success: boolean; message: string }> {
     // This would typically interact with your own database or service
-    console.log('Image rejected:', image);
+    void image;
     return {
       success: true,
       message: 'Image rejected successfully',
@@ -92,16 +100,12 @@ export class HuggingFaceClient {
    * @param context The text prompt to regenerate an image from
    * @returns Response from the HuggingFace API
    */
-  async regenerateImage(context: string): Promise<AxiosResponse> {
+  async regenerateImage(context: string): Promise<AxiosResponse<unknown>> {
     // In test environment, return mock data
     if (this.isTestEnvironment) {
-      return Promise.resolve({
-        data: { url: 'https://example.com/regenerated-image.jpg' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      return Promise.resolve(
+        createMockResponse({ url: 'https://example.com/regenerated-image.jpg' })
+      );
     }
 
     // Simply call generateImage with the same context
@@ -113,10 +117,10 @@ export class HuggingFaceClient {
    * @param file The file data to upload
    * @returns Success message
    */
-  async uploadImage(file: any): Promise<{ success: boolean; url?: string; message: string }> {
+  async uploadImage(file: unknown): Promise<{ success: boolean; url?: string; message: string }> {
     // This would typically upload to your own storage service
     // Since direct file upload to HuggingFace isn't part of their inference API
-    console.log('Image upload requested:', file);
+    void file;
     return {
       success: true,
       message: 'Image upload simulation successful',
@@ -130,16 +134,10 @@ export class HuggingFaceClient {
    * @param data The data to send in the request body
    * @returns Response from the HuggingFace API
    */
-  async post(endpoint: string, data: any): Promise<AxiosResponse> {
+  async post(endpoint: string, data: unknown): Promise<AxiosResponse<unknown>> {
     // In test environment, return mock data
     if (this.isTestEnvironment) {
-      return Promise.resolve({
-        data: { result: 'mock-result' },
-        status: 200,
-        statusText: 'OK',
-        headers: {},
-        config: {} as any,
-      });
+      return Promise.resolve(createMockResponse({ result: 'mock-result' }));
     }
 
     return this.client.post(endpoint, data);
