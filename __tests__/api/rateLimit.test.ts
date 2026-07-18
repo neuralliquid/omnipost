@@ -34,6 +34,12 @@ describe('Rate Limiting - PERF-03/MEM-02/BUG-06 Fix Verification', () => {
       expect(RateLimitPresets.AUTH.windowMs).toBe(15 * 60 * 1000);
     });
 
+    it('should have OAUTH_CALLBACK preset separate from brute-force auth attempts', () => {
+      const { RateLimitPresets } = require('@/app/api/_utils/rateLimit');
+      expect(RateLimitPresets.OAUTH_CALLBACK.maxRequests).toBe(30);
+      expect(RateLimitPresets.OAUTH_CALLBACK.windowMs).toBe(5 * 60 * 1000);
+    });
+
     it('should have AI_SERVICE preset with 10 requests per minute', () => {
       const { RateLimitPresets } = require('@/app/api/_utils/rateLimit');
       expect(RateLimitPresets.AI_SERVICE.maxRequests).toBe(10);
