@@ -169,10 +169,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ---- Social Proof ---- */}
+      {/* ---- Project Status ---- */}
       <section className={`${styles.section} ${styles.socialProofSection}`}>
         <div className={styles.sectionInner}>
-          <h2 className={styles.sectionTitle}>Trusted by Content Creators Worldwide</h2>
+          <h2 className={styles.sectionTitle}>Early Access, Built in the Open</h2>
 
           <div className={styles.metrics}>
             <div className={styles.metric}>
@@ -180,43 +180,43 @@ export default function HomePage() {
               <span className={styles.metricLabel}>MIT Licensed</span>
             </div>
             <div className={styles.metric}>
-              <span className={styles.metricValue}>2M+</span>
-              <span className={styles.metricLabel}>Posts published</span>
+              <span className={styles.metricValue}>Alpha</span>
+              <span className={styles.metricLabel}>First tester cohort</span>
             </div>
             <div className={styles.metric}>
-              <span className={styles.metricValue}>4.8/5</span>
-              <span className={styles.metricLabel}>Average rating</span>
+              <span className={styles.metricValue}>WIP</span>
+              <span className={styles.metricLabel}>Publishing flow in progress</span>
             </div>
           </div>
 
           <div className={styles.testimonials}>
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;OmniPost cut my publishing time in half. I used to spend an hour reformatting
-                posts — now it takes seconds.&rdquo;
+                &ldquo;OmniPost is currently being shaped with direct tester feedback before public
+                launch.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
-                <strong>Sarah K.</strong> — Social Media Manager
+                <strong>Alpha note</strong> — Product status
               </p>
             </article>
 
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;The AI adaptation feature is a game-changer. Each platform gets perfectly
-                tailored content automatically.&rdquo;
+                &ldquo;The focus is a practical first posting flow with AI-assisted wording for each
+                platform.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
-                <strong>Marcus T.</strong> — Content Creator
+                <strong>Current scope</strong> — Platform adaptation
               </p>
             </article>
 
             <article className={styles.testimonialCard}>
               <blockquote>
-                &ldquo;Finally, one dashboard for all our analytics. Our team makes better decisions
-                faster.&rdquo;
+                &ldquo;Metrics, scheduling depth, and advanced platform workflows will grow after
+                the first live path is stable.&rdquo;
               </blockquote>
               <p className={styles.testimonialAuthor}>
-                <strong>Priya R.</strong> — Marketing Director
+                <strong>Roadmap</strong> — Alpha readiness
               </p>
             </article>
           </div>

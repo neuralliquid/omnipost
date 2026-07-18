@@ -27,7 +27,7 @@ export default function NotFound() {
             Go home
           </Link>
           <Link
-            href="/dashboard"
+            href="/dashboard/dashboard"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
           >
             Dashboard
@@ -44,22 +44,25 @@ export default function NotFound() {
               </Link>
             </li>
             <li>
-              <Link href="/dashboard" className="text-sm text-primary hover:underline">
+              <Link href="/dashboard/dashboard" className="text-sm text-primary hover:underline">
                 Dashboard
               </Link>
             </li>
             <li>
-              <Link href="/review" className="text-sm text-primary hover:underline">
+              <Link href="/dashboard/review" className="text-sm text-primary hover:underline">
                 Content Review
               </Link>
             </li>
             <li>
-              <Link href="/workflow" className="text-sm text-primary hover:underline">
+              <Link href="/dashboard/workflow" className="text-sm text-primary hover:underline">
                 Workflow
               </Link>
             </li>
             <li>
-              <Link href="/platform-analysis" className="text-sm text-primary hover:underline">
+              <Link
+                href="/dashboard/platform-analysis"
+                className="text-sm text-primary hover:underline"
+              >
                 Platform Analysis
               </Link>
             </li>

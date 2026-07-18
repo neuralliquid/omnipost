@@ -24,6 +24,7 @@ const DEFAULT_STRUCTURED_DATA = {
   applicationCategory: 'BusinessApplication',
   operatingSystem: 'Web',
   browserRequirements: 'Requires JavaScript. Requires HTML5.',
+  softwareVersion: 'alpha',
   offers: [
     {
       '@type': 'Offer',
@@ -49,13 +50,6 @@ const DEFAULT_STRUCTURED_DATA = {
       description: 'Everything in Pro plus team collaboration, client workspaces, shared calendars',
     },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '256',
-    bestRating: '5',
-    worstRating: '1',
-  },
   creator: {
     '@type': 'Organization',
     name: 'OmniPost',
