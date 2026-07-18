@@ -30,3 +30,7 @@ output "sluice_gateway_url" {
 output "postgresql_server_name" {
   value = var.enable_postgresql ? azurerm_postgresql_flexible_server.this[0].name : null
 }
+
+output "postgresql_database_name" {
+  value = var.enable_postgresql ? azurerm_postgresql_flexible_server_database.app[0].name : null
+}

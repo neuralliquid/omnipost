@@ -24,9 +24,8 @@ DNS records for `omnipost.neuralliquid.ai` are owned by
 - `nl-dev-omnipost-kv`
 - `nl-dev-omnipost-cae`
 - `nl-dev-omnipost-sluice`
-
-PostgreSQL is modeled in Terraform but disabled by default with
-`enable_postgresql = false`.
+- `nl-dev-omnipost-psql-swc` in `swedencentral`
+- PostgreSQL database `omnipost`
 
 The existing App Service managed certificate remains live in Azure but is not
 managed by this first Terraform pass because importing it as

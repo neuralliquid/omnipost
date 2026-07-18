@@ -23,7 +23,7 @@ Product runtime is owned by this repo:
 - Key Vault: `nl-dev-omnipost-kv`
 - Sluice gateway: `nl-dev-omnipost-sluice`
 - Sluice URL: `https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io`
-- PostgreSQL: modeled but disabled by default
+- PostgreSQL: `nl-dev-omnipost-psql-swc` in Sweden Central, database `omnipost`
 
 Organization DNS is owned by `neuralliquid-org`:
 
@@ -61,7 +61,7 @@ the app package to the existing dev Web App.
 ```bash
 curl -I https://omnipost.neuralliquid.ai/api/health
 curl -I https://nl-dev-omnipost-web.azurewebsites.net/api/health
-curl https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io/health/liveliness
+curl https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io/health/readiness
 ```
 
-Expected result: HTTP `200 OK`.
+Expected result: HTTP `200 OK`; Sluice readiness should include `db: "connected"`.

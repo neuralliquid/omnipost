@@ -27,7 +27,8 @@
 - Active runtime infrastructure validation now runs through Terraform. The
   legacy production Bicep workflow is retained but hard-disabled.
 - Key Vault and Sluice gateway are modeled as live Terraform resources.
-- PostgreSQL is modeled in Terraform with `enable_postgresql = false`.
+- PostgreSQL is live in Terraform for Sluice LiteLLM persistence:
+  `nl-dev-omnipost-psql-swc` in Sweden Central with database `omnipost`.
 - Sluice gateway is live at
   `https://nl-dev-omnipost-sluice.jollyfield-e2805f37.westeurope.azurecontainerapps.io`;
   Omnipost Web App settings include `SLUICE_GATEWAY_URL` and `SLUICE_API_KEY`.
@@ -61,9 +62,8 @@ Expected:
 ### Remaining Alpha Readiness Work
 
 - Configure required app secrets on `nl-dev-omnipost-web`. Current deployed settings include platform/runtime settings, but not `JWT_SECRET` or optional integration secrets.
-- Use `/health/liveliness` as the Sluice quick-iteration health signal while
-  PostgreSQL remains disabled. `/health/readiness` may report `db: "Not
-connected"` even when the LiteLLM gateway is serving traffic.
+- Use `/health/readiness` as the Sluice health signal; readiness should report
+  `db: "connected"` for the database-backed LiteLLM gateway.
 - Keep the existing managed certificate Azure-managed until a no-replacement
   Terraform import can be proven.
 - Follow up on non-blocking CI annotations:
@@ -89,7 +89,7 @@ connected"` even when the LiteLLM gateway is serving traffic.
 | Component                | Files                                                      | Purpose                                                                                                           |
 | ------------------------ | ---------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
 | **Sluice AI Gateway**    | `lib/clients/sluice-gateway.ts`, `infra/terraform/env/dev` | OpenAI-compatible proxy for centralized AI cost tracking, model routing, failover. Feature-flagged (`aiGateway`). |
-| **Azure PostgreSQL**     | `infra/terraform/env/dev`                                  | Modeled in Terraform with `enable_postgresql = false`.                                                            |
+| **Azure PostgreSQL**     | `infra/terraform/env/dev`                                  | Live Terraform-managed Sluice LiteLLM persistence in Sweden Central.                                              |
 | **Retort Orchestration** | `.agentkit/spec/*.yaml`                                    | Single-source YAML spec generating configs for 16+ AI tools.                                                      |
 | **Agent Rules**          | `.cursor/rules/` (10), `.windsurf/rules/` (10)             | Team-scoped coding rules for Claude, Cursor, Windsurf, Copilot.                                                   |
 | **Baton**                | `lib/integrations/baton.ts`                                | MCP client for task management + org context (proxies mcp-org). Feature-flagged (`baton`). Formerly phoenix-flow. |
@@ -250,10 +250,10 @@ pnpm test:e2e               # Playwright E2E tests (needs running dev server)
 | -------------------- | ----------------- | ------------------------------------------------------------------- |
 | **Retort**           | Active            | `.agentkit/spec/` → generates agent configs                         |
 | **MarketingSkills**  | Active            | 34 skills in `.agents/skills/`, validated                           |
-| **Sluice**           | Ready (flag off)  | `lib/clients/sluice-gateway.ts` + `infra/terraform/env/dev`         |
+| **Sluice**           | Live              | `lib/clients/sluice-gateway.ts` + `infra/terraform/env/dev`         |
 | **Baton**            | Ready (flag off)  | `lib/integrations/baton.ts` + task board UI (formerly phoenix-flow) |
 | **mcp-org**          | Ready (via baton) | Org context proxied through baton MCP                               |
-| **Azure PostgreSQL** | Modeled, disabled | `infra/terraform/env/dev` with `enable_postgresql = false`          |
+| **Azure PostgreSQL** | Live              | `infra/terraform/env/dev`; Sluice LiteLLM persistence database      |
 
 ---
 
