@@ -405,10 +405,11 @@ export async function handleAuthCallback(
         typeof tokenData.access_token === 'string' ? tokenData.access_token : null;
       const idToken = typeof tokenData.id_token === 'string' ? tokenData.id_token : null;
 
-      const claims =
+      const userInfoClaims =
         accessToken && discovery.userinfo_endpoint
           ? await fetchUserInfo(discovery.userinfo_endpoint, accessToken)
-          : decodeJwtPayload(idToken);
+          : null;
+      const claims = userInfoClaims ?? decodeJwtPayload(idToken);
 
       if (!claims) {
         return { success: false, error: 'Mystira Identity did not return user claims' };
