@@ -4,9 +4,8 @@ import path from 'node:path';
 const STORAGE_STATE_PATH = path.join(__dirname, '..', '.auth', 'user.json');
 
 const TEST_USER = {
-  email: 'e2e-test@omnipost.dev',
-  password: 'Test1234!Secure',
-  username: 'e2e-tester',
+  username: 'admin',
+  password: 'admin',
 };
 
 /**
@@ -15,9 +14,9 @@ const TEST_USER = {
  */
 async function loginViaUI(page: Page): Promise<void> {
   await page.goto('/login');
-  await page.getByLabel('Email').fill(TEST_USER.email);
+  await page.getByLabel('Username').fill(TEST_USER.username);
   await page.getByLabel('Password').fill(TEST_USER.password);
-  await page.getByRole('button', { name: /log\s*in|sign\s*in/i }).click();
+  await page.getByRole('button', { name: /login/i }).click();
 
   // Wait until we land on the dashboard -- proves login succeeded
   await page.waitForURL('**/dashboard', { timeout: 15_000 });

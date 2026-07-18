@@ -4,18 +4,15 @@ test.describe('Public page navigation', () => {
   test('landing page loads with hero section', async ({ page }) => {
     await page.goto('/');
 
-    // Hero section should be present with a heading and a CTA
-    const hero = page
-      .locator('[data-testid="hero"], section[class*="hero"], section[class*="Hero"]')
-      .or(page.locator('main').first());
-    await expect(hero).toBeVisible();
-
-    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: /publish once\. reach every platform/i })
+    ).toBeVisible();
 
     // At least one call-to-action button
     const cta = page
-      .getByRole('link', { name: /get\s*started|sign\s*up|try/i })
-      .or(page.getByRole('button', { name: /get\s*started|sign\s*up|try/i }));
+      .getByRole('link', { name: /start publishing free|get\s*started|sign\s*up|try/i })
+      .or(page.getByRole('button', { name: /start publishing free|get\s*started|sign\s*up|try/i }))
+      .first();
     await expect(cta).toBeVisible();
   });
 
@@ -23,22 +20,20 @@ test.describe('Public page navigation', () => {
     await page.goto('/pricing');
     await expect(page).toHaveURL(/\/pricing/);
 
-    await expect(page.getByRole('heading', { name: /pricing|plans/i })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { level: 1, name: /simple, transparent pricing/i })
+    ).toBeVisible();
 
-    // Should show at least 3 pricing tiers
-    const tierCards = page.locator(
-      '[data-testid="pricing-tier"], [class*="pricingCard"], [class*="PricingCard"], [class*="tier"]'
-    );
-    await expect(tierCards).toHaveCount(3, { timeout: 5_000 });
+    await expect(page.getByRole('heading', { level: 3, name: 'Free' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 3, name: 'Pro' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 3, name: 'Team' })).toBeVisible();
   });
 
   test('signup page loads with registration form', async ({ page }) => {
     await page.goto('/signup');
     await expect(page).toHaveURL(/\/signup/);
 
-    await expect(
-      page.getByRole('heading', { name: /sign\s*up|create.*account|register/i })
-    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: /start publishing everywhere/i })).toBeVisible();
 
     // Form fields
     await expect(page.getByLabel('Username')).toBeVisible();
@@ -55,9 +50,9 @@ test.describe('Public page navigation', () => {
 
     await expect(page.getByRole('heading', { name: /log\s*in|sign\s*in|welcome/i })).toBeVisible();
 
-    await expect(page.getByLabel('Email')).toBeVisible();
+    await expect(page.getByLabel('Username')).toBeVisible();
     await expect(page.getByLabel('Password')).toBeVisible();
-    await expect(page.getByRole('button', { name: /log\s*in|sign\s*in/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /login/i })).toBeVisible();
   });
 });
 
