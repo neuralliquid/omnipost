@@ -79,6 +79,24 @@ const defaultOptions: Required<RetryOptions> = {
   operationName: 'operation',
 };
 
+function getNumericProperty(value: unknown, property: string): number | undefined {
+  if (!value || typeof value !== 'object' || !(property in value)) {
+    return undefined;
+  }
+
+  const candidate = (value as Record<string, unknown>)[property];
+  return typeof candidate === 'number' ? candidate : undefined;
+}
+
+function getStringProperty(value: unknown, property: string): string | undefined {
+  if (!value || typeof value !== 'object' || !(property in value)) {
+    return undefined;
+  }
+
+  const candidate = (value as Record<string, unknown>)[property];
+  return typeof candidate === 'string' ? candidate : undefined;
+}
+
 /**
  * Default function to determine if an error is retryable
  */
@@ -89,15 +107,15 @@ function defaultIsRetryable(error: unknown): boolean {
   }
 
   // HTTP response errors
-  if (error && typeof error === 'object' && 'status' in error) {
-    const status = (error as { status: number }).status;
+  const status = getNumericProperty(error, 'status');
+  if (status !== undefined) {
     // Retry on 5xx errors and 429 (rate limit)
     return status >= 500 || status === 429;
   }
 
   // Error with code (Node.js style)
-  if (error && typeof error === 'object' && 'code' in error) {
-    const code = (error as { code: string }).code;
+  const code = getStringProperty(error, 'code');
+  if (code !== undefined) {
     const retryableCodes = [
       'ECONNRESET',
       'ETIMEDOUT',
@@ -183,13 +201,6 @@ export async function withRetry<T>(
       // Calculate delay and wait
       const delay = calculateDelay(attempt, opts);
       opts.onRetry(error, attempt + 1, delay);
-
-      if (process.env.NODE_ENV === 'development') {
-        console.log(
-          `[Retry] ${opts.operationName} failed (attempt ${attempt + 1}/${opts.maxRetries + 1}), ` +
-            `retrying in ${delay}ms...`
-        );
-      }
 
       await sleep(delay);
     }
