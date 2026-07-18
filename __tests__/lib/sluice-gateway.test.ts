@@ -31,9 +31,6 @@ jest.mock('../../lib/featureFlags', () => ({
 }));
 
 describe('Sluice Gateway Client', () => {
-  let isGatewayEnabled: () => boolean;
-  let gatewayPost: Function;
-
   beforeEach(() => {
     jest.clearAllMocks();
 
@@ -46,9 +43,6 @@ describe('Sluice Gateway Client', () => {
 
     // Re-import module to pick up new flag state
     jest.resetModules();
-    const mod = require('../../lib/clients/sluice-gateway');
-    isGatewayEnabled = mod.isGatewayEnabled;
-    gatewayPost = mod.gatewayPost;
   });
 
   describe('isGatewayEnabled()', () => {

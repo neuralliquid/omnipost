@@ -44,7 +44,7 @@ interface AuthProviderInfo {
 export default function SignupPage() {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
-  const { track, trackSignup, events } = useAnalytics({ trackPageView: true });
+  const { trackSignup } = useAnalytics({ trackPageView: true });
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

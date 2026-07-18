@@ -57,6 +57,11 @@ package-lock.json
 # Bicep compiled ARM templates (JSON output)
 infra/*.json
 
+# Terraform local cache and state
+**/.terraform/
+*.tfstate
+*.tfstate.*
+
 # Deployment artifacts
 deploy/
 node-app.zip

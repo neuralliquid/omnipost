@@ -9,7 +9,6 @@ import PageSkeleton from '@/components/ui/PageSkeleton';
 describe('PageSkeleton', () => {
   it('renders correct number of rows', () => {
     const { container } = render(<PageSkeleton rows={5} />);
-    const rows = container.querySelectorAll('[class*="row"]');
     // Each row contains a row div with a rowLine div inside, so filter to direct row children
     const rowContainer = container.querySelector('[class*="rows"]');
     expect(rowContainer).toBeInTheDocument();
