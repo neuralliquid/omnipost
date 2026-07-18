@@ -21,11 +21,6 @@ interface TasksApiResponse {
   error?: string;
 }
 
-interface ProjectsApiResponse {
-  projects: Project[];
-  error?: string;
-}
-
 interface CreateTaskResponse {
   task: Task;
   error?: string;
@@ -276,7 +271,7 @@ function CreateTaskModal({
 
 export default function TasksPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);

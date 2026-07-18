@@ -170,16 +170,10 @@ export async function generateImage(
  */
 export async function approveContent(
   _prevState: ApproveResult | null,
-  formData: FormData
+  _formData: FormData
 ): Promise<ApproveResult> {
   try {
-    const summary = formData.get('summary') as string;
-    const image = formData.get('image') as string;
-
     // In a real implementation, this would save to a database and trigger publishing
-    console.log('Content approved:', { summary: summary?.substring(0, 100), hasImage: !!image });
-
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 500));
 
     return {
