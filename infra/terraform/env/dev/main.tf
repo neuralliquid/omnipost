@@ -38,6 +38,15 @@ locals {
       master_key = "os.environ/LITELLM_GATEWAY_KEY"
     }
   })
+
+  postgresql_password = var.enable_postgresql ? coalesce(var.postgresql_administrator_password, random_password.postgresql[0].result) : null
+  postgresql_url = var.enable_postgresql ? format(
+    "postgresql://%s:%s@%s:5432/%s?sslmode=require",
+    var.postgresql_administrator_login,
+    urlencode(local.postgresql_password),
+    azurerm_postgresql_flexible_server.this[0].fqdn,
+    var.postgresql_database_name
+  ) : null
 }
 
 data "azurerm_client_config" "current" {}
@@ -267,6 +276,14 @@ resource "azurerm_container_app" "sluice" {
     value = var.sluice_api_key
   }
 
+  dynamic "secret" {
+    for_each = var.enable_postgresql ? [1] : []
+    content {
+      name  = "litellm-db-url"
+      value = local.postgresql_url
+    }
+  }
+
   ingress {
     external_enabled = true
     target_port      = 4000
@@ -290,8 +307,8 @@ resource "azurerm_container_app" "sluice" {
     container {
       name   = "litellm"
       image  = var.sluice_image
-      cpu    = 0.5
-      memory = "1Gi"
+      cpu    = var.enable_postgresql ? 1.0 : 0.5
+      memory = var.enable_postgresql ? "2Gi" : "1Gi"
 
       command = [
         "/bin/sh",
@@ -319,6 +336,14 @@ resource "azurerm_container_app" "sluice" {
         value = "4000"
       }
 
+      dynamic "env" {
+        for_each = var.enable_postgresql ? [1] : []
+        content {
+          name        = "DATABASE_URL"
+          secret_name = "litellm-db-url"
+        }
+      }
+
       liveness_probe {
         transport        = "HTTP"
         path             = "/health/liveliness"
@@ -329,7 +354,7 @@ resource "azurerm_container_app" "sluice" {
 
       readiness_probe {
         transport        = "HTTP"
-        path             = "/health/liveliness"
+        path             = "/health/readiness"
         port             = 4000
         initial_delay    = 3
         interval_seconds = 5
@@ -338,20 +363,32 @@ resource "azurerm_container_app" "sluice" {
   }
 }
 
+resource "random_password" "postgresql" {
+  count = var.enable_postgresql ? 1 : 0
+
+  length           = 32
+  special          = true
+  override_special = "_%@"
+}
+
 resource "azurerm_postgresql_flexible_server" "this" {
   count = var.enable_postgresql ? 1 : 0
 
-  name                          = "${local.base}-psql"
+  name                          = "${local.base}-psql-swc"
   resource_group_name           = azurerm_resource_group.this.name
-  location                      = azurerm_resource_group.this.location
+  location                      = var.postgresql_location
   version                       = var.postgresql_version
   administrator_login           = var.postgresql_administrator_login
-  administrator_password        = var.postgresql_administrator_password
+  administrator_password        = local.postgresql_password
   sku_name                      = "B_Standard_B1ms"
   storage_mb                    = var.postgresql_storage_mb
   backup_retention_days         = var.postgresql_backup_retention_days
   public_network_access_enabled = true
   tags                          = merge(local.tags, { managedBy = "terraform", component = "postgresql" })
+
+  lifecycle {
+    ignore_changes = [zone]
+  }
 }
 
 resource "azurerm_postgresql_flexible_server_firewall_rule" "allow_azure_services" {

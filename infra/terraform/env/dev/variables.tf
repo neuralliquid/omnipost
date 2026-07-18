@@ -37,7 +37,7 @@ variable "enable_sluice_gateway" {
 variable "sluice_image" {
   type        = string
   description = "Container image for the Sluice gateway."
-  default     = "litellm/litellm:v1.83.7-stable"
+  default     = "litellm/litellm-database:v1.83.7-stable@sha256:85e3d3ca43ff554b5731b00ef470ce7717f47505e56676afd46ec3a9f5a63466"
 }
 
 variable "sluice_azure_openai_endpoint" {
@@ -84,8 +84,8 @@ variable "sluice_azure_openai_embedding_api_version" {
 
 variable "enable_postgresql" {
   type        = bool
-  description = "Whether to manage Omnipost PostgreSQL. Kept false during quick iteration."
-  default     = false
+  description = "Whether to manage PostgreSQL for Sluice LiteLLM persistence."
+  default     = true
 }
 
 variable "postgresql_administrator_login" {
@@ -105,6 +105,12 @@ variable "postgresql_version" {
   type        = string
   description = "PostgreSQL major version."
   default     = "16"
+}
+
+variable "postgresql_location" {
+  type        = string
+  description = "Azure region for PostgreSQL Flexible Server. Separate from the Web App region because some subscriptions are restricted by offer in westeurope."
+  default     = "swedencentral"
 }
 
 variable "postgresql_database_name" {

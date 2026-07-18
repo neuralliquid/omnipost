@@ -23,8 +23,8 @@ Active workflow ownership:
 - Manual Terraform plan/apply: `.github/workflows/terraform-dev.yml`
 
 `deploy-prod.yml` is retained as a legacy Bicep workflow but hard-disabled.
-Key Vault and Sluice gateway are now modeled in Terraform. PostgreSQL is modeled
-with `enable_postgresql = false`.
+Key Vault, Sluice gateway, and the Sluice PostgreSQL persistence database are
+now modeled in Terraform.
 
 ## Recent Changes
 
@@ -41,7 +41,8 @@ The live dev runtime was imported into Terraform with no live Azure changes:
 - `omnipost.neuralliquid.ai` hostname binding
 - Key Vault
 - Sluice Container App Environment and internal gateway
-- PostgreSQL resources, disabled by default
+- PostgreSQL Flexible Server `nl-dev-omnipost-psql-swc` in Sweden Central with
+  database `omnipost`
 
 The existing App Service managed certificate remains live in Azure. Certificate
 lifecycle should remain Azure-managed until a no-replacement Terraform import
