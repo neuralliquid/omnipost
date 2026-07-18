@@ -61,8 +61,9 @@ Expected:
 ### Remaining Alpha Readiness Work
 
 - Configure required app secrets on `nl-dev-omnipost-web`. Current deployed settings include platform/runtime settings, but not `JWT_SECRET` or optional integration secrets.
-- Monitor first Sluice-routed calls and adjust model aliases if Omnipost needs
-  names beyond `gpt-4o` and `text-embedding-3-large`.
+- Use `/health/liveliness` as the Sluice quick-iteration health signal while
+  PostgreSQL remains disabled. `/health/readiness` may report `db: "Not
+connected"` even when the LiteLLM gateway is serving traffic.
 - Keep the existing managed certificate Azure-managed until a no-replacement
   Terraform import can be proven.
 - Follow up on non-blocking CI annotations:
