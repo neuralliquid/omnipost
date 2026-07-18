@@ -104,7 +104,7 @@ describe('Scheduler API Routes', () => {
       // Override headers mock to simulate unauthenticated request
       const { headers } = require('next/headers');
       (headers as jest.Mock).mockReturnValueOnce({
-        get: (name: string) => null, // No x-user-id
+        get: (_name: string) => null, // No x-user-id
       });
 
       const request = createRequest('GET');
@@ -174,7 +174,7 @@ describe('Scheduler API Routes', () => {
     test('requires authentication for POST', async () => {
       const { headers } = require('next/headers');
       (headers as jest.Mock).mockReturnValueOnce({
-        get: (name: string) => null, // No x-user-id
+        get: (_name: string) => null, // No x-user-id
       });
 
       const validJob = {
@@ -187,7 +187,7 @@ describe('Scheduler API Routes', () => {
 
       const request = createRequest('POST', validJob);
       const response = await POST(request);
-      const data = await response.json();
+      await response.json();
 
       expect(response.status).toBe(401);
       expect(mockSchedule).not.toHaveBeenCalled();
