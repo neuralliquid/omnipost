@@ -131,7 +131,7 @@ export async function logToAuditTrail(entry: LogEntry): Promise<void> {
   }
 
   // Fallback to console logging
-  console.log('[AUDIT]', JSON.stringify(entry));
+  console.warn('[AUDIT]', JSON.stringify(entry));
 }
 
 interface ResultWithStatus {
