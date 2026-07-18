@@ -15,6 +15,13 @@ export interface AuthUser {
   role: string;
 }
 
+interface StoredTokenPayload {
+  id?: string;
+  username?: string;
+  role?: string;
+  exp?: number;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
@@ -33,45 +40,61 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing token on mount
+  // Check for existing token or cookie-backed session on mount
   useEffect(() => {
+    const restoreAuthState = async () => {
+      try {
+        const token = tokenStorage.getToken();
+        if (token) {
+          // Try to decode the token to get user info
+          try {
+            const parts = token.split('.');
+            if (parts.length !== 3) {
+              throw new Error('Malformed JWT: expected 3 parts');
+            }
+            const payload = JSON.parse(atob(parts[1])) as StoredTokenPayload;
+            if (
+              payload?.exp &&
+              payload.exp * 1000 > Date.now() &&
+              payload.id &&
+              payload.username &&
+              payload.role
+            ) {
+              setUser({
+                id: payload.id,
+                username: payload.username,
+                role: payload.role,
+              });
+              return;
+            }
+
+            // Token expired, remove it
+            tokenStorage.removeToken();
+          } catch {
+            // Invalid token, remove it
+            console.warn('[AuthProvider] Removed invalid auth token from storage');
+            tokenStorage.removeToken();
+          }
+        }
+
+        const session = await apiClient.getSession();
+        if (session.authenticated && session.user) {
+          setUser(session.user);
+        }
+      } catch (error) {
+        // localStorage/session restoration can fail. Log and continue - the user simply won't be authenticated.
+        console.error('[AuthProvider] Failed to restore auth state:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (globalThis.window === undefined) {
       setIsLoading(false);
       return;
     }
 
-    try {
-      const token = tokenStorage.getToken();
-      if (token) {
-        // Try to decode the token to get user info
-        try {
-          const parts = token.split('.');
-          if (parts.length !== 3) {
-            throw new Error('Malformed JWT: expected 3 parts');
-          }
-          const payload = JSON.parse(atob(parts[1]));
-          if (payload && payload.exp * 1000 > Date.now()) {
-            setUser({
-              id: payload.id,
-              username: payload.username,
-              role: payload.role,
-            });
-          } else {
-            // Token expired, remove it
-            tokenStorage.removeToken();
-          }
-        } catch {
-          // Invalid token, remove it
-          console.warn('[AuthProvider] Removed invalid auth token from storage');
-          tokenStorage.removeToken();
-        }
-      }
-    } catch (error) {
-      // localStorage access can fail (e.g., corrupted storage, security restrictions).
-      // Log and continue - the user simply won't be authenticated.
-      console.error('[AuthProvider] Failed to restore auth state:', error);
-    }
-    setIsLoading(false);
+    void restoreAuthState();
   }, []);
 
   const login = useCallback(async (username: string, password: string) => {

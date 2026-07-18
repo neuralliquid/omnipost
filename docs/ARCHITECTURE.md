@@ -269,9 +269,9 @@ Different endpoints have different rate limits based on resource consumption:
 
 The application sets the following security headers:
 
-- `X-Frame-Options`: DENY
+- `X-Frame-Options`: SAMEORIGIN
 - `X-Content-Type-Options`: nosniff
-- `Referrer-Policy`: strict-origin-when-cross-origin
+- `Referrer-Policy`: origin-when-cross-origin
 - `Permissions-Policy`: Restrictive permissions
 - `Content-Security-Policy`: Comprehensive CSP
 - `Strict-Transport-Security`: HSTS enabled

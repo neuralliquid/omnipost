@@ -76,16 +76,6 @@ const nextConfig: NextConfig = {
               "form-action 'self'",
             ].join('; '),
           },
-          {
-            key: 'Content-Security-Policy-Report-Only',
-            value: [
-              "default-src 'self'",
-              "script-src 'self'",
-              "style-src 'self' 'unsafe-inline'",
-              "img-src 'self' data: https:",
-              "connect-src 'self' https://*.huggingface.co https://*.openai.com https://*.azure.com",
-            ].join('; '),
-          },
         ],
       },
     ];

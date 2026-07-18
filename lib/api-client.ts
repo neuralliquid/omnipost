@@ -17,6 +17,17 @@ export interface ApiError {
   code?: string;
 }
 
+export interface AuthSessionUser {
+  id: string;
+  username: string;
+  role: string;
+}
+
+export interface AuthSessionResponse {
+  authenticated: boolean;
+  user: AuthSessionUser | null;
+}
+
 /**
  * API Client for making requests to the backend API
  */
@@ -159,6 +170,13 @@ class ApiClient {
     tokenStorage.removeToken();
 
     return response;
+  }
+
+  /**
+   * Get the current cookie-backed auth session, if one exists.
+   */
+  public async getSession(): Promise<AuthSessionResponse> {
+    return this.get<AuthSessionResponse>('/api/auth/session');
   }
 
   /**
