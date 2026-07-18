@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       enable_custom_domain:
-        description: 'Enable custom domain (omnipost.nexamesh.ai)'
+        description: 'Enable custom domain (omnipost.neuralliquid.ai)'
         required: true
         default: 'true'
         type: boolean
@@ -21,8 +21,8 @@ env:
   PROJECT_NAME: 'omnipost'
   REGION_CODE: 'euw'
   LOCATION: 'westeurope'
-  DNS_ZONE: 'nexamesh.ai'
-  DNS_ZONE_RG: 'rg-dns-global'
+  DNS_ZONE: 'neuralliquid.ai'
+  DNS_ZONE_RG: 'mys-global-shared-rg'
   APP_SUBDOMAIN: 'omnipost'
   API_SUBDOMAIN: 'api.omnipost'
   AZURE_SUBSCRIPTION_ID: 'bb4e3882-2079-4bab-8974-611bc0b8bb58'
@@ -242,7 +242,7 @@ jobs:
 
             echo "📝 Configuring DNS records for ${{ env.DNS_ZONE }}..."
 
-            # Create CNAME for omnipost.nexamesh.ai
+            # Create CNAME for omnipost.neuralliquid.ai
             echo "Creating CNAME: ${{ env.APP_SUBDOMAIN }}.${{ env.DNS_ZONE }} -> ${HOSTNAME}"
             az network dns record-set cname set-record \
               --zone-name ${{ env.DNS_ZONE }} \
@@ -261,7 +261,7 @@ jobs:
               --record-set-name ${{ env.APP_SUBDOMAIN }} \
               --cname ${HOSTNAME}
 
-            # Create CNAME for api.omnipost.nexamesh.ai
+            # Create CNAME for api.omnipost.neuralliquid.ai
             echo "Creating CNAME: ${{ env.API_SUBDOMAIN }}.${{ env.DNS_ZONE }} -> ${HOSTNAME}"
             az network dns record-set cname set-record \
               --zone-name ${{ env.DNS_ZONE }} \
