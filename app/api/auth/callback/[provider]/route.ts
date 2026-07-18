@@ -243,5 +243,6 @@ export const GET = withRateLimit(
     });
   }),
   '/api/auth/callback',
-  RateLimitPresets.AUTH
+  RateLimitPresets.OAUTH_CALLBACK,
+  'OAUTH_CALLBACK'
 );

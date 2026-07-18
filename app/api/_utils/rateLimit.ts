@@ -99,6 +99,17 @@ async function initUpstash(): Promise<Map<string, UpstashRatelimit> | null> {
       })
     );
 
+    // OAUTH_CALLBACK: 30 requests per 5 minutes
+    upstashLimiters.set(
+      'OAUTH_CALLBACK',
+      new Ratelimit({
+        redis,
+        limiter: Ratelimit.slidingWindow(30, '5 m'),
+        analytics: true,
+        prefix: 'ratelimit:oauth-callback',
+      })
+    );
+
     // AI_SERVICE: 10 requests per minute
     upstashLimiters.set(
       'AI_SERVICE',
@@ -389,6 +400,17 @@ export const RateLimitPresets: Record<string, RateLimitConfig> = {
     maxRequests: 5,
     windowMs: 15 * 60 * 1000, // 15 minutes
     message: 'Too many authentication attempts. Please try again in 15 minutes.',
+  },
+
+  /**
+   * For OAuth redirect/callback endpoints.
+   * These are not password attempts; browser retries, provider redirects, and
+   * smoke tests should not consume the brute-force login budget.
+   */
+  OAUTH_CALLBACK: {
+    maxRequests: 30,
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    message: 'Too many sign-in redirects. Please try again in a few minutes.',
   },
 
   /**
