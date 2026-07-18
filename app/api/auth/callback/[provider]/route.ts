@@ -58,6 +58,14 @@ function findExistingUser(
   return null;
 }
 
+function getPublicOrigin(request: Request, fallbackUrl: URL): string {
+  const forwardedProto = request.headers.get('x-forwarded-proto')?.split(',')[0]?.trim();
+  const forwardedHost = request.headers.get('x-forwarded-host')?.split(',')[0]?.trim();
+  const host = forwardedHost || request.headers.get('host') || fallbackUrl.host;
+  const proto = forwardedProto || fallbackUrl.protocol.replace(':', '');
+  return proto + '://' + host;
+}
+
 function parseSafeRedirect(value: string, origin: string): string {
   try {
     const redirectUrl = new URL(value, origin);
@@ -101,7 +109,8 @@ async function handleCallback(
 
   const url = new URL(request.url);
   const code = url.searchParams.get('code');
-  const callbackUrl = new URL(url.pathname, url.origin).toString();
+  const publicOrigin = getPublicOrigin(request, url);
+  const callbackUrl = new URL(url.pathname, publicOrigin).toString();
   const cookieStore = await cookies();
   const stateCookieName = `${OAUTH_STATE_COOKIE_PREFIX}${provider}`;
 
@@ -111,7 +120,7 @@ async function handleCallback(
     const redirect = await initiateExternalAuth(provider, callbackUrl, state);
 
     if (!redirect) {
-      const loginUrl = new URL('/login', request.url);
+      const loginUrl = new URL('/login', publicOrigin);
       loginUrl.searchParams.set('error', 'Mystira Identity sign-in is unavailable');
       return NextResponse.redirect(loginUrl);
     }
@@ -120,7 +129,7 @@ async function handleCallback(
       name: stateCookieName,
       value: JSON.stringify({
         state,
-        redirect: parseSafeRedirect(requestedRedirect, url.origin),
+        redirect: parseSafeRedirect(requestedRedirect, publicOrigin),
       }),
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -147,7 +156,7 @@ async function handleCallback(
         reason: authResult.error ?? 'Unknown error',
       })
     );
-    const loginUrl = new URL('/login', request.url);
+    const loginUrl = new URL('/login', publicOrigin);
     loginUrl.searchParams.set('error', authResult.error ?? 'Authentication failed');
     return NextResponse.redirect(loginUrl);
   }
@@ -200,7 +209,7 @@ async function handleCallback(
     })
   );
 
-  return NextResponse.redirect(new URL(storedState.redirect, request.url));
+  return NextResponse.redirect(new URL(storedState.redirect, publicOrigin));
 }
 
 export const GET = withRateLimit(
