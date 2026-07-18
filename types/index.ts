@@ -59,7 +59,7 @@ export interface Feedback {
 
 // User types
 export interface UserPayload {
-  [key: string]: any;
+  [key: string]: unknown;
   isAdmin?: boolean;
 }
 
