@@ -29,21 +29,6 @@ param enableMonitoring bool = true
 @description('Enable deployment slot for blue-green deployments (staging/prod only)')
 param enableDeploymentSlot bool = false
 
-@description('Enable custom domain configuration')
-param enableCustomDomain bool = false
-
-@description('DNS Zone name')
-param dnsZoneName string = 'nexamesh.ai'
-
-@description('DNS Zone resource group')
-param dnsZoneResourceGroup string = 'rg-dns-global'
-
-@description('Application subdomain')
-param appSubdomain string = 'omnipost'
-
-@description('API subdomain')
-param apiSubdomain string = 'api.omnipost'
-
 // Generate names directly (required for resource names - must be available at deployment start)
 // Region suffix dropped per ADR-0027 (mystira) applied to omnipost: region is already
 // expressed by the resource group's location property; the suffix added noise without value.
@@ -192,64 +177,10 @@ resource stagingSlot 'Microsoft.Web/sites/slots@2022-09-01' = if (enableDeployme
   }
 }
 
-// Get DNS zone information (deployed to current resource group scope)
-module dns 'dns.bicep' = if (enableCustomDomain) {
-  name: 'dns-info'
-  params: {
-    dnsZoneName: dnsZoneName
-    dnsZoneResourceGroup: dnsZoneResourceGroup
-  }
-}
-
-// Deploy DNS records to DNS zone resource group
-module dnsRecords 'dns-records.bicep' = if (enableCustomDomain) {
-  name: 'dns-records-deployment'
-  scope: resourceGroup(dnsZoneResourceGroup)
-  params: {
-    dnsZoneName: dnsZoneName
-    appSubdomain: appSubdomain
-    apiSubdomain: apiSubdomain
-    webAppDefaultHostname: webApp.properties.defaultHostName
-    tags: tags
-  }
-}
-
-// Custom domain binding for main app (omnipost.nexamesh.ai)
-module appCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
-  name: 'app-custom-domain-deployment'
-  params: {
-    webAppName: webApp.name
-    customHostname: '${appSubdomain}.${dnsZoneName}'
-    enableSsl: true
-    tags: tags
-  }
-  dependsOn: [
-    dnsRecords
-  ]
-}
-
-// Custom domain binding for API (api.omnipost.nexamesh.ai)
-module apiCustomDomain 'custom-domain.bicep' = if (enableCustomDomain) {
-  name: 'api-custom-domain-deployment'
-  params: {
-    webAppName: webApp.name
-    customHostname: '${apiSubdomain}.${dnsZoneName}'
-    enableSsl: true
-    tags: tags
-  }
-  dependsOn: [
-    dnsRecords
-  ]
-}
-
 output webAppName string = webApp.name
 output webAppUrl string = 'https://${webApp.properties.defaultHostName}'
 output appServicePlanName string = appServicePlan.name
 output stagingSlotUrl string = enableDeploymentSlot ? 'https://${stagingSlot!.properties.defaultHostName}' : 'N/A'
-
-// Custom domain outputs
-output customDomainUrl string = enableCustomDomain ? 'https://${appSubdomain}.${dnsZoneName}' : 'N/A'
-output apiCustomDomainUrl string = enableCustomDomain ? 'https://${apiSubdomain}.${dnsZoneName}' : 'N/A'
 
 // Monitoring outputs
 output appInsightsConnectionString string = enableMonitoring ? monitoring!.outputs.connectionString : ''

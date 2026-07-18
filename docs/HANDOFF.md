@@ -22,6 +22,8 @@
 - Azure DNS for `omnipost.neuralliquid.ai` now points to `nl-dev-omnipost-web.azurewebsites.net`.
 - Azure App Service custom hostname binding is configured for `omnipost.neuralliquid.ai`.
 - Managed certificate is created and bound with SNI.
+- DNS ownership moved to `neuralliquid-org` Terraform.
+- Live Omnipost dev runtime was imported into `infra/terraform/env/dev` with `9 imported, 0 added, 0 changed, 0 destroyed`.
 
 ### Azure Resources
 
@@ -52,8 +54,8 @@ Expected:
 ### Remaining Alpha Readiness Work
 
 - Configure required app secrets on `nl-dev-omnipost-web`. Current deployed settings include platform/runtime settings, but not `JWT_SECRET` or optional integration secrets.
-- Decide whether custom-domain DNS/cert binding should be codified in Bicep/workflows. It was completed live in Azure to unblock go-live.
-- Review `.github/workflows/deploy-prod.yml`: it still targets `nexamesh.ai` for the production custom-domain path. The current live domain is `neuralliquid.ai`.
+- Normalize remaining runtime Bicep helpers into Terraform as quick iteration stabilizes.
+- Decide whether the existing managed certificate should be imported into Terraform or left Azure-managed behind the imported hostname binding.
 - Follow up on non-blocking CI annotations:
   - GitHub Actions Node 20 deprecation warnings for pinned actions.
   - Existing lint warnings emitted during build annotations, though CI is passing.

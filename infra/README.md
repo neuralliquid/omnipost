@@ -4,38 +4,47 @@ This infrastructure follows the **NeuralLiquid Azure Naming Standards v3**, with
 the **region suffix dropped per [ADR-0027](https://github.com/JustAGhosT/mystira-workspace/blob/main/docs/architecture/adr/0027-azure-resource-naming-convention.md)**
 (originally a mystira ADR; adopted for omnipost on 2026-05-10).
 
-## Recent Changes (December 2024)
+## Current Ownership
+
+Runtime infrastructure for the live dev app is now represented in Terraform at
+`infra/terraform/env/dev`.
+
+DNS records for `omnipost.neuralliquid.ai` are owned by the `neuralliquid-org`
+Terraform DNS stack. Do not manage `neuralliquid.ai` records from this repo.
+
+The remaining Bicep files are legacy/runtime helpers retained during quick
+iteration. DNS and custom-domain Bicep modules have been removed.
+
+## Recent Changes
+
+### Terraform Runtime Import (July 2026)
+
+The live dev runtime was imported into Terraform with no live Azure changes:
+
+- resource group
+- App Service Plan
+- Linux Web App
+- Log Analytics workspace
+- Application Insights
+- metric alerts
+- `omnipost.neuralliquid.ai` hostname binding
+
+The existing App Service managed certificate remains live in Azure. Certificate
+lifecycle should be normalized in a later Terraform pass after validating the
+provider import behavior.
 
 ### App Service Startup Command Configuration (Dec 10, 2024)
 
 **Issue**: Container was terminating during startup because Azure App Service was using default Node.js startup (`npm start`) instead of running the Next.js standalone server.
 
-**Fix**: Explicitly set `appCommandLine: 'node server.js'` in `main.bicep` for both production and staging slots.
+**Fix**: Explicitly set `appCommandLine: 'node server.js'` in runtime infrastructure for the production app and staging slots.
 
 **Technical Details**:
 
 - Next.js standalone mode creates a minimal `server.js` that must be run directly
 - Azure's managed Node.js runtime ignores `WEBSITE_STARTUP_FILE` when `appCommandLine` is empty
 - Setting `appCommandLine` explicitly ensures the correct startup command is used
-- This affects lines 88 and 182 in `main.bicep`
-
-### DNS Module Restructuring
-
-The DNS configuration has been split into two modules to resolve cross-resource-group deployment issues:
-
-1. **`dns.bicep`** - References the existing DNS zone and provides zone information
-2. **`dns-records.bicep`** - Creates DNS records (CNAME and TXT) in the DNS zone
-
-This change fixes Bicep error BCP165 by ensuring DNS records are deployed with the correct scope (DNS zone's resource group).
-
-**Before:** Single `dns.bicep` module tried to create child resources of a zone in a different resource group (not allowed).
-
-**After:** Separate modules with proper scoping:
-
-- `dns.bicep` - Deployed in app resource group, references existing zone
-- `dns-records.bicep` - Deployed in DNS zone resource group, creates records
-
-See `main.bicep` for usage example.
+- This was originally fixed in `main.bicep` and is mirrored in Terraform.
 
 ## Naming Pattern
 
