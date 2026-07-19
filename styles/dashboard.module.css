@@ -1,24 +1,137 @@
 /* Dashboard-specific styles */
+.dashboardHero {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+  padding: 2rem;
+  color: var(--color-text-inverse);
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboardHero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.dashboardHero p {
+  max-width: 680px;
+  margin: 0.65rem 0 0;
+  font-size: var(--font-size-lg, 1.125rem);
+  opacity: 0.92;
+}
+
+.eyebrow,
+.cardKicker,
+.summaryLabel {
+  display: block;
+  margin: 0 0 0.35rem;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs, 0.75rem);
+  font-weight: var(--font-weight-bold, 700);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.dashboardHero .eyebrow {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.heroMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 220px;
+}
+
+.heroMeta span {
+  display: inline-flex;
+  justify-content: center;
+  padding: 0.45rem 0.7rem;
+  color: var(--color-text-inverse);
+  background-color: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: var(--radius-md, 8px);
+  font-size: var(--font-size-sm, 0.875rem);
+  font-weight: var(--font-weight-medium, 500);
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.summaryCard,
+.metricsCard {
+  min-width: 0;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: var(--shadow-sm);
+}
+
+.summaryCard {
+  padding: 1rem;
+}
+
+.summaryCard strong {
+  display: block;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-xl, 1.25rem);
+  line-height: 1.2;
+}
+
+.summaryHint {
+  display: block;
+  margin-top: 0.35rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.dashboardSection {
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
 .dashboardGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+  gap: 1.25rem;
   margin: 0;
 }
 
 .metricsCard {
-  min-width: 0;
+  overflow: hidden;
 }
 
 .cardHeader {
+  padding: 1.25rem 1.25rem 0;
   margin-bottom: 1rem;
 }
 
 .cardHeader h2 {
-  margin-top: 0;
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-2xl, 1.5rem);
+  line-height: 1.2;
+}
+
+.cardHeader p {
+  margin: 0.4rem 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm, 0.875rem);
 }
 
 .cardContent {
+  padding: 0 1.25rem 1.25rem;
   color: var(--color-text-body);
 }
 
@@ -44,23 +157,33 @@
   color: var(--color-primary);
   padding: 0.25rem 0.75rem;
   background-color: var(--color-primary-100);
-  border-radius: 4px;
+  border-radius: var(--radius-sm, 4px);
 }
 
 .refreshButton {
   margin-top: 1rem;
-  padding: 0.5rem 1rem;
-  background-color: #4a6491;
-  color: white;
+  padding: 0.6rem 0.95rem;
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-sm, 4px);
   cursor: pointer;
   font-size: 0.9rem;
-  transition: background-color 0.2s;
+  font-weight: var(--font-weight-semibold, 600);
+  transition:
+    background-color 0.2s,
+    transform 0.2s;
 }
 
 .refreshButton:hover {
-  background-color: #3a5481;
+  background-color: var(--color-primary-dark);
+  transform: translateY(-1px);
+}
+
+.refreshButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
 }
 
 .errorMessage {
@@ -71,32 +194,104 @@
   margin: 1rem 0;
 }
 
+.emptyMessage,
 .loadingIndicator {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 140px;
   padding: 2rem;
-  color: #718096;
+  color: var(--color-text-secondary);
 }
+
 .tableContainer {
   width: 100%;
+  overflow-x: auto;
 }
 
 .metricsTable {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md, 8px);
 }
 
 .metricsTable th,
 .metricsTable td {
-  border: 1px solid var(--color-border);
-  padding: 8px;
+  padding: 0.85rem 1rem;
   text-align: left;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .metricsTable th {
   background-color: var(--color-bg-tertiary);
   color: var(--color-text-heading);
+  font-size: var(--font-size-xs, 0.75rem);
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.metricsTable tr:last-child td {
+  border-bottom: 0;
+}
+
+.metricsTable td:last-child {
+  color: var(--color-primary);
+  font-weight: var(--font-weight-semibold, 600);
+}
+
+.integrationPausedCard {
+  border-style: dashed;
+  background-color: var(--color-bg-tertiary);
+}
+
+.integrationPanel h2 {
+  margin: 0;
+  color: var(--color-text-heading);
+  font-size: var(--font-size-2xl, 1.5rem);
+  line-height: 1.2;
+}
+
+.integrationIntro {
+  margin: 0.4rem 0 1rem;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+.recordList {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.recordList li {
+  padding: 0.65rem 0.75rem;
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm, 4px);
+  font-size: var(--font-size-sm, 0.875rem);
+}
+
+@media (max-width: 900px) {
+  .dashboardHero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .heroMeta {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .summaryGrid,
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
 }

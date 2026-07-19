@@ -4,11 +4,18 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import styles from '@/styles/Header.module.css';
-import { siteConfig } from '../../data/siteConfig';
+import { NavigationItem, siteConfig } from '../../data/siteConfig';
 import { useAuth } from '../providers/AuthProvider';
+
+type ThemeMode = 'light' | 'dark';
+
+const THEME_STORAGE_KEY = 'omnipost.theme';
+const AIRTABLE_STORAGE_KEY = 'omnipost.airtableEnabled';
 
 const Header: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>('light');
+  const [airtableEnabled, setAirtableEnabled] = useState(true);
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLElement>(null);
@@ -28,6 +35,45 @@ const Header: React.FC = () => {
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
+
+  const isNavItemActive = (item: NavigationItem): boolean => {
+    if (pathname === item.path) return true;
+    return item.children?.some(child => pathname === child.path) ?? false;
+  };
+
+  const toggleTheme = () => {
+    const nextTheme = themeMode === 'dark' ? 'light' : 'dark';
+    setThemeMode(nextTheme);
+    document.documentElement.dataset.theme = nextTheme;
+    localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+  };
+
+  const toggleAirtable = () => {
+    const nextValue = !airtableEnabled;
+    setAirtableEnabled(nextValue);
+    localStorage.setItem(AIRTABLE_STORAGE_KEY, String(nextValue));
+    window.dispatchEvent(
+      new CustomEvent('omnipost:airtable-toggle', { detail: { enabled: nextValue } })
+    );
+  };
+
+  useEffect(() => {
+    const storedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    const preferredTheme =
+      storedTheme === 'dark' || storedTheme === 'light'
+        ? storedTheme
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
+
+    setThemeMode(preferredTheme);
+    document.documentElement.dataset.theme = preferredTheme;
+
+    const storedAirtable = localStorage.getItem(AIRTABLE_STORAGE_KEY);
+    if (storedAirtable !== null) {
+      setAirtableEnabled(storedAirtable === 'true');
+    }
+  }, []);
 
   // Handle escape key to close menu
   useEffect(() => {
@@ -81,17 +127,72 @@ const Header: React.FC = () => {
         >
           <ul className={styles.navList}>
             {navigationItems.map(item => (
-              <li key={`nav-${item.path}`} className={styles.navItem}>
-                <Link
-                  href={item.path}
-                  className={`${styles.navLink} ${pathname === item.path ? styles.activeLink : ''}`}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
+              <li
+                key={`nav-${item.path}`}
+                className={`${styles.navItem} ${item.children ? styles.hasDropdown : ''}`}
+              >
+                {item.children ? (
+                  <>
+                    <Link
+                      href={item.path}
+                      className={`${styles.navLink} ${styles.dropdownTrigger} ${
+                        isNavItemActive(item) ? styles.activeLink : ''
+                      }`}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {item.name}
+                      <span className={styles.dropdownChevron} aria-hidden="true">
+                        v
+                      </span>
+                    </Link>
+                    <ul className={styles.dropdownMenu} aria-label={`${item.name} navigation`}>
+                      {item.children.map(child => (
+                        <li key={`nav-${item.path}-${child.path}`}>
+                          <Link
+                            href={child.path}
+                            className={`${styles.dropdownLink} ${
+                              pathname === child.path ? styles.activeDropdownLink : ''
+                            }`}
+                            onClick={() => setMenuOpen(false)}
+                          >
+                            {child.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                ) : (
+                  <Link
+                    href={item.path}
+                    className={`${styles.navLink} ${pathname === item.path ? styles.activeLink : ''}`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                )}
               </li>
             ))}
-            <li className={styles.navItem}>
+            <li className={`${styles.navItem} ${styles.utilityGroup}`} aria-label="Header controls">
+              <button
+                type="button"
+                className={`${styles.toggleButton} ${airtableEnabled ? styles.toggleActive : ''}`}
+                onClick={toggleAirtable}
+                aria-pressed={airtableEnabled}
+              >
+                <span className={styles.toggleTrack} aria-hidden="true">
+                  <span className={styles.toggleThumb}></span>
+                </span>
+                Airtable
+              </button>
+              <button
+                type="button"
+                className={styles.iconToggleButton}
+                onClick={toggleTheme}
+                aria-label={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} mode`}
+                title={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} mode`}
+              >
+                {themeMode === 'dark' ? 'Light' : 'Dark'}
+              </button>
               {isAuthenticated ? (
                 <button onClick={handleLogout} className={styles.authButton}>
                   Logout ({user?.username})
