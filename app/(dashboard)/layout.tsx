@@ -9,6 +9,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/providers/AuthProvider';
 import { ErrorBoundary } from '@/components/ui';
+import Header from '@/components/ui/Header';
 import styles from '@/styles/shared.module.css';
 
 export default function DashboardLayout({ children }: { readonly children: React.ReactNode }) {
@@ -23,9 +24,12 @@ export default function DashboardLayout({ children }: { readonly children: React
 
   if (isLoading) {
     return (
-      <div className={styles.container}>
-        <div>Loading...</div>
-      </div>
+      <>
+        <Header />
+        <div className={styles.container}>
+          <div>Loading...</div>
+        </div>
+      </>
     );
   }
 
@@ -34,8 +38,11 @@ export default function DashboardLayout({ children }: { readonly children: React
   }
 
   return (
-    <div className={styles.container}>
-      <ErrorBoundary>{children}</ErrorBoundary>
-    </div>
+    <>
+      <Header />
+      <div className={styles.container}>
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </div>
+    </>
   );
 }
