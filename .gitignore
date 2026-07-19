@@ -67,10 +67,12 @@ deploy/
 node-app.zip
 
 # Playwright
+.playwright-cli/
 test-results/
 playwright-report/
 blob-report/
 e2e/.auth/
+output/playwright/
 
 # Retort ephemeral state
 .claude/state/
