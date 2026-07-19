@@ -1,5 +1,6 @@
 import Airtable, { FieldSet, Records } from 'airtable';
 import React, { useEffect, useState } from 'react';
+import dashboardStyles from '@/styles/dashboard.module.css';
 
 interface Record {
   id: string;
@@ -18,10 +19,20 @@ const AirtableIntegration: React.FC = () => {
     const fetchRecords = async () => {
       setLoading(true);
       try {
+        const apiKey = process.env.NEXT_PUBLIC_AIRTABLE_API_KEY || '';
+        const baseId = process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID || '';
+        const tableName = process.env.NEXT_PUBLIC_AIRTABLE_TABLE_NAME || '';
+
+        if (!apiKey || !baseId || !tableName) {
+          setRecords([]);
+          setError('Airtable browser configuration is incomplete.');
+          return;
+        }
+
         const base = new Airtable({
-          apiKey: process.env.NEXT_PUBLIC_AIRTABLE_API_KEY || '',
-        }).base(process.env.NEXT_PUBLIC_AIRTABLE_BASE_ID || '');
-        const table = base(process.env.NEXT_PUBLIC_AIRTABLE_TABLE_NAME || '');
+          apiKey,
+        }).base(baseId);
+        const table = base(tableName);
 
         const records: Records<FieldSet> = await table.select().all();
         setRecords([...records] as Record[]);
@@ -36,12 +47,17 @@ const AirtableIntegration: React.FC = () => {
   }, []);
 
   return (
-    <div>
+    <div className={dashboardStyles.integrationPanel}>
       <h2>Airtable Integration</h2>
-      {error && <p>Error: {error}</p>}
-      {loading && <p>Loading records...</p>}
-      {!loading && records.length === 0 && !error && <p>No records found</p>}
-      <ul>
+      <p className={dashboardStyles.integrationIntro}>
+        Review synced content records from the configured Airtable base.
+      </p>
+      {error && <p className={dashboardStyles.errorMessage}>Error: {error}</p>}
+      {loading && <p className={dashboardStyles.loadingIndicator}>Loading records...</p>}
+      {!loading && records.length === 0 && !error && (
+        <p className={dashboardStyles.emptyMessage}>No records found</p>
+      )}
+      <ul className={dashboardStyles.recordList}>
         {records.map(record => (
           <li key={record.id}>{record.fields?.Name || record.id || 'Unnamed record'}</li>
         ))}

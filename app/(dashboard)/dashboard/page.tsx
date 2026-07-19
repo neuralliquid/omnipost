@@ -24,16 +24,58 @@ async function getEngagementMetrics() {
   return engagementMetrics;
 }
 
+function getNumericMetricValue(value: number | string): number {
+  if (typeof value === 'number') return value;
+  const parsed = Number.parseFloat(value.replace(/[^0-9.-]/g, ''));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
 export default async function PerformanceDashboardPage() {
   const metrics = await getEngagementMetrics();
+  const metricValues = metrics.map(metric => getNumericMetricValue(metric.value));
+  const totalEngagement = metricValues.reduce((total, value) => total + value, 0);
+  const topMetric = metrics.reduce<(typeof metrics)[number] | null>((top, metric) => {
+    if (!top) return metric;
+    return getNumericMetricValue(metric.value) > getNumericMetricValue(top.value) ? metric : top;
+  }, null);
 
   return (
     <>
-      <div className={styles.header}>
-        <h1>Performance Dashboard</h1>
-        <p>Monitor and analyze your content performance across platforms</p>
+      <div className={dashboardStyles.dashboardHero}>
+        <div>
+          <p className={dashboardStyles.eyebrow}>Publishing intelligence</p>
+          <h1>Performance Dashboard</h1>
+          <p>Monitor engagement, integrations, and platform momentum from one workspace.</p>
+        </div>
+        <div className={dashboardStyles.heroMeta}>
+          <span>{metrics.length} platforms tracked</span>
+          <span>{topMetric ? `${topMetric.platform} leads` : 'No leader yet'}</span>
+        </div>
       </div>
-      <div className={styles.section}>
+
+      <div className={dashboardStyles.summaryGrid} aria-label="Dashboard summary">
+        <div className={dashboardStyles.summaryCard}>
+          <span className={dashboardStyles.summaryLabel}>Total engagement</span>
+          <strong>{totalEngagement.toLocaleString()}</strong>
+          <span className={dashboardStyles.summaryHint}>Across tracked platforms</span>
+        </div>
+        <div className={dashboardStyles.summaryCard}>
+          <span className={dashboardStyles.summaryLabel}>Top platform</span>
+          <strong>{topMetric?.platform ?? 'None'}</strong>
+          <span className={dashboardStyles.summaryHint}>
+            {topMetric ? `${topMetric.value} engagement` : 'Waiting for activity'}
+          </span>
+        </div>
+        <div className={dashboardStyles.summaryCard}>
+          <span className={dashboardStyles.summaryLabel}>Airtable sync</span>
+          <strong>Header controlled</strong>
+          <span className={dashboardStyles.summaryHint}>
+            Toggle visibility without leaving the page
+          </span>
+        </div>
+      </div>
+
+      <div className={`${styles.section} ${dashboardStyles.dashboardSection}`}>
         <div className={dashboardStyles.dashboardGrid}>
           {/* Engagement Metrics - Server rendered with client refresh */}
           <Suspense

@@ -44,7 +44,7 @@ function MetricsContent({
   }
 
   if (metrics.length === 0) {
-    return <p>No metrics available</p>;
+    return <p className={dashboardStyles.emptyMessage}>No metrics available</p>;
   }
 
   return (
@@ -101,7 +101,9 @@ export function DashboardMetrics({ initialMetrics }: Readonly<DashboardMetricsPr
   return (
     <div className={dashboardStyles.metricsCard}>
       <div className={dashboardStyles.cardHeader}>
+        <span className={dashboardStyles.cardKicker}>Analytics</span>
         <h2>Engagement Metrics</h2>
+        <p>Current engagement by platform with manual refresh support.</p>
       </div>
       <div className={dashboardStyles.cardContent}>
         <MetricsContent
