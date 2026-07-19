@@ -3,7 +3,8 @@
  *
  * Public endpoint that returns available authentication providers.
  * Calls the external identity API via the identity-provider abstraction
- * and caches results for 5 minutes.
+ * without HTTP caching so runtime identity configuration changes are reflected
+ * immediately on login/signup pages.
  *
  * Rate-limited to prevent abuse (public endpoint).
  */
@@ -25,7 +26,7 @@ async function handleGetProviders(): Promise<NextResponse> {
     { providers: publicProviders },
     {
       headers: {
-        'Cache-Control': 'public, max-age=300, s-maxage=300',
+        'Cache-Control': 'no-store, max-age=0',
       },
     }
   );
