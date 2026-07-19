@@ -34,7 +34,7 @@ export default function LoginPage() {
     let cancelled = false;
     async function fetchProviders() {
       try {
-        const res = await fetch('/api/auth/providers');
+        const res = await fetch('/api/auth/providers', { cache: 'no-store' });
         if (res.ok) {
           const data = await res.json();
           if (!cancelled && Array.isArray(data.providers)) {
