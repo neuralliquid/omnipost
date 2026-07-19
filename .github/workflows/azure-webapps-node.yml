@@ -54,12 +54,15 @@ jobs:
       - name: Install, build, and test
         run: |
           pnpm install --frozen-lockfile
+          pnpm exec prisma generate
           pnpm run type-check
           pnpm run lint
           pnpm run build
+          pnpm exec prisma db push --skip-generate
           pnpm test
         env:
           JWT_SECRET: test-secret-key-for-deployment-ci
+          DATABASE_URL: file:./prisma/omnipost.db
 
       - name: Prepare deployment package
         run: |
@@ -78,6 +81,10 @@ jobs:
 
           # Copy data directory (required for feature flags and configuration)
           cp -r data deploy/data || true
+
+          # Copy Prisma SQLite bootstrap database for alpha App Service auth persistence.
+          mkdir -p deploy/prisma
+          cp prisma/omnipost.db deploy/prisma/omnipost.db
 
           # Fix package.json start script for standalone mode
           # The standalone build includes a server.js that should be run directly
