@@ -110,7 +110,7 @@ export function ContentCreatePage() {
   // Step 2: Platform Adaptation
   const [platformStates, setPlatformStates] = useState<PlatformState[]>(() =>
     platforms
-      .filter(p => p.slug !== 'custom-channel')
+      .filter(p => p.slug !== 'custom-channel' && p.defaultContentFlow !== false)
       .map(p => ({
         slug: p.slug,
         name: p.name,

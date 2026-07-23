@@ -42,6 +42,7 @@ export {
   LinkedInAdapter,
   FacebookAdapter,
   InstagramAdapter,
+  TikTokAdapter,
 } from './adapters';
 
 // Publisher

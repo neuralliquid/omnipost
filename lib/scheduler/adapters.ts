@@ -141,6 +141,12 @@ abstract class BasePlatformAdapter implements PlatformAdapter {
   }
 
   protected abstract getMockUrl(postId: string): string;
+
+  protected assertProductionCredentials(config: { apiKey?: string } | undefined): void {
+    if (process.env.NODE_ENV === 'production' && !config?.apiKey) {
+      throw new Error(`${this.platformId} API key is not configured`);
+    }
+  }
 }
 
 /**
@@ -160,6 +166,7 @@ export class TwitterAdapter extends BasePlatformAdapter {
     if (config?.apiKey && process.env.NODE_ENV === 'production') {
       return this.publishToTwitter(content, config);
     }
+    this.assertProductionCredentials(config);
 
     // Development: simulate
     return this.simulatePublish(content, 'Twitter');
@@ -313,6 +320,7 @@ export class LinkedInAdapter extends BasePlatformAdapter {
     if (config?.apiKey && process.env.NODE_ENV === 'production') {
       return this.publishToLinkedIn(content, config);
     }
+    this.assertProductionCredentials(config);
 
     return this.simulatePublish(content, 'LinkedIn');
   }
@@ -379,6 +387,7 @@ export class FacebookAdapter extends BasePlatformAdapter {
     if (config?.apiKey && process.env.NODE_ENV === 'production') {
       return this.publishToFacebook(content, config);
     }
+    this.assertProductionCredentials(config);
 
     return this.simulatePublish(content, 'Facebook');
   }
@@ -429,6 +438,7 @@ export class InstagramAdapter extends BasePlatformAdapter {
     if (config?.apiKey && process.env.NODE_ENV === 'production') {
       return this.publishToInstagram(content, config);
     }
+    this.assertProductionCredentials(config);
 
     return this.simulatePublish(content, 'Instagram');
   }
@@ -496,6 +506,97 @@ export class InstagramAdapter extends BasePlatformAdapter {
 }
 
 /**
+ * TikTok Adapter
+ */
+export class TikTokAdapter extends BasePlatformAdapter {
+  platformId = 'tiktok';
+
+  getMaxLength(): number {
+    return 2200;
+  }
+
+  async publish(content: ScheduledJob['content']): Promise<PlatformPublishResult> {
+    const config = getPlatformConfig('tiktok');
+
+    if (config?.apiKey && process.env.NODE_ENV === 'production') {
+      return this.publishToTikTok(content, config);
+    }
+    this.assertProductionCredentials(config);
+
+    return this.simulatePublish(content, 'TikTok');
+  }
+
+  private async publishToTikTok(
+    content: ScheduledJob['content'],
+    config: { apiUrl: string; apiKey: string; timeoutMs?: number }
+  ): Promise<PlatformPublishResult> {
+    if (!content.mediaUrls || content.mediaUrls.length === 0) {
+      throw new Error('TikTok posts require a video URL');
+    }
+
+    const privacyLevel = content.tiktokPrivacyLevel || process.env.TIKTOK_PRIVACY_LEVEL;
+    if (!privacyLevel) {
+      throw new Error('TikTok privacy level is required for direct posts');
+    }
+
+    const data = await fetchWithTimeout<{
+      data?: { publish_id?: string };
+      error?: { code?: string; message?: string };
+    }>({
+      url: config.apiUrl,
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${config.apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: {
+        post_info: {
+          title: content.text,
+          privacy_level: privacyLevel,
+        },
+        source_info: {
+          source: 'PULL_FROM_URL',
+          video_url: content.mediaUrls[0],
+        },
+      },
+      timeoutMs: config.timeoutMs ?? DEFAULT_TIMEOUT_MS,
+      platformName: 'TikTok',
+    });
+
+    if (data.error?.code && data.error.code !== 'ok') {
+      const message = data.error.message ? ` - ${data.error.message}` : '';
+      throw new Error(`TikTok API error: ${data.error.code}${message}`);
+    }
+
+    const id = data.data?.publish_id;
+    if (!id) {
+      throw new Error('TikTok publish response did not include a publish ID');
+    }
+
+    return {
+      id,
+      url: `https://www.tiktok.com/upload?publish_id=${id}`,
+      platformData: data,
+    };
+  }
+
+  protected getMockUrl(postId: string): string {
+    return `https://www.tiktok.com/@user/video/${postId}`;
+  }
+
+  validateContent(content: ScheduledJob['content']): ValidationResult {
+    const result = super.validateContent(content);
+
+    if (!content.mediaUrls || content.mediaUrls.length === 0) {
+      result.errors.push('TikTok posts require a video URL');
+      result.valid = false;
+    }
+
+    return result;
+  }
+}
+
+/**
  * Adapter registry
  */
 const adapters = new Map<string, PlatformAdapter>();
@@ -503,6 +604,7 @@ adapters.set('twitter', new TwitterAdapter());
 adapters.set('linkedin', new LinkedInAdapter());
 adapters.set('facebook', new FacebookAdapter());
 adapters.set('instagram', new InstagramAdapter());
+adapters.set('tiktok', new TikTokAdapter());
 
 /**
  * Get adapter for a platform

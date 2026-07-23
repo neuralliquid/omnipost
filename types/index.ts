@@ -18,6 +18,9 @@ export interface ContentType {
   id?: string;
   title?: string;
   description?: string;
+  mediaUrls?: string[];
+  hashtags?: string[];
+  tiktokPrivacyLevel?: string;
   // Add other relevant fields
 }
 
