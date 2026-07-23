@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
-import axios, { AxiosError } from 'axios';
-import pLimit from 'p-limit';
-import { getPlatformConfig, PlatformConfig } from '../../../../lib/config/platforms';
+import { getPublisher } from '../../../../lib/scheduler';
+import type { ScheduledJob } from '../../../../lib/scheduler';
 import { QueueItem, PublishResult } from '../../../../types';
 import featureFlags from '../../../../lib/featureFlags';
 import { withErrorHandling, Errors } from '../../_utils/errors';
@@ -12,6 +11,37 @@ import { validateArray } from '../../_utils/validation';
 // Configure concurrency limit - could be moved to config
 const MAX_CONCURRENT_REQUESTS = 5;
 
+async function mapWithConcurrency<T, TResult>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T, index: number) => Promise<TResult>
+): Promise<PromiseSettledResult<TResult>[]> {
+  const results = new Array<PromiseSettledResult<TResult>>(items.length);
+  let nextIndex = 0;
+
+  async function worker(): Promise<void> {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex++;
+      try {
+        results[currentIndex] = {
+          status: 'fulfilled',
+          value: await mapper(items[currentIndex], currentIndex),
+        };
+      } catch (reason) {
+        results[currentIndex] = {
+          status: 'rejected',
+          reason,
+        };
+      }
+    }
+  }
+
+  const workerCount = Math.min(concurrency, items.length);
+  await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+  return results;
+}
+
 /**
  * Validates a queue item structure
  */
@@ -19,30 +49,43 @@ function validateQueueItem(item: QueueItem): { valid: boolean; error?: string } 
   if (!item.platform || !item.platform.name || !item.content) {
     return { valid: false, error: 'Invalid item structure' };
   }
+  if (!getContentText(item)) {
+    return { valid: false, error: 'Content text is required' };
+  }
   return { valid: true };
 }
 
 /**
- * Validates platform configuration
+ * Gets publishable text from legacy queue content.
  */
-function validatePlatformConfig(
-  platformName: string
-): { valid: true; config: PlatformConfig } | { valid: false; error: string } {
-  const platformConfig = getPlatformConfig(platformName);
+function getContentText(item: QueueItem): string {
+  return (item.content.description || item.content.title || '').trim();
+}
 
-  if (!platformConfig) {
-    return { valid: false, error: `Platform configuration not found for ${platformName}` };
-  }
+/**
+ * Converts legacy queue items into scheduler publisher jobs.
+ */
+function toPublishJob(item: QueueItem): ScheduledJob {
+  const now = new Date().toISOString();
+  const platformId = item.platform.name.toLowerCase().replaceAll(/\s+/g, '-');
+  const contentId = item.content.id || `queue-${platformId}-${Date.now()}`;
 
-  // Check if API key is missing for a required platform
-  if (platformConfig.required && !platformConfig.apiKey) {
-    return {
-      valid: false,
-      error: `API key for ${platformName} is not configured. Please set the ${platformName.toUpperCase().replaceAll(/\s+/g, '_')}_API_KEY environment variable.`,
-    };
-  }
-
-  return { valid: true, config: platformConfig };
+  return {
+    id: `queue-${platformId}-${contentId}`,
+    type: 'standalone',
+    contentId,
+    platformId,
+    content: {
+      text: getContentText(item),
+    },
+    scheduledTime: now,
+    timezone: 'UTC',
+    status: 'processing',
+    attempts: 0,
+    maxAttempts: 1,
+    createdAt: now,
+    updatedAt: now,
+  };
 }
 
 /**
@@ -59,14 +102,6 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
   const platformName = item.platform.name.toLowerCase();
   const contentId = item.content.id || 'unknown';
 
-  // Validate platform configuration
-  const configValidation = validatePlatformConfig(platformName);
-  if (!configValidation.valid) {
-    return { item, error: configValidation.error };
-  }
-
-  const platformConfig = configValidation.config;
-
   try {
     // Log individual publishing attempt
     const publishLogEntry = await createLogEntry('PUBLISH_TO_PLATFORM', {
@@ -75,41 +110,28 @@ async function publishItem(item: QueueItem): Promise<PublishResult> {
     });
     await logToAuditTrail(publishLogEntry);
 
-    // Publish to platform
-    await axios.post(
-      platformConfig.apiUrl,
-      {
-        content: item.content,
-      },
-      {
-        headers: {
-          ...platformConfig.headers,
-          ...(platformConfig.headers?.Authorization
-            ? { Authorization: platformConfig.headers.Authorization }
-            : platformConfig.apiKey
-              ? { Authorization: `Bearer ${platformConfig.apiKey}` }
-              : {}),
-        },
-      }
-    );
+    const publishResult = await getPublisher().publish(toPublishJob(item));
 
-    // Return successful result without error property
-    return { item };
+    if (!publishResult.success) {
+      return {
+        item,
+        error: publishResult.error?.message || 'Publishing failed',
+      };
+    }
+
+    return {
+      item,
+      platformPostId: publishResult.result?.id,
+      publishedUrl: publishResult.result?.url,
+    };
   } catch (err) {
-    // Enhanced error handling with AxiosError details
-    const axiosError = err as AxiosError;
-    const statusCode = axiosError.response?.status;
-    const errorMessage = platformConfig.apiKey
-      ? axiosError.message
-      : `${axiosError.message} (This may be due to missing API key)`;
+    const errorMessage = err instanceof Error ? err.message : 'Unknown publishing error';
 
     // Enhanced error logging with HTTP status
     const errorLogEntry = await createLogEntry('PUBLISH_FAILURE', {
       platformName,
       contentId,
       error: errorMessage,
-      statusCode: statusCode,
-      responseData: axiosError.response?.data,
     });
     await logToAuditTrail(errorLogEntry);
 
@@ -151,24 +173,21 @@ export const POST = withErrorHandling(async (request: Request) => {
   const approvalLogEntry = await createLogEntry('APPROVE_QUEUE', { queueSize: queue.length });
   await logToAuditTrail(approvalLogEntry);
 
-  // Create a concurrency limiter
-  const limit = pLimit(MAX_CONCURRENT_REQUESTS);
-
   // Process all items concurrently with throttling
-  const publishPromises: Promise<PublishResult>[] = queue.map((item: QueueItem) =>
-    limit(() => publishItem(item))
-  );
-  const publishResults = await Promise.allSettled(publishPromises);
+  const publishResults = await mapWithConcurrency(queue, MAX_CONCURRENT_REQUESTS, publishItem);
 
   // Process results
-  const results: { success: QueueItem[]; failed: PublishResult[] } = { success: [], failed: [] };
+  const results: { success: PublishResult[]; failed: PublishResult[] } = {
+    success: [],
+    failed: [],
+  };
 
   publishResults.forEach((result, index) => {
     if (result.status === 'fulfilled') {
       const publishResult = result.value;
       if (!publishResult.error) {
         // No error means success
-        results.success.push(publishResult.item);
+        results.success.push(publishResult);
       } else {
         // Has error property means failure
         results.failed.push(publishResult);

@@ -29,6 +29,8 @@ export interface QueueItem {
 export interface PublishResult {
   item: QueueItem;
   error?: string;
+  platformPostId?: string;
+  publishedUrl?: string;
 }
 
 // Feature flag types
