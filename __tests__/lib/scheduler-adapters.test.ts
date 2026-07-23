@@ -66,11 +66,21 @@ describe('Scheduler platform adapters', () => {
     ).rejects.toThrow('facebook API key is not configured');
   });
 
+  test('provider-gated platforms are marked as coming soon', () => {
+    const comingSoonSlugs = platforms
+      .filter(platform => platform.comingSoon)
+      .map(platform => platform.slug)
+      .sort();
+
+    expect(comingSoonSlugs).toEqual(['facebook', 'instagram', 'tiktok']);
+  });
+
   test('TikTok is excluded from the default text-only content flow', () => {
     const tiktok = platforms.find(platform => platform.slug === 'tiktok');
 
     expect(tiktok).toEqual(
       expect.objectContaining({
+        comingSoon: true,
         defaultContentFlow: false,
         requiresMedia: true,
       })

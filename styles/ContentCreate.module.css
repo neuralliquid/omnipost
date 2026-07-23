@@ -244,6 +244,11 @@
   border-color: var(--color-border-light);
 }
 
+.platformCard.comingSoonCard {
+  opacity: 1;
+  background-color: var(--color-bg-secondary);
+}
+
 .platformCardHeader {
   display: flex;
   align-items: center;
@@ -253,10 +258,27 @@
   border-bottom: 1px solid var(--color-border-light);
 }
 
+.platformTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-width: 0;
+}
+
 .platformName {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-heading);
+}
+
+.comingSoonBadge {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 8px;
+  white-space: nowrap;
 }
 
 .platformToggle {
@@ -280,6 +302,10 @@
   transition: background-color var(--transition-fast);
   border: none;
   padding: 0;
+}
+
+.toggle:disabled {
+  cursor: not-allowed;
 }
 
 .toggle.toggleOn {

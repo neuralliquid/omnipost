@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "AI-powered multi-platform content publishing. Publish everywhere, manage anywhere. Built with React and Next.js.",
   "main": "index.js",
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.34.5",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

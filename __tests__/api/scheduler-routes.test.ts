@@ -171,6 +171,24 @@ describe('Scheduler API Routes', () => {
       expect(mockSchedule).not.toHaveBeenCalled();
     });
 
+    test('rejects coming-soon platforms before scheduling', async () => {
+      const comingSoonJob = {
+        type: 'standalone',
+        contentId: 'content-1',
+        platformId: 'facebook',
+        content: { text: 'Hello world' },
+        scheduledTime: '2026-04-01T12:00:00Z',
+      };
+
+      const request = createRequest('POST', comingSoonJob);
+      const response = await POST(request);
+      const data = await response.json();
+
+      expect(response.status).toBe(400);
+      expect(data.message).toContain('Facebook publishing is coming soon');
+      expect(mockSchedule).not.toHaveBeenCalled();
+    });
+
     test('requires authentication for POST', async () => {
       const { headers } = require('next/headers');
       (headers as jest.Mock).mockReturnValueOnce({

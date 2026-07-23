@@ -1,6 +1,10 @@
 packages:
   - '.'
 
+nodeLinker: hoisted
+autoInstallPeers: true
+strictPeerDependencies: false
+
 onlyBuiltDependencies:
   - sharp
   - unrs-resolver

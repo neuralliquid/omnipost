@@ -19,13 +19,12 @@
 pnpm's default isolated module structure (`.pnpm` directory) is not compatible with Azure App Service's Node.js module resolution. When Next.js tries to resolve dependencies like `styled-jsx/package.json`, it fails because Azure's runtime doesn't understand pnpm's hoisted structure.
 
 **Solution:**
-Added `.npmrc` configuration to use hoisted node_modules structure:
+Added `pnpm-workspace.yaml` configuration to use hoisted node_modules structure:
 
-```ini
-# .npmrc
-node-linker=hoisted
-auto-install-peers=true
-strict-peer-dependencies=false
+```yaml
+nodeLinker: hoisted
+autoInstallPeers: true
+strictPeerDependencies: false
 ```
 
 This ensures all dependencies are placed in a flat `node_modules` directory that Azure can resolve.
@@ -46,12 +45,12 @@ Explicitly set `appCommandLine: 'node server.js'` in the Bicep template (`infra/
 
 ### Changes Made
 
-1. **.npmrc** (NEW):
+1. **pnpm-workspace.yaml**:
 
-   ```ini
-   node-linker=hoisted
-   auto-install-peers=true
-   strict-peer-dependencies=false
+   ```yaml
+   nodeLinker: hoisted
+   autoInstallPeers: true
+   strictPeerDependencies: false
    ```
 
 2. **infra/main.bicep** (Lines 88, 182):
@@ -70,7 +69,7 @@ Explicitly set `appCommandLine: 'node server.js'` in the Bicep template (`infra/
 
 - pnpm's default `.pnpm` structure uses symlinks and a complex nested layout
 - Azure's Node.js runtime expects a flat `node_modules` directory
-- `node-linker=hoisted` creates a traditional flat structure compatible with Azure
+- `nodeLinker: hoisted` creates a traditional flat structure compatible with Azure
 - All dependencies (including `styled-jsx`) are now directly resolvable
 
 **Explicit startup command:**
