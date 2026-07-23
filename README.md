@@ -330,6 +330,11 @@ FACEBOOK_API_KEY=your-facebook-api-key
 INSTAGRAM_API_URL=https://graph.instagram.com
 INSTAGRAM_API_KEY=your-instagram-api-key
 
+# TikTok
+TIKTOK_API_URL=https://open.tiktokapis.com/v2/post/publish/video/init/
+TIKTOK_API_KEY=your-tiktok-api-key
+TIKTOK_PRIVACY_LEVEL=SELF_ONLY
+
 # LinkedIn
 LINKEDIN_API_URL=https://api.linkedin.com
 LINKEDIN_API_KEY=your-linkedin-api-key
