@@ -69,7 +69,12 @@ describe('Queue approval API', () => {
         queue: [
           {
             platform: { id: 1, name: 'Facebook' },
-            content: { id: 'content-1', title: 'Launch note' },
+            content: {
+              id: 'content-1',
+              title: 'Launch note',
+              mediaUrls: ['https://cdn.example.com/post.png'],
+              hashtags: ['launch'],
+            },
           },
         ],
       })
@@ -89,7 +94,11 @@ describe('Queue approval API', () => {
         type: 'standalone',
         contentId: 'content-1',
         platformId: 'facebook',
-        content: { text: 'Launch note' },
+        content: {
+          text: 'Launch note',
+          mediaUrls: ['https://cdn.example.com/post.png'],
+          hashtags: ['launch'],
+        },
       })
     );
   });

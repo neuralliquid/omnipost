@@ -38,6 +38,7 @@ export interface ScheduledJob {
     mediaUrls?: string[];
     hashtags?: string[];
     mentions?: string[];
+    tiktokPrivacyLevel?: string;
     isThread?: boolean;
     threadParts?: { order: number; text: string; mediaUrls?: string[] }[];
   };

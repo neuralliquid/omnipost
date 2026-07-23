@@ -77,6 +77,9 @@ function toPublishJob(item: QueueItem): ScheduledJob {
     platformId,
     content: {
       text: getContentText(item),
+      mediaUrls: item.content.mediaUrls,
+      hashtags: item.content.hashtags,
+      tiktokPrivacyLevel: item.content.tiktokPrivacyLevel,
     },
     scheduledTime: now,
     timezone: 'UTC',

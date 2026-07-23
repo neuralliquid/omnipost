@@ -9,6 +9,8 @@ export interface Platform {
   name: string;
   slug: string;
   description?: string;
+  defaultContentFlow?: boolean;
+  requiresMedia?: boolean;
 }
 
 export interface PlatformConfig {
@@ -27,6 +29,14 @@ export const platforms: Platform[] = [
   { id: 4, name: 'Twitter', slug: 'twitter', description: 'Twitter microblogging platform' },
   {
     id: 5,
+    name: 'TikTok',
+    slug: 'tiktok',
+    description: 'TikTok short-form video platform',
+    defaultContentFlow: false,
+    requiresMedia: true,
+  },
+  {
+    id: 6,
     name: 'Custom Channel',
     slug: 'custom-channel',
     description: 'Custom publishing channel',
@@ -38,13 +48,13 @@ export const platforms: Platform[] = [
  */
 export const platformConfigurations: Record<string, PlatformConfig> = {
   facebook: {
-    apiUrl: 'https://api.facebook.com/publish',
+    apiUrl: process.env.FACEBOOK_API_URL || 'https://graph.facebook.com/v23.0/me/feed',
     apiKey: process.env.FACEBOOK_API_KEY || '',
     required: true,
     capabilities: ['text', 'image', 'video'],
   },
   instagram: {
-    apiUrl: 'https://api.instagram.com/publish',
+    apiUrl: process.env.INSTAGRAM_API_URL || 'https://graph.instagram.com/v23.0/me/media',
     apiKey: process.env.INSTAGRAM_API_KEY || '',
     required: true,
     capabilities: ['image', 'video'],
@@ -60,6 +70,12 @@ export const platformConfigurations: Record<string, PlatformConfig> = {
     apiKey: process.env.TWITTER_API_KEY || '',
     required: true,
     capabilities: ['text', 'image', 'video'],
+  },
+  tiktok: {
+    apiUrl: process.env.TIKTOK_API_URL || 'https://open.tiktokapis.com/v2/post/publish/video/init/',
+    apiKey: process.env.TIKTOK_API_KEY || '',
+    required: true,
+    capabilities: ['video'],
   },
   'custom-channel': {
     apiUrl: 'https://api.customchannel.com/publish',
