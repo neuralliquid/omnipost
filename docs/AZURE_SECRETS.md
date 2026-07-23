@@ -105,6 +105,15 @@ az webapp config appsettings set \
     INSTAGRAM_API_URL="https://graph.instagram.com" \
     INSTAGRAM_API_KEY="your-api-key"
 
+# TikTok
+az webapp config appsettings set \
+  --name nl-dev-omnipost-web \
+  --resource-group nl-dev-omnipost-rg \
+  --settings \
+    TIKTOK_API_URL="https://open.tiktokapis.com/v2/post/publish/video/init/" \
+    TIKTOK_API_KEY="your-api-key" \
+    TIKTOK_PRIVACY_LEVEL="SELF_ONLY"
+
 # LinkedIn
 az webapp config appsettings set \
   --name nl-dev-omnipost-web \
@@ -214,6 +223,29 @@ az webapp config appsettings list \
 # Test the health endpoint
 curl https://nl-dev-omnipost-web.azurewebsites.net/api/health
 ```
+
+## R13 Live Publish Readiness
+
+The current-release posting baseline fails closed in production when provider credentials are missing. Before running a controlled publish smoke, verify the App Service has the required provider settings:
+
+```bash
+az webapp config appsettings list \
+  --name nl-dev-omnipost-web \
+  --resource-group nl-dev-omnipost-rg \
+  --query "[?name=='FACEBOOK_API_KEY' || name=='INSTAGRAM_API_KEY' || name=='TIKTOK_API_KEY' || name=='TIKTOK_PRIVACY_LEVEL'].name" \
+  --output tsv
+```
+
+Expected settings for the R13 smoke:
+
+```text
+FACEBOOK_API_KEY
+INSTAGRAM_API_KEY
+TIKTOK_API_KEY
+TIKTOK_PRIVACY_LEVEL
+```
+
+Use `TIKTOK_PRIVACY_LEVEL=SELF_ONLY` for the first controlled TikTok smoke unless the account owner explicitly selects another creator privacy option.
 
 ## GitHub Secrets for CI/CD
 
