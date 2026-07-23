@@ -147,11 +147,14 @@ export function PlatformSettingsPage() {
           const connection = connections[platform.slug];
           const isConnected = Boolean(connection);
           const config = platformConfigurations[platform.slug];
+          const isComingSoon = platform.comingSoon;
 
           return (
             <div
               key={platform.slug}
-              className={`${styles.platformCard} ${isConnected ? styles.platformCardConnected : ''}`}
+              className={`${styles.platformCard} ${isConnected ? styles.platformCardConnected : ''} ${
+                isComingSoon ? styles.platformCardComingSoon : ''
+              }`}
             >
               <div className={styles.cardTop}>
                 <div className={`${styles.platformIcon} ${getIconColorClass(platform.slug)}`}>
@@ -167,12 +170,24 @@ export function PlatformSettingsPage() {
 
               <div>
                 <span
-                  className={`${styles.statusBadge} ${isConnected ? styles.statusConnected : styles.statusDisconnected}`}
+                  className={`${styles.statusBadge} ${
+                    isComingSoon
+                      ? styles.statusComingSoon
+                      : isConnected
+                        ? styles.statusConnected
+                        : styles.statusDisconnected
+                  }`}
                 >
                   <span
-                    className={`${styles.statusDot} ${isConnected ? styles.statusDotConnected : styles.statusDotDisconnected}`}
+                    className={`${styles.statusDot} ${
+                      isComingSoon
+                        ? styles.statusDotComingSoon
+                        : isConnected
+                          ? styles.statusDotConnected
+                          : styles.statusDotDisconnected
+                    }`}
                   />
-                  {isConnected ? 'Connected' : 'Not Connected'}
+                  {isComingSoon ? 'Coming Soon' : isConnected ? 'Connected' : 'Not Connected'}
                 </span>
               </div>
 
@@ -204,8 +219,9 @@ export function PlatformSettingsPage() {
                   <button
                     className={`${styles.connectButton} ${styles.connectButtonPrimary}`}
                     onClick={() => openConnectModal(platform.slug)}
+                    disabled={isComingSoon}
                   >
-                    Connect
+                    {isComingSoon ? 'Coming Soon' : 'Connect'}
                   </button>
                 )}
               </div>

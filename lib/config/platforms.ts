@@ -11,6 +11,7 @@ export interface Platform {
   description?: string;
   defaultContentFlow?: boolean;
   requiresMedia?: boolean;
+  comingSoon?: boolean;
 }
 
 export interface PlatformConfig {
@@ -23,8 +24,20 @@ export interface PlatformConfig {
 
 // List of available platforms
 export const platforms: Platform[] = [
-  { id: 1, name: 'Facebook', slug: 'facebook', description: 'Facebook social media platform' },
-  { id: 2, name: 'Instagram', slug: 'instagram', description: 'Instagram photo sharing platform' },
+  {
+    id: 1,
+    name: 'Facebook',
+    slug: 'facebook',
+    description: 'Facebook social media platform',
+    comingSoon: true,
+  },
+  {
+    id: 2,
+    name: 'Instagram',
+    slug: 'instagram',
+    description: 'Instagram photo sharing platform',
+    comingSoon: true,
+  },
   { id: 3, name: 'LinkedIn', slug: 'linkedin', description: 'LinkedIn professional network' },
   { id: 4, name: 'Twitter', slug: 'twitter', description: 'Twitter microblogging platform' },
   {
@@ -34,6 +47,7 @@ export const platforms: Platform[] = [
     description: 'TikTok short-form video platform',
     defaultContentFlow: false,
     requiresMedia: true,
+    comingSoon: true,
   },
   {
     id: 6,

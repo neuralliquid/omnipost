@@ -826,9 +826,9 @@ This has been fixed in the repository. Ensure you have the latest code:
 # Pull latest changes
 git pull origin main
 
-# Verify .npmrc exists
-cat .npmrc
-# Should contain: node-linker=hoisted
+# Verify pnpm-workspace.yaml contains Azure-compatible pnpm settings
+cat pnpm-workspace.yaml
+# Should contain: nodeLinker: hoisted
 
 # Rebuild and redeploy
 pnpm install

@@ -27,6 +27,7 @@ const PLATFORM_CHAR_LIMITS: Record<string, number> = {
   linkedin: 3000,
   facebook: 63206,
   instagram: 2200,
+  tiktok: 2200,
   'custom-channel': 5000,
 };
 
@@ -37,6 +38,7 @@ interface PlatformState {
   name: string;
   enabled: boolean;
   hashtags: string;
+  comingSoon?: boolean;
 }
 
 interface ContentDraft {
@@ -110,12 +112,13 @@ export function ContentCreatePage() {
   // Step 2: Platform Adaptation
   const [platformStates, setPlatformStates] = useState<PlatformState[]>(() =>
     platforms
-      .filter(p => p.slug !== 'custom-channel' && p.defaultContentFlow !== false)
+      .filter(p => p.slug !== 'custom-channel')
       .map(p => ({
         slug: p.slug,
         name: p.name,
-        enabled: true,
+        enabled: p.defaultContentFlow !== false && !p.comingSoon,
         hashtags: (DEFAULT_PLATFORM_CONFIGS[p.slug]?.defaultHashtags ?? []).join(', '),
+        comingSoon: p.comingSoon,
       }))
   );
 
@@ -159,7 +162,9 @@ export function ContentCreatePage() {
   }, [body, track, events]);
 
   const togglePlatform = useCallback((slug: string) => {
-    setPlatformStates(prev => prev.map(p => (p.slug === slug ? { ...p, enabled: !p.enabled } : p)));
+    setPlatformStates(prev =>
+      prev.map(p => (p.slug === slug && !p.comingSoon ? { ...p, enabled: !p.enabled } : p))
+    );
   }, []);
 
   const updateHashtags = useCallback((slug: string, value: string) => {
@@ -370,25 +375,36 @@ export function ContentCreatePage() {
             const charUsed = Math.min(body.length, charLimit);
             const color = getCharColor(body.length, charLimit);
             const fillPercent = Math.min((body.length / charLimit) * 100, 100);
+            const isComingSoon = platform.comingSoon;
 
             return (
               <div
                 key={platform.slug}
-                className={`${styles.platformCard} ${!platform.enabled ? styles.excluded : ''}`}
+                className={`${styles.platformCard} ${!platform.enabled ? styles.excluded : ''} ${
+                  isComingSoon ? styles.comingSoonCard : ''
+                }`}
               >
                 <div className={styles.platformCardHeader}>
-                  <span className={styles.platformName}>{platform.name}</span>
+                  <div className={styles.platformTitle}>
+                    <span className={styles.platformName}>{platform.name}</span>
+                    {isComingSoon && <span className={styles.comingSoonBadge}>Coming Soon</span>}
+                  </div>
                   <div className={styles.platformToggle}>
                     <span className={styles.toggleLabel}>
-                      {platform.enabled ? 'Included' : 'Excluded'}
+                      {isComingSoon ? 'Unavailable' : platform.enabled ? 'Included' : 'Excluded'}
                     </span>
                     <button
                       type="button"
                       className={`${styles.toggle} ${platform.enabled ? styles.toggleOn : ''}`}
                       onClick={() => togglePlatform(platform.slug)}
-                      aria-label={`${platform.enabled ? 'Exclude' : 'Include'} ${platform.name}`}
+                      aria-label={
+                        isComingSoon
+                          ? `${platform.name} is coming soon`
+                          : `${platform.enabled ? 'Exclude' : 'Include'} ${platform.name}`
+                      }
                       role="switch"
                       aria-checked={platform.enabled}
+                      disabled={isComingSoon}
                     >
                       <span className={styles.toggleKnob} />
                     </button>

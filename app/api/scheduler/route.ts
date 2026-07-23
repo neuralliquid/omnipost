@@ -12,6 +12,7 @@ import { isAuthenticated, getCurrentUserId } from '@/app/api/_utils/auth';
 import { Errors, withErrorHandling } from '@/app/api/_utils/errors';
 import { withRateLimit, RateLimitPresets } from '@/app/api/_utils/rateLimit';
 import { sanitizeText, validateAndSanitize } from '@/app/api/_utils/sanitize';
+import { platforms } from '@/lib/config/platforms';
 
 // ── Zod Schemas ──────────────────────────────────────────────────────────
 
@@ -60,6 +61,13 @@ const createJobSchema = z.object({
   timezone: z.string().optional(),
   maxAttempts: z.number().int().min(1).max(20).optional(),
 });
+
+function getComingSoonPlatformName(platformId: string): string | undefined {
+  const normalizedPlatformId = platformId.toLowerCase();
+  const platform = platforms.find(p => p.slug === normalizedPlatformId);
+
+  return platform?.comingSoon ? platform.name : undefined;
+}
 
 // ── Route Handlers ───────────────────────────────────────────────────────
 
@@ -142,6 +150,10 @@ export const POST = withRateLimit(
     }
 
     const data = validation.data;
+    const comingSoonPlatformName = getComingSoonPlatformName(data.platformId);
+    if (comingSoonPlatformName) {
+      return Errors.badRequest(`${comingSoonPlatformName} publishing is coming soon`);
+    }
 
     const scheduler = getScheduler();
     const job = await scheduler.schedule({
